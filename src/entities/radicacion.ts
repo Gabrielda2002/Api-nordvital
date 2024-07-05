@@ -11,6 +11,8 @@ import {
 import { TipoDocumento } from "./tipo-documento";
 import { Convenio } from "./convenio";
 import { IpsPrimaria } from "./ips-primaria";
+import { Especialidad } from "./especialidad";
+import { LugarRadicacion } from "./lugar-radicacion";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -115,4 +117,14 @@ export class Radicacion extends BaseEntity {
   @OneToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
   @JoinColumn({ name: "IpsPrimaria" })
   ipsPrimariaRelacion: IpsPrimaria;
+
+  // ? relacion con lugar de radicacion
+  @OneToOne(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
+  @JoinColumn({ name: "Especialidad" })
+  specialtyRelation: Especialidad;
+
+  // ? relacion con lugar de radicacion
+  @OneToOne(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
+  @JoinColumn({ name: "LugarRadicacion" })
+  placeRelation: LugarRadicacion;
 }
