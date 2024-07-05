@@ -13,6 +13,7 @@ import { Convenio } from "./convenio";
 import { IpsPrimaria } from "./ips-primaria";
 import { Especialidad } from "./especialidad";
 import { LugarRadicacion } from "./lugar-radicacion";
+import { IpsRemite } from "./ips-remite";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -127,4 +128,10 @@ export class Radicacion extends BaseEntity {
   @OneToOne(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
   @JoinColumn({ name: "LugarRadicacion" })
   placeRelation: LugarRadicacion;
+
+  // ? relacion con ips remitente
+    radicacionRelation: Radicacion
+  @OneToOne(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
+  @JoinColumn({ name: "IpsRemite" })
+  ipsRemiteRelation: IpsRemite;
 }

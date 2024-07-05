@@ -6,6 +6,7 @@ import tipoDocumentoRoutes from './routes/tipo-documento_routes';
 import convenioRoutes from './routes/convenio_routes';
 import ipsPrimariaRoutes from './routes/ips-primaria_routes';
 import especialidadRoutes from './routes/especialidad_routes';
+import ipsRemiteRoutes from './routes/ips-remite_routes';
 import lugarRadicacionRoutes from './routes/lugar-radicacion_routes';
 
 
@@ -21,5 +22,6 @@ app.use(convenioRoutes)
 app.use(ipsPrimariaRoutes);
 app.use(especialidadRoutes)
 app.use(lugarRadicacionRoutes);
+app.use(ipsRemiteRoutes)
 
 export default app;
