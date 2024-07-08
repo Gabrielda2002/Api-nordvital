@@ -8,6 +8,7 @@ import ipsPrimariaRoutes from './routes/ips-primaria_routes';
 import especialidadRoutes from './routes/especialidad_routes';
 import ipsRemiteRoutes from './routes/ips-remite_routes';
 import lugarRadicacionRoutes from './routes/lugar-radicacion_routes';
+import grupoServiciosRoutes from './routes/grupo-servicios_routes';
 
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(convenioRoutes)
 app.use(ipsPrimariaRoutes);
 app.use(especialidadRoutes)
 app.use(lugarRadicacionRoutes);
-app.use(ipsRemiteRoutes)
+app.use(ipsRemiteRoutes);
+app.use(grupoServiciosRoutes);
 
 export default app;

@@ -14,6 +14,7 @@ import { IpsPrimaria } from "./ips-primaria";
 import { Especialidad } from "./especialidad";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IpsRemite } from "./ips-remite";
+import { GrupoServicios } from "./grupo-servicios";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -130,8 +131,13 @@ export class Radicacion extends BaseEntity {
   placeRelation: LugarRadicacion;
 
   // ? relacion con ips remitente
-    radicacionRelation: Radicacion
   @OneToOne(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
   @JoinColumn({ name: "IpsRemite" })
   ipsRemiteRelation: IpsRemite;
+
+  // ? relacion con grupo de servicios
+  @OneToOne(() => GrupoServicios, (grupoServicios) => grupoServicios.radicacionRelation)
+  @JoinColumn({ name: "GrupoServicios" })
+  servicesGroupRelation: GrupoServicios
+
 }
