@@ -16,6 +16,7 @@ import { LugarRadicacion } from "./lugar-radicacion";
 import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
 import { TipoServicios } from "./tipo-servicios";
+import { Radicador } from "./radicador";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -145,5 +146,10 @@ export class Radicacion extends BaseEntity {
   @OneToOne(() => TipoServicios, (servicio) => servicio.radicacionRelation)
   @JoinColumn({ name: "TipoServicio" })
   servicesRelation: TipoServicios
+
+  // ? relacion con quien radica
+  @OneToOne(() => Radicador, (radicador) => radicador.radicacionRelation)
+  @JoinColumn({ name: "QuienRadica" })
+  radicadorRelation: Radicador;
   
 }
