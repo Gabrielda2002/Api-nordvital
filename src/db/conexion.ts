@@ -7,6 +7,7 @@ import { Especialidad } from "../entities/especialidad";
 import { LugarRadicacion } from "../entities/lugar-radicacion";
 import { IpsRemite } from "../entities/ips-remite";
 import { GrupoServicios } from "../entities/grupo-servicios";
+import { TipoServicios } from "../entities/tipo-servicios";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -24,7 +25,8 @@ export const AppDataSource = new DataSource({
     Especialidad,
     LugarRadicacion,
     IpsRemite,
-    GrupoServicios
+    GrupoServicios,
+    TipoServicios
   ],
   logging: true,
 });
