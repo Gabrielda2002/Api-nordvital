@@ -12,6 +12,7 @@ import grupoServiciosRoutes from './routes/grupo-servicios_routes';
 import radicadorRoutes from './routes/radicador_routes';
 import estadosRoutes from './routes/estados_routes';
 import cupsRadicadosRoutes from './routes/cups-radicados_routes';
+import diagnosticosRoutes from './routes/diagnosticos-routes';
 
 
 const app = express();
@@ -31,5 +32,6 @@ app.use(grupoServiciosRoutes);
 app.use(radicadorRoutes);
 app.use(estadosRoutes);
 app.use(cupsRadicadosRoutes);
+app.use(diagnosticosRoutes)
 
 export default app;

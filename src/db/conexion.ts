@@ -11,6 +11,7 @@ import { TipoServicios } from "../entities/tipo-servicios";
 import { Radicador } from "../entities/radicador";
 import { Estados } from "../entities/estados";
 import { CupsRadicados } from "../entities/cups-radicados";
+import { Diagnostico } from "../entities/diagnostico";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -32,7 +33,8 @@ export const AppDataSource = new DataSource({
     TipoServicios, 
     Radicador,
     Estados,
-    CupsRadicados
+    CupsRadicados,
+    Diagnostico
   ],
   logging: true,
   migrationsRun: true,
