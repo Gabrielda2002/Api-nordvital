@@ -13,7 +13,7 @@ import radicadorRoutes from './routes/radicador_routes';
 import estadosRoutes from './routes/estados_routes';
 import cupsRadicadosRoutes from './routes/cups-radicados_routes';
 import diagnosticosRoutes from './routes/diagnosticos-routes';
-
+import estadoSeguimientoRoutes from './routes/estados-seguimientos_routes';
 
 const app = express();
 
@@ -33,5 +33,7 @@ app.use(radicadorRoutes);
 app.use(estadosRoutes);
 app.use(cupsRadicadosRoutes);
 app.use(diagnosticosRoutes)
+app.use(estadoSeguimientoRoutes);
+
 
 export default app;
