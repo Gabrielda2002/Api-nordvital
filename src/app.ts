@@ -11,6 +11,7 @@ import lugarRadicacionRoutes from './routes/lugar-radicacion_routes';
 import grupoServiciosRoutes from './routes/grupo-servicios_routes';
 import radicadorRoutes from './routes/radicador_routes';
 import estadosRoutes from './routes/estados_routes';
+import cupsRadicadosRoutes from './routes/cups-radicados_routes';
 
 
 const app = express();
@@ -29,5 +30,6 @@ app.use(ipsRemiteRoutes);
 app.use(grupoServiciosRoutes);
 app.use(radicadorRoutes);
 app.use(estadosRoutes);
+app.use(cupsRadicadosRoutes);
 
 export default app;

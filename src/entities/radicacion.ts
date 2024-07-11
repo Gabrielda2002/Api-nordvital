@@ -19,6 +19,7 @@ import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
 import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
+import { CupsRadicados } from "./cups-radicados";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -145,4 +146,8 @@ export class Radicacion extends BaseEntity {
   // ? relacion con quien radica
   @OneToMany(() => Radicador, (radicador) => radicador.radicacionRelation)
   radicadorRelation: Radicador[];
+
+  // ? relacion con cups radicados
+  @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation)
+  cupsRadicadosRelation: CupsRadicados;
 }
