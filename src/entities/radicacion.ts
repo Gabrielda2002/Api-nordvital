@@ -114,35 +114,35 @@ export class Radicacion extends BaseEntity {
   @JoinColumn({ name: "TipoDocumento" })
   typeDocumentRelation: TipoDocumento;
 
-  // // ? relacion con convenio
-  // @OneToMany(() => Convenio, (convenio) => convenio.radicacion)
-  // convenio: Convenio[];
+  // ? relacion con convenio
+  @OneToMany(() => Convenio, (convenio) => convenio.radicacion)
+  convenio: Convenio[];
 
-  // // ? relacion con ips primaria
-  // @OneToMany(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
-  // ipsPrimariaRelacion: IpsPrimaria[];
+  // ? relacion con ips primaria
+  @OneToMany(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
+  ipsPrimariaRelacion: IpsPrimaria[];
 
-  // // ? relacion con lugar de radicacion
-  // @OneToMany(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
-  // specialtyRelation: Especialidad[];
+  // ? relacion con lugar de radicacion
+  @OneToMany(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
+  specialtyRelation: Especialidad[];
 
-  // // ? relacion con lugar de radicacion
-  // @OneToMany(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
-  // placeRelation: LugarRadicacion[];
+  // ? relacion con lugar de radicacion
+  @OneToMany(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
+  placeRelation: LugarRadicacion[];
 
-  // // ? relacion con ips remitente
-  // @OneToMany(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
-  // ipsRemiteRelation: IpsRemite[];
+  // ? relacion con ips remitente
+  @OneToMany(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
+  ipsRemiteRelation: IpsRemite[];
 
-  // // ? relacion con grupo de servicios
-  // @OneToMany(() => GrupoServicios, (grupoServicios) => grupoServicios.radicacionRelation)
-  // servicesGroupRelation: GrupoServicios[];
+  // ? relacion con grupo de servicios
+  @OneToMany(() => GrupoServicios, (grupoServicios) => grupoServicios.radicacionRelation)
+  servicesGroupRelation: GrupoServicios[];
 
-  // // * relacion con tipo de servicios
-  // @OneToMany(() => TipoServicios, (servicio) => servicio.radicacionRelation)
-  // servicesRelation: TipoServicios[];
+  // * relacion con tipo de servicios
+  @OneToMany(() => TipoServicios, (servicio) => servicio.radicacionRelation)
+  servicesRelation: TipoServicios[];
 
-  // // ? relacion con quien radica
-  // @OneToMany(() => Radicador, (radicador) => radicador.radicacionRelation)
-  // radicadorRelation: Radicador[];
+  // ? relacion con quien radica
+  @OneToMany(() => Radicador, (radicador) => radicador.radicacionRelation)
+  radicadorRelation: Radicador[];
 }

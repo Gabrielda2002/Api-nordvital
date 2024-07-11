@@ -12,6 +12,6 @@ export class Radicador  extends BaseEntity {
     @Column({name: "EstadoRadicador"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.radicadorRelation)
-    // radicacionRelation: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.radicadorRelation)
+    radicacionRelation: Radicacion
 }

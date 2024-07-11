@@ -16,6 +16,6 @@ export class Convenio extends BaseEntity{
     @Column({name: "roles", type: "text"})
     roles: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.convenio)
-    // radicacion: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.convenio)
+    radicacion: Radicacion
 }

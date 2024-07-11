@@ -13,6 +13,6 @@ export class IpsPrimaria extends BaseEntity{
     @Column({name: "EstadoIpsPrimaria"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
-    // radicacion: Radicacion
+    @ManyToOne(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
+    radicacion: Radicacion
 }

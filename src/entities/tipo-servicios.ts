@@ -13,7 +13,7 @@ export class TipoServicios extends BaseEntity {
     @Column({name: "EstadoServicio"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.servicesRelation)
-    // radicacionRelation: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.servicesRelation)
+    radicacionRelation: Radicacion
 
 }

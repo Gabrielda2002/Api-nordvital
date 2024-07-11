@@ -12,6 +12,6 @@ export class GrupoServicios extends BaseEntity{
     @Column({name: "EstadoGrupoServicio"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.servicesGroupRelation )
-    // radicacionRelation: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.servicesGroupRelation )
+    radicacionRelation: Radicacion
 }

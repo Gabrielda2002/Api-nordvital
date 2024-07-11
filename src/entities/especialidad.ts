@@ -13,6 +13,6 @@ export class Especialidad extends BaseEntity {
     @Column({name: "EstadoEspecialidad"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.specialtyRelation)
-    // radicacionRelation: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.specialtyRelation)
+    radicacionRelation: Radicacion
 }

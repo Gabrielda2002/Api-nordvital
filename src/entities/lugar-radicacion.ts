@@ -13,6 +13,6 @@ export class LugarRadicacion extends BaseEntity{
     @Column({name: "EstadoLugar"})
     status: string
 
-    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.placeRelation)
-    // radicacionRelation: Radicacion
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.placeRelation)
+    radicacionRelation: Radicacion
 }
