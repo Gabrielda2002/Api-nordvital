@@ -9,6 +9,7 @@ import { IpsRemite } from "../entities/ips-remite";
 import { GrupoServicios } from "../entities/grupo-servicios";
 import { TipoServicios } from "../entities/tipo-servicios";
 import { Radicador } from "../entities/radicador";
+import { Estados } from "../entities/estados";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -28,7 +29,8 @@ export const AppDataSource = new DataSource({
     IpsRemite,
     GrupoServicios,
     TipoServicios, 
-    Radicador
+    Radicador,
+    Estados
   ],
   logging: true,
   migrationsRun: true,

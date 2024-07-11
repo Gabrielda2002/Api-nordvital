@@ -10,6 +10,7 @@ import ipsRemiteRoutes from './routes/ips-remite_routes';
 import lugarRadicacionRoutes from './routes/lugar-radicacion_routes';
 import grupoServiciosRoutes from './routes/grupo-servicios_routes';
 import radicadorRoutes from './routes/radicador_routes';
+import estadosRoutes from './routes/estados_routes';
 
 
 const app = express();
@@ -27,5 +28,6 @@ app.use(lugarRadicacionRoutes);
 app.use(ipsRemiteRoutes);
 app.use(grupoServiciosRoutes);
 app.use(radicadorRoutes);
+app.use(estadosRoutes);
 
 export default app;
