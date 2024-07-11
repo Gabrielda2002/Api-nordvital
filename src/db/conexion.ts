@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   host: "localhost",
   username: "root",
   password: "",
-  database: "nordvitalips",
+  database: "nordvitalips-api-test",
   synchronize: false,
   port: 3306,
   entities: [
@@ -31,4 +31,6 @@ export const AppDataSource = new DataSource({
     Radicador
   ],
   logging: true,
+  migrationsRun: true,
+  migrations:  [__dirname + "/../migrations/*{.ts, .js}"],
 });

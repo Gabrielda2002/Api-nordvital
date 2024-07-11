@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -27,7 +29,7 @@ export class Radicacion extends BaseEntity {
   createdAt: Date;
 
   @Column({ name: "TipoDocumento" })
-  documentType: string;
+  documentType: number;
 
   @Column({ name: "Identificacion" })
   documentNumber: number;
@@ -37,10 +39,10 @@ export class Radicacion extends BaseEntity {
 
   @Column({ name: "NumeroCel" })
   phoneNumber: string;
-
+  
   @Column({ name: "Email" })
   email: string;
-
+ 
   //* telefono fijo
   @Column({ name: "TelFijo" })
   landline: number;
@@ -55,7 +57,7 @@ export class Radicacion extends BaseEntity {
   @Column({ name: "IpsPrimaria" })
   ipsPrimaria: number;
 
-  @Column({ name: "FechaOrden" })
+  @Column({ name: "FechaOrden", type: "date", nullable: true})
   orderDate: Date;
 
   // * lugar de radicacion
@@ -99,7 +101,7 @@ export class Radicacion extends BaseEntity {
   @Column({ name: "Auditora" })
   auditora: string;
 
-  @Column({ name: "FechaAuditoria" })
+  @Column({ name: "FechaAuditoria",type: "date", nullable: true })
   auditDate: Date;
 
   @Column({ name: "JustificacionAuditoria" })
@@ -108,48 +110,39 @@ export class Radicacion extends BaseEntity {
   // * relaciones
 
   // ? relacion con tipo de documento
-  @OneToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.radicacion)
+  @ManyToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.radicacion)
   @JoinColumn({ name: "TipoDocumento" })
-  tipoDocumento: TipoDocumento;
+  typeDocumentRelation: TipoDocumento;
 
-  // ? relacion con convenio
-  @OneToOne(() => Convenio, (convenio) => convenio.radicacion)
-  @JoinColumn({ name: "Convenio" })
-  convenio: Convenio;
+  // // ? relacion con convenio
+  // @OneToMany(() => Convenio, (convenio) => convenio.radicacion)
+  // convenio: Convenio[];
 
-  // ? relacion con ips primaria
-  @OneToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
-  @JoinColumn({ name: "IpsPrimaria" })
-  ipsPrimariaRelacion: IpsPrimaria;
+  // // ? relacion con ips primaria
+  // @OneToMany(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
+  // ipsPrimariaRelacion: IpsPrimaria[];
 
-  // ? relacion con lugar de radicacion
-  @OneToOne(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
-  @JoinColumn({ name: "Especialidad" })
-  specialtyRelation: Especialidad;
+  // // ? relacion con lugar de radicacion
+  // @OneToMany(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
+  // specialtyRelation: Especialidad[];
 
-  // ? relacion con lugar de radicacion
-  @OneToOne(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
-  @JoinColumn({ name: "LugarRadicacion" })
-  placeRelation: LugarRadicacion;
+  // // ? relacion con lugar de radicacion
+  // @OneToMany(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
+  // placeRelation: LugarRadicacion[];
 
-  // ? relacion con ips remitente
-  @OneToOne(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
-  @JoinColumn({ name: "IpsRemite" })
-  ipsRemiteRelation: IpsRemite;
+  // // ? relacion con ips remitente
+  // @OneToMany(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)
+  // ipsRemiteRelation: IpsRemite[];
 
-  // ? relacion con grupo de servicios
-  @OneToOne(() => GrupoServicios, (grupoServicios) => grupoServicios.radicacionRelation)
-  @JoinColumn({ name: "GrupoServicios" })
-  servicesGroupRelation: GrupoServicios
+  // // ? relacion con grupo de servicios
+  // @OneToMany(() => GrupoServicios, (grupoServicios) => grupoServicios.radicacionRelation)
+  // servicesGroupRelation: GrupoServicios[];
 
-  // * relacion con tipo de servicios
-  @OneToOne(() => TipoServicios, (servicio) => servicio.radicacionRelation)
-  @JoinColumn({ name: "TipoServicio" })
-  servicesRelation: TipoServicios
+  // // * relacion con tipo de servicios
+  // @OneToMany(() => TipoServicios, (servicio) => servicio.radicacionRelation)
+  // servicesRelation: TipoServicios[];
 
-  // ? relacion con quien radica
-  @OneToOne(() => Radicador, (radicador) => radicador.radicacionRelation)
-  @JoinColumn({ name: "QuienRadica" })
-  radicadorRelation: Radicador;
-  
+  // // ? relacion con quien radica
+  // @OneToMany(() => Radicador, (radicador) => radicador.radicacionRelation)
+  // radicadorRelation: Radicador[];
 }

@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 
 @Entity("ipsremite")
@@ -13,6 +13,6 @@ export class IpsRemite extends BaseEntity {
     @Column({name: "EstadoIpsRemite"})
     status: string
 
-    @OneToOne(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
-    radicacionRelation: Radicacion
+    // @ManyToOne(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
+    // radicacionRelation: Radicacion
 }
