@@ -16,6 +16,7 @@ import diagnosticosRoutes from './routes/diagnosticos-routes';
 import estadoSeguimientoRoutes from './routes/estados-seguimientos_routes';
 import municipioRoutes from './routes/municipio_routes';
 import pacientesRoutes from './routes/pacientes_routes';
+import permisosRoutes from './routes/permisos_routes';
 
 const app = express();
 
@@ -38,5 +39,6 @@ app.use(diagnosticosRoutes)
 app.use(estadoSeguimientoRoutes);
 app.use(municipioRoutes);
 app.use(pacientesRoutes);
+app.use(permisosRoutes);
 
 export default app;
