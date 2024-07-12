@@ -13,6 +13,7 @@ import { Estados } from "../entities/estados";
 import { CupsRadicados } from "../entities/cups-radicados";
 import { Diagnostico } from "../entities/diagnostico";
 import { EstadosSeguimiento } from "../entities/estados-seguimiento";
+import { Municipio } from "../entities/municipio";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -36,7 +37,8 @@ export const AppDataSource = new DataSource({
     Estados,
     CupsRadicados,
     Diagnostico,
-    EstadosSeguimiento
+    EstadosSeguimiento,
+    Municipio
   ],
   logging: true,
   migrationsRun: true,
