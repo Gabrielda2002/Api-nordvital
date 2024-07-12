@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
+import { Pacientes } from "./pacientes";
 
 @Entity("documento")
 export class TipoDocumento extends BaseEntity {
@@ -15,6 +16,9 @@ export class TipoDocumento extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.typeDocumentRelation)
     radicacion: Radicacion[]
+
+    @ManyToOne(() => Pacientes, (pacientes) => pacientes.documentRelation)
+    patientRelation: Pacientes[]
 
     
 }

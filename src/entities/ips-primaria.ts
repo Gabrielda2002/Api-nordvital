@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
+import { Pacientes } from "./pacientes";
 
 @Entity("ipsprimaria")
 export class IpsPrimaria extends BaseEntity{
@@ -15,4 +16,7 @@ export class IpsPrimaria extends BaseEntity{
 
     @ManyToOne(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
     radicacion: Radicacion
+
+    @OneToMany(() => Pacientes, (pacientes) => pacientes.ipsPrimariaRelation)
+    patientRelation: Pacientes[]
 }
