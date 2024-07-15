@@ -19,6 +19,7 @@ import pacientesRoutes from './routes/pacientes_routes';
 import permisosRoutes from './routes/permisos_routes';
 import rolesRoutes from './routes/roles_routes';
 import seguimientoAuxiliarRoutes from './routes/seguimiento-auxiliar_routes';
+import serviciosRoutes from './routes/servicio_routes';
 
 const app = express();
 
@@ -44,5 +45,6 @@ app.use(pacientesRoutes);
 app.use(permisosRoutes);
 app.use(rolesRoutes);
 app.use(seguimientoAuxiliarRoutes);
+app.use(serviciosRoutes);
 
 export default app;
