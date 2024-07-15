@@ -21,6 +21,7 @@ import rolesRoutes from './routes/roles_routes';
 import seguimientoAuxiliarRoutes from './routes/seguimiento-auxiliar_routes';
 import serviciosRoutes from './routes/servicio_routes';
 import servicioSolicitadoRoutes from './routes/servicio-solicitado_routes';
+import unidadFuncionalRoutes from './routes/unidad-funcional_routes';
 
 
 const app = express();
@@ -49,5 +50,6 @@ app.use(rolesRoutes);
 app.use(seguimientoAuxiliarRoutes);
 app.use(serviciosRoutes);
 app.use(servicioSolicitadoRoutes);
+app.use(unidadFuncionalRoutes);
 
 export default app;
