@@ -16,6 +16,7 @@ import { EstadosSeguimiento } from "../entities/estados-seguimiento";
 import { Municipio } from "../entities/municipio";
 import { Pacientes } from "../entities/pacientes";
 import { Permisos } from "../entities/permisos";
+import { Roles } from "../entities/roles";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -42,7 +43,8 @@ export const AppDataSource = new DataSource({
     EstadosSeguimiento,
     Municipio,
     Pacientes,
-    Permisos
+    Permisos,
+    Roles
   ],
   logging: true,
   migrationsRun: true,
