@@ -20,6 +20,8 @@ import permisosRoutes from './routes/permisos_routes';
 import rolesRoutes from './routes/roles_routes';
 import seguimientoAuxiliarRoutes from './routes/seguimiento-auxiliar_routes';
 import serviciosRoutes from './routes/servicio_routes';
+import servicioSolicitadoRoutes from './routes/servicio-solicitado_routes';
+
 
 const app = express();
 
@@ -46,5 +48,6 @@ app.use(permisosRoutes);
 app.use(rolesRoutes);
 app.use(seguimientoAuxiliarRoutes);
 app.use(serviciosRoutes);
+app.use(servicioSolicitadoRoutes);
 
 export default app;
