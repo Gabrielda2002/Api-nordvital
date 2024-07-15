@@ -18,6 +18,7 @@ import municipioRoutes from './routes/municipio_routes';
 import pacientesRoutes from './routes/pacientes_routes';
 import permisosRoutes from './routes/permisos_routes';
 import rolesRoutes from './routes/roles_routes';
+import seguimientoAuxiliarRoutes from './routes/seguimiento-auxiliar_routes';
 
 const app = express();
 
@@ -42,5 +43,6 @@ app.use(municipioRoutes);
 app.use(pacientesRoutes);
 app.use(permisosRoutes);
 app.use(rolesRoutes);
+app.use(seguimientoAuxiliarRoutes);
 
 export default app;
