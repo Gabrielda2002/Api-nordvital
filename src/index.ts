@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import app from "./app";
+import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
+
 
 try {
 

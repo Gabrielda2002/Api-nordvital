@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
+import { UnidadFuncional } from "./unidad-funcional";
 
 @Entity("cupspaciente")
 export class CupsRadicados extends BaseEntity {
@@ -35,5 +36,9 @@ export class CupsRadicados extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.cupsRadicadosRelation)
     radicacionRelation: Radicacion[]
+
+    @OneToMany(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
+    @JoinColumn({ name: "UnidadFuncional" })
+    functionalUnitRelation: UnidadFuncional[]
 
 }

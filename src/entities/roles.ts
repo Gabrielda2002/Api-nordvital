@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Permisos } from "./permisos";
+import { PermisosRol } from "./permisos-rol";
 
 @Entity("rol")
 export class Roles extends BaseEntity {
@@ -9,6 +11,6 @@ export class Roles extends BaseEntity {
     @Column({name: 'TipoRol'})
     name: string;
 
-
-    
+    @OneToMany(() => PermisosRol, (permisosRol) => permisosRol.rolRelation)
+    permisosRolRelation: PermisosRol[]
 }

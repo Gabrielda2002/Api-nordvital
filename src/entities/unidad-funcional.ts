@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { CupsRadicados } from "./cups-radicados";
 
 @Entity({name: "unidadfuncional"})
 export class UnidadFuncional extends BaseEntity {
@@ -11,5 +12,9 @@ export class UnidadFuncional extends BaseEntity {
 
     @Column({name: "EstadoUnidad"})
     status: string;
+
+    @ManyToOne(() => CupsRadicados, (cupsradicados) => cupsradicados.functionalUnitRelation)
+    cupsRadicadosRelation: CupsRadicados
+
 
 }

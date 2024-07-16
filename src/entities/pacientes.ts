@@ -62,4 +62,6 @@ export class Pacientes extends BaseEntity {
     @ManyToOne(()=> IpsPrimaria, (ipsPrimaria) => ipsPrimaria.patientRelation)
     @JoinColumn({name: "ipsPrimaria"})
     ipsPrimariaRelation: IpsPrimaria
+
+    
 }
