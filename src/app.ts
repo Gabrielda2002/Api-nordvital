@@ -23,6 +23,7 @@ import serviciosRoutes from './routes/servicio_routes';
 import servicioSolicitadoRoutes from './routes/servicio-solicitado_routes';
 import unidadFuncionalRoutes from './routes/unidad-funcional_routes';
 import usuariosRoutes from './routes/usuarios_routes';
+import permisosRolRoutes from './routes/permisos-rol_routes';
 
 const app = express();
 
@@ -52,5 +53,7 @@ app.use(serviciosRoutes);
 app.use(servicioSolicitadoRoutes);
 app.use(unidadFuncionalRoutes);
 app.use(usuariosRoutes);
+app.use(permisosRolRoutes);
+
 
 export default app;
