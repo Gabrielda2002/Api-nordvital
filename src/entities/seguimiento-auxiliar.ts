@@ -1,4 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Radicacion } from "./radicacion";
+import { EstadosSeguimiento } from "./estados-seguimiento";
 
 @Entity({name: "seguimientoauxiliar"})
 export class SeguimietoAuxiliar extends BaseEntity {
@@ -25,5 +27,13 @@ export class SeguimietoAuxiliar extends BaseEntity {
     // @UpdateDateColumn()
     // updatedAt: Date;
 
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.seguimientoAuxiliarRelation)
+    @JoinColumn({name: "Radicacion"})
+    radicacionRelation: Radicacion;
+
+    // * relacion con estados seguimiento
+    @ManyToOne(()=> EstadosSeguimiento, (estadoSeguimiento) => estadoSeguimiento.seguimientoAuxiliarRelation)
+    @JoinColumn({name: "EstadoSeguimiento"})
+    estadoSeguimientoRelation: EstadosSeguimiento
 
 }

@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
 @Entity("estadoseguimiento")
 export class EstadosSeguimiento extends BaseEntity{
@@ -17,6 +18,9 @@ export class EstadosSeguimiento extends BaseEntity{
 
     // @CreateDateColumn({ name: "FechaRegistro" })
     // createdAt: Date
+
+    @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.estadoSeguimientoRelation)
+    seguimientoAuxiliarRelation: SeguimietoAuxiliar[]
 
 
 }

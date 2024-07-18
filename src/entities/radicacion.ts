@@ -20,6 +20,7 @@ import { GrupoServicios } from "./grupo-servicios";
 import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
+import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -150,4 +151,8 @@ export class Radicacion extends BaseEntity {
   // ? relacion con cups radicados
   @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation)
   cupsRadicadosRelation: CupsRadicados;
+
+  // * relacion con seguimiento auxiliar
+  @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.radicacionRelation)
+  seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
 }
