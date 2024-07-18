@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { PermisosUsuarios } from "./permisos-usuario";
 
 @Entity({name: "usuario"})
 export class Usuarios extends BaseEntity {
@@ -38,4 +39,7 @@ export class Usuarios extends BaseEntity {
 
     @Column({name: "imagen"})
     photo: string;
+
+    @OneToMany(() => PermisosUsuarios, (permisosUsuarios) => permisosUsuarios.userRelation)
+    permisosUsuariosRelation: PermisosUsuarios[];
 }

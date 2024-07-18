@@ -24,7 +24,7 @@ import servicioSolicitadoRoutes from './routes/servicio-solicitado_routes';
 import unidadFuncionalRoutes from './routes/unidad-funcional_routes';
 import usuariosRoutes from './routes/usuarios_routes';
 import permisosRolRoutes from './routes/permisos-rol_routes';
-
+import permisosUsuarioRoutes from './routes/permisos-usuario_routes';
 const app = express();
 
 app.use(morgan('dev'));
@@ -54,6 +54,7 @@ app.use(servicioSolicitadoRoutes);
 app.use(unidadFuncionalRoutes);
 app.use(usuariosRoutes);
 app.use(permisosRolRoutes);
+app.use(permisosUsuarioRoutes);
 
 
 export default app;

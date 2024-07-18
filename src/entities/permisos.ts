@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Roles } from "./roles";
 import { PermisosRol } from "./permisos-rol";
+import { PermisosUsuarios } from "./permisos-usuario";
 
 @Entity("permisos")
 export class Permisos extends BaseEntity {
@@ -26,7 +27,12 @@ export class Permisos extends BaseEntity {
     // @UpdateDateColumn()
     // updateAt: Date
 
+    // * relacion con permisosRol
     @OneToMany(() => PermisosRol, (permisosRol) => permisosRol.permisosRelation)
     permisosRolRelation: PermisosRol[]
+
+    // * relacion con usuariosPermisos
+    @OneToMany(()=> PermisosUsuarios, (permisosUsuario) => permisosUsuario.permisoRelation)
+    permisosUsuariosRelation: PermisosUsuarios[]
     
 }
