@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Usuarios } from "./usuarios";
 
 @Entity("municipio")
 export class Municipio extends BaseEntity {
@@ -19,4 +20,8 @@ export class Municipio extends BaseEntity {
 
   // @CreateDateColumn({ name: "FechaRegistro" })
   // createdAt: Date
+
+  // * relacion con usuarios
+  @OneToMany(() => Usuarios, (usuarios) => usuarios.municipioRelation)
+  usuarioRelation: Usuarios[];
 }

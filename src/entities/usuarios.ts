@@ -1,5 +1,8 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PermisosUsuarios } from "./permisos-usuario";
+import { Municipio } from "./municipio";
+import { Roles } from "./roles";
+import { TipoDocumento } from "./tipo-documento";
 
 @Entity({name: "usuario"})
 export class Usuarios extends BaseEntity {
@@ -42,4 +45,22 @@ export class Usuarios extends BaseEntity {
 
     @OneToMany(() => PermisosUsuarios, (permisosUsuarios) => permisosUsuarios.userRelation)
     permisosUsuariosRelation: PermisosUsuarios[];
+
+    // * relacion con municipio
+    @ManyToOne(() => Municipio, (municipio) => municipio.usuarioRelation)
+    @JoinColumn({name: "Nit_Municipio"})
+    municipioRelation: Municipio;
+
+    // * relacion con roles
+    @ManyToOne(()=> Roles, (roles) => roles.usuarioRelation)
+    @JoinColumn({name: "Tipo_rol"})
+    rolesRelation: Roles
+
+    @ManyToOne(()=> TipoDocumento, (tipoDocumento) => tipoDocumento.usuarioRelation)
+    @JoinColumn({name: "TipoCedula"})
+    typeDocumentRelation: TipoDocumento
+
+    
+
+
 }
