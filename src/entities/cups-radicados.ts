@@ -35,7 +35,8 @@ export class CupsRadicados extends BaseEntity {
     //* relaciones
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.cupsRadicadosRelation)
-    radicacionRelation: Radicacion[]
+    @JoinColumn({ name: "IDRADICADO" })
+    radicacionRelation: Radicacion
 
     @OneToMany(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
     @JoinColumn({ name: "UnidadFuncional" })
