@@ -10,6 +10,6 @@ export const AppDataSource = new DataSource({
   port: parseInt(process.env.DB_PORT || "3306"),
   entities: [__dirname + "/../entities/*{.ts, .js}"],
   logging: true,
-  migrationsRun: true,
+  // migrationsRun: true,
   migrations:  [__dirname + "/../migrations/*{.ts, .js}"],
 });
