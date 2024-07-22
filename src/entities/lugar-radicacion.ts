@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 
 @Entity("lugarradicacion")
@@ -12,6 +12,12 @@ export class LugarRadicacion extends BaseEntity{
 
     @Column({name: "EstadoLugar"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones
 

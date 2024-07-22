@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 
@@ -13,6 +13,12 @@ export class IpsPrimaria extends BaseEntity{
 
     @Column({name: "EstadoIpsPrimaria"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones
 

@@ -17,7 +17,12 @@ const tables = [
   'servicio',
   'serviciosolicitado',
   'unidadfuncional',
-  'usuario'
+  'usuario',
+  'permisos',
+  'permisosusuario', 
+  'permisosrol',
+  'pacientes',
+  'radicador'
 ];
 
 export class AgregarCamposCreateUpdate1721656857249 implements MigrationInterface {

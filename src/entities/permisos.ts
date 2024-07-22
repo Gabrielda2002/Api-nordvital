@@ -24,8 +24,8 @@ export class Permisos extends BaseEntity {
     @CreateDateColumn({ name: "Fecha_Creacion" })
     createdAt: Date
 
-    // @UpdateDateColumn()
-    // updateAt: Date
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
 
     // * relaciones
 

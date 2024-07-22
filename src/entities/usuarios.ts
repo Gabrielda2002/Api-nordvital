@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PermisosUsuarios } from "./permisos-usuario";
 import { Municipio } from "./municipio";
 import { Roles } from "./roles";
@@ -42,6 +42,12 @@ export class Usuarios extends BaseEntity {
 
     @Column({name: "imagen"})
     photo: string;
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones
 

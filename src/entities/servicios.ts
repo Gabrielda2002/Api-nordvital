@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({name: "servicio"})
 export class Servicios extends BaseEntity {
@@ -11,4 +11,10 @@ export class Servicios extends BaseEntity {
 
     @Column({name: "EstadoServicio"})
     status: string;
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 }

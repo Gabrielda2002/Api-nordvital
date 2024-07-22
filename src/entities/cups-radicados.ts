@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { UnidadFuncional } from "./unidad-funcional";
 
@@ -34,12 +34,12 @@ export class CupsRadicados extends BaseEntity {
 
     //* relaciones
 
-    @OneToMany(() => Radicacion, (radicacion) => radicacion.cupsRadicadosRelation)
+    @ManyToOne(() => Radicacion, (radicacion) => radicacion.cupsRadicadosRelation)
     @JoinColumn({ name: "IDRADICADO" })
     radicacionRelation: Radicacion
 
-    @OneToMany(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
+    @ManyToOne(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
     @JoinColumn({ name: "UnidadFuncional" })
-    functionalUnitRelation: UnidadFuncional[]
+    functionalUnitRelation: UnidadFuncional
 
 }

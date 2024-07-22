@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CupsRadicados } from "./cups-radicados";
 
 @Entity({name: "unidadfuncional"})
@@ -13,10 +13,16 @@ export class UnidadFuncional extends BaseEntity {
     @Column({name: "EstadoUnidad"})
     status: string;
 
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
     // * relaciones
 
-    @ManyToOne(() => CupsRadicados, (cupsradicados) => cupsradicados.functionalUnitRelation)
-    cupsRadicadosRelation: CupsRadicados
+    @OneToMany(() => CupsRadicados, (cupsradicados) => cupsradicados.functionalUnitRelation)
+    cupsRadicadosRelation: CupsRadicados[]
 
 
 }

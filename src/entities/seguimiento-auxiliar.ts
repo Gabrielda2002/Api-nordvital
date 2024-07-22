@@ -23,9 +23,8 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @Column({name: "Radicacion"})
     idRadicacion: number;
 
-    // * falta crear este campo en la base de datos
-    // @UpdateDateColumn()
-    // updatedAt: Date;
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date;
 
     // * relacion
 

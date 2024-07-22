@@ -13,11 +13,11 @@ export class EstadosSeguimiento extends BaseEntity{
     @Column({ name: "Estado" })
     status: string
 
-    // @UpdateDateColumn({ name: "UltimaModificacion" })
-    // updatedAt: Date
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
 
-    // @CreateDateColumn({ name: "FechaRegistro" })
-    // createdAt: Date
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones
 

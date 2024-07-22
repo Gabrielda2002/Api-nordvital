@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, NumericType, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, NumericType, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 
 @Entity("gruposervicio")
@@ -12,6 +12,12 @@ export class GrupoServicios extends BaseEntity{
 
     @Column({name: "EstadoGrupoServicio"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones
 
