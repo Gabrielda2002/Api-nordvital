@@ -12,6 +12,8 @@ export class Radicador  extends BaseEntity {
     @Column({name: "EstadoRadicador"})
     status: string
 
+    // * relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.radicadorRelation)
     radicacionRelation: Radicacion[]
 }

@@ -13,6 +13,8 @@ export class UnidadFuncional extends BaseEntity {
     @Column({name: "EstadoUnidad"})
     status: string;
 
+    // * relaciones
+
     @ManyToOne(() => CupsRadicados, (cupsradicados) => cupsradicados.functionalUnitRelation)
     cupsRadicadosRelation: CupsRadicados
 

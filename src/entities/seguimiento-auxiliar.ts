@@ -27,6 +27,8 @@ export class SeguimietoAuxiliar extends BaseEntity {
     // @UpdateDateColumn()
     // updatedAt: Date;
 
+    // * relacion
+
     @ManyToOne(() => Radicacion, (radicacion) => radicacion.seguimientoAuxiliarRelation)
     @JoinColumn({name: "Radicacion"})
     radicacionRelation: Radicacion;

@@ -43,8 +43,15 @@ export class Usuarios extends BaseEntity {
     @Column({name: "imagen"})
     photo: string;
 
+    // * relaciones
+
+    // * relaciones sin llaves foraneas
+
+    // * relaciones con permisos usuario
     @OneToMany(() => PermisosUsuarios, (permisosUsuarios) => permisosUsuarios.userRelation)
     permisosUsuariosRelation: PermisosUsuarios[];
+
+    // * relaciones con llaves foraneas
 
     // * relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.usuarioRelation)

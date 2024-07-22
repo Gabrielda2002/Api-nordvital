@@ -15,6 +15,8 @@ export class TipoDocumento extends BaseEntity {
     @Column({ name: "EstadoDocumento"})
     status: string
 
+    // * relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.typeDocumentRelation)
     radicacion: Radicacion[]
 

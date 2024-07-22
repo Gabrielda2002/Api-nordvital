@@ -13,6 +13,8 @@ export class TipoServicios extends BaseEntity {
     @Column({name: "EstadoServicio"})
     status: string
 
+    // * relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.servicesRelation)
     radicacionRelation: Radicacion[]
 

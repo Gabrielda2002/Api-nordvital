@@ -14,6 +14,8 @@ export class IpsPrimaria extends BaseEntity{
     @Column({name: "EstadoIpsPrimaria"})
     status: string
 
+    // * relaciones
+
     @OneToMany(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
     radicacion: Radicacion[]
 

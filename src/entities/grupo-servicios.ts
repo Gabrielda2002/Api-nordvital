@@ -9,8 +9,11 @@ export class GrupoServicios extends BaseEntity{
 
     @Column({name: "NombreGrupo"})
     name: string
+
     @Column({name: "EstadoGrupoServicio"})
     status: string
+
+    // * relaciones
 
     @OneToOne(() => Radicacion, (radicacion) => radicacion.servicesGroupRelation )
     radicacionRelation: Radicacion[]

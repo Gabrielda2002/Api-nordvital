@@ -12,6 +12,8 @@ export class Roles extends BaseEntity {
     @Column({name: 'TipoRol'})
     name: string;
 
+    // * relaciones
+
     @OneToMany(() => PermisosRol, (permisosRol) => permisosRol.rolRelation)
     permisosRolRelation: PermisosRol[]
 

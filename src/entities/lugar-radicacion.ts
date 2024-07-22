@@ -13,6 +13,8 @@ export class LugarRadicacion extends BaseEntity{
     @Column({name: "EstadoLugar"})
     status: string
 
+    // * relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.placeRelation)
     radicacionRelation: Radicacion[]
 }

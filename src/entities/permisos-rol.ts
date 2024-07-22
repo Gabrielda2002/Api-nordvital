@@ -14,6 +14,8 @@ export class PermisosRol extends BaseEntity {
     @Column({name: "id_permisos"})
     idPermisos: number
 
+    // * relaciones
+
     @ManyToOne(() => Roles, (roles) => roles.permisosRolRelation)
     @JoinColumn({name: "id_rol"})
     rolRelation: Roles

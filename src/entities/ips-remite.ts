@@ -13,6 +13,9 @@ export class IpsRemite extends BaseEntity {
     @Column({name: "EstadoIpsRemite"})
     status: string
 
+
+    // * relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
     radicacionRelation: Radicacion[]
 }

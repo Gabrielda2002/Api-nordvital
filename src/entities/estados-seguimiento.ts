@@ -19,6 +19,8 @@ export class EstadosSeguimiento extends BaseEntity{
     // @CreateDateColumn({ name: "FechaRegistro" })
     // createdAt: Date
 
+    // * relaciones
+
     @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.estadoSeguimientoRelation)
     seguimientoAuxiliarRelation: SeguimietoAuxiliar[]
 

@@ -17,6 +17,8 @@ export class PermisosUsuarios extends BaseEntity {
     @CreateDateColumn({name: "fecha_creacion"})
     createdat: Date;
 
+    // * relaciones
+
     @ManyToOne(() => Usuarios, (usuarios) => usuarios.permisosUsuariosRelation)
     @JoinColumn({name: "id_usuario"}) 
     userRelation: Usuarios;

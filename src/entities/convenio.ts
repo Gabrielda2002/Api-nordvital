@@ -17,6 +17,8 @@ export class Convenio extends BaseEntity{
     @Column({name: "roles", type: "text"})
     roles: string
 
+    // * Relaciones
+
     @OneToMany(() => Radicacion, (radicacion) => radicacion.convenio)
     radicacion: Radicacion[]
 

@@ -21,6 +21,8 @@ export class Municipio extends BaseEntity {
   // @CreateDateColumn({ name: "FechaRegistro" })
   // createdAt: Date
 
+  // * relaciones
+
   // * relacion con usuarios
   @OneToMany(() => Usuarios, (usuarios) => usuarios.municipioRelation)
   usuarioRelation: Usuarios[];
