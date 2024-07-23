@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
+import { IsBoolean, IsNotEmpty, Length } from "class-validator";
 
 @Entity("convenio")
 export class Convenio extends BaseEntity{
@@ -9,10 +10,13 @@ export class Convenio extends BaseEntity{
     id: number
 
     @Column({ name: "NombreConvenio"})
-    nameAgreement: string
+    @IsNotEmpty({message: "El nombre del convenio no puede estar vacío"})
+    @Length(3, 50, {message: "El nombre del convenio debe tener entre $constraint1 y $constraint2 caracteres"})
+    name: string
 
-    @Column({ name: "EstadoConvenio"})
-    status: string
+    @Column({ name: "EstadoConvenio", type: "boolean"})
+    @IsBoolean({message: "El estado del convenio debe ser un valor booleano"})
+    status: boolean
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date
