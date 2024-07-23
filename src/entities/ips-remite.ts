@@ -10,7 +10,7 @@ export class IpsRemite extends BaseEntity {
     @Column({name: "NombreIpsRemite"})
     name: string
 
-    @Column({name: "EstadoIpsRemite"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

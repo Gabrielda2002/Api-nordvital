@@ -12,7 +12,7 @@ export class TipoDocumento extends BaseEntity {
     @Column({ name: "TipoDocumento"})
     name: string
 
-    @Column({ name: "EstadoDocumento"})
+    @Column({ name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

@@ -37,7 +37,7 @@ export class Pacientes extends BaseEntity {
     @Column({name: "ipsPrimaria"})
     ipsPrimaria: number;
 
-    @Column({name: "EstadoPaciente"})
+    @Column({name: "Estado"})
     status: string;
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

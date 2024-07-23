@@ -14,7 +14,7 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @Column({name: "ObservacionSeguimiento"})
     observation: string;
 
-    @Column({name: "EstadoSeguimiento"})
+    @Column({name: "Estado"})
     status: string;
 
     @Column({name: "CodigoCups"})

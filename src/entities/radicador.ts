@@ -9,7 +9,7 @@ export class Radicador  extends BaseEntity {
     @Column({name: "NombreRadicador"})
     name: string
 
-    @Column({name: "EstadoRadicador"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

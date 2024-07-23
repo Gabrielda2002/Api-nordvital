@@ -10,7 +10,7 @@ export class GrupoServicios extends BaseEntity{
     @Column({name: "NombreGrupo"})
     name: string
 
-    @Column({name: "EstadoGrupoServicio"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

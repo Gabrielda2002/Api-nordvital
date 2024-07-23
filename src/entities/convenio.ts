@@ -14,7 +14,7 @@ export class Convenio extends BaseEntity{
     @Length(3, 50, {message: "El nombre del convenio debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
-    @Column({ name: "EstadoConvenio", type: "boolean"})
+    @Column({ name: "Estado", type: "boolean"})
     @IsBoolean({message: "El estado del convenio debe ser un valor booleano"})
     status: boolean
 

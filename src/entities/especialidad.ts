@@ -10,7 +10,7 @@ export class Especialidad extends BaseEntity {
     @Column({name: "NombreEspecialidad"})
     name: string
 
-    @Column({name: "EstadoEspecialidad"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

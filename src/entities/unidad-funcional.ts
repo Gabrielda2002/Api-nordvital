@@ -10,7 +10,7 @@ export class UnidadFuncional extends BaseEntity {
     @Column({name: "NombreUnidad"})
     name: string;
 
-    @Column({name: "EstadoUnidad"})
+    @Column({name: "Estado"})
     status: string;
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

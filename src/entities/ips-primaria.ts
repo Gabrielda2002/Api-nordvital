@@ -11,7 +11,7 @@ export class IpsPrimaria extends BaseEntity{
     @Column({name: "NombreIpsPrimaria"})
     nameIpsPrimaria: string
 
-    @Column({name: "EstadoIpsPrimaria"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

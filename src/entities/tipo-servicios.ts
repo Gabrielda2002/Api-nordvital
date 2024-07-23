@@ -10,7 +10,7 @@ export class TipoServicios extends BaseEntity {
     @Column({name: "NombreServicio"})
     name: string
 
-    @Column({name: "EstadoServicio"})
+    @Column({name: "Estado"})
     status: string
     
     @UpdateDateColumn({ name: "fecha-actualizacion" })

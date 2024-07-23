@@ -12,7 +12,7 @@ export class Municipio extends BaseEntity {
   @Column({ name: "NitMunicipio" })
   nitMunicipio: string;
 
-  @Column({ name: "EstadoMunicipio" })
+  @Column({ name: "Estado" })
   status: string;
 
   @UpdateDateColumn({ name: "fecha-actualizacion" })

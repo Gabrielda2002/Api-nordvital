@@ -10,7 +10,7 @@ export class LugarRadicacion extends BaseEntity{
     @Column({name: "NombreLugar"})
     name: string
 
-    @Column({name: "EstadoLugar"})
+    @Column({name: "Estado"})
     status: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })

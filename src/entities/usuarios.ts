@@ -31,7 +31,7 @@ export class Usuarios extends BaseEntity {
     @Column({name: "fecha"})
     date: Date;
 
-    @Column({name: "EstadoUsuario"})
+    @Column({name: "Estado"})
     status: string;
 
     @Column({name: "Nit_Municipio"})

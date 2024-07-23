@@ -12,7 +12,7 @@ export class ServiciosSolicitados extends BaseEntity {
     @Column({name: "NombreSolicitado"})
     name: string;
 
-    @Column({name: "EstadoCup"}) 
+    @Column({name: "Estado"}) 
     status: string;
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
