@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PermisosUsuarios } from "./permisos-usuario";
 import { Municipio } from "./municipio";
 import { Roles } from "./roles";
@@ -31,7 +31,7 @@ export class Usuarios extends BaseEntity {
     @Column({name: "fecha"})
     date: Date;
 
-    @Column({name: "EstadoUsuario"})
+    @Column({name: "Estado"})
     status: string;
 
     @Column({name: "Nit_Municipio"})
@@ -43,8 +43,21 @@ export class Usuarios extends BaseEntity {
     @Column({name: "imagen"})
     photo: string;
 
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
+    // * relaciones
+
+    // * relaciones sin llaves foraneas
+
+    // * relaciones con permisos usuario
     @OneToMany(() => PermisosUsuarios, (permisosUsuarios) => permisosUsuarios.userRelation)
     permisosUsuariosRelation: PermisosUsuarios[];
+
+    // * relaciones con llaves foraneas
 
     // * relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.usuarioRelation)

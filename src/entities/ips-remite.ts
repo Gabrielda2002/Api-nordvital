@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 
 @Entity("ipsremite")
@@ -10,8 +10,16 @@ export class IpsRemite extends BaseEntity {
     @Column({name: "NombreIpsRemite"})
     name: string
 
-    @Column({name: "EstadoIpsRemite"})
+    @Column({name: "Estado"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
+    // * relaciones
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
     radicacionRelation: Radicacion[]

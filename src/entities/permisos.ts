@@ -24,8 +24,10 @@ export class Permisos extends BaseEntity {
     @CreateDateColumn({ name: "Fecha_Creacion" })
     createdAt: Date
 
-    // @UpdateDateColumn()
-    // updateAt: Date
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    // * relaciones
 
     // * relacion con permisosRol
     @OneToMany(() => PermisosRol, (permisosRol) => permisosRol.permisosRelation)

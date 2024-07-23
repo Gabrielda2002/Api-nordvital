@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
@@ -37,14 +37,14 @@ export class Pacientes extends BaseEntity {
     @Column({name: "ipsPrimaria"})
     ipsPrimaria: number;
 
-    @Column({name: "EstadoPaciente"})
+    @Column({name: "Estado"})
     status: string;
 
-    // @UpdateDateColumn({ name: "UltimaModificacion" })
-    // updatedAt: Date
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
 
-    // @CreateDateColumn({ name: "FechaRegistro" })
-    // createdAt: Date
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
     // * relaciones 
 

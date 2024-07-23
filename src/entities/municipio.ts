@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
 
 @Entity("municipio")
@@ -12,14 +12,16 @@ export class Municipio extends BaseEntity {
   @Column({ name: "NitMunicipio" })
   nitMunicipio: string;
 
-  @Column({ name: "EstadoMunicipio" })
+  @Column({ name: "Estado" })
   status: string;
 
-  // @UpdateDateColumn({ name: "UltimaModificacion" })
-  // updatedAt: Date
+  @UpdateDateColumn({ name: "fecha-actualizacion" })
+  updatedAt: Date
 
-  // @CreateDateColumn({ name: "FechaRegistro" })
-  // createdAt: Date
+  @CreateDateColumn({ name: "fecha-creacion" })
+  createdAt: Date
+
+  // * relaciones
 
   // * relacion con usuarios
   @OneToMany(() => Usuarios, (usuarios) => usuarios.municipioRelation)

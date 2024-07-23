@@ -13,11 +13,11 @@ export class Diagnostico extends BaseEntity {
     @Column({ name: "descripcion" })
     description: string
 
-    // * falta crear la migracion para estos campos
-    // @UpdateDateColumn({ name: "UltimaModificacion" })
-    // updatedAt: Date
 
-    // @CreateDateColumn({ name: "FechaRegistro" })
-    // createdAt: Date
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
 
 }

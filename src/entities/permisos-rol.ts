@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Roles } from "./roles";
 import { Permisos } from "./permisos";
 
@@ -13,6 +13,14 @@ export class PermisosRol extends BaseEntity {
 
     @Column({name: "id_permisos"})
     idPermisos: number
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
+    // * relaciones
 
     @ManyToOne(() => Roles, (roles) => roles.permisosRolRelation)
     @JoinColumn({name: "id_rol"})

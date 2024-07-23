@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 @Entity("radicador")
 export class Radicador  extends BaseEntity {
@@ -9,8 +9,16 @@ export class Radicador  extends BaseEntity {
     @Column({name: "NombreRadicador"})
     name: string
 
-    @Column({name: "EstadoRadicador"})
+    @Column({name: "Estado"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
+    // * relaciones
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.radicadorRelation)
     radicacionRelation: Radicacion[]

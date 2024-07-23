@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
@@ -12,13 +12,21 @@ export class TipoDocumento extends BaseEntity {
     @Column({ name: "TipoDocumento"})
     name: string
 
-    @Column({ name: "EstadoDocumento"})
+    @Column({ name: "Estado"})
     status: string
+
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date
+
+    @CreateDateColumn({ name: "fecha-creacion" })
+    createdAt: Date
+
+    // * relaciones
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.typeDocumentRelation)
     radicacion: Radicacion[]
 
-    @ManyToOne(() => Pacientes, (pacientes) => pacientes.documentRelation)
+    @OneToMany(() => Pacientes, (pacientes) => pacientes.documentRelation)
     patientRelation: Pacientes[]
 
     @OneToMany(()=> Usuarios, (usuarios) => usuarios.typeDocumentRelation)

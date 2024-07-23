@@ -14,7 +14,7 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @Column({name: "ObservacionSeguimiento"})
     observation: string;
 
-    @Column({name: "EstadoSeguimiento"})
+    @Column({name: "Estado"})
     status: string;
 
     @Column({name: "CodigoCups"})
@@ -23,9 +23,10 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @Column({name: "Radicacion"})
     idRadicacion: number;
 
-    // * falta crear este campo en la base de datos
-    // @UpdateDateColumn()
-    // updatedAt: Date;
+    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    updatedAt: Date;
+
+    // * relacion
 
     @ManyToOne(() => Radicacion, (radicacion) => radicacion.seguimientoAuxiliarRelation)
     @JoinColumn({name: "Radicacion"})

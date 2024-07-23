@@ -6,8 +6,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { TipoDocumento } from "./tipo-documento";
@@ -161,7 +159,7 @@ export class Radicacion extends BaseEntity {
   // * rrelaciones no llaves foraneas
 
   // ? relacion con cups radicados
-  @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation)
+  @OneToMany(() => CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation)
   cupsRadicadosRelation: CupsRadicados[];
 
   // * relacion con seguimiento auxiliar
