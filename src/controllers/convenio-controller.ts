@@ -75,6 +75,7 @@ export async function createConvenio(req: Request, res: Response){
 
         const convenio = new Convenio();
         convenio.name = name;
+        convenio.status = true;
 
         const errors = await validate(convenio);
 
@@ -127,7 +128,6 @@ export async function updateConvenio(req: Request, res: Response){
         }
 
         convenio.name = name;
-        convenio.status = true;
 
         const errors = await validate(convenio);
 
