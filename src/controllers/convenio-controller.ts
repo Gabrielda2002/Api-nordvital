@@ -1,17 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Convenio } from "../entities/convenio";
 import { validate } from "class-validator";
 
-export async function getAllConvenio(req: Request, res: Response){
+export async function getAllConvenio(req: Request, res: Response, next: NextFunction){
     try {
         
         const convenio = await Convenio.find();
         return res.json(convenio);
 
     } catch (error) {
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
@@ -21,16 +19,10 @@ export async function getAllConvenio(req: Request, res: Response){
  * @param res - The response object.
  * @returns The JSON representation of the convenio.
  */
-export async function getConvenioById(req: Request, res: Response){
+export async function getConvenioById(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
-
-        const convenioId = parseInt(id);
-
-        if (isNaN(convenioId)) {
-            return res.status(400).json({ message: "ID must be a number" });
-        }
 
         const convenio = await Convenio.findOneBy({ id: parseInt(id) });
 
@@ -41,15 +33,7 @@ export async function getConvenioById(req: Request, res: Response){
         return res.json(convenio);
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        // ? manejo de errores inesperados
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
@@ -60,7 +44,7 @@ export async function getConvenioById(req: Request, res: Response){
  * @param res - The response object.
  * @returns The created convenio object or an error message.
  */
-export async function createConvenio(req: Request, res: Response){
+export async function createConvenio(req: Request, res: Response, next: NextFunction) {
     try {
         const { name } = req.body;
 
@@ -94,13 +78,7 @@ export async function createConvenio(req: Request, res: Response){
         return res.status(201).json(convenio);
 
     } catch (error) {
-        console.error(error);
-        
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
 
@@ -110,18 +88,13 @@ export async function createConvenio(req: Request, res: Response){
  * @param res - The response object used to send the updated convenio or error messages.
  * @returns The updated convenio if successful, or an error message if there was an error.
  */
-export async function updateConvenio(req: Request, res: Response){
+export async function updateConvenio(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
         const { name } = req.body;
 
-        const convenioId = parseInt(id);
 
-        if (isNaN(convenioId)) {
-            return res.status(400).json({ message: "ID must be a number" });
-        }
-
-        const convenio = await Convenio.findOneBy({ id: convenioId });
+        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
 
         if (!convenio) {
             return res.status(404).json({ message: "Convenio not found" });
@@ -145,13 +118,7 @@ export async function updateConvenio(req: Request, res: Response){
         return res.json(convenio);
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
 
@@ -162,17 +129,11 @@ export async function updateConvenio(req: Request, res: Response){
  * @param res - The response object used to send the result of the operation.
  * @returns A JSON response indicating the result of the operation.
  */
-export async function deleteConvenio(req: Request, res: Response){
+export async function deleteConvenio(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
 
-        const convenioId = parseInt(id);
-
-        if (isNaN(convenioId)) {
-            return res.status(400).json({ message: "ID must be a number" });
-        }
-
-        const convenio = await Convenio.findOneBy({ id: convenioId });
+        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
 
         if (!convenio) {
             return res.status(404).json({ message: "Convenio not found" });
@@ -183,13 +144,6 @@ export async function deleteConvenio(req: Request, res: Response){
         return res.json({ message: "Convenio deleted" });
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }

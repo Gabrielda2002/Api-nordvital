@@ -1,32 +1,24 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Especialidad } from "../entities/especialidad";
 import { validate } from "class-validator";
 
-export async function getAllEspecialidades(req: Request, res: Response) {
+export async function getAllEspecialidades(req: Request, res: Response, next: NextFunction) {
     try {
         
         const especialidades = await Especialidad.find();
         return res.json(especialidades);
 
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
-export async function getEspecialidad(req: Request, res: Response) {
+export async function getEspecialidad(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
-        const especialidadId = parseInt(id);
-
-        if (isNaN(especialidadId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const especialidad = await Especialidad.findOneBy({ id: especialidadId });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -35,19 +27,11 @@ export async function getEspecialidad(req: Request, res: Response) {
         return res.json(especialidad);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-        
+        next(error);
     }
 }
 
-export async function createEspecialidad(req: Request, res: Response){
+export async function createEspecialidad(req: Request, res: Response, next: NextFunction) {
 
     try {
         
@@ -88,20 +72,12 @@ export async function createEspecialidad(req: Request, res: Response){
         return res.status(201).json(especialidad);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 
 }
 
-export async function updateEspecialidad(req: Request, res: Response){
+export async function updateEspecialidad(req: Request, res: Response, next: NextFunction) {
 
     try {
         
@@ -116,13 +92,7 @@ export async function updateEspecialidad(req: Request, res: Response){
             return res.status(400).json({ message: "Name is required" });
         }
 
-        const especialidadId = parseInt(id);
-
-        if (isNaN(especialidadId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const especialidad = await Especialidad.findOneBy({ id: especialidadId });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -146,19 +116,11 @@ export async function updateEspecialidad(req: Request, res: Response){
         return res.json(especialidad);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function deleteEspecialidad(req: Request, res: Response){
+export async function deleteEspecialidad(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
@@ -167,13 +129,7 @@ export async function deleteEspecialidad(req: Request, res: Response){
             return res.status(400).json({ message: "Id is required" });
         }
 
-        const especialidadId = parseInt(id);
-
-        if (isNaN(especialidadId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const especialidad = await Especialidad.findOneBy({ id: especialidadId });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -184,14 +140,6 @@ export async function deleteEspecialidad(req: Request, res: Response){
         return res.json({ message: "Especialidad deleted" });
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }

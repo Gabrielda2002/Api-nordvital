@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { IpsRemite } from "../entities/ips-remite";
 import { validate } from "class-validator";
-import { error } from "console";
-import { parse } from "path";
 
 export async function getAllIpsRemite(req: Request, res: Response, next: NextFunction){
     try {

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Diagnostico } from "../entities/diagnostico";
 import { validate } from "class-validator";
 
-export async function getAllDiagnosticos(req: Request, res: Response) {
+export async function getAllDiagnosticos(req: Request, res: Response, next: NextFunction) {
     try {
         
         const diagnosticos = await Diagnostico.find()
@@ -14,22 +14,14 @@ export async function getAllDiagnosticos(req: Request, res: Response) {
         return res.json(diagnosticos);
 
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(400).json({message : error.message});
-        }
+        next(error);
     }
 }
 
-export async function getDiagnosticoById(req: Request, res: Response){
+export async function getDiagnosticoById(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
-
-        const idDiagnostico = parseInt(id);
-
-        if (isNaN(idDiagnostico)) {
-            return res.status(400).json({message: "Id must be a number"});
-        }
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
 
@@ -40,19 +32,11 @@ export async function getDiagnosticoById(req: Request, res: Response){
         return res.json(diagnostico);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(400).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
 
-export async function createDiagnostico(req: Request, res: Response) {
+export async function createDiagnostico(req: Request, res: Response, next: NextFunction) {
     try {
         const { code, description } = req.body;
 
@@ -87,17 +71,11 @@ export async function createDiagnostico(req: Request, res: Response) {
         return res.status(201).json(diagnostico);
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Error interno del servidor" });
+        next(error);
     }
 }
 
-export async function updateDiagnostico(req: Request, res: Response){
+export async function updateDiagnostico(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
@@ -110,12 +88,6 @@ export async function updateDiagnostico(req: Request, res: Response){
 
         if (!code || !description) {
             return res.status(400).json({message: "All fields are required"});
-        }
-
-        const diagnosticoId = parseInt(id);
-
-        if (isNaN(diagnosticoId)) {
-            return res.status(400).json({message: "Id must be a number"});
         }
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
@@ -142,31 +114,17 @@ export async function updateDiagnostico(req: Request, res: Response){
         return res.json(diagnostico);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
 
-export async function deleteDiagnostico(req: Request, res: Response){
+export async function deleteDiagnostico(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
         if (!id) {
             return res.status(400).json({message: "Id is required"});
-        }
-
-        const diagnosticoId = parseInt(id);
-
-        if (isNaN(diagnosticoId)) {
-            return res.status(400).json({message: "Id must be a number"});
         }
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
@@ -180,15 +138,7 @@ export async function deleteDiagnostico(req: Request, res: Response){
         return res.json({message: "Diagnostico deleted"});
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 
 }

@@ -1,32 +1,24 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IpsPrimaria } from "../entities/ips-primaria";
-import { validate, ValidationError } from "class-validator";
+import { validate } from "class-validator";
 
-export async function getAllIpsPrimaria(req: Request, res: Response){
+export async function getAllIpsPrimaria(req: Request, res: Response, next: NextFunction){
     try {
         
         const ipsPrimaria = await IpsPrimaria.find();
         return res.json(ipsPrimaria);
 
     } catch (error) {
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
-export async function getIpsPrimaria(req: Request, res: Response){
+export async function getIpsPrimaria(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
-        const ipsPrimariaId = parseInt(id);
-
-        if (isNaN(ipsPrimariaId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: ipsPrimariaId });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -35,19 +27,11 @@ export async function getIpsPrimaria(req: Request, res: Response){
         return res.json(ipsPrimaria);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-        
+        next(error);
     }
 }
 
-export async function createIpsPrimaria(req: Request, res: Response){
+export async function createIpsPrimaria(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { name } = req.body;
@@ -84,31 +68,17 @@ export async function createIpsPrimaria(req: Request, res: Response){
         return res.json(ipsPrimaria);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function updateIpsPrimaria(req: Request, res: Response){
+export async function updateIpsPrimaria(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
         const { name, status } = req.body;
 
-        const ipsPrimariaId = parseInt(id);
-
-        if (isNaN(ipsPrimariaId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: ipsPrimariaId });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -135,30 +105,16 @@ export async function updateIpsPrimaria(req: Request, res: Response){
         return res.json(ipsPrimaria);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function deleteIpsPrimaria(req: Request, res: Response) {
+export async function deleteIpsPrimaria(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
-        const ipsPrimariaId = parseInt(id);
-
-        if (isNaN(ipsPrimariaId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: ipsPrimariaId });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -169,14 +125,6 @@ export async function deleteIpsPrimaria(req: Request, res: Response) {
         return res.json({ message: "Ips Primaria deleted" });
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }

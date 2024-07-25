@@ -1,27 +1,22 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { GrupoServicios } from "../entities/grupo-servicios";
 import { validate } from "class-validator";
+import { parse } from "path";
 
-export async function getAllGruposServicios(req: Request, res: Response) {
+export async function getAllGruposServicios(req: Request, res: Response, next: NextFunction ) {
   try {
     const gruposServicios = await GrupoServicios.find();
     return res.json(gruposServicios);
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
-export async function getGrupoServicios(req: Request, res: Response){
+export async function getGrupoServicios(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
-    const grupoServiciosId = parseInt(id);
-
-    if (isNaN(grupoServiciosId)) {
-      return res.status(400).json({ message: "Id must be a number" });
-    }
-
-    const grupoServicios = await GrupoServicios.findOneBy({ id: grupoServiciosId });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });
@@ -29,14 +24,11 @@ export async function getGrupoServicios(req: Request, res: Response){
 
     return res.json(grupoServicios);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
-export async function createGrupoServicios(req: Request, res: Response){
+export async function createGrupoServicios(req: Request, res: Response, next: NextFunction) {
   try {
     
     const {name} = req.body;
@@ -73,32 +65,17 @@ export async function createGrupoServicios(req: Request, res: Response){
     return res.status(201).json(grupoServicios);
 
   } catch (error) {
-  
-    console.error(error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-      
-    }
-
-    return res.status(500).json({ message: "Internal Server Error" });
-
+    next(error);
   }
 }
 
-export async function updateGrupoServicios(req: Request, res: Response){
+export async function updateGrupoServicios(req: Request, res: Response, next: NextFunction) {
   try {
     
     const { id } = req.params;
     const { name, status } = req.body;
 
-    const grupoServiciosId = parseInt(id);
-
-    if (isNaN(grupoServiciosId)) {
-      return res.status(400).json({ message: "Id must be a number" });
-    }
-
-    const grupoServicios = await GrupoServicios.findOneBy({ id: grupoServiciosId });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });
@@ -125,30 +102,16 @@ export async function updateGrupoServicios(req: Request, res: Response){
     return res.json(grupoServicios);
 
   } catch (error) {
-    
-    console.error(error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: "Internal Server Error" });
-
+    next(error);
   }
 }
 
-export async function deleteGrupoServicios(req: Request, res: Response) {
+export async function deleteGrupoServicios(req: Request, res: Response, next: NextFunction) {
   try {
     
     const { id } = req.params;
 
-    const grupoServiciosId = parseInt(id);
-
-    if (isNaN(grupoServiciosId)) {
-      return res.status(400).json({ message: "Id must be a number" });
-    }
-
-    const grupoServicios = await GrupoServicios.findOneBy({ id: grupoServiciosId });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });
@@ -159,14 +122,6 @@ export async function deleteGrupoServicios(req: Request, res: Response) {
     return res.json({ message: "Grupo de servicios eliminado" });
 
   } catch (error) {
-    
-    console.error(error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: "Internal Server Error" });
-
+    next(error);
   }
 }

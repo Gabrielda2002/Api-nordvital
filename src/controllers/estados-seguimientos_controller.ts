@@ -1,33 +1,25 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { EstadosSeguimiento } from "../entities/estados-seguimiento";
 import { validate, Validator } from "class-validator";
 
-export async function getEstadosSeguimientos(req: Request, res: Response){
+export async function getEstadosSeguimientos(req: Request, res: Response, next: NextFunction){
     try {
         
         const estadosSeguimientos = await EstadosSeguimiento.find();
         return res.json(estadosSeguimientos);
 
     } catch (error) {
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
-export async function getEstadosSeguimiento(req: Request, res: Response){
+export async function getEstadosSeguimiento(req: Request, res: Response, next: NextFunction){
     try {
         
         const { id } = req.params;
 
         if (!id) {
             return res.status(400).json({message: "Id is required"});
-        }
-
-        const estadoSeguimientoId = parseInt(id);
-
-        if (isNaN(estadoSeguimientoId)) {
-            return res.status(400).json({message: "Id must be a number"});
         }
 
         const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
@@ -39,19 +31,11 @@ export async function getEstadosSeguimiento(req: Request, res: Response){
         return res.json(estadoSeguimiento);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
 
-export async function createEstadosSeguimiento(req: Request, res: Response){
+export async function createEstadosSeguimiento(req: Request, res: Response, next: NextFunction){
     try {
         
         const { name } = req.body;
@@ -88,19 +72,11 @@ export async function createEstadosSeguimiento(req: Request, res: Response){
         return res.json(estadoSeguimiento);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
 
-export async function updateEstadosSeguimiento(req: Request, res: Response){
+export async function updateEstadosSeguimiento(req: Request, res: Response, next: NextFunction){
     try {
         
         const { id } = req.params;
@@ -114,12 +90,6 @@ export async function updateEstadosSeguimiento(req: Request, res: Response){
         if (!name || !status) {
 
             return res.status(400).json({message: "Name and status are required"});
-        }
-
-        const estadoSeguimientoId = parseInt(id);
-
-        if (isNaN(estadoSeguimientoId)) {
-            return res.status(400).json({message: "Id must be a number"});
         }
 
         const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
@@ -145,31 +115,17 @@ export async function updateEstadosSeguimiento(req: Request, res: Response){
         return res.json(estadoSeguimiento);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
 
-export async function deleteEstadosSeguimiento(req: Request, res: Response){
+export async function deleteEstadosSeguimiento(req: Request, res: Response, next: NextFunction){
     try {
         
         const { id } = req.params;
 
         if (!id) {
             return res.status(400).json({message: "Id is required"});
-        }
-
-        const estadoSeguimientoId = parseInt(id);
-
-        if (isNaN(estadoSeguimientoId)) {
-            return res.status(400).json({message: "Id must be a number"});
         }
 
         const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
@@ -183,14 +139,6 @@ export async function deleteEstadosSeguimiento(req: Request, res: Response){
         return res.json({message: "Estado de seguimiento deleted"});
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
-
+        next(error);
     }
 }
