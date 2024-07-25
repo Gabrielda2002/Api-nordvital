@@ -1,33 +1,26 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IpsRemite } from "../entities/ips-remite";
 import { validate } from "class-validator";
 import { error } from "console";
+import { parse } from "path";
 
-export async function getAllIpsRemite(req: Request, res: Response){
+export async function getAllIpsRemite(req: Request, res: Response, next: NextFunction){
     try {
         
         const ipsRemite = await IpsRemite.find();
         return res.json(ipsRemite);
 
     } catch (error) {
-        if (error instanceof Error) {
-            console.error(error.message);
-            res.status(500).json({message: error.message});
-        }    }
+        next(error);
+    }
 }
 
-export async function getIpsRemite(req: Request, res: Response){
+export async function getIpsRemite(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
-        const ipsRemiteId = parseInt(id);
-
-        if (isNaN(ipsRemiteId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsRemite = await IpsRemite.findOneBy({ id: ipsRemiteId });
+        const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
 
         if (!ipsRemite) {
             return res.status(404).json({ message: "Ips Remite not found" });
@@ -36,19 +29,11 @@ export async function getIpsRemite(req: Request, res: Response){
         return res.json(ipsRemite);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function createIpsRemite(req: Request, res: Response) {
+export async function createIpsRemite(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { name } = req.body;
@@ -85,31 +70,17 @@ export async function createIpsRemite(req: Request, res: Response) {
         return res.json(ipsRemite);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function updateIpsRemite(req: Request, res: Response) {
+export async function updateIpsRemite(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
         const { name, status } = req.body;
 
-        const ipsRemiteId = parseInt(id);
-
-        if (isNaN(ipsRemiteId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsRemite = await IpsRemite.findOneBy({ id: ipsRemiteId });
+        const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
 
         if (!ipsRemite) {
             return res.status(404).json({ message: "Ips Remite not found" });
@@ -136,30 +107,16 @@ export async function updateIpsRemite(req: Request, res: Response) {
         return res.json(ipsRemite);
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function deleteIpsRemite(req: Request, res: Response) {
+export async function deleteIpsRemite(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
 
-        const ipsRemiteId = parseInt(id);
-
-        if (isNaN(ipsRemiteId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const ipsRemite = await IpsRemite.findOneBy({ id: ipsRemiteId });
+        const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
 
         if (!ipsRemite) {
             return res.status(404).json({ message: "Ips Remite not found" });
@@ -170,13 +127,6 @@ export async function deleteIpsRemite(req: Request, res: Response) {
         return res.json({ message: "Ips Remite deleted" });
 
     } catch (error) {
-        
-        console.log(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
