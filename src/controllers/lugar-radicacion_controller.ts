@@ -53,6 +53,8 @@ export async function createLugarRadicacion(req: Request, res: Response, next: N
                 property: err.property,
                 constraints: err.constraints
             }))
+
+            return res.status(400).json({ message: "Error creating lugar radicador", messages });
         }
 
         await lugarRadicacion.save();
