@@ -1,5 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
+import { IsBoolean, IsInt, IsNotEmpty, IsString, Length, Max, Min } from "class-validator";
 
 @Entity("municipio")
 export class Municipio extends BaseEntity {
@@ -7,13 +8,22 @@ export class Municipio extends BaseEntity {
   id: number;
 
   @Column({ name: "NombreMunicipio" })
+  @IsString()
+  @IsNotEmpty({message: 'El nombre del municipio no puede estar vacio'})
+  @Length(3, 50, {message: 'El nombre del municipio debe tener entre $constraint1 y $constraint2 caracteres'})
   name: string;
 
   @Column({ name: "NitMunicipio" })
-  nitMunicipio: string;
+  @IsInt()
+  @IsNotEmpty({message: 'El nit del municipio no puede estar vacio'})
+  @Min(1, {message: 'El nit del municipio debe tener 1 caracteres'})
+  // @Max(9, {message: 'El nit del municipio debe tener 9 caracteres'})
+  nitMunicipio: number;
 
   @Column({ name: "Estado" })
-  status: string;
+  @IsBoolean()
+  @IsNotEmpty({message: 'El estado del municipio no puede estar vacio'})
+  status: boolean;
 
   @UpdateDateColumn({ name: "fecha-actualizacion" })
   updatedAt: Date
