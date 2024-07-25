@@ -1,8 +1,17 @@
 import { Router } from "express";
-import { getAllPacientes } from "../controllers/pacientes_controller";
+import { createPaciente, deletePaciente, getAllPacientes, getPaciente, updatePaciente } from "../controllers/pacientes_controller";
+import { validarId } from "../middlewares/validar-id_middleware";
 
 const router = Router();
 
 router.get("/pacientes", getAllPacientes);
+
+router.get("/pacientes/:id", validarId, getPaciente);
+
+router.post("/pacientes", createPaciente);
+
+router.put("/pacientes/:id", validarId, updatePaciente);
+
+router.delete("/pacientes/:id", validarId, deletePaciente);
 
 export default router;
