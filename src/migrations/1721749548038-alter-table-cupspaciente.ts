@@ -1,14 +1,25 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AlterTableCupspaciente1721749548038 implements MigrationInterface {
-    name = 'AlterTableCupspaciente1721749548038';
+  name = "AlterTableCupspaciente1721749548038";
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`EstadoCupsRadicacion\` \`Estado\` VARCHAR(255) NOT NULL`);
-        await queryRunner.query(`INSERT INTO \`autorizacion\` (\`OpcionAutorizacion\`) VALUES ('EN TRAMITE')`);
-        await queryRunner.query(`INSERT INTO \`autorizacion\` (\`OpcionAutorizacion\`) VALUES ('YA AUTORIZADO')`);
-        
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`EstadoCupsRadicacion\` \`Estado\` VARCHAR(255) NOT NULL`
+    );
+    await queryRunner.query(
+      `INSERT INTO \`autorizacion\` (\`OpcionAutorizacion\`) VALUES ('EN TRAMITE')`
+    );
+    await queryRunner.query(
+      `INSERT INTO \`autorizacion\` (\`OpcionAutorizacion\`) VALUES ('YA AUTORIZADO')`
+    );
+    // Eliminar registros con valores inesperados en la columna Estado
+    await queryRunner.query(`
+                    DELETE FROM \`cupspaciente\`
+                    WHERE \`Estado\` NOT IN ('AUTORIZADO', 'REDIRECCIONADO', 'NO AUTORIZADO', 'YA AUDITADO', 'OTRO', 'PENDIENTE', 'EN TRAMITE', 'YA AUTORIZADO')
+                `);
+
+    await queryRunner.query(`
             UPDATE \`cupspaciente\`
             SET \`Estado\` = CASE
                 WHEN \`Estado\` IS null OR \`Estado\` = ' ' THEN 6   
@@ -23,18 +34,23 @@ export class AlterTableCupspaciente1721749548038 implements MigrationInterface {
             END
         `);
 
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` MODIFY COLUMN \`Estado\` INT NOT NULL`);
-        
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` ADD CONSTRAINT \`FK_autorizacion\`
-                                FOREIGN KEY (\`Estado\`) REFERENCES \`autorizacion\`(\`IdAutorizacion\`)`);
-    }
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` MODIFY COLUMN \`Estado\` INT NOT NULL`
+    );
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` DROP CONSTRAINT \`FK_autorizacion\``);
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`Estado\` \`EstadoCupsRadicacion\` VARCHAR(255) NOT NULL`);
-        
-        
-        await queryRunner.query(`
+    await queryRunner.query(`ALTER TABLE \`cupspaciente\` ADD CONSTRAINT \`FK_autorizacion\`
+                                FOREIGN KEY (\`Estado\`) REFERENCES \`autorizacion\`(\`IdAutorizacion\`)`);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` DROP CONSTRAINT \`FK_autorizacion\``
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`Estado\` \`EstadoCupsRadicacion\` VARCHAR(255) NOT NULL`
+    );
+
+    await queryRunner.query(`
             UPDATE \`cupspaciente\`
             SET \`Estado\` = CASE
                 WHEN \`Estado\` = 1 THEN 'AUTORIZADO'
@@ -48,8 +64,12 @@ export class AlterTableCupspaciente1721749548038 implements MigrationInterface {
             END
         `);
 
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` MODIFY COLUMN \`Estado\` VARCHAR(255) NOT NULL`);
-        
-        await queryRunner.query(`ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`Estado\` \`EstadoCupsRadicacion\` VARCHAR(255) NOT NULL`);
-    }
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` MODIFY COLUMN \`Estado\` VARCHAR(255) NOT NULL`
+    );
+
+    await queryRunner.query(
+      `ALTER TABLE \`cupspaciente\` CHANGE COLUMN \`Estado\` \`EstadoCupsRadicacion\` VARCHAR(255) NOT NULL`
+    );
+  }
 }
