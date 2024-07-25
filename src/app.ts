@@ -25,6 +25,7 @@ import unidadFuncionalRoutes from './routes/unidad-funcional_routes';
 import usuariosRoutes from './routes/usuarios_routes';
 import permisosRolRoutes from './routes/permisos-rol_routes';
 import permisosUsuarioRoutes from './routes/permisos-usuario_routes';
+import { errorHandler } from './middlewares/manejar-errores_middleware';
 const app = express();
 
 app.use(morgan('dev'));
@@ -55,6 +56,10 @@ app.use(unidadFuncionalRoutes);
 app.use(usuariosRoutes);
 app.use(permisosRolRoutes);
 app.use(permisosUsuarioRoutes);
+
+
+// Middleware para manejar errores
+app.use(errorHandler);
 
 
 export default app;

@@ -1,29 +1,22 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { LugarRadicacion } from "../entities/lugar-radicacion";
 import { validate } from "class-validator";
+import { parse } from "path";
 
-export async function getAllLugaresRadicacion(req: Request, res: Response){
+export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         const lugaresRadicacion = await LugarRadicacion.find();
         return res.json(lugaresRadicacion);
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
-export async function getLugarRadicacion(req: Request, res: Response){
+export async function getLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
 
-        const lugarRadicacionId = parseInt(id);
-
-        if (isNaN(lugarRadicacionId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: lugarRadicacionId });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id)  });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -31,15 +24,11 @@ export async function getLugarRadicacion(req: Request, res: Response){
 
         return res.json(lugarRadicacion);
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
 
-export async function createLugarRadicacion(req: Request, res: Response){
+export async function createLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         const { name } = req.body;
 
@@ -70,27 +59,17 @@ export async function createLugarRadicacion(req: Request, res: Response){
 
         return res.json(lugarRadicacion);
     } catch (error) {
-        console.error(error);
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
 
-export async function updateLugarRadicacion(req: Request, res: Response){
+export async function updateLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         
         const { id } = req.params;
         const { name, status } = req.body;
 
-        const lugarRadicacionId = parseInt(id);
-
-        if (isNaN(lugarRadicacionId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: lugarRadicacionId });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -116,29 +95,15 @@ export async function updateLugarRadicacion(req: Request, res: Response){
         return res.json(lugarRadicacion);
 
     } catch (error) {
-        
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-
+        next(error);
     }
 }
 
-export async function deleteLugarRadicacion(req: Request, res: Response){
+export async function deleteLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
 
-        const lugarRadicacionId = parseInt(id);
-
-        if (isNaN(lugarRadicacionId)) {
-            return res.status(400).json({ message: "Id must be a number" });
-        }
-
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: lugarRadicacionId });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -148,10 +113,6 @@ export async function deleteLugarRadicacion(req: Request, res: Response){
 
         return res.json({ message: "LugarRadicacion deleted" });
     } catch (error) {
-        console.error(error);
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
