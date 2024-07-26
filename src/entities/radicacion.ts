@@ -19,7 +19,7 @@ import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
-import { IsInt, IsNotEmpty } from "class-validator";
+import { IsDate, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
 
 @Entity("radicacion")
@@ -31,35 +31,55 @@ export class Radicacion extends BaseEntity {
   createdAt: Date;
 
   @Column({ name: "FechaOrden", type: "date", nullable: true})
+  @IsNotEmpty({message: "La fecha de la orden es requerida"})
   orderDate: Date;
 
   // * lugar de radicacion
   @Column({ name: "LugarRadicacion" })
+  @IsInt()
+  @IsNotEmpty({message: "El lugar de radicacion es requerido"})
   place: number;
 
   @Column({ name: "IpsRemite" })
+  @IsInt()
+  @IsNotEmpty({message: "La ips remitente es requerida"})
   ipsRemitente: number;
 
   @Column({ name: "Profesional" })
+  @IsString()
+  @IsNotEmpty({message: "El profesional es requerido"})
+  @Length(3, 100, {message: "El profesional debe tener entre 3 y 100 caracteres"})
   profetional: string;
 
   @Column({ name: "Especialidad" })
+  @IsInt()
+  @IsNotEmpty({message: "La especialidad es requerida"})
   specialty: number;
 
   @Column({ name: "CodDiagnostico" })
+  @IsString()
+  @IsNotEmpty({message: "El codigo de diagnostico es requerido"})
   diagnosticCode: string;
 
   @Column({ name: "DescripcionDiagnostico" })
+  @IsString()
+  @IsNotEmpty({message: "La descripcion del diagnostico es requerida"})
   diagnosticDescription: string;
 
   @Column({ name: "GrupoServicios" })
+  @IsInt()
+  @IsNotEmpty({message: "El grupo de servicios es requerido"})
   groupServices: number;
 
   @Column({ name: "TipoServicio" })
+  @IsInt()
+  @IsNotEmpty({message: "El tipo de servicio es requerido"})
   typeServices: number;
 
   // * pendiente por cambiar el nombre de argumento
   @Column({ name: "QuienRadica" })
+  @IsInt()
+  @IsNotEmpty({message: "Quien radica es requerido"})
   radicador: number;
 
   // @Column({name: "NombreSoporte"})
@@ -72,12 +92,20 @@ export class Radicacion extends BaseEntity {
   // contentFileSupport: string
 
   @Column({ name: "Auditora" })
+  @IsString()
+  @IsNotEmpty({message: "La auditoria es requerida"})
+  @Length(3, 100, {message: "La auditoria debe tener entre 3 y 100 caracteres"})
   auditora: string;
 
   @Column({ name: "FechaAuditoria",type: "date", nullable: true })
+  @IsDate()
+  @IsNotEmpty({message: "La fecha de la auditoria es requerida"})
   auditDate: Date;
 
   @Column({ name: "JustificacionAuditoria" })
+  @IsString()
+  @IsNotEmpty({message: "La justificacion de la auditoria es requerida"})
+  @Length(3, 100, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
   justify: string;
 
   @Column({ name: "Paciente_id" })

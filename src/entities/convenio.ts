@@ -26,9 +26,6 @@ export class Convenio extends BaseEntity{
 
     // * Relaciones
 
-    @OneToMany(() => Radicacion, (radicacion) => radicacion.convenioRelation)
-    radicacionRelation: Radicacion[]
-
     @OneToMany(() => Pacientes, (pacientes) => pacientes.convenioRelation)
     patientRelation: Pacientes[]
 }

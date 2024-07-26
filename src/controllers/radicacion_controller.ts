@@ -1,31 +1,27 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 
-export async function getAllRadicacion(req: Request, res: Response) {
+export async function getAllRadicacion(req: Request, res: Response, next: NextFunction) {
   try {
     const radicacion = await Radicacion.find();
     return res.json(radicacion);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
 
-export async function getRadicacionById(req: Request, res: Response) {
+export async function getRadicacionById(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
     const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
     return res.json(radicacion);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
 
-export async function createRadicado(req: Request, res: Response) {
+export async function createRadicado(req: Request, res: Response, next: NextFunction) {
   try {
     const {
       orderDate,
@@ -65,8 +61,6 @@ export async function createRadicado(req: Request, res: Response) {
 
     return res.json(radicacado);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
