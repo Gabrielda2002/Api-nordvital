@@ -28,16 +28,7 @@ export async function getRadicacionById(req: Request, res: Response) {
 export async function createRadicado(req: Request, res: Response) {
   try {
     const {
-      ipsPrimaria,
       orderDate,
-      name,
-      email,
-      landline,
-      phoneNumber,
-      address,
-      agreement,
-      documentNumber,
-      documentType,
       place,
       ipsRemitente,
       profetional,
@@ -49,20 +40,12 @@ export async function createRadicado(req: Request, res: Response) {
       auditora,
       auditDate,
       typeServices,
-      justify
+      justify,
+      idPatient
     } = req.body;
 
     const radicacado = new Radicacion();
 
-    radicacado.documentNumber = documentNumber;
-    radicacado.documentType = documentType;
-    radicacado.patientName = name;
-    radicacado.email = email;
-    radicacado.phoneNumber = phoneNumber;
-    radicacado.landline = landline;
-    radicacado.address = address;
-    radicacado.agreement = agreement;
-    radicacado.ipsPrimaria = ipsPrimaria;
     radicacado.orderDate = orderDate;
     radicacado.place = place;
     radicacado.ipsRemitente = ipsRemitente;
@@ -76,6 +59,7 @@ export async function createRadicado(req: Request, res: Response) {
     radicacado.auditora = auditora;
     radicacado.auditDate = auditDate;
     radicacado.justify = justify;
+    radicacado.idPatient = idPatient;
 
     await radicacado.save();
 

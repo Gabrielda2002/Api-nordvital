@@ -19,6 +19,8 @@ import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
+import { IsInt, IsNotEmpty } from "class-validator";
+import { Pacientes } from "./pacientes";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -27,35 +29,6 @@ export class Radicacion extends BaseEntity {
 
   @CreateDateColumn({ name: "FechaRadicado" })
   createdAt: Date;
-
-  @Column({ name: "TipoDocumento" })
-  documentType: number;
-
-  @Column({ name: "Identificacion" })
-  documentNumber: number;
-
-  @Column({ name: "NombreCompleto" })
-  patientName: string;
-
-  @Column({ name: "NumeroCel" })
-  phoneNumber: string;
-  
-  @Column({ name: "Email" })
-  email: string;
- 
-  //* telefono fijo
-  @Column({ name: "TelFijo" })
-  landline: number;
-
-  @Column({ name: "Direccion" })
-  address: string;
-
-  // * convenio
-  @Column({ name: "Convenio" })
-  agreement: number;
-
-  @Column({ name: "IpsPrimaria" })
-  ipsPrimaria: number;
 
   @Column({ name: "FechaOrden", type: "date", nullable: true})
   orderDate: Date;
@@ -107,24 +80,14 @@ export class Radicacion extends BaseEntity {
   @Column({ name: "JustificacionAuditoria" })
   justify: string;
 
+  @Column({ name: "Paciente_id" })
+  @IsInt()
+  @IsNotEmpty()
+  idPatient: number;
+
   // * relaciones
 
   // * relaciones con llaves foraneas
-
-  // ? relacion con tipo de documento
-  @ManyToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.radicacion)
-  @JoinColumn({ name: "TipoDocumento" })
-  typeDocumentRelation: TipoDocumento;
-
-  // ? relacion con convenio
-  @ManyToOne(() => Convenio, (convenio) => convenio.radicacion)
-  @JoinColumn({ name: "Convenio" })
-  convenio: Convenio;
-
-  // ? relacion con ips primaria
-  @ManyToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
-  @JoinColumn({ name: "IpsPrimaria" })
-  ipsPrimariaRelacion: IpsPrimaria;
 
   // ? relacion con lugar de radicacion
   @ManyToOne(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
@@ -155,6 +118,10 @@ export class Radicacion extends BaseEntity {
   @ManyToOne(() => Radicador, (radicador) => radicador.radicacionRelation)
   @JoinColumn({ name: "QuienRadica" })
   radicadorRelation: Radicador;
+
+  @ManyToOne(() => Pacientes, (pacientes) => pacientes.radicacionRelation)
+  @JoinColumn({ name: "Paciente_id" })
+  patientRelation: Pacientes;
 
   // * rrelaciones no llaves foraneas
 

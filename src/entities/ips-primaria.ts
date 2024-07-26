@@ -28,9 +28,6 @@ export class IpsPrimaria extends BaseEntity{
 
     // * relaciones
 
-    @OneToMany(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
-    radicacion: Radicacion[]
-
     @OneToMany(() => Pacientes, (pacientes) => pacientes.ipsPrimariaRelation)
     patientRelation: Pacientes[]
 }

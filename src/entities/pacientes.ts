@@ -2,7 +2,8 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
-import { IsBoolean, IsEmail, IsIn, isInt, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { Radicacion } from "./radicacion";
 
 
 @Entity("pacientes")
@@ -86,5 +87,9 @@ export class Pacientes extends BaseEntity {
     @JoinColumn({name: "ipsPrimaria"})
     ipsPrimariaRelation: IpsPrimaria
 
+    // * relacion con radicacion
+
+    @OneToMany(() => Radicacion, (radicacion) => radicacion.patientRelation)
+    radicacionRelation: Radicacion[]
     
 }
