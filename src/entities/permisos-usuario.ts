@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
 import { Permisos } from "./permisos";
+import { IsInt, IsNotEmpty } from "class-validator";
 
 @Entity({name: "permisosusuario"})
 export class PermisosUsuarios extends BaseEntity {
@@ -9,9 +10,13 @@ export class PermisosUsuarios extends BaseEntity {
     id: number;
 
     @Column({name: "id_usuario"})
+    @IsInt()
+    @IsNotEmpty({message: "El campo id_usuario no puede estar vacio"})
     idUser: number;
 
     @Column({name: "id_permiso"})
+    @IsInt()
+    @IsNotEmpty({message: "El campo id_permiso no puede estar vacio"})
     idPermiso: number;
 
     @CreateDateColumn({name: "fecha_creacion"})
