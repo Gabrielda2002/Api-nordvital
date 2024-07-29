@@ -62,6 +62,8 @@ export async function createSoporte(req: Request, res: Response, next: NextFunct
         const soporte = Soportes.create({
             name : fileNameWithoutExt?.normalize('NFC'),
             url: file?.path,
+            size: file?.size,
+            type: file?.mimetype,
             idRadicacion
         });
 
@@ -89,7 +91,7 @@ export async function updateSoporte(req: Request, res: Response, next: NextFunct
     try {
         
         const { id } = req.params;
-        const { name, url, idRadicacion } = req.body;
+        const { name, url } = req.body;
 
         const soporteExist = await Soportes.findOneBy({id: parseInt (id)});
 
@@ -99,7 +101,6 @@ export async function updateSoporte(req: Request, res: Response, next: NextFunct
 
         soporteExist.name = name;
         soporteExist.url = url;
-        soporteExist.idRadicacion = idRadicacion;
 
         const errors = await validate(soporteExist);
 

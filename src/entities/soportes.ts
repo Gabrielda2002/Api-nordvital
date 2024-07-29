@@ -1,5 +1,5 @@
 import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
-import { BaseEntity, Column, Entity, EntityMetadata, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, EntityMetadata, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 
 @Entity("soportes")
@@ -24,6 +24,26 @@ export class Soportes extends BaseEntity {
     // @IsInt()
     @IsNotEmpty({message: "El id de la radicacion es requerido"})
     idRadicacion: number;
+
+    @Column({name: "size"})
+    @IsInt()
+    @IsNotEmpty({message: "El tamaño del soporte es requerido"})
+    size: number;
+
+    @Column({name: "tipo"})
+    @IsString()
+    @Length(1, 100, {message: "El tipo del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({message: "El tipo del soporte es requerido"})
+    type: string;
+
+    @CreateDateColumn({name: "fechaCreacion"})
+    createdAt: Date;
+
+    @UpdateDateColumn({name: "fechaActualizacion"})
+    updateAt: Date;
+
+
+    //* Relaciones
 
     @ManyToOne(() => Radicacion, radicacion => radicacion.soportesRelation)
     @JoinColumn({name: "id_radicacion"})

@@ -11,7 +11,7 @@ router.get("/soportes/:id", validarId , getSoporteById);
 
 router.post("/soportes", upload.single('file') , createSoporte);
 
-router.put("/soportes/:id", validarId, updateSoporte);
+router.put("/soportes/:id",upload.single('file') ,validarId, updateSoporte);
 
 router.delete("/soportes/:id", validarId, deleteSoporte);
 
