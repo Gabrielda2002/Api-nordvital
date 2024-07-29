@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, Ma
 import { Permisos } from "./permisos";
 import { PermisosRol } from "./permisos-rol";
 import { Usuarios } from "./usuarios";
+import { IsNotEmpty, IsString, Length } from "class-validator";
 
 @Entity("rol")
 export class Roles extends BaseEntity {
@@ -10,6 +11,9 @@ export class Roles extends BaseEntity {
     id: number;
 
     @Column({name: 'TipoRol'})
+    @IsNotEmpty({message: 'El nombre del rol es requerido'})
+    @IsString()
+    @Length(3, 50, {message: 'El nombre del rol debe tener entre $constraint1 y $constraint2 caracteres'})
     name: string;
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
