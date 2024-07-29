@@ -24,6 +24,7 @@ import unidadFuncionalRoutes from './unidad-funcional_routes';
 import usuariosRoutes from './usuarios_routes';
 import permisosRolRoutes from './permisos-rol_routes';
 import permisosUsuarioRoutes from './permisos-usuario_routes';
+import soportesRoutes from './soportes_routes';
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.use( unidadFuncionalRoutes);
 router.use( usuariosRoutes);
 router.use( permisosRolRoutes);
 router.use( permisosUsuarioRoutes);
+router.use( soportesRoutes);
 
 
 export default router;

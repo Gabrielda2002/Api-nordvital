@@ -6,6 +6,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || "root",
   password: process.env.DB_PASS || "",
   database: process.env.DB_NAME || "nordvitalips-api-test",
+  charset: "utf8mb4",
   synchronize: false,
   port: parseInt(process.env.DB_PORT || "3306"),
   entities: [__dirname + "/../entities/*{.ts, .js}"],
