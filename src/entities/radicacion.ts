@@ -19,7 +19,7 @@ import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
-import { IsDate, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 
@@ -99,7 +99,7 @@ export class Radicacion extends BaseEntity {
   auditora: string;
 
   @Column({ name: "FechaAuditoria",type: "date", nullable: true })
-  @IsDate()
+  // @IsDate()
   @IsNotEmpty({message: "La fecha de la auditoria es requerida"})
   auditDate: Date;
 
@@ -108,6 +108,11 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty({message: "La justificacion de la auditoria es requerida"})
   @Length(3, 100, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
   justify: string;
+
+  @Column({ name: "ConceptoAuditoria" })
+  @IsNumber()
+  @IsNotEmpty({message: "El concepto de la auditoria es requerido"})
+  auditConcept: number;
 
   @Column({ name: "Paciente_id" })
   @IsInt()
