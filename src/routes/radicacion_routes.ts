@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createRadicado, getAllRadicacion, getRadicacionById } from "../controllers/radicacion_controller";
+import { createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, updateRadicado } from "../controllers/radicacion_controller";
 import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 
@@ -10,6 +10,12 @@ router.get('/radicacion', getAllRadicacion);
 
 router.get('/radicacion/:id', validarId,  getRadicacionById);
 
-router.post('/radicacion', upload.single('archive') , createRadicado);
+router.post('/radicacion', createRadicado);
+
+router.put('/radicacion/:id', validarId, updateRadicado);
+
+router.delete('/radicacion/:id', validarId, deleteRadicado);
+
+
 
 export default router;

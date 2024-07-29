@@ -93,7 +93,7 @@ export async function updatePermisoUsuario(req: Request, res: Response, next: Ne
 
         return res.json(permisoUsuario);
     } catch (error) {
-        
+        next(error);
     }
 }
 
