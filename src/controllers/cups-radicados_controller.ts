@@ -1,29 +1,22 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CupsRadicados } from "../entities/cups-radicados";
 import { validate } from "class-validator";
 
-export async function getAllCupsRadicados(req: Request, res: Response){
+export async function getAllCupsRadicados(req: Request, res: Response, next: NextFunction){
     try {
         
         const cupsRadicados = await CupsRadicados.find();
         return res.json(cupsRadicados);
 
     } catch (error) {
-        if (error instanceof Error) {
-            return res.status(400).json({ message: error.message });
-        }
+        next(error);
     }
 }
 
-export async function getCupsRadicados(req: Request, res: Response){
+export async function getCupsRadicados(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
-        const cupsId = parseInt(id);
-
-        if (isNaN(cupsId)) {
-            return res.status(400).json({ message: "ID must be a number" });
-        }
 
         const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
 
@@ -34,19 +27,11 @@ export async function getCupsRadicados(req: Request, res: Response){
         return res.json(cupsRadicados);
 
     } catch (error) {
-
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(400).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-        
+        next(error);
     }
 }
 
-export async function createCupsRadicados(req: Request, res: Response){
+export async function createCupsRadicados(req: Request, res: Response, next: NextFunction) {
 
     try {
         
@@ -85,18 +70,11 @@ export async function createCupsRadicados(req: Request, res: Response){
         return res.status(201).json(cupsRadicados);
 
     } catch (error) {
-    
-            console.error(error);
-    
-            if (error instanceof Error) {
-                return res.status(500).json({ message: error.message });
-            }
-    
-            return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }
 
-export async function updateCupsRadicados(req: Request, res: Response) {
+export async function updateCupsRadicados(req: Request, res: Response, next: NextFunction) {
     
     try {
         
@@ -105,12 +83,6 @@ export async function updateCupsRadicados(req: Request, res: Response) {
 
         if (!code || !DescriptionCode || !status || !observation || !functionalUnit || !idRadicacion) {
             return res.status(400).json({ message: "All fields are required" });
-        }
-
-        const cupsId = parseInt(id);
-
-        if (isNaN(cupsId)) {
-            return res.status(400).json({ message: "ID must be a number" });
         }
 
         const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
@@ -141,27 +113,15 @@ export async function updateCupsRadicados(req: Request, res: Response) {
         return res.json(cupsRadicados);
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
-        
+        next(error);
     }
 
 }
 
-export async function deleteCupsRadicados(req: Request, res: Response) {
+export async function deleteCupsRadicados(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
-        const cupsId = parseInt(id);
-
-        if (isNaN(cupsId)) {
-            return res.status(400).json({ message: "ID must be a number" });
-        }
 
         const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
 
@@ -174,12 +134,6 @@ export async function deleteCupsRadicados(req: Request, res: Response) {
         return res.json({ message: "Cups Radicados deleted" });
 
     } catch (error) {
-        console.error(error);
-
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
-        }
-
-        return res.status(500).json({ message: "Internal Server Error" });
+        next(error);
     }
 }

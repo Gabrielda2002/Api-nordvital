@@ -1,16 +1,17 @@
 import { Router } from "express";
 import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio } from "../controllers/convenio-controller";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
 router.get('/convenio', getAllConvenio);
 
-router.get('/convenio/:id', getConvenioById);
+router.get('/convenio/:id', validarId, getConvenioById);
 
-router.post('/convenio', createConvenio)
+router.post('/convenio',createConvenio)
 
-router.put('/convenio/:id', updateConvenio)
+router.put('/convenio/:id', validarId,updateConvenio)
 
-router.delete('/convenio/:id', deleteConvenio)
+router.delete('/convenio/:id', validarId, deleteConvenio)
 
 export default router;

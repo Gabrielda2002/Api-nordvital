@@ -1,43 +1,30 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 
-export async function getAllRadicacion(req: Request, res: Response) {
+export async function getAllRadicacion(req: Request, res: Response, next: NextFunction) {
   try {
     const radicacion = await Radicacion.find();
     return res.json(radicacion);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
 
-export async function getRadicacionById(req: Request, res: Response) {
+export async function getRadicacionById(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
     const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
     return res.json(radicacion);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
 
-export async function createRadicado(req: Request, res: Response) {
+export async function createRadicado(req: Request, res: Response, next: NextFunction) {
   try {
     const {
-      ipsPrimaria,
       orderDate,
-      name,
-      email,
-      landline,
-      phoneNumber,
-      address,
-      agreement,
-      documentNumber,
-      documentType,
       place,
       ipsRemitente,
       profetional,
@@ -49,20 +36,12 @@ export async function createRadicado(req: Request, res: Response) {
       auditora,
       auditDate,
       typeServices,
-      justify
+      justify,
+      idPatient
     } = req.body;
 
     const radicacado = new Radicacion();
 
-    radicacado.documentNumber = documentNumber;
-    radicacado.documentType = documentType;
-    radicacado.patientName = name;
-    radicacado.email = email;
-    radicacado.phoneNumber = phoneNumber;
-    radicacado.landline = landline;
-    radicacado.address = address;
-    radicacado.agreement = agreement;
-    radicacado.ipsPrimaria = ipsPrimaria;
     radicacado.orderDate = orderDate;
     radicacado.place = place;
     radicacado.ipsRemitente = ipsRemitente;
@@ -76,13 +55,12 @@ export async function createRadicado(req: Request, res: Response) {
     radicacado.auditora = auditora;
     radicacado.auditDate = auditDate;
     radicacado.justify = justify;
+    radicacado.idPatient = idPatient;
 
     await radicacado.save();
 
     return res.json(radicacado);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }

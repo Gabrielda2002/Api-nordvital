@@ -23,9 +23,6 @@ export class TipoDocumento extends BaseEntity {
 
     // * relaciones
 
-    @OneToMany(() => Radicacion, (radicacion) => radicacion.typeDocumentRelation)
-    radicacion: Radicacion[]
-
     @OneToMany(() => Pacientes, (pacientes) => pacientes.documentRelation)
     patientRelation: Pacientes[]
 

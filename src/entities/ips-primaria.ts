@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
+import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 
 @Entity("ipsprimaria")
 export class IpsPrimaria extends BaseEntity{
@@ -9,10 +10,15 @@ export class IpsPrimaria extends BaseEntity{
     id: number
 
     @Column({name: "NombreIpsPrimaria"})
-    nameIpsPrimaria: string
+    @IsNotEmpty({message: "El nombre de la ips primaria es requerido"})
+    @IsString()
+    @Length(3, 50, {message: "El nombre de la ips primaria debe tener entre $constraint1 y $constraint2 caracteres"})
+    name: string
 
     @Column({name: "Estado"})
-    status: string
+    @IsNotEmpty({message: "El estado de la ips primaria es requerido"})
+    @IsBoolean()
+    status: boolean
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date
@@ -21,9 +27,6 @@ export class IpsPrimaria extends BaseEntity{
     createdAt: Date
 
     // * relaciones
-
-    @OneToMany(() => Radicacion, (Radicacion) => Radicacion.ipsPrimariaRelacion)
-    radicacion: Radicacion[]
 
     @OneToMany(() => Pacientes, (pacientes) => pacientes.ipsPrimariaRelation)
     patientRelation: Pacientes[]

@@ -19,6 +19,9 @@ import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
+import { IsDate, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { Pacientes } from "./pacientes";
+import { Soportes } from "./soportes";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -28,65 +31,56 @@ export class Radicacion extends BaseEntity {
   @CreateDateColumn({ name: "FechaRadicado" })
   createdAt: Date;
 
-  @Column({ name: "TipoDocumento" })
-  documentType: number;
-
-  @Column({ name: "Identificacion" })
-  documentNumber: number;
-
-  @Column({ name: "NombreCompleto" })
-  patientName: string;
-
-  @Column({ name: "NumeroCel" })
-  phoneNumber: string;
-  
-  @Column({ name: "Email" })
-  email: string;
- 
-  //* telefono fijo
-  @Column({ name: "TelFijo" })
-  landline: number;
-
-  @Column({ name: "Direccion" })
-  address: string;
-
-  // * convenio
-  @Column({ name: "Convenio" })
-  agreement: number;
-
-  @Column({ name: "IpsPrimaria" })
-  ipsPrimaria: number;
-
   @Column({ name: "FechaOrden", type: "date", nullable: true})
+  @IsNotEmpty({message: "La fecha de la orden es requerida"})
   orderDate: Date;
 
   // * lugar de radicacion
   @Column({ name: "LugarRadicacion" })
+  @IsInt()
+  @IsNotEmpty({message: "El lugar de radicacion es requerido"})
   place: number;
 
   @Column({ name: "IpsRemite" })
+  @IsInt()
+  @IsNotEmpty({message: "La ips remitente es requerida"})
   ipsRemitente: number;
 
   @Column({ name: "Profesional" })
+  @IsString()
+  @IsNotEmpty({message: "El profesional es requerido"})
+  @Length(3, 100, {message: "El profesional debe tener entre 3 y 100 caracteres"})
   profetional: string;
 
   @Column({ name: "Especialidad" })
+  @IsInt()
+  @IsNotEmpty({message: "La especialidad es requerida"})
   specialty: number;
 
   @Column({ name: "CodDiagnostico" })
+  @IsString()
+  @IsNotEmpty({message: "El codigo de diagnostico es requerido"})
   diagnosticCode: string;
 
   @Column({ name: "DescripcionDiagnostico" })
+  @IsString()
+  @IsNotEmpty({message: "La descripcion del diagnostico es requerida"})
   diagnosticDescription: string;
 
   @Column({ name: "GrupoServicios" })
+  @IsInt()
+  @IsNotEmpty({message: "El grupo de servicios es requerido"})
   groupServices: number;
 
   @Column({ name: "TipoServicio" })
+  @IsInt()
+  @IsNotEmpty({message: "El tipo de servicio es requerido"})
   typeServices: number;
 
   // * pendiente por cambiar el nombre de argumento
   @Column({ name: "QuienRadica" })
+  @IsInt()
+  @IsNotEmpty({message: "Quien radica es requerido"})
   radicador: number;
 
   // @Column({name: "NombreSoporte"})
@@ -99,32 +93,30 @@ export class Radicacion extends BaseEntity {
   // contentFileSupport: string
 
   @Column({ name: "Auditora" })
+  @IsString()
+  @IsNotEmpty({message: "La auditoria es requerida"})
+  @Length(3, 100, {message: "La auditoria debe tener entre 3 y 100 caracteres"})
   auditora: string;
 
   @Column({ name: "FechaAuditoria",type: "date", nullable: true })
+  @IsDate()
+  @IsNotEmpty({message: "La fecha de la auditoria es requerida"})
   auditDate: Date;
 
   @Column({ name: "JustificacionAuditoria" })
+  @IsString()
+  @IsNotEmpty({message: "La justificacion de la auditoria es requerida"})
+  @Length(3, 100, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
   justify: string;
+
+  @Column({ name: "Paciente_id" })
+  @IsInt()
+  @IsNotEmpty()
+  idPatient: number;
 
   // * relaciones
 
   // * relaciones con llaves foraneas
-
-  // ? relacion con tipo de documento
-  @ManyToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.radicacion)
-  @JoinColumn({ name: "TipoDocumento" })
-  typeDocumentRelation: TipoDocumento;
-
-  // ? relacion con convenio
-  @ManyToOne(() => Convenio, (convenio) => convenio.radicacion)
-  @JoinColumn({ name: "Convenio" })
-  convenio: Convenio;
-
-  // ? relacion con ips primaria
-  @ManyToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.radicacion)
-  @JoinColumn({ name: "IpsPrimaria" })
-  ipsPrimariaRelacion: IpsPrimaria;
 
   // ? relacion con lugar de radicacion
   @ManyToOne(() => Especialidad, (Especialidad) => Especialidad.radicacionRelation)
@@ -156,6 +148,13 @@ export class Radicacion extends BaseEntity {
   @JoinColumn({ name: "QuienRadica" })
   radicadorRelation: Radicador;
 
+  @ManyToOne(() => Pacientes, (pacientes) => pacientes.radicacionRelation)
+  @JoinColumn({ name: "Paciente_id" })
+  patientRelation: Pacientes;
+
+
+
+
   // * rrelaciones no llaves foraneas
 
   // ? relacion con cups radicados
@@ -165,4 +164,8 @@ export class Radicacion extends BaseEntity {
   // * relacion con seguimiento auxiliar
   @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.radicacionRelation)
   seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+
+
+  @OneToMany(() => Soportes, (soportes) => soportes.radicacionRelation)
+  soportesRelation: Soportes[];
 }
