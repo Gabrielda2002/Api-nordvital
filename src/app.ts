@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cors from 'cors';
-import { errorHandler } from './middlewares/manejar-errores_middleware';
+import { errorHandler } from './middlewares/manejar-errores';
 import routes from './routes/index';
 
 // * cargar variables de entorno
