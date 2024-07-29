@@ -21,6 +21,7 @@ import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { IsDate, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
+import { Soportes } from "./soportes";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -151,6 +152,9 @@ export class Radicacion extends BaseEntity {
   @JoinColumn({ name: "Paciente_id" })
   patientRelation: Pacientes;
 
+
+
+
   // * rrelaciones no llaves foraneas
 
   // ? relacion con cups radicados
@@ -160,4 +164,8 @@ export class Radicacion extends BaseEntity {
   // * relacion con seguimiento auxiliar
   @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.radicacionRelation)
   seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+
+
+  @OneToMany(() => Soportes, (soportes) => soportes.radicacionRelation)
+  soportesRelation: Soportes[];
 }
