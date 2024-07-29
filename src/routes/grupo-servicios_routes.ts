@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, updateGrupoServicios } from "../controllers/grupo-servicios_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

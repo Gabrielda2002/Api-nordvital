@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio } from "../controllers/municipio_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 import { Municipio } from "../entities/municipio";
 
 const router = Router();

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio } from "../controllers/convenio-controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

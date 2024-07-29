@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateCupsRadicados } from "../controllers/cups-radicados_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

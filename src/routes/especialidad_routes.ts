@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, updateEspecialidad } from "../controllers/especialidad_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

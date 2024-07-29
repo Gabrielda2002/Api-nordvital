@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createDiagnostico, deleteDiagnostico, getAllDiagnosticos, getDiagnosticoById, updateDiagnostico } from "../controllers/diagnostico-controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createEstados, deleteEstados, getAllEstados, getEstadosById, updateEstados } from "../controllers/estados_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

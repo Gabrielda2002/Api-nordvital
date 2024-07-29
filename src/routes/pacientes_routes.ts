@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createPaciente, deletePaciente, getAllPacientes, getPaciente, updatePaciente } from "../controllers/pacientes_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

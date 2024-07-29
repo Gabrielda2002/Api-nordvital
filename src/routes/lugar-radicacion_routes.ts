@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugarRadicacion, updateLugarRadicacion } from "../controllers/lugar-radicacion_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

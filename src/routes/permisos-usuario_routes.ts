@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createPermisoUsuario, deletePermisoUsuario, getAllPermisosUsuarios, getPermisoUsuario, updatePermisoUsuario } from "../controllers/permisos-usuario_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 

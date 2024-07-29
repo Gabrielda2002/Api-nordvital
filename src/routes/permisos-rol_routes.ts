@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createPermisosRol, deletePermisosRol, getAllPermisosRol, getPermisosRolById, updatePermisosRol } from "../controllers/permisos-rol_controller";
-import { validarId } from "../middlewares/validar-id_middleware";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
