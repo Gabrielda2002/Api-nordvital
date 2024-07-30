@@ -1,5 +1,6 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Radicacion } from "./radicacion";
 
 @Entity({name: "servicio"})
 export class Servicios extends BaseEntity {
@@ -23,4 +24,9 @@ export class Servicios extends BaseEntity {
 
     @CreateDateColumn({ name: "fecha-creacion" })
     createdAt: Date
+
+    // * relaciones
+
+    @OneToMany(() => Radicacion, radicacion => radicacion.servicesRelation)
+    radicacionRelation: Radicacion[]
 }

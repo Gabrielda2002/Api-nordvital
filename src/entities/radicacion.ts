@@ -15,13 +15,13 @@ import { Especialidad } from "./especialidad";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
-import { TipoServicios } from "./tipo-servicios";
 import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
+import { Servicios } from "./servicios";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -144,9 +144,9 @@ export class Radicacion extends BaseEntity {
   servicesGroupRelation: GrupoServicios;
 
   // * relacion con tipo de servicios
-  @ManyToOne(() => TipoServicios, (servicio) => servicio.radicacionRelation)
+  @ManyToOne(() => Servicios, (servicio) => servicio.radicacionRelation)
   @JoinColumn({ name: "TipoServicio" })
-  servicesRelation: TipoServicios;
+  servicesRelation: Servicios;
 
   // ? relacion con quien radica
   @ManyToOne(() => Radicador, (radicador) => radicador.radicacionRelation)
