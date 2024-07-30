@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ServiciosSolicitados } from "../entities/servicios-solicitados";
+import { validate } from "class-validator";
 
-export async function getAllServiciosSolicitados(req: Request, res: Response){
+export async function getAllServiciosSolicitados(req: Request, res: Response, next: NextFunction){
 
     try {
         
@@ -9,9 +10,133 @@ export async function getAllServiciosSolicitados(req: Request, res: Response){
         return res.json(serviciosSolicitados);
 
     } catch (error) {
-        if (error instanceof Error) {
-            return res.status(500).json({ message: error.message });
+        next(error);
+    }
+
+}
+
+export async function getServicioSolicitado(req: Request, res: Response, next: NextFunction){
+
+    try {
+        
+        const { id } = req.params;
+
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+
+        if(!servicioSolicitado){
+            return res.status(404).json({message: "Servicio solicitado no encontrado"});
         }
+
+        return res.json(servicioSolicitado);
+
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+export async function createServicioSolicitado(req: Request, res: Response, next: NextFunction){
+
+    try {
+        
+        const { code, name } = req.body;
+
+        if (!code || !name) {
+            return res.status(400).json({message: "Código y nombre son requeridos"});
+            
+        }
+
+        const codeExists = await ServiciosSolicitados.findOneBy({code});
+
+        if (codeExists) {
+            return res.status(400).json({message: "El código ya existe"});   
+        }
+
+        const servicioSolicitado =  new ServiciosSolicitados();
+
+        servicioSolicitado.code = code;
+        servicioSolicitado.name = name;
+        servicioSolicitado.status = true;
+
+        const errors = await validate(servicioSolicitado);
+
+        if (errors.length > 0) {
+            const message = errors.map(err => ({
+                constraint: err.constraints,
+                property: err.property
+            }))
+
+            return res.status(400).json({"messages":"Ocurrio un error: ", message});
+        }
+
+        await servicioSolicitado.save();
+
+        return res.json(servicioSolicitado);
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+export async function updateServicioSolicitado(req: Request, res: Response, next: NextFunction){
+
+    try {
+        
+        const { id } = req.params;
+
+        const { code, name, status } = req.body;
+
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+
+        if (!servicioSolicitado) {
+            return res.status(404).json({message: "Servicio solicitado no encontrado"});
+        }
+
+        servicioSolicitado.code = code;
+        servicioSolicitado.name = name;
+        servicioSolicitado.status = status;
+
+        const errors = await validate(servicioSolicitado);
+
+        if (errors.length > 0) {
+            const message = errors.map(err => ({
+                constraint: err.constraints,
+                property: err.property
+            }))
+
+            return res.status(400).json({"messages":"Ocurrio un error: ", message});
+        }
+
+        await servicioSolicitado.save();
+
+        return res.json(servicioSolicitado);
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+export async function deleteServicioSolicitado(req: Request, res: Response, next: NextFunction){
+
+    try {
+        
+        const { id } = req.params;
+
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+
+        if (!servicioSolicitado) {
+            return res.status(404).json({message: "Servicio solicitado no encontrado"});
+        }
+
+        await servicioSolicitado.remove();
+
+        return res.json({message: "Servicio solicitado eliminado"});
+
+    } catch (error) {
+        next(error);
     }
 
 }
