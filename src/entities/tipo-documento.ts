@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, One
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
+import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 
 @Entity("documento")
 export class TipoDocumento extends BaseEntity {
@@ -10,10 +11,14 @@ export class TipoDocumento extends BaseEntity {
     id: number
 
     @Column({ name: "TipoDocumento"})
+    @IsNotEmpty({message: "El nombre del documento es requerido"})
+    @IsString()
+    @Length(1, 4, {message: "El nombre del documento debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
     @Column({ name: "Estado"})
-    status: string
+    @IsBoolean()
+    status: boolean
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date

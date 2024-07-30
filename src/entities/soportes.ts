@@ -21,7 +21,7 @@ export class Soportes extends BaseEntity {
     url: string;
 
     @Column({name: "id_radicacion"})
-    // @IsInt()
+    @IsInt()
     @IsNotEmpty({message: "El id de la radicacion es requerido"})
     idRadicacion: number;
 
