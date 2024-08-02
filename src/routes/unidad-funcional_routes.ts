@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { createUnidadFuncional, deleteUnidadFuncional, getAllUnidadFuncional, getUnidadFuncionalById, updateUnidadFuncional } from "../controllers/unidad-funcional_controller";
 import { validarId } from "../middlewares/validar-id";
+import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/unidad-funcional', getAllUnidadFuncional);
+router.get('/unidad-funcional',authenticate, authorizeRoles(['1']), getAllUnidadFuncional);
 
-router.get('/unidad-funcional/:id',validarId ,getUnidadFuncionalById);
+router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,getUnidadFuncionalById);
 
-router.post('/unidad-funcional', createUnidadFuncional);
+router.post('/unidad-funcional',authenticate, authorizeRoles(['1']), createUnidadFuncional);
 
-router.put('/unidad-funcional/:id',validarId ,updateUnidadFuncional);
+router.put('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,updateUnidadFuncional);
 
-router.delete('/unidad-funcional/:id',validarId ,deleteUnidadFuncional);
+router.delete('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,deleteUnidadFuncional);
 
 export default router;

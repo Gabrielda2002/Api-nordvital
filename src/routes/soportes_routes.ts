@@ -2,17 +2,19 @@ import { Router } from "express";
 import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes_controladores";
 import { validarId } from "../middlewares/validar-id";
 import { upload } from "../middlewares/multer-config";
+import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/soportes", getAllSorportes);
+router.get("/soportes",authenticate, authorizeRoles(['1']), getAllSorportes);
 
-router.get("/soportes/:id", validarId , getSoporteById);
+router.get("/soportes/:id",authenticate, authorizeRoles(['1']), validarId , getSoporteById);
 
-router.post("/soportes", upload.single('file') , createSoporte);
+router.post("/soportes",authenticate, authorizeRoles(['1']), upload.single('file') , createSoporte);
 
-router.put("/soportes/:id",upload.single('file') ,validarId, updateSoporte);
+router.put("/soportes/:id",authenticate, authorizeRoles(['1']),upload.single('file') ,validarId, updateSoporte);
 
-router.delete("/soportes/:id", validarId, deleteSoporte);
+router.delete("/soportes/:id",authenticate, authorizeRoles(['1']), validarId, deleteSoporte);
 
 export default router;

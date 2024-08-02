@@ -9,10 +9,10 @@ const router = Router();
 router.get('/usuarios', authenticate, authorizeRoles(["1"]), getAllUsuarios);
 router.get('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, getUsuario);
 
-router.post('/usuarios', createUsuario);
+router.post('/usuarios', authenticate, authorizeRoles(['1']), createUsuario);
 
-router.put('/usuarios/:id', validarId, updateUsuario);
+router.put('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, updateUsuario);
 
-router.delete('/usuarios/:id', validarId, deleteUsuario);
+router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteUsuario);
 
 export default router;

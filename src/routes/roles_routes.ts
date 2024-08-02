@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { createRole, deleteRole, getAllRoles, getRole, updateRole } from "../controllers/roles_controller";
 import { validarId } from "../middlewares/validar-id";
+import { authenticate } from "../middlewares/auth";
+import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get("/roles", getAllRoles);
+router.get("/roles",authenticate, authorizeRoles(['1']), getAllRoles);
 
-router.get("/roles/:id", validarId ,getRole);
+router.get("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,getRole);
 
-router.post("/roles", createRole);
+router.post("/roles",authenticate, authorizeRoles(['1']), createRole);
 
-router.put("/roles/:id", validarId ,updateRole);
+router.put("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,updateRole);
 
-router.delete("/roles/:id", validarId ,deleteRole);
+router.delete("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,deleteRole);
 
 export default router;
