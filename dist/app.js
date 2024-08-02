@@ -4,28 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
-const radicacion_routes_1 = __importDefault(require("./routes/radicacion_routes"));
-const tipo_documento_routes_1 = __importDefault(require("./routes/tipo-documento_routes"));
-const convenio_routes_1 = __importDefault(require("./routes/convenio_routes"));
-const ips_primaria_routes_1 = __importDefault(require("./routes/ips-primaria_routes"));
-const especialidad_routes_1 = __importDefault(require("./routes/especialidad_routes"));
-const ips_remite_routes_1 = __importDefault(require("./routes/ips-remite_routes"));
-const lugar_radicacion_routes_1 = __importDefault(require("./routes/lugar-radicacion_routes"));
-const grupo_servicios_routes_1 = __importDefault(require("./routes/grupo-servicios_routes"));
-const radicador_routes_1 = __importDefault(require("./routes/radicador_routes"));
+const manejar_errores_1 = require("./middlewares/manejar-errores");
+const index_1 = __importDefault(require("./routes/index"));
+const logger_middleware_1 = require("./middlewares/logger_middleware");
+// * cargar variables de entorno
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, morgan_1.default)('dev'));
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use(radicacion_routes_1.default);
-app.use(tipo_documento_routes_1.default);
-app.use(convenio_routes_1.default);
-app.use(ips_primaria_routes_1.default);
-app.use(especialidad_routes_1.default);
-app.use(lugar_radicacion_routes_1.default);
-app.use(ips_remite_routes_1.default);
-app.use(grupo_servicios_routes_1.default);
-app.use(radicador_routes_1.default);
+//* Middleware para loggear las peticiones
+app.use(logger_middleware_1.loggerMiddleware);
+// * variable global de prefijos para las rutas
+const apiPrefix = process.env.API_PREFIX || '/api/v1';
+// * Rutas
+app.use(apiPrefix, index_1.default);
+// Middleware para manejar errores
+app.use(manejar_errores_1.errorHandler);
 exports.default = app;

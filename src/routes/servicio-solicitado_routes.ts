@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { createServicioSolicitado, deleteServicioSolicitado, getAllServiciosSolicitados, getServicioSolicitado, updateServicioSolicitado } from "../controllers/servio-solicitado_controller";
 import { validarId } from "../middlewares/validar-id";
+import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/servicio-solicitado", getAllServiciosSolicitados);
+router.get("/servicio-solicitado",authenticate, authorizeRoles(['1']), getAllServiciosSolicitados);
 
-router.get("/servicio-solicitado/:id", validarId ,getServicioSolicitado);
+router.get("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,getServicioSolicitado);
 
-router.post("/servicio-solicitado", createServicioSolicitado);
+router.post("/servicio-solicitado",authenticate, authorizeRoles(['1']), createServicioSolicitado);
 
-router.put("/servicio-solicitado/:id", validarId ,updateServicioSolicitado);
+router.put("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,updateServicioSolicitado);
 
-router.delete("/servicio-solicitado/:id", validarId ,deleteServicioSolicitado);
+router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,deleteServicioSolicitado);
 
 export default router;

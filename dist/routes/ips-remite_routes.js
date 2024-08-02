@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const ips_remite_controller_1 = require("../controllers/ips-remite_controller");
+const validar_id_1 = require("../middlewares/validar-id");
 const router = (0, express_1.Router)();
 router.get("/ips-remite", ips_remite_controller_1.getAllIpsRemite);
+router.get("/ips-remite/:id", validar_id_1.validarId, ips_remite_controller_1.getIpsRemite);
+router.post("/ips-remite", ips_remite_controller_1.createIpsRemite);
+router.put("/ips-remite/:id", validar_id_1.validarId, ips_remite_controller_1.updateIpsRemite);
+router.delete("/ips-remite/:id", validar_id_1.validarId, ips_remite_controller_1.deleteIpsRemite);
 exports.default = router;

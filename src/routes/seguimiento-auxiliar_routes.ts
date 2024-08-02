@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { createSeguimientoAuxiliar, deleteSeguimientoAuxiliar, getAllSeguimientosAuxiliares, getSeguimientoAuxiliar, updateSeguimientoAuxiliar } from "../controllers/seguimiento-auxiliar_controller";
 import { validarId } from "../middlewares/validar-id";
+import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/seguimientos-auxiliares", getAllSeguimientosAuxiliares);
+router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1']), getAllSeguimientosAuxiliares);
 
-router.get("/seguimientos-auxiliares/:id", validarId ,getSeguimientoAuxiliar);
+router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,getSeguimientoAuxiliar);
 
-router.post("/seguimientos-auxiliares", createSeguimientoAuxiliar);
+router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1']), createSeguimientoAuxiliar);
 
-router.put("/seguimientos-auxiliares/:id", validarId ,updateSeguimientoAuxiliar);
+router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,updateSeguimientoAuxiliar);
 
-router.delete("/seguimientos-auxiliares/:id", validarId ,deleteSeguimientoAuxiliar);
+router.delete("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,deleteSeguimientoAuxiliar);
 
 export default router;

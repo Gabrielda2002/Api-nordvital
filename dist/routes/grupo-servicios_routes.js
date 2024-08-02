@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const grupo_servicios_controller_1 = require("../controllers/grupo-servicios_controller");
+const validar_id_1 = require("../middlewares/validar-id");
 const router = (0, express_1.Router)();
 router.get("/grupo-servicios", grupo_servicios_controller_1.getAllGruposServicios);
+router.get("/grupo-servicios/:id", validar_id_1.validarId, grupo_servicios_controller_1.getGrupoServicios);
+router.post("/grupo-servicios", grupo_servicios_controller_1.createGrupoServicios);
+router.put("/grupo-servicios/:id", validar_id_1.validarId, grupo_servicios_controller_1.updateGrupoServicios);
+router.delete("/grupo-servicios/:id", validar_id_1.validarId, grupo_servicios_controller_1.deleteGrupoServicios);
 exports.default = router;

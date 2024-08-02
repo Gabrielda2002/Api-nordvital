@@ -9,16 +9,110 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllGruposServicios = getAllGruposServicios;
+exports.deleteGrupoServicios = exports.updateGrupoServicios = exports.createGrupoServicios = exports.getGrupoServicios = exports.getAllGruposServicios = void 0;
 const grupo_servicios_1 = require("../entities/grupo-servicios");
-function getAllGruposServicios(req, res) {
+const class_validator_1 = require("class-validator");
+function getAllGruposServicios(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const gruposServicios = yield grupo_servicios_1.GrupoServicios.find();
             return res.json(gruposServicios);
         }
         catch (error) {
-            return res.status(500).json({ message: "Internal server error" });
+            next(error);
         }
     });
 }
+exports.getAllGruposServicios = getAllGruposServicios;
+function getGrupoServicios(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const grupoServicios = yield grupo_servicios_1.GrupoServicios.findOneBy({ id: parseInt(id) });
+            if (!grupoServicios) {
+                return res.status(404).json({ message: "Grupo de servicios no encontrado" });
+            }
+            return res.json(grupoServicios);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getGrupoServicios = getGrupoServicios;
+function createGrupoServicios(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            if (!name) {
+                return res.status(400).json({ message: "Name is required" });
+            }
+            const grupoServiciosExist = yield grupo_servicios_1.GrupoServicios.findOneBy({ name });
+            if (grupoServiciosExist) {
+                return res.status(400).json({ message: "Grupo de servicios ya existe" });
+            }
+            const grupoServicios = new grupo_servicios_1.GrupoServicios();
+            grupoServicios.name = name;
+            grupoServicios.status = true;
+            const errors = yield (0, class_validator_1.validate)(grupoServicios);
+            if (errors.length > 0) {
+                const errorsMessage = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error creating grupo de servicios", errors: errorsMessage });
+            }
+            yield grupoServicios.save();
+            return res.status(201).json(grupoServicios);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.createGrupoServicios = createGrupoServicios;
+function updateGrupoServicios(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { name, status } = req.body;
+            const grupoServicios = yield grupo_servicios_1.GrupoServicios.findOneBy({ id: parseInt(id) });
+            if (!grupoServicios) {
+                return res.status(404).json({ message: "Grupo de servicios no encontrado" });
+            }
+            grupoServicios.name = name;
+            grupoServicios.status = status;
+            const errors = yield (0, class_validator_1.validate)(grupoServicios);
+            if (errors.length > 0) {
+                const errorsMessage = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error updating grupo de servicios", errors: errorsMessage });
+            }
+            yield grupoServicios.save();
+            return res.json(grupoServicios);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.updateGrupoServicios = updateGrupoServicios;
+function deleteGrupoServicios(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const grupoServicios = yield grupo_servicios_1.GrupoServicios.findOneBy({ id: parseInt(id) });
+            if (!grupoServicios) {
+                return res.status(404).json({ message: "Grupo de servicios no encontrado" });
+            }
+            yield grupoServicios.remove();
+            return res.json({ message: "Grupo de servicios eliminado" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.deleteGrupoServicios = deleteGrupoServicios;

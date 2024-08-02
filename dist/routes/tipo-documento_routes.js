@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const tipo_documento_controller_1 = require("../controllers/tipo-documento_controller");
+const validar_id_1 = require("../middlewares/validar-id");
 const router = (0, express_1.Router)();
 router.get('/documento', tipo_documento_controller_1.getAllDocumentType);
+router.get('/documento/:id', validar_id_1.validarId, tipo_documento_controller_1.getDocumentTypeById);
+router.post('/documento', tipo_documento_controller_1.createDocumentType);
+router.put('/documento/:id', validar_id_1.validarId, tipo_documento_controller_1.updateDocumentType);
+router.delete('/documento/:id', validar_id_1.validarId, tipo_documento_controller_1.deleteDocumentType);
 exports.default = router;
