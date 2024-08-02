@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const especialidad_controller_1 = require("../controllers/especialidad_controller");
+const validar_id_1 = require("../middlewares/validar-id");
 const router = (0, express_1.Router)();
 router.get("/especialidades", especialidad_controller_1.getAllEspecialidades);
+router.get("/especialidades/:id", validar_id_1.validarId, especialidad_controller_1.getEspecialidad);
+router.post("/especialidades", especialidad_controller_1.createEspecialidad);
+router.put("/especialidades/:id", validar_id_1.validarId, especialidad_controller_1.updateEspecialidad);
+router.delete("/especialidades/:id", validar_id_1.validarId, especialidad_controller_1.deleteEspecialidad);
 exports.default = router;

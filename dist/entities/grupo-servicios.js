@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GrupoServicios = void 0;
 const typeorm_1 = require("typeorm");
+const radicacion_1 = require("./radicacion");
+const class_validator_1 = require("class-validator");
 let GrupoServicios = class GrupoServicios extends typeorm_1.BaseEntity {
 };
 exports.GrupoServicios = GrupoServicios;
@@ -20,12 +22,31 @@ __decorate([
 ], GrupoServicios.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: "NombreGrupo" }),
+    (0, class_validator_1.IsNotEmpty)({ message: "El nombre del grupo de servicios es requerido" }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(3, 50, { message: "El nombre del grupo de servicios debe tener entre $constraint1 y $constraint2 caracteres" }),
     __metadata("design:type", String)
 ], GrupoServicios.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: "EstadoGrupoServicio" }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ name: "Estado" }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)({ message: "El estado del grupo de servicios es requerido" }),
+    __metadata("design:type", Boolean)
 ], GrupoServicios.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: "fecha-actualizacion" }),
+    __metadata("design:type", Date)
+], GrupoServicios.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: "fecha-creacion" }),
+    __metadata("design:type", Date
+    // * relaciones
+    )
+], GrupoServicios.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => radicacion_1.Radicacion, (radicacion) => radicacion.servicesGroupRelation),
+    __metadata("design:type", Array)
+], GrupoServicios.prototype, "radicacionRelation", void 0);
 exports.GrupoServicios = GrupoServicios = __decorate([
     (0, typeorm_1.Entity)("gruposervicio")
 ], GrupoServicios);

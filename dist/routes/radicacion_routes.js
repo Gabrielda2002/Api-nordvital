@@ -2,8 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const radicacion_controller_1 = require("../controllers/radicacion_controller");
+const validar_id_1 = require("../middlewares/validar-id");
 const router = (0, express_1.Router)();
 router.get('/radicacion', radicacion_controller_1.getAllRadicacion);
-router.get('/radicacion/:id', radicacion_controller_1.getRadicacionById);
+router.get('/radicacion/:id', validar_id_1.validarId, radicacion_controller_1.getRadicacionById);
 router.post('/radicacion', radicacion_controller_1.createRadicado);
+router.put('/radicacion/:id', validar_id_1.validarId, radicacion_controller_1.updateRadicado);
+router.delete('/radicacion/:id', validar_id_1.validarId, radicacion_controller_1.deleteRadicado);
 exports.default = router;
