@@ -1,22 +1,42 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-
+import e, { NextFunction, Request, Response } from "express";
+import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
 
+// * Middleware para autenticar a los usuarios
+
 export function authenticate(req: Request, res: Response, next: NextFunction) {
+    try {
     const authHeader = req.headers['authorization'];
 
-    const token = authHeader && authHeader.split(' ')[1];
+    // console.log(authHeader);
 
-    if (token == null) {
-        return res.sendStatus(401);
+    if (!authHeader) {
+        return res.status(401).json({ message: "No se ha proporcionado el encabezado de autorizacion." });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) =>{
-        if (err) return res.sendStatus(403);
+    const token = authHeader.substring(7);
 
-        (req as any).user = user;
-        next();
-    });
+    console.log(token);
+
+    if (!token) {
+        return res.status(401).json({ message: "Token no proporcionado." });
+    }
+
+        
+        jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+            // if (err) {
+            //     return res.status(403).json({ message: "Token inválido o expirado." });
+            // }
+            
+            if (decoded) {
+                //@ts-ignore
+                req.user = decoded as JwtPayload & { rol: string };
+            }
+            next();
+    
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }

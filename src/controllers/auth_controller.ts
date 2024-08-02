@@ -12,12 +12,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
         // Buscar el usuario por dniNumber
         const user = await Usuarios.findOneBy({ dniNumber });
-        console.log(user);
-
 
         const passwordMatch = await bcrypt.compare(password, user?.password || '');
-
-        console.log(passwordMatch);
 
         // Validar el usuario y la contraseña
         if (!user || !passwordMatch) {
@@ -25,7 +21,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
 
         // Generar el token JWT
-        const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '1h' });
 
         // Enviar el token al cliente
         res.json({ token });
