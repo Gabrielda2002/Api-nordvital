@@ -8,11 +8,11 @@ const router = Router();
 
 router.get("/especialidades", getAllEspecialidades);
 
-router.get("/especialidades/:id",authenticate, authorizeRoles(['1']), validarId, getEspecialidad);
+router.get("/especialidades/:id",authenticate, authorizeRoles(['1', '2']), validarId, getEspecialidad);
 
-router.post("/especialidades",authenticate, authorizeRoles(['1']), createEspecialidad);
+router.post("/especialidades",authenticate, authorizeRoles(['1', '2']), createEspecialidad);
 
-router.put("/especialidades/:id",authenticate, authorizeRoles(['1']), validarId,updateEspecialidad);
+router.put("/especialidades/:id",authenticate, authorizeRoles(['1', '2']), validarId,updateEspecialidad);
 
 router.delete("/especialidades/:id",authenticate, authorizeRoles(['1']), validarId, deleteEspecialidad);
 

@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/ips-remite",authenticate, authorizeRoles(['1']), getAllIpsRemite);
+router.get("/ips-remite",authenticate, authorizeRoles(['1', '2']), getAllIpsRemite);
 
-router.get("/ips-remite/:id",authenticate, authorizeRoles(['1']),validarId ,getIpsRemite);
+router.get("/ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId ,getIpsRemite);
 
-router.post("/ips-remite" ,authenticate, authorizeRoles(['1']),createIpsRemite);
+router.post("/ips-remite" ,authenticate, authorizeRoles(['1', '2']),createIpsRemite);
 
-router.put("/ips-remite/:id",authenticate, authorizeRoles(['1']),validarId ,updateIpsRemite);
+router.put("/ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateIpsRemite);
 
 router.delete("/ips-remite/:id",authenticate, authorizeRoles(['1']),validarId ,deleteIpsRemite);
 

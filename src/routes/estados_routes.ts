@@ -8,11 +8,11 @@ const router = Router();
 
 router.get("/estados", getAllEstados);
 
-router.get("/estados/:id",authenticate, authorizeRoles(['1']),validarId , getEstadosById);
+router.get("/estados/:id",authenticate, authorizeRoles(['1', '2']),validarId , getEstadosById);
 
-router.post("/estados",authenticate, authorizeRoles(['1']), createEstados);
+router.post("/estados",authenticate, authorizeRoles(['1', '2']), createEstados);
 
-router.put("/estados/:id",authenticate, authorizeRoles(['1']), validarId, updateEstados);
+router.put("/estados/:id",authenticate, authorizeRoles(['1', '2']), validarId, updateEstados);
 
 router.delete("/estados/:id",authenticate, authorizeRoles(['1']), validarId, deleteEstados);
 

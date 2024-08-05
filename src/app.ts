@@ -1,5 +1,5 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { errorHandler } from './middlewares/manejar-errores';

@@ -7,13 +7,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/ips-primaria',authenticate, authorizeRoles(['1']), getAllIpsPrimaria);
+router.get('/ips-primaria',authenticate, authorizeRoles(['1', '2']), getAllIpsPrimaria);
 
-router.get('/ips-primaria/:id',authenticate, authorizeRoles(['1']),validarId ,getIpsPrimaria);
+router.get('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']),validarId ,getIpsPrimaria);
 
-router.post('/ips-primaria',authenticate, authorizeRoles(['1']),createIpsPrimaria);
+router.post('/ips-primaria',authenticate, authorizeRoles(['1', '2']),createIpsPrimaria);
 
-router.put('/ips-primaria/:id',authenticate, authorizeRoles(['1']), validarId ,updateIpsPrimaria);
+router.put('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateIpsPrimaria);
 
 router.delete('/ips-primaria/:id',authenticate, authorizeRoles(['1']),validarId ,deleteIpsPrimaria);
 

@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/diagnosticos",authenticate, authorizeRoles(['1']), getAllDiagnosticos);
+router.get("/diagnosticos",authenticate, authorizeRoles(['1', '2']), getAllDiagnosticos);
 
-router.get("/diagnosticos/:id",authenticate, authorizeRoles(['1']), validarId, getDiagnosticoById);
+router.get("/diagnosticos/:id",authenticate, authorizeRoles(['1', '2']), validarId, getDiagnosticoById);
 
-router.post("/diagnosticos",authenticate, authorizeRoles(['1']), createDiagnostico);
+router.post("/diagnosticos",authenticate, authorizeRoles(['1', '2']), createDiagnostico);
 
-router.put("/diagnosticos/:id",authenticate, authorizeRoles(['1']),validarId ,updateDiagnostico);
+router.put("/diagnosticos/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateDiagnostico);
 
 router.delete("/diagnosticos/:id",authenticate, authorizeRoles(['1']), validarId, deleteDiagnostico);
 

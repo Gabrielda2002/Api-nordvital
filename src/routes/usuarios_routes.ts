@@ -6,12 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/usuarios', authenticate, authorizeRoles(["1"]), getAllUsuarios);
-router.get('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, getUsuario);
+router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios);
 
-router.post('/usuarios', authenticate, authorizeRoles(['1']), createUsuario);
+router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId, getUsuario);
 
-router.put('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, updateUsuario);
+router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario);
+
+router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateUsuario);
 
 router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteUsuario);
 

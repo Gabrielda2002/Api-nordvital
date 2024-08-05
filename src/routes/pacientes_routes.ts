@@ -6,13 +6,13 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get("/pacientes",authenticate, authorizeRoles(['1']), getAllPacientes);
+router.get("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), getAllPacientes);
 
-router.get("/pacientes/:id", validarId, getPaciente);
+router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3' , '5']),validarId, getPaciente);
 
-router.post("/pacientes",authenticate, authorizeRoles(['1']), createPaciente);
+router.post("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), createPaciente);
 
-router.put("/pacientes/:id",authenticate, authorizeRoles(['1']), validarId, updatePaciente);
+router.put("/pacientes/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, updatePaciente);
 
 router.delete("/pacientes/:id",authenticate, authorizeRoles(['1']), validarId, deletePaciente);
 

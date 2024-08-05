@@ -8,13 +8,13 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get('/documento',authenticate, authorizeRoles(['1']), getAllDocumentType);
+router.get('/documento',authenticate, authorizeRoles(['1' , '2']), getAllDocumentType);
 
-router.get('/documento/:id',authenticate, authorizeRoles(['1']), validarId, getDocumentTypeById);
+router.get('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId, getDocumentTypeById);
 
-router.post('/documento',authenticate, authorizeRoles(['1']), createDocumentType);
+router.post('/documento',authenticate, authorizeRoles(['1' , '2']), createDocumentType);
 
-router.put('/documento/:id',authenticate, authorizeRoles(['1']), validarId, updateDocumentType);
+router.put('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId, updateDocumentType);
 
 router.delete('/documento/:id',authenticate, authorizeRoles(['1']), validarId, deleteDocumentType);
 

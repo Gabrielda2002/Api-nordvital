@@ -7,13 +7,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/municipios',authenticate, authorizeRoles(['1']), getAllMunicipios);
+router.get('/municipios',authenticate, authorizeRoles(['1', '2']), getAllMunicipios);
 
-router.get('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, getMunicipioById);
+router.get('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId, getMunicipioById);
 
-router.post('/municipios',authenticate, authorizeRoles(['1']), createMunicipio);
+router.post('/municipios',authenticate, authorizeRoles(['1', '2']), createMunicipio);
 
-router.put('/municipios/:id',authenticate, authorizeRoles(['1']), validarId ,updateMunicipio);
+router.put('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateMunicipio);
 
 router.delete('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, deleteMunicipio);
 

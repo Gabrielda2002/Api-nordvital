@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/cups-radicados",authenticate, authorizeRoles(['1']), getAllCupsRadicados);
+router.get("/cups-radicados",authenticate, authorizeRoles(['1', '2', '3' , '5']), getAllCupsRadicados);
 
-router.get("/cups-radicados/:id",authenticate, authorizeRoles(['1']), validarId, getCupsRadicados);
+router.get("/cups-radicados/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, getCupsRadicados);
 
-router.post("/cups-radicados",authenticate, authorizeRoles(['1']), createCupsRadicados)
+router.post("/cups-radicados",authenticate, authorizeRoles(['1', '2', '3' , '5']), createCupsRadicados)
 
-router.put("/cups-radicados/:id",authenticate, authorizeRoles(['1']), validarId,updateCupsRadicados);
+router.put("/cups-radicados/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId,updateCupsRadicados);
 
 router.delete("/cups-radicados/:id",authenticate, authorizeRoles(['1']), validarId,deleteCupsRadicados);
 

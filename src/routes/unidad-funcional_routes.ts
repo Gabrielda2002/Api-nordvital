@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/unidad-funcional',authenticate, authorizeRoles(['1']), getAllUnidadFuncional);
+router.get('/unidad-funcional',authenticate, authorizeRoles(['1' , '2']), getAllUnidadFuncional);
 
-router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,getUnidadFuncionalById);
+router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),validarId ,getUnidadFuncionalById);
 
-router.post('/unidad-funcional',authenticate, authorizeRoles(['1']), createUnidadFuncional);
+router.post('/unidad-funcional',authenticate, authorizeRoles(['1' , '2']), createUnidadFuncional);
 
-router.put('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,updateUnidadFuncional);
+router.put('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),validarId ,updateUnidadFuncional);
 
 router.delete('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,deleteUnidadFuncional);
 
