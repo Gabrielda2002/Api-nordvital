@@ -7,7 +7,9 @@ import path from "path";
 export async function getAllSorportes(req: Request, res: Response, next: NextFunction){
     try {
         
-        const soportes = await Soportes.find();
+        const soportes = await Soportes.find({
+            relations: ["radicacionRelation"]
+        });
 
         if (!soportes) {
             return res.status(404).json({message: "No hay soportes registrados"});
@@ -26,7 +28,10 @@ export async function getSoporteById(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const soporte = await Soportes.findOneBy({id: parseInt(id)});
+        const soporte = await Soportes.findOne({
+            where: {id: parseInt(id)},
+            relations: ["radicacionRelation"]
+        });
 
         if (!soporte) {
             return res.status(404).json({message: "Soporte no encontrado"});

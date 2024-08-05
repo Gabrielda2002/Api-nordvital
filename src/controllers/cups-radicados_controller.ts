@@ -5,7 +5,9 @@ import { validate } from "class-validator";
 export async function getAllCupsRadicados(req: Request, res: Response, next: NextFunction){
     try {
         
-        const cupsRadicados = await CupsRadicados.find();
+        const cupsRadicados = await CupsRadicados.find({
+            relations: ['radicacionRelation', 'functionalUnitRelation']
+        });
         return res.json(cupsRadicados);
 
     } catch (error) {
@@ -18,7 +20,10 @@ export async function getCupsRadicados(req: Request, res: Response, next: NextFu
         
         const { id } = req.params;
 
-        const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
+        const cupsRadicados = await CupsRadicados.findOne({
+            where:{ id: parseInt(id)} ,
+            relations: ['radicacionRelation', 'functionalUnitRelation']
+            });
 
         if (!cupsRadicados) {
             return res.status(404).json({ message: "Cups Radicados not found" });

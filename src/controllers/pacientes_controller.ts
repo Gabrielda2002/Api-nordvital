@@ -8,7 +8,9 @@ export async function getAllPacientes(
   next: NextFunction
 ) {
   try {
-    const pacientes = await Pacientes.find();
+    const pacientes = await Pacientes.find({
+      relations: ["convenioRelation", "ipsPrimariaRelation","documentRelation"],
+    });
     return res.json(pacientes);
   } catch (error) {
     next(error);
@@ -23,7 +25,10 @@ export async function getPaciente(
   try {
     const { id } = req.params;
 
-    const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
+    const paciente = await Pacientes.findOne({
+       where:{id: parseInt(id)} ,
+        relations: ["convenioRelation", "ipsPrimariaRelation","documentRelation"]
+      });
 
     if (!paciente) {
       return res.status(404).json({ message: "Paciente not found" });

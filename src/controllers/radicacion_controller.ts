@@ -4,7 +4,9 @@ import { validate } from "class-validator";
 
 export async function getAllRadicacion(req: Request, res: Response, next: NextFunction) {
   try {
-    const radicacion = await Radicacion.find();
+    const radicacion = await Radicacion.find({
+      relations: ['specialtyRelation', 'placeRelation', 'ipsRemiteRelation', 'servicesGroupRelation', 'servicesRelation', 'radicadorRelation', 'patientRelation']
+    });
     return res.json(radicacion);
   } catch (error) {
     next(error);
@@ -15,7 +17,10 @@ export async function getRadicacionById(req: Request, res: Response, next: NextF
   try {
     const { id } = req.params;
 
-    const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
+    const radicacion = await Radicacion.findOne({
+       where: {id: parseInt(id)},
+      relations: ['specialtyRelation', 'placeRelation', 'ipsRemiteRelation', 'servicesGroupRelation', 'servicesRelation', 'radicadorRelation', 'patientRelation'] 
+      });
 
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });

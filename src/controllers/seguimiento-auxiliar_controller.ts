@@ -5,7 +5,9 @@ import { validate } from "class-validator";
 export async function getAllSeguimientosAuxiliares(req: Request, res: Response, next: NextFunction){
     try {
         
-        const seguimientosAuxiliares = await SeguimietoAuxiliar.find();
+        const seguimientosAuxiliares = await SeguimietoAuxiliar.find({
+            relations: ["radicacionRelation", "estadoSeguimientoRelation"]
+        });
         return res.json(seguimientosAuxiliares);
 
     } catch (error) {
@@ -18,7 +20,10 @@ export async function getSeguimientoAuxiliar(req: Request, res: Response, next: 
     try {
         const { id } = req.params;
 
-        const seguimientoAuxiliar = await SeguimietoAuxiliar.findOneBy({id: parseInt(id)});
+        const seguimientoAuxiliar = await SeguimietoAuxiliar.findOne({
+            where: {id: parseInt(id)},
+            relations: ["radicacionRelation", "estadoSeguimientoRelation"]
+        });
 
         if (!seguimientoAuxiliar) {
             return res.status(404).json({message: "Seguimiento auxiliar no encontrado"});
