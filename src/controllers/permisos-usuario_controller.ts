@@ -6,7 +6,9 @@ import { validate } from "class-validator";
 export async function getAllPermisosUsuarios(req: Request, res: Response, next: NextFunction) {
     try {
         
-        const permisosUsuarios = await PermisosUsuarios.find();
+        const permisosUsuarios = await PermisosUsuarios.find({
+            relations: ['userRelation', 'permisoRelation']
+        });
         res.json(permisosUsuarios);
 
     } catch (error) {
@@ -18,7 +20,10 @@ export async function getPermisoUsuario(req: Request, res: Response, next: NextF
     try {
         const { id } = req.params;
 
-        const permisoUsuario = await PermisosUsuarios.findOneBy({ id: parseInt(id) });
+        const permisoUsuario = await PermisosUsuarios.findOne({
+            where: {id: parseInt(id)},
+            relations: ['userRelation', 'permisoRelation']
+             });
 
         if (!permisoUsuario) {
             return res.status(404).json({ message: "PermisoUsuario not found" });

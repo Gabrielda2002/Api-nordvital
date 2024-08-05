@@ -5,7 +5,9 @@ import { validate } from "class-validator";
 export async function getAllPermisosRol(req: Request, res: Response, next: NextFunction){
     try {
         
-        const permisosRol = await PermisosRol.find()
+        const permisosRol = await PermisosRol.find({
+            relations: ["rolRelation", "permisosRelation"]
+        })
         res.json(permisosRol)
 
     } catch (error) {
@@ -17,7 +19,10 @@ export async function getPermisosRolById(req: Request, res: Response, next: Next
     try {
         const { id } = req.params
 
-        const permisosRol = await PermisosRol.findOneBy({id: parseInt(id)})
+        const permisosRol = await PermisosRol.findOne({
+            where:{id: parseInt(id)} ,
+            relations: ["rolRelation", "permisosRelation"]
+        })
 
         if (!permisosRol){
             res.status(404).json({message: "PermisosRol not found"})

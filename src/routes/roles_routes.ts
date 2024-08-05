@@ -6,11 +6,11 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get("/roles",authenticate, authorizeRoles(['1']), getAllRoles);
+router.get("/roles",authenticate, authorizeRoles(['1', '2']), getAllRoles);
 
-router.get("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,getRole);
+router.get("/roles/:id",authenticate, authorizeRoles(['1', '2']), validarId ,getRole);
 
-router.post("/roles",authenticate, authorizeRoles(['1']), createRole);
+router.post("/roles",authenticate, authorizeRoles(['1', '2']), createRole);
 
 router.put("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,updateRole);
 

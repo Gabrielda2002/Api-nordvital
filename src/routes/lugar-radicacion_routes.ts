@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/lugares-radicacion",authenticate, authorizeRoles(['1']), getAllLugaresRadicacion);
+router.get("/lugares-radicacion",authenticate, authorizeRoles(['1', '2']), getAllLugaresRadicacion);
 
-router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId , getLugarRadicacion);
+router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),validarId , getLugarRadicacion);
 
-router.post("/lugares-radicacion",authenticate, authorizeRoles(['1']), createLugarRadicacion);
+router.post("/lugares-radicacion",authenticate, authorizeRoles(['1', '2']), createLugarRadicacion);
 
-router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId ,updateLugarRadicacion);
+router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateLugarRadicacion);
 
 router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId ,deleteLugarRadicacion);
 

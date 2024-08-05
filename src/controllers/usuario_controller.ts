@@ -9,7 +9,9 @@ export async function getAllUsuarios(
   next: NextFunction
 ) {
   try {
-    const usuarios = await Usuarios.find();
+    const usuarios = await Usuarios.find({
+      relations: ["rolesRelation", "municipioRelation", "typeDocumentRelation"],
+    });
     return res.json(usuarios);
   } catch (error) {
     next(error);
@@ -24,7 +26,10 @@ export async function getUsuario(
   try {
     const { id } = req.params;
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOne({ 
+      where: { id: parseInt(id) },
+      relations: ["rolesRelation", "municipioRelation", "typeDocumentRelation"],
+     });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });

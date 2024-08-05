@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1']), getAllSeguimientosAuxiliares);
+router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '5']), getAllSeguimientosAuxiliares);
 
-router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,getSeguimientoAuxiliar);
+router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,getSeguimientoAuxiliar);
 
-router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1']), createSeguimientoAuxiliar);
+router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '5']), createSeguimientoAuxiliar);
 
-router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,updateSeguimientoAuxiliar);
+router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateSeguimientoAuxiliar);
 
 router.delete("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,deleteSeguimientoAuxiliar);
 

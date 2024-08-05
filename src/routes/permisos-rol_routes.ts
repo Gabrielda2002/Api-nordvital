@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/permisos-rol",authenticate, authorizeRoles(['1']), getAllPermisosRol);
+router.get("/permisos-rol",authenticate, authorizeRoles(['1', '2']), getAllPermisosRol);
 
-router.get("/permisos-rol/:id",authenticate, authorizeRoles(['1']), validarId, getPermisosRolById);
+router.get("/permisos-rol/:id",authenticate, authorizeRoles(['1', '2']), validarId, getPermisosRolById);
 
-router.post("/permisos-rol",authenticate, authorizeRoles(['1']), createPermisosRol);
+router.post("/permisos-rol",authenticate, authorizeRoles(['1', '2']), createPermisosRol);
 
-router.put("/permisos-rol/:id",authenticate, authorizeRoles(['1']), validarId, updatePermisosRol);
+router.put("/permisos-rol/:id",authenticate, authorizeRoles(['1', '2']), validarId, updatePermisosRol);
 
 router.delete("/permisos-rol/:id",authenticate, authorizeRoles(['1']), validarId, deletePermisosRol);
 
