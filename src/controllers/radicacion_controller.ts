@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
+import { SeguimietoAuxiliar } from "../entities/seguimiento-auxiliar";
 
 export async function getAllRadicacion(req: Request, res: Response, next: NextFunction) {
   try {
@@ -177,3 +178,34 @@ export async function deleteRadicado(req: Request, res: Response, next: NextFunc
     next(error);
   }
 }
+export async function mostrarTabla(req: Request, res: Response, next: NextFunction) {
+  try {
+    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
+      .leftJoinAndSelect("pacientes.documentRelation", "document")
+      .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
+      .orderBy("radicacion.id", "DESC")
+      .getMany();
+
+    const formatedRadicaciones = radicaciones.map((r) => {
+      const latestSeguimiento = r.seguimientoAuxiliarRelation?.sort((a, b) => b.id - a.id)[0];
+
+      return {
+        createdAt: r.createdAt,
+        typeDocument: r.patientRelation?.documentRelation?.name || 'N/A',
+        id: r.id,
+        convenio: r.patientRelation?.convenioRelation?.name || 'N/A',
+        document: r.patientRelation?.documentNumber || 'N/A',
+        patientName: r.patientRelation?.name || 'N/A',
+        auditDate: r.auditDate,
+        management: latestSeguimiento ? latestSeguimiento.observation : 'N/A',
+      };
+    });
+
+    return res.json(formatedRadicaciones);
+  } catch (error) {
+    next(error);
+  }
+}
+

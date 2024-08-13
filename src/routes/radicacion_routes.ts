@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, updateRadicado } from "../controllers/radicacion_controller";
+import { createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, mostrarTabla, updateRadicado } from "../controllers/radicacion_controller";
 import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -17,6 +17,8 @@ router.post('/radicacion',authenticate, authorizeRoles(['1', '2','3', '5']), cre
 router.put('/radicacion/:id',authenticate, authorizeRoles(['1', '2','3', '5']), validarId, updateRadicado);
 
 router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, deleteRadicado);
+
+router.get('/radicacion-tabla',authenticate, authorizeRoles(['1', '2','3', '5']),  mostrarTabla);
 
 
 
