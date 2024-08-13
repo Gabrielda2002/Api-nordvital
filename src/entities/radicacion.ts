@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { TipoDocumento } from "./tipo-documento";
 import { Convenio } from "./convenio";
@@ -98,7 +99,7 @@ export class Radicacion extends BaseEntity {
   @Length(3, 100, {message: "La auditoria debe tener entre 3 y 100 caracteres"})
   auditora: string;
 
-  @Column({ name: "FechaAuditoria",type: "date", nullable: true })
+  @UpdateDateColumn({ name: "FechaAuditoria",type: "date", nullable: true })
   // @IsDate()
   @IsNotEmpty({message: "La fecha de la auditoria es requerida"})
   auditDate: Date;
