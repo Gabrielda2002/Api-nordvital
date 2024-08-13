@@ -51,8 +51,6 @@ export async function getRadicacionById(
       return res.status(404).json({ message: "Radicacion not found" });
     }
 
-
-
     const radicacionFormated = {
       id: radicacion.id,
       name: radicacion.patientRelation?.name,
@@ -279,6 +277,53 @@ export async function mostrarTabla(
         management: latestSeguimiento ? latestSeguimiento.observation : "N/A",
       };
     });
+
+    return res.json(formatedRadicaciones);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function tablaPorAuditar(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
+      .leftJoinAndSelect("pacientes.documentRelation", "document")
+      .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+      .leftJoinAndSelect("radicacion.servicesRelation", "services")
+      .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .where("cupsRadicados.status = 6")
+      .orderBy("radicacion.id", "DESC")
+      .getMany();
+
+    const formatedRadicaciones = await radicaciones.map((r) => ({
+      radicadoDate: r.createdAt,
+      documentType: r.patientRelation?.documentRelation.name || "N/A",
+      documentNumber: r.patientRelation?.documentNumber || "N/A",
+      namePatient: r.patientRelation?.name || "N/A",
+      convenio: r.patientRelation?.convenioRelation?.name || "N/A",
+      ipsPrimary: r.patientRelation.ipsPrimaria || "N/A",
+      orderDate: r.orderDate || "N/A",
+      place: r.placeRelation?.name || "N/A",
+      ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
+      profetional: r.profetional || "N/A",
+      speciality: r.specialtyRelation?.name || "N/A",
+      typeServices: r.servicesRelation?.name || "N/A",
+      radicador: r.radicadorRelation?.name || "N/A",
+      statusCups:  r.cupsRadicadosRelation?.map((c) => ({
+        code: c.code,
+        description: c.DescriptionCode,
+        observation: c.observation
+      })) || "N/A",
+    }));
 
     return res.json(formatedRadicaciones);
   } catch (error) {

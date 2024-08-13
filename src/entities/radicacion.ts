@@ -156,7 +156,7 @@ export class Radicacion extends BaseEntity {
 
   @ManyToOne(() => Pacientes, (pacientes) => pacientes.radicacionRelation)
   @JoinColumn({ name: "Paciente_id" })
-  patientRelation: Pacientes;
+  patientRelation: Pacientes; 
 
 
 
