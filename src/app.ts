@@ -14,9 +14,9 @@ dotenv.config();
 
 const app = express();
 
+app.use(cors());
 app.use(limiter);
 app.use(morgan('dev'));
-app.use(cors());
 app.use(express.json());
 // * Middleware para proteger la aplicación
 app.use(helmet());

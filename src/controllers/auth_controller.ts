@@ -24,7 +24,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '1h' });
 
         // Enviar el token al cliente
-        res.header({ token }).json({ message: "Inicio de sesión exitoso" });
+        res.json({  token,rol: user.rol , message: "Inicio de sesión exitoso" });
     } catch (error) {
         // Pasar el error al middleware de manejo de errores
         next(error);

@@ -330,3 +330,29 @@ export async function tablaPorAuditar(
     next(error);
   }
 }
+
+export async function auditorRadicados(req: Request, res:Response, next: NextFunction){
+  try {
+    
+    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
+      .leftJoinAndSelect("pacientes.documentRelation", "document")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .orderBy("radicacion.id", "DESC")
+      .getMany();
+
+    const formatedRadicaciones = radicaciones.map((r) => ({
+      id: r.id,
+      document: r.patientRelation?.documentNumber || "N/A",
+      patientName: r.patientRelation?.name || "N/A",
+      codeCup: r.cupsRadicadosRelation?.map((c) => c.code) || "N/A",
+      descriptionCup: r.cupsRadicadosRelation?.map((c) => c.DescriptionCode) || "N/A",
+    }));
+
+    return res.json(formatedRadicaciones);
+
+  } catch (error) {
+    next(error)
+  }
+}
