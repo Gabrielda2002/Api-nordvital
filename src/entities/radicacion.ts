@@ -119,6 +119,11 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty()
   idPatient: number;
 
+  @Column({ name: "id_soportes" })
+  @IsInt()
+  @IsNotEmpty({message: "El soporte es requerido"})
+  idSoporte: number;
+
   // * relaciones
 
   // * relaciones con llaves foraneas
@@ -157,8 +162,9 @@ export class Radicacion extends BaseEntity {
   @JoinColumn({ name: "Paciente_id" })
   patientRelation: Pacientes; 
 
-
-
+  @ManyToOne(() => Soportes, (soportes) => soportes.radicacionRelation)
+  @JoinColumn({ name: "id_soportes" })
+  soportesRelation: Soportes;
 
   // * rrelaciones no llaves foraneas
 
@@ -171,6 +177,5 @@ export class Radicacion extends BaseEntity {
   seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
 
 
-  @OneToMany(() => Soportes, (soportes) => soportes.radicacionRelation)
-  soportesRelation: Soportes[];
+
 }

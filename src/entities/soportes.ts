@@ -20,11 +20,6 @@ export class Soportes extends BaseEntity {
     @IsNotEmpty({message: "La url del soporte es requerida"})
     url: string;
 
-    @Column({name: "id_radicacion"})
-    @IsInt()
-    @IsNotEmpty({message: "El id de la radicacion es requerido"})
-    idRadicacion: number;
-
     @Column({name: "size"})
     @IsInt()
     @IsNotEmpty({message: "El tamaño del soporte es requerido"})
@@ -45,8 +40,7 @@ export class Soportes extends BaseEntity {
 
     //* Relaciones
 
-    @ManyToOne(() => Radicacion, radicacion => radicacion.soportesRelation)
-    @JoinColumn({name: "id_radicacion"})
-    radicacionRelation: Radicacion;
+    @OneToMany(() => Radicacion, radicacion => radicacion.soportesRelation)
+    radicacionRelation: Radicacion[];
 
 }

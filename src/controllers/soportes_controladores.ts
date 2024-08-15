@@ -46,14 +46,13 @@ export async function getSoporteById(req: Request, res: Response, next: NextFunc
 
 export async function createSoporte(req: Request, res: Response, next: NextFunction){
     try {
-        const { idRadicacion } = req.body;
         const file = req.file;
 
         if (!file) {
             return res.status(400).json({message: "El archivo es requerido"});
         }
 
-        const soporteExists = await Soportes.findOneBy({idRadicacion: parseInt(idRadicacion)});
+        const soporteExists = await Soportes.findOneBy({name: file.originalname});
 
         if (soporteExists) {
             return res.status(409).json({message: "El soporte ya existe"});
@@ -68,8 +67,7 @@ export async function createSoporte(req: Request, res: Response, next: NextFunct
             name : fileNameWithoutExt?.normalize('NFC'),
             url: file?.path,
             size: file?.size,
-            type: file?.mimetype,
-            idRadicacion
+            type: file?.mimetype
         });
 
         const errors = await validate(soporte);
