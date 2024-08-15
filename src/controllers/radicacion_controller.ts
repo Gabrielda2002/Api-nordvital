@@ -107,12 +107,8 @@ export async function createRadicado(
       diagnosticDescription,
       groupServices,
       radicador,
-      auditora,
-      auditDate,
       typeServices,
-      justify,
       idPatient,
-      auditConcept,
     } = req.body;
 
     const radicacado = new Radicacion();
@@ -127,11 +123,10 @@ export async function createRadicado(
     radicacado.groupServices = groupServices;
     radicacado.typeServices = typeServices;
     radicacado.radicador = radicador;
-    radicacado.auditora = auditora;
-    radicacado.auditDate = auditDate;
-    radicacado.justify = justify;
+    radicacado.auditora = "Pendiente";
+    radicacado.justify = "Pendiente";
+    radicacado.auditConcept = 6;
     radicacado.idPatient = idPatient;
-    radicacado.auditConcept = auditConcept;
 
     const errors = await validate(radicacado);
 

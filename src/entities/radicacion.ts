@@ -101,7 +101,6 @@ export class Radicacion extends BaseEntity {
 
   @UpdateDateColumn({ name: "FechaAuditoria",type: "date", nullable: true })
   // @IsDate()
-  @IsNotEmpty({message: "La fecha de la auditoria es requerida"})
   auditDate: Date;
 
   @Column({ name: "JustificacionAuditoria" })
