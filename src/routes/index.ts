@@ -26,6 +26,8 @@ import permisosRolRoutes from './permisos-rol_routes';
 import permisosUsuarioRoutes from './permisos-usuario_routes';
 import soportesRoutes from './soportes_routes';
 import authRoutes from './auth_routes';
+import carpetasRoutes from './carpetas_routes';
+import archivosRoutes from './archivos_routes';
 
 const router = Router();
 
@@ -56,6 +58,8 @@ router.use( permisosRolRoutes);
 router.use( permisosUsuarioRoutes);
 router.use( soportesRoutes);
 router.use( authRoutes);
+router.use(carpetasRoutes);
+router.use(archivosRoutes);
 
 
 export default router;

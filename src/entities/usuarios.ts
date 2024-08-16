@@ -5,6 +5,7 @@ import { Roles } from "./roles";
 import { TipoDocumento } from "./tipo-documento";
 import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Matches, Max, Min } from "class-validator";
 import { Transform } from "stream";
+import { Carpeta } from "./carpeta";
 
 @Entity({name: "usuario"})
 export class Usuarios extends BaseEntity {
@@ -107,6 +108,9 @@ export class Usuarios extends BaseEntity {
     typeDocumentRelation: TipoDocumento
 
     
+// * relacion con carpeta
 
+@OneToMany(() => Carpeta, (carpeta) => carpeta.userRelation)
+folderRelation: Carpeta[]
 
 }
