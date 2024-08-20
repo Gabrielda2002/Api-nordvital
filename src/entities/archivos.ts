@@ -34,6 +34,9 @@ export class Archivos extends BaseEntity {
     @UpdateDateColumn({name: "updatedAt"})
     updateAt: Date;
 
+    @Column({name: "name_saved"})
+    nameSaved: string;
+
     // * relacion con carpetas
 
     @ManyToOne(() => Carpeta, (carpeta) => carpeta.fileRelation)

@@ -161,7 +161,6 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
 async function updateSubFiles(folderId: number, newPath: string) {
     const subFiles = await Archivos.find({ where: { folderId } });
 
-    console.log("archivos hijos" , subFiles);
 
     for (const subfile of subFiles) {
         const oldSubPathFile = subfile.path;
@@ -169,15 +168,10 @@ async function updateSubFiles(folderId: number, newPath: string) {
         // * reemplazar espacios por guiones bajos
         const sanitazedfileName = path.basename(subfile.name, path.extname(subfile.name)).replace(/ /g, '_' ) + path.extname(subfile.name);
 
-        const newSubPathFile = path.join(newPath, sanitazedfileName);
-
-        console.log("oldSubPathFile", oldSubPathFile);
-        console.log("newSubPathFile", newSubPathFile);
+        const newSubPathFile = path.join(newPath, path.basename(subfile.path));
 
         try {
-            console.log("entra al try")
             // await fsPromises.rename(oldSubPathFile, newSubPathFile);
-            console.log("pasa el rename")
             subfile.path = newSubPathFile;
             await subfile.save();
         } catch (error) {
