@@ -66,6 +66,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             newFile.size = file.size;
             newFile.mimeType = file.mimetype;
             newFile.folderId = parentFolderId;
+            newFile.nameSaved = path.basename(file.filename);
 
             const errors = await validate(newFile);
 
@@ -108,6 +109,7 @@ export async function updateFile(req: Request, res: Response, next: NextFunction
             return res.status(404).json({message: "Archivo no encontrado"});
         }
 
+
         file.name = name;
         file.folderId = parentFolderId;
 
@@ -143,7 +145,7 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
 
         await file.remove();
 
-        return res.status(204).json();
+        return res.status(204).json({message: "Archivo eliminado"});
 
     } catch (error) {
         next(error)
