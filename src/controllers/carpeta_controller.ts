@@ -5,6 +5,7 @@ import { error } from "console";
 import * as fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
+import { Archivos } from "../entities/archivos";
 
 export async function getAllFolders(req: Request, res: Response, next: NextFunction){
     try {
@@ -91,7 +92,7 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
 export async function updateFolder(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
-        const {  name, userId, parentFolderId } = req.body;
+        const { name, userId, parentFolderId } = req.body;
 
         // Buscar la carpeta existente en la base de datos
         const folder = await Carpeta.findOneBy({ id: parseInt(id) });
@@ -136,7 +137,6 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
         folder.path = newPath;
 
         const errors = await validate(folder);
-
         if (errors.length > 0) {
             const message = errors.map(err => ({
                 property: err.property,
@@ -147,9 +147,64 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
 
         await folder.save();
 
+        // Actualizar las rutas de los archivos y subcarpetas
+        await updateSubFiles(folder.id, newPath);
+        await updateSubFolders(folder.id, newPath);
+
         return res.status(200).json(folder);
     } catch (error) {
         next(error);
+    }
+}
+
+// Función para actualizar rutas de archivos
+async function updateSubFiles(folderId: number, newPath: string) {
+    const subFiles = await Archivos.find({ where: { folderId } });
+
+    console.log("archivos hijos" , subFiles);
+
+    for (const subfile of subFiles) {
+        const oldSubPathFile = subfile.path;
+
+        // * reemplazar espacios por guiones bajos
+        const sanitazedfileName = path.basename(subfile.name, path.extname(subfile.name)).replace(/ /g, '_' ) + path.extname(subfile.name);
+
+        const newSubPathFile = path.join(newPath, sanitazedfileName);
+
+        console.log("oldSubPathFile", oldSubPathFile);
+        console.log("newSubPathFile", newSubPathFile);
+
+        try {
+            console.log("entra al try")
+            // await fsPromises.rename(oldSubPathFile, newSubPathFile);
+            console.log("pasa el rename")
+            subfile.path = newSubPathFile;
+            await subfile.save();
+        } catch (error) {
+            throw new Error(`File with the same name already exists: ${subfile.name}`);
+        }
+    }
+}
+
+// Función para actualizar rutas de subcarpetas
+async function updateSubFolders(parentFolderId: number, newPath: string) {
+    const subFolders = await Carpeta.find({ where: { parentFolderId } });
+
+    for (const subFolder of subFolders) {
+        const oldSubPathFolder = subFolder.path;
+        const newSubPathFolder = path.join(newPath, subFolder.name);
+
+        try {
+            // await fsPromises.rename(oldSubPathFolder, newSubPathFolder);
+            subFolder.path = newSubPathFolder;
+            await subFolder.save();
+
+            // Actualizar las rutas de subcarpetas y archivos dentro de esta subcarpeta
+            await updateSubFiles(subFolder.id, newSubPathFolder);
+            await updateSubFolders(subFolder.id, newSubPathFolder);
+        } catch (error) {
+            throw new Error(`Folder with the same name already exists: ${subFolder.name}`);
+        }
     }
 }
 

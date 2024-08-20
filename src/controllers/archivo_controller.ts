@@ -143,7 +143,7 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
 
         await file.remove();
 
-        return res.status(204).json();
+        return res.status(204).json({message: "Archivo eliminado"});
 
     } catch (error) {
         next(error)
