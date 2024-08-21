@@ -212,6 +212,18 @@ export async function deleteFolder(req: Request, res: Response, next: NextFuncti
             return res.status(404).json({ message: "Folder not found" });
         }
 
+        // * validacion para no eliminar carpetas con archivos
+
+        const files = await Archivos.find({ where: { folderId: folder.id } });
+        const subFolders = await Carpeta.find({ where: { parentFolderId: folder.id } });
+
+        if (files.length > 0 || subFolders.length > 0) {
+            return res.status(400).json({ message: "Folder has files or subfolders", subFilesCount: files.length, subFoldersCount: subFolders.length });
+            
+        }
+
+
+
         // Eliminar la carpeta en el sistema de archivos
         await fsPromises.rmdir(folder.path, { recursive: true });
 
