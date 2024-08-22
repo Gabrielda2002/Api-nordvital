@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
+import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 
 @Entity("estadoseguimiento")
 export class EstadosSeguimiento extends BaseEntity{
@@ -30,5 +31,8 @@ export class EstadosSeguimiento extends BaseEntity{
     @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.estadoSeguimientoRelation)
     seguimientoAuxiliarRelation: SeguimietoAuxiliar[]
 
+    // * relacion con gestion_auxiliar_cirugias
+    @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoAuxiliarCirugias) => seguimientoAuxiliarCirugias.estadoSeguimientoRelation)
+    statusRelation: SeguimientoAuxiliarCirugias[]
 
 }

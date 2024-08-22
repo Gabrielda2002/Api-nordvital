@@ -1,5 +1,6 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 
 @Entity({name: "serviciosolicitado"})
 export class ServiciosSolicitados extends BaseEntity {
@@ -29,4 +30,8 @@ export class ServiciosSolicitados extends BaseEntity {
 
     @CreateDateColumn({ name: "fecha-creacion" })
     createdAt: Date
+
+    // * relacion con gestion auxiliar cirugias
+    @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoAuxiliarCirugias) => seguimientoAuxiliarCirugias.cupsRelation )
+    statusRelation: SeguimientoAuxiliarCirugias[]
 }

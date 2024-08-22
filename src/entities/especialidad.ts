@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
+import { Cirugias } from "./cirugias";
 
 @Entity("especialidad")
 export class Especialidad extends BaseEntity {
@@ -29,4 +30,8 @@ export class Especialidad extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.specialtyRelation)
     radicacionRelation: Radicacion[]
+
+    //* relacion con cirugias
+    @OneToMany(() => Cirugias, (cirugias) => cirugias.specialityRelation)
+    cirugiasRelation: Cirugias[]
 }
