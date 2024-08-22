@@ -30,6 +30,7 @@ import carpetasRoutes from './carpetas_routes';
 import archivosRoutes from './archivos_routes';
 import cirugiasRoutes from './cirugias_routes';
 import seguimientoAuxiliarCirugiasRoutes from './seguimientp-auxiliar-cirugia_routes';
+import reportExcelRoutes from './report-excel_routes';
 
 const router = Router();
 
@@ -64,6 +65,7 @@ router.use(carpetasRoutes);
 router.use(archivosRoutes);
 router.use(cirugiasRoutes);
 router.use(seguimientoAuxiliarCirugiasRoutes);
+router.use(reportExcelRoutes);
 
 
 export default router;
