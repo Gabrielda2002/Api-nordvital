@@ -4,6 +4,7 @@ import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { Radicacion } from "./radicacion";
+import { Cirugias } from "./cirugias";
 
 
 @Entity("pacientes")
@@ -91,5 +92,9 @@ export class Pacientes extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.patientRelation)
     radicacionRelation: Radicacion[]
+
+    // * relacion con cirugias
+    @OneToMany(() => Cirugias, (cirugias) => cirugias.patientRelation)
+    cirugiasRelation: Cirugias[]
     
 }

@@ -29,4 +29,8 @@ export class IpsRemite extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
     radicacionRelation: Radicacion[]
+
+    // * relacion con cirugias
+    @OneToMany(() => Radicacion, (radicacion) => radicacion.ipsRemiteRelation)
+    cirugiasRelation: Radicacion[]
 }

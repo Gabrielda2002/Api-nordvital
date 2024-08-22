@@ -23,6 +23,7 @@ import { IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-val
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
+import { Cirugias } from "./cirugias";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -175,6 +176,10 @@ export class Radicacion extends BaseEntity {
   // * relacion con seguimiento auxiliar
   @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.radicacionRelation)
   seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+
+  // * relacion con cirugias
+  @OneToMany(() => Cirugias, (cirugias) => cirugias.radicacionRelation)
+  cirugiasRelation: Cirugias[];
 
 
 
