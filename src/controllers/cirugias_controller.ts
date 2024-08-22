@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Cirugias } from "../entities/cirugias";
 import { validate } from "class-validator";
+import { stat } from "fs";
 
 export async function getAllSurgery(req: Request, res: Response, next: NextFunction){
     try {
@@ -44,7 +45,7 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
             observation,
             specialistName,
             specialityId,
-            patientId,
+            status,
             radicadoId
         } = req.body;
 
@@ -58,7 +59,7 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         surgery.observation = observation;
         surgery.specialistName = specialistName;
         surgery.specialityId = specialityId;
-        surgery.patientId = patientId;
+        surgery.status = status;
         surgery.radicadoId = radicadoId;
 
         const errors = await validate(surgery);
@@ -95,7 +96,7 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
             observation,
             specialistName,
             specialityId,
-            patientId,
+            status,
             radicadoId
         } = req.body;
 
@@ -114,7 +115,7 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
         surgery.observation = observation;
         surgery.specialistName = specialistName;
         surgery.specialityId = specialityId;
-        surgery.patientId = patientId;
+        surgery.status = status;
         surgery.radicadoId = radicadoId;
 
         const errors = await validate(surgery);

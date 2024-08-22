@@ -48,9 +48,9 @@ export class Cirugias extends BaseEntity {
     @IsNotEmpty({message: 'La especialidad es requerida'})
     specialityId: number;
 
-    @Column({name: 'paciente_id'})
-    @IsNotEmpty({message: 'El paciente es requerido'})
-    patientId: number;
+    @Column({name: 'estado'})
+    @IsNotEmpty({message: 'el estado es requerido'})
+    status: boolean;
 
     @Column({name: 'radicado_id'})
     @IsNotEmpty({message: 'El radicado es requerido'})
@@ -63,11 +63,6 @@ export class Cirugias extends BaseEntity {
     updatedAt: Date;
 
     // * relaciones
-
-    // * relacion con pacientes
-    @ManyToOne(() => Pacientes, (pacientes) => pacientes.cirugiasRelation)
-    @JoinColumn({name: 'paciente_id'})
-    patientRelation: Pacientes;
 
     // * relacion con especialidades
     @ManyToOne(() => Especialidad, (especialidades) => especialidades.cirugiasRelation)

@@ -92,9 +92,5 @@ export class Pacientes extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.patientRelation)
     radicacionRelation: Radicacion[]
-
-    // * relacion con cirugias
-    @OneToMany(() => Cirugias, (cirugias) => cirugias.patientRelation)
-    cirugiasRelation: Cirugias[]
     
 }
