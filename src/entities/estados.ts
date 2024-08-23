@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CupsRadicados } from "./cups-radicados";
 
 @Entity("autorizacion")
 export class Estados extends BaseEntity {
@@ -20,4 +21,8 @@ export class Estados extends BaseEntity {
     createdAt: Date
 
     // * relaciones
+
+    // * relacion con cups
+    @OneToMany(() => CupsRadicados, (cupsRadicados) => cupsRadicados.statusRelation)
+    cupsRelation: CupsRadicados[]
 }

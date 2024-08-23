@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Radicacion } from "./radicacion";
 import { UnidadFuncional } from "./unidad-funcional";
 import { IsInt, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
+import { Estados } from "./estados";
 
 @Entity("cupspaciente")
 export class CupsRadicados extends BaseEntity {
@@ -50,6 +51,11 @@ export class CupsRadicados extends BaseEntity {
     @ManyToOne(() => Radicacion, (radicacion) => radicacion.cupsRadicadosRelation)
     @JoinColumn({ name: "IDRADICADO" })
     radicacionRelation: Radicacion
+
+    // * relacion con autorizacion
+    @ManyToOne(() => Estados, (estados) => estados.cupsRelation)
+    @JoinColumn({ name: "Estado" })
+    statusRelation: Estados;
 
     @ManyToOne(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
     @JoinColumn({ name: "UnidadFuncional" })
