@@ -10,7 +10,7 @@ import { Cirugias } from "./cirugias";
 @Entity("pacientes")
 export class Pacientes extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "IdUsuarios"})
+    @PrimaryGeneratedColumn({name: "id"})
     id: number;
 
     @Column({name: "Documento"})
