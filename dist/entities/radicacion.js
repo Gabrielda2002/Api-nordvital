@@ -22,6 +22,7 @@ const class_validator_1 = require("class-validator");
 const pacientes_1 = require("./pacientes");
 const soportes_1 = require("./soportes");
 const servicios_1 = require("./servicios");
+const cirugias_1 = require("./cirugias");
 let Radicacion = class Radicacion extends typeorm_1.BaseEntity {
 };
 exports.Radicacion = Radicacion;
@@ -101,10 +102,9 @@ __decorate([
     __metadata("design:type", String)
 ], Radicacion.prototype, "auditora", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: "FechaAuditoria", type: "date", nullable: true })
+    (0, typeorm_1.UpdateDateColumn)({ name: "FechaAuditoria", type: "date", nullable: true })
     // @IsDate()
     ,
-    (0, class_validator_1.IsNotEmpty)({ message: "La fecha de la auditoria es requerida" }),
     __metadata("design:type", Date)
 ], Radicacion.prototype, "auditDate", void 0);
 __decorate([
@@ -126,6 +126,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], Radicacion.prototype, "idPatient", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: "id_soportes" }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNotEmpty)({ message: "El soporte es requerido" }),
+    __metadata("design:type", Number)
+], Radicacion.prototype, "idSoporte", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => especialidad_1.Especialidad, (Especialidad) => Especialidad.radicacionRelation),
     (0, typeorm_1.JoinColumn)({ name: "Especialidad" }),
@@ -162,6 +168,11 @@ __decorate([
     __metadata("design:type", pacientes_1.Pacientes)
 ], Radicacion.prototype, "patientRelation", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => soportes_1.Soportes, (soportes) => soportes.radicacionRelation),
+    (0, typeorm_1.JoinColumn)({ name: "id_soportes" }),
+    __metadata("design:type", soportes_1.Soportes)
+], Radicacion.prototype, "soportesRelation", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => cups_radicados_1.CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation),
     __metadata("design:type", Array)
 ], Radicacion.prototype, "cupsRadicadosRelation", void 0);
@@ -170,9 +181,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Radicacion.prototype, "seguimientoAuxiliarRelation", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => soportes_1.Soportes, (soportes) => soportes.radicacionRelation),
+    (0, typeorm_1.OneToMany)(() => cirugias_1.Cirugias, (cirugias) => cirugias.radicacionRelation),
     __metadata("design:type", Array)
-], Radicacion.prototype, "soportesRelation", void 0);
+], Radicacion.prototype, "cirugiasRelation", void 0);
 exports.Radicacion = Radicacion = __decorate([
     (0, typeorm_1.Entity)("radicacion")
 ], Radicacion);

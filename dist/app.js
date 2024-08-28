@@ -3,21 +3,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const manejar_errores_1 = require("./middlewares/manejar-errores");
 const index_1 = __importDefault(require("./routes/index"));
 const logger_middleware_1 = require("./middlewares/logger_middleware");
+const rate_limit_1 = require("./middlewares/rate-limit");
+const helmet_1 = __importDefault(require("helmet"));
+const path_1 = __importDefault(require("path"));
 // * cargar variables de entorno
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-app.use((0, morgan_1.default)('dev'));
 app.use((0, cors_1.default)());
+app.use(rate_limit_1.limiter);
+app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
+// * Middleware para proteger la aplicación
+app.use((0, helmet_1.default)());
 //* Middleware para loggear las peticiones
 app.use(logger_middleware_1.loggerMiddleware);
+app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
+console.log(path_1.default.join(__dirname, 'uploads'));
 // * variable global de prefijos para las rutas
 const apiPrefix = process.env.API_PREFIX || '/api/v1';
 // * Rutas

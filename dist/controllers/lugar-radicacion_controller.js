@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteLugarRadicacion = exports.updateLugarRadicacion = exports.createLugarRadicacion = exports.getLugarRadicacion = exports.getAllLugaresRadicacion = void 0;
+exports.getAllLugaresRadicacion = getAllLugaresRadicacion;
+exports.getLugarRadicacion = getLugarRadicacion;
+exports.createLugarRadicacion = createLugarRadicacion;
+exports.updateLugarRadicacion = updateLugarRadicacion;
+exports.deleteLugarRadicacion = deleteLugarRadicacion;
 const lugar_radicacion_1 = require("../entities/lugar-radicacion");
 const class_validator_1 = require("class-validator");
 function getAllLugaresRadicacion(req, res, next) {
@@ -23,7 +27,6 @@ function getAllLugaresRadicacion(req, res, next) {
         }
     });
 }
-exports.getAllLugaresRadicacion = getAllLugaresRadicacion;
 function getLugarRadicacion(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getLugarRadicacion(req, res, next) {
         }
     });
 }
-exports.getLugarRadicacion = getLugarRadicacion;
 function createLugarRadicacion(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -70,7 +72,6 @@ function createLugarRadicacion(req, res, next) {
         }
     });
 }
-exports.createLugarRadicacion = createLugarRadicacion;
 function updateLugarRadicacion(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -98,7 +99,6 @@ function updateLugarRadicacion(req, res, next) {
         }
     });
 }
-exports.updateLugarRadicacion = updateLugarRadicacion;
 function deleteLugarRadicacion(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -115,4 +115,3 @@ function deleteLugarRadicacion(req, res, next) {
         }
     });
 }
-exports.deleteLugarRadicacion = deleteLugarRadicacion;

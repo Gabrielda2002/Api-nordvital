@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteIpsRemite = exports.updateIpsRemite = exports.createIpsRemite = exports.getIpsRemite = exports.getAllIpsRemite = void 0;
+exports.getAllIpsRemite = getAllIpsRemite;
+exports.getIpsRemite = getIpsRemite;
+exports.createIpsRemite = createIpsRemite;
+exports.updateIpsRemite = updateIpsRemite;
+exports.deleteIpsRemite = deleteIpsRemite;
 const ips_remite_1 = require("../entities/ips-remite");
 const class_validator_1 = require("class-validator");
 function getAllIpsRemite(req, res, next) {
@@ -23,7 +27,6 @@ function getAllIpsRemite(req, res, next) {
         }
     });
 }
-exports.getAllIpsRemite = getAllIpsRemite;
 function getIpsRemite(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getIpsRemite(req, res, next) {
         }
     });
 }
-exports.getIpsRemite = getIpsRemite;
 function createIpsRemite(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -70,7 +72,6 @@ function createIpsRemite(req, res, next) {
         }
     });
 }
-exports.createIpsRemite = createIpsRemite;
 function updateIpsRemite(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -98,7 +99,6 @@ function updateIpsRemite(req, res, next) {
         }
     });
 }
-exports.updateIpsRemite = updateIpsRemite;
 function deleteIpsRemite(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -115,4 +115,3 @@ function deleteIpsRemite(req, res, next) {
         }
     });
 }
-exports.deleteIpsRemite = deleteIpsRemite;

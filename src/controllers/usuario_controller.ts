@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Usuarios } from "../entities/usuarios";
 import { validate } from "class-validator";
 import bcrypt from "bcrypt";
+import fs from "fs";
+import path from "path";
 
 export async function getAllUsuarios(
   req: Request,
@@ -170,6 +172,72 @@ export async function deleteUsuario(
     await usuario.remove();
 
     return res.json({ message: "Usuario eliminado" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// * funcion para subir la foto de perfil del usuario
+
+export async function uploadPhoto(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const file = req.file;
+
+    const { id } = req.params; 
+
+    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    if (file) {
+      const relativePath = file.path.replace(/^.*[\\\/]/, ""); // obtener el nombre del archivo
+      usuario.photo = `uploads/FotosPerfil/${relativePath}`;
+      await usuario.save();
+    }
+
+    return res.json(usuario);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// * eliminar la foto de perfil del usuario
+export async function deletePhoto(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    // Busca el usuario en la base de datos
+    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Obtén la ruta de la foto de perfil
+    const filePath = path.join(__dirname, '..', usuario.photo); // Ajusta según la estructura de tu proyecto
+
+    // Verifica si el archivo existe antes de intentar eliminarlo
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    } else {
+      return res.status(404).json({ message: "Foto de perfil no encontrada" });
+    }
+
+    // Actualiza el campo 'photo' en la base de datos
+    usuario.photo = "";
+    await usuario.save();
+
+    return res.json({ message: "Foto de perfil eliminada" });
   } catch (error) {
     next(error);
   }

@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteIpsPrimaria = exports.updateIpsPrimaria = exports.createIpsPrimaria = exports.getIpsPrimaria = exports.getAllIpsPrimaria = void 0;
+exports.getAllIpsPrimaria = getAllIpsPrimaria;
+exports.getIpsPrimaria = getIpsPrimaria;
+exports.createIpsPrimaria = createIpsPrimaria;
+exports.updateIpsPrimaria = updateIpsPrimaria;
+exports.deleteIpsPrimaria = deleteIpsPrimaria;
 const ips_primaria_1 = require("../entities/ips-primaria");
 const class_validator_1 = require("class-validator");
 function getAllIpsPrimaria(req, res, next) {
@@ -23,7 +27,6 @@ function getAllIpsPrimaria(req, res, next) {
         }
     });
 }
-exports.getAllIpsPrimaria = getAllIpsPrimaria;
 function getIpsPrimaria(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getIpsPrimaria(req, res, next) {
         }
     });
 }
-exports.getIpsPrimaria = getIpsPrimaria;
 function createIpsPrimaria(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -70,7 +72,6 @@ function createIpsPrimaria(req, res, next) {
         }
     });
 }
-exports.createIpsPrimaria = createIpsPrimaria;
 function updateIpsPrimaria(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -98,7 +99,6 @@ function updateIpsPrimaria(req, res, next) {
         }
     });
 }
-exports.updateIpsPrimaria = updateIpsPrimaria;
 function deleteIpsPrimaria(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -115,4 +115,3 @@ function deleteIpsPrimaria(req, res, next) {
         }
     });
 }
-exports.deleteIpsPrimaria = deleteIpsPrimaria;

@@ -7,6 +7,7 @@ import routes from './routes/index';
 import { loggerMiddleware } from './middlewares/logger_middleware';
 import { limiter } from './middlewares/rate-limit';
 import helmet from 'helmet';
+import path from 'path';
 
 // * cargar variables de entorno
 dotenv.config();
@@ -19,10 +20,14 @@ app.use(limiter);
 app.use(morgan('dev'));
 app.use(express.json());
 // * Middleware para proteger la aplicación
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: false, // Deshabilitar la política para recursos estáticos
+}));
 
 //* Middleware para loggear las peticiones
 app.use(loggerMiddleware);
+
+app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // * variable global de prefijos para las rutas

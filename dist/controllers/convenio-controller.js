@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteConvenio = exports.updateConvenio = exports.createConvenio = exports.getConvenioById = exports.getAllConvenio = void 0;
+exports.getAllConvenio = getAllConvenio;
+exports.getConvenioById = getConvenioById;
+exports.createConvenio = createConvenio;
+exports.updateConvenio = updateConvenio;
+exports.deleteConvenio = deleteConvenio;
 const convenio_1 = require("../entities/convenio");
 const class_validator_1 = require("class-validator");
 function getAllConvenio(req, res, next) {
@@ -23,7 +27,6 @@ function getAllConvenio(req, res, next) {
         }
     });
 }
-exports.getAllConvenio = getAllConvenio;
 /**
  * Retrieves a convenio by its ID.
  * @param req - The request object.
@@ -45,7 +48,6 @@ function getConvenioById(req, res, next) {
         }
     });
 }
-exports.getConvenioById = getConvenioById;
 /**
  * Creates a new convenio.
  *
@@ -83,7 +85,6 @@ function createConvenio(req, res, next) {
         }
     });
 }
-exports.createConvenio = createConvenio;
 /**
  * Updates a convenio (agreement) based on the provided ID.
  * @param req - The request object containing the ID parameter and the new name in the request body.
@@ -116,7 +117,6 @@ function updateConvenio(req, res, next) {
         }
     });
 }
-exports.updateConvenio = updateConvenio;
 /**
  * Deletes a convenio (agreement) by its ID.
  *
@@ -140,4 +140,3 @@ function deleteConvenio(req, res, next) {
         }
     });
 }
-exports.deleteConvenio = deleteConvenio;

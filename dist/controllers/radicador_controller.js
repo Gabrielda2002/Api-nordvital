@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteRadicador = exports.updateRadicador = exports.createRadicador = exports.getRadicador = exports.getAllRadicador = void 0;
+exports.getAllRadicador = getAllRadicador;
+exports.getRadicador = getRadicador;
+exports.createRadicador = createRadicador;
+exports.updateRadicador = updateRadicador;
+exports.deleteRadicador = deleteRadicador;
 const radicador_1 = require("../entities/radicador");
 const class_validator_1 = require("class-validator");
 function getAllRadicador(req, res, next) {
@@ -23,7 +27,6 @@ function getAllRadicador(req, res, next) {
         }
     });
 }
-exports.getAllRadicador = getAllRadicador;
 function getRadicador(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getRadicador(req, res, next) {
         }
     });
 }
-exports.getRadicador = getRadicador;
 function createRadicador(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -67,7 +69,6 @@ function createRadicador(req, res, next) {
         }
     });
 }
-exports.createRadicador = createRadicador;
 function updateRadicador(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -95,7 +96,6 @@ function updateRadicador(req, res, next) {
         }
     });
 }
-exports.updateRadicador = updateRadicador;
 function deleteRadicador(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -112,4 +112,3 @@ function deleteRadicador(req, res, next) {
         }
     });
 }
-exports.deleteRadicador = deleteRadicador;
