@@ -45,18 +45,18 @@ export class CreateTablesSsc1723755656508 implements MigrationInterface {
         }
 
         // * eliminar campo carpeta de protoformatos
-        const columnExists4 = await queryRunner.hasColumn("protoformatos", "Carpeta");
+        // const columnExists4 = await queryRunner.hasColumn("protoformatos", "Carpeta");
 
-        if (columnExists4) {
-            const table = await queryRunner.getTable("protoformatos");
-            const foreignKey = table?.foreignKeys.find(fk => fk.columnNames.indexOf("Carpeta") !== -1);
+        // if (columnExists4) {
+        //     const table = await queryRunner.getTable("protoformatos");
+        //     const foreignKey = table?.foreignKeys.find(fk => fk.columnNames.indexOf("Carpeta") !== -1);
 
-            if (foreignKey) {
-                await queryRunner.dropForeignKey("protoformatos", foreignKey);
-            }
+        //     if (foreignKey) {
+        //         await queryRunner.dropForeignKey("protoformatos", foreignKey);
+        //     }
             
-            await queryRunner.dropColumn("protoformatos", "Carpeta");
-        }
+        //     await queryRunner.dropColumn("protoformatos", "Carpeta");
+        // }
 
         // * eliminar  tabla "protoformatos" si existe
 
