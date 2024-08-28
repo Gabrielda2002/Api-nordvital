@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDocumentType = exports.updateDocumentType = exports.createDocumentType = exports.getDocumentTypeById = exports.getAllDocumentType = void 0;
+exports.getAllDocumentType = getAllDocumentType;
+exports.getDocumentTypeById = getDocumentTypeById;
+exports.createDocumentType = createDocumentType;
+exports.updateDocumentType = updateDocumentType;
+exports.deleteDocumentType = deleteDocumentType;
 const tipo_documento_1 = require("../entities/tipo-documento");
 const class_validator_1 = require("class-validator");
 function getAllDocumentType(req, res, next) {
@@ -23,7 +27,6 @@ function getAllDocumentType(req, res, next) {
         }
     });
 }
-exports.getAllDocumentType = getAllDocumentType;
 function getDocumentTypeById(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getDocumentTypeById(req, res, next) {
         }
     });
 }
-exports.getDocumentTypeById = getDocumentTypeById;
 function createDocumentType(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -67,7 +69,6 @@ function createDocumentType(req, res, next) {
         }
     });
 }
-exports.createDocumentType = createDocumentType;
 function updateDocumentType(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -95,7 +96,6 @@ function updateDocumentType(req, res, next) {
         }
     });
 }
-exports.updateDocumentType = updateDocumentType;
 function deleteDocumentType(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -112,4 +112,3 @@ function deleteDocumentType(req, res, next) {
         }
     });
 }
-exports.deleteDocumentType = deleteDocumentType;

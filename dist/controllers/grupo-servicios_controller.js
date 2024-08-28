@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteGrupoServicios = exports.updateGrupoServicios = exports.createGrupoServicios = exports.getGrupoServicios = exports.getAllGruposServicios = void 0;
+exports.getAllGruposServicios = getAllGruposServicios;
+exports.getGrupoServicios = getGrupoServicios;
+exports.createGrupoServicios = createGrupoServicios;
+exports.updateGrupoServicios = updateGrupoServicios;
+exports.deleteGrupoServicios = deleteGrupoServicios;
 const grupo_servicios_1 = require("../entities/grupo-servicios");
 const class_validator_1 = require("class-validator");
 function getAllGruposServicios(req, res, next) {
@@ -23,7 +27,6 @@ function getAllGruposServicios(req, res, next) {
         }
     });
 }
-exports.getAllGruposServicios = getAllGruposServicios;
 function getGrupoServicios(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getGrupoServicios(req, res, next) {
         }
     });
 }
-exports.getGrupoServicios = getGrupoServicios;
 function createGrupoServicios(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -70,7 +72,6 @@ function createGrupoServicios(req, res, next) {
         }
     });
 }
-exports.createGrupoServicios = createGrupoServicios;
 function updateGrupoServicios(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -98,7 +99,6 @@ function updateGrupoServicios(req, res, next) {
         }
     });
 }
-exports.updateGrupoServicios = updateGrupoServicios;
 function deleteGrupoServicios(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -115,4 +115,3 @@ function deleteGrupoServicios(req, res, next) {
         }
     });
 }
-exports.deleteGrupoServicios = deleteGrupoServicios;

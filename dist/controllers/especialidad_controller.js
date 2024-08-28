@@ -9,7 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteEspecialidad = exports.updateEspecialidad = exports.createEspecialidad = exports.getEspecialidad = exports.getAllEspecialidades = void 0;
+exports.getAllEspecialidades = getAllEspecialidades;
+exports.getEspecialidad = getEspecialidad;
+exports.createEspecialidad = createEspecialidad;
+exports.updateEspecialidad = updateEspecialidad;
+exports.deleteEspecialidad = deleteEspecialidad;
 const especialidad_1 = require("../entities/especialidad");
 const class_validator_1 = require("class-validator");
 function getAllEspecialidades(req, res, next) {
@@ -23,7 +27,6 @@ function getAllEspecialidades(req, res, next) {
         }
     });
 }
-exports.getAllEspecialidades = getAllEspecialidades;
 function getEspecialidad(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,7 +42,6 @@ function getEspecialidad(req, res, next) {
         }
     });
 }
-exports.getEspecialidad = getEspecialidad;
 function createEspecialidad(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -70,7 +72,6 @@ function createEspecialidad(req, res, next) {
         }
     });
 }
-exports.createEspecialidad = createEspecialidad;
 function updateEspecialidad(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -104,7 +105,6 @@ function updateEspecialidad(req, res, next) {
         }
     });
 }
-exports.updateEspecialidad = updateEspecialidad;
 function deleteEspecialidad(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -124,4 +124,3 @@ function deleteEspecialidad(req, res, next) {
         }
     });
 }
-exports.deleteEspecialidad = deleteEspecialidad;

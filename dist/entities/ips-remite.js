@@ -47,6 +47,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => radicacion_1.Radicacion, (radicacion) => radicacion.ipsRemiteRelation),
     __metadata("design:type", Array)
 ], IpsRemite.prototype, "radicacionRelation", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => radicacion_1.Radicacion, (radicacion) => radicacion.ipsRemiteRelation),
+    __metadata("design:type", Array)
+], IpsRemite.prototype, "cirugiasRelation", void 0);
 exports.IpsRemite = IpsRemite = __decorate([
     (0, typeorm_1.Entity)("ipsremite")
 ], IpsRemite);

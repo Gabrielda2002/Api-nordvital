@@ -13,6 +13,7 @@ exports.Especialidad = void 0;
 const typeorm_1 = require("typeorm");
 const radicacion_1 = require("./radicacion");
 const class_validator_1 = require("class-validator");
+const cirugias_1 = require("./cirugias");
 let Especialidad = class Especialidad extends typeorm_1.BaseEntity {
 };
 exports.Especialidad = Especialidad;
@@ -47,6 +48,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => radicacion_1.Radicacion, (radicacion) => radicacion.specialtyRelation),
     __metadata("design:type", Array)
 ], Especialidad.prototype, "radicacionRelation", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => cirugias_1.Cirugias, (cirugias) => cirugias.specialityRelation),
+    __metadata("design:type", Array)
+], Especialidad.prototype, "cirugiasRelation", void 0);
 exports.Especialidad = Especialidad = __decorate([
     (0, typeorm_1.Entity)("especialidad")
 ], Especialidad);
