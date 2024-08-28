@@ -75,12 +75,6 @@ import {
           // * Si la columna existe, eliminarla
           await queryRunner.dropColumn("radicacion", "IpsPrimaria");
       }
-  
-      // Eliminar columnas
-      for (const columnName of columns) {
-        console.log(`Eliminando columna: ${columnName}`);
-        await queryRunner.dropColumn("radicacion", columnName);
-      }
     }
   
     public async down(queryRunner: QueryRunner): Promise<void> {
