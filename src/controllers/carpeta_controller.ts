@@ -6,6 +6,7 @@ import * as fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
 import { Archivos } from "../entities/archivos";
+import { IsNull } from "typeorm";
 
 export async function getAllFolders(req: Request, res: Response, next: NextFunction){
     try {
@@ -231,6 +232,39 @@ export async function deleteFolder(req: Request, res: Response, next: NextFuncti
         await folder.remove();
 
         return res.status(204).json();
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getSgcFoldersFiles(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.body;
+        console.log(id)
+
+        let folders, files: {};
+
+        if (id) {
+
+            // * mostrar archivos y carpetas de la carpeta seleccionada
+            const folder = await Carpeta.findOneBy({ id: parseInt(id) });
+
+            if (!folder) {
+                return res.status(404).json({ message: "Folder not found" });
+            }
+
+            // * mostrar archivos y carpetas de la carpeta seleccionada
+            folders = await Carpeta.find({where: {parentFolderId: folder.id}});
+            files = await Archivos.find({where: {folderId: folder.id}});
+        }else{
+            // * mostrar carpeta raiz
+            folders = await Carpeta.find({where: {parentFolderId: IsNull()}}); // * se usa la funcion IsNull() para que typeorm busque los registros con parentFolderId = null
+            files = [];
+        }
+
+
+
+        return res.json({ folders, files });
     } catch (error) {
         next(error);
     }
