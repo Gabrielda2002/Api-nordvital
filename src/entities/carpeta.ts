@@ -19,8 +19,8 @@ export class Carpeta extends BaseEntity {
     @IsNotEmpty({message: "El id del usuario no puede estar vacío"})
     userId: number;
 
-    @Column({name:'carpeta_padre_id'})
-    parentFolderId: number;
+    @Column({name:'carpeta_padre_id' , nullable: true})
+    parentFolderId: number | null;
 
     @Column({name:'ruta'})
     @IsNotEmpty({message: "La ruta de la carpeta no puede estar vacía"})
