@@ -242,3 +242,35 @@ export async function deletePhoto(
     next(error);
   }
 }
+
+export async function getUsuariosTable(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const usuariosData = await Usuarios.createQueryBuilder("usuarios")
+    .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
+    .leftJoinAndSelect("usuarios.rolesRelation", "roles")
+    .leftJoinAndSelect("usuarios.municipioRelation", "municipio")
+    .getMany();
+
+    const usuarios = usuariosData.map((usuario) => ({
+      id: usuario.id,
+      dniNumber: usuario.dniNumber,
+      name: usuario.name,
+      lastName: usuario.lastName,
+      email: usuario.email,
+      status: usuario.status,
+      createdAt: usuario.createdAt,
+      updatedAt: usuario.updatedAt,
+      documento: usuario.typeDocumentRelation?.name,
+      roles: usuario.rolesRelation?.name,
+      municipio: usuario.municipioRelation?.name,
+    }))
+
+    return res.json(usuarios);
+  } catch (error) {
+    next(error);
+  }
+}

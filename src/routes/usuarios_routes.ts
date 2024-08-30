@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, updateUsuario, uploadPhoto } from "../controllers/usuario_controller";
+import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, updateUsuario, uploadPhoto } from "../controllers/usuario_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -20,5 +20,7 @@ router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, d
 router.put('/upload-photo/:id', authenticate, authorizeRoles(['1', '2']), uploadPhotoUser.single('photo') , validarId, uploadPhoto);
 
 router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '2']), validarId, deletePhoto);
+
+router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuariosTable);
 
 export default router;
