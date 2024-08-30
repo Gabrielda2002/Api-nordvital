@@ -156,3 +156,21 @@ export async function deleteSurgery(req: Request, res: Response, next: NextFunct
         next(error)
     }
 }
+
+export async function getSurgeryTable(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const surgery = await Cirugias.createQueryBuilder("cirugias")
+        .leftJoinAndSelect("cirugias.speciality", "speciality")
+        .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ips")
+        .leftJoinAndSelect("cirugias.radicacionRelation", "radicado")
+        .leftJoinAndSelect("radicado.patientRelation", "pacientes")
+        .leftJoinAndSelect("cirugias.statusRelation", "status")
+        .getMany();
+
+        res.json(surgery);
+
+    } catch (error) {
+        next(error)
+    }
+}
