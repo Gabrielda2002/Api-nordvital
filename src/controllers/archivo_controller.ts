@@ -41,10 +41,11 @@ export async function getFileById(req: Request, res: Response, next: NextFunctio
 
 export async function createFile(req: Request, res: Response, next: NextFunction) {
     try {
-        const { parentFolderId } = req.body;
+        const { parentFolderId } = req.query;
 
         // Asegúrate de que req.files sea un array de archivos
         const files = req.files as Express.Multer.File[];
+
 
         if (!files || files.length === 0) {
             return res.status(400).json({ message: "At least one file is required" });
@@ -65,7 +66,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             newFile.path = file.path;
             newFile.size = file.size;
             newFile.mimeType = file.mimetype;
-            newFile.folderId = parentFolderId;
+            newFile.folderId = parseInt(parentFolderId as string);
             newFile.nameSaved = path.basename(file.filename);
 
             const errors = await validate(newFile);
@@ -136,6 +137,7 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
     try {
         
         const { id } = req.params;
+        
 
         const file = await Archivos.findOne({where: {id: parseInt(id)}});
 

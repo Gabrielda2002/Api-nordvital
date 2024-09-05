@@ -4,6 +4,8 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 import { uploadSggc } from "../middlewares/multer-config-ssgc";
 import { createFile, deleteFile, getAllFiles, getFileById, updateFile } from "../controllers/archivo_controller";
 import { validarId } from "../middlewares/validar-id";
+import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
+
 
 
 const router = Router();
@@ -12,7 +14,7 @@ router.get("/archivo", authenticate, authorizeRoles(['1','4']) , getAllFiles)
 
 router.get("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId  ,getFileById)
 
-router.post("/archivo", authenticate, authorizeRoles(['1','4']), uploadSggc, createFile)
+router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, parseParentFolderId, createFile)
 
 router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, updateFile)
 

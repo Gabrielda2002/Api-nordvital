@@ -21,7 +21,7 @@ export class Archivos extends BaseEntity {
     size: number;
 
     @Column({name: "carpeta_id"})
-    @IsNotEmpty({message: "El id de la carpeta no puede estar vacío"})
+    // @IsNotEmpty({message: "El id de la carpeta no puede estar vacío"})
     folderId: number;
 
     @Column({name: "mimeType"})

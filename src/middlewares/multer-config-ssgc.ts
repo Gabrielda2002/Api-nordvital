@@ -1,20 +1,21 @@
 import multer from "multer";
-import path from "path";
+import path, { parse } from "path";
 import { Carpeta } from "../entities/carpeta";
-
 
 export const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const { parentFolderId } = req.body;
+    const {parentFolderId}  = req.query;
+
+
 
 
     let uploadPath: string;
 
     if (parentFolderId) {
-      const parentFolder = await Carpeta.findOneBy({ id: parentFolderId });
+      const parentFolder = await Carpeta.findOneBy({ id: parseInt(parentFolderId as string) });
 
       if (!parentFolder) {
-        return cb(new Error("Pasta não encontrada"), "");
+        return cb(new Error("ruta de carpeta padre no encontrada"), "");
       }
 
       uploadPath = parentFolder.path;
@@ -39,7 +40,7 @@ export const uploadSggc = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
-      !["application/pdf", "application/docx", "application/msword"].includes(
+      !["application/pdf", "application/docx", "application/msword", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].includes(
         file.mimetype
       )
     ) {

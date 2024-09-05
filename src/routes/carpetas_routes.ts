@@ -16,6 +16,6 @@ router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '2']), validarId,
 
 router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '2']), validarId, deleteFolder);
 
-router.get('/sistema-calidad' ,authenticate , authorizeRoles(['1', '2']), getSgcFoldersFiles);
+router.get('/sistema-calidad/:id?' ,authenticate , authorizeRoles(['1', '2']), getSgcFoldersFiles);
 
 export default router;

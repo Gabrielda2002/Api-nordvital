@@ -239,7 +239,7 @@ export async function deleteFolder(req: Request, res: Response, next: NextFuncti
 
 export async function getSgcFoldersFiles(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         console.log(id)
 
         let folders, files: {};
@@ -255,7 +255,7 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
 
             // * mostrar archivos y carpetas de la carpeta seleccionada
             folders = await Carpeta.find({where: {parentFolderId: folder.id}});
-            files = await Archivos.find({where: {folderId: folder.id}});
+            files = await Archivos.find({where: {folderId: folder.id}})
         }else{
             // * mostrar carpeta raiz
             folders = await Carpeta.find({where: {parentFolderId: IsNull()}}); // * se usa la funcion IsNull() para que typeorm busque los registros con parentFolderId = null
