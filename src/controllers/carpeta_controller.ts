@@ -81,7 +81,6 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
             
         }
 
-
         await folder.save();
 
         return res.status(201).json(folder);
@@ -240,9 +239,11 @@ export async function deleteFolder(req: Request, res: Response, next: NextFuncti
 export async function getSgcFoldersFiles(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
-        console.log(id)
 
-        let folders, files: {};
+        const {Municipio} = req.query;
+
+
+        let folders: {} = {}, files: {} = {};
 
         if (id) {
 
@@ -254,12 +255,17 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
             }
 
             // * mostrar archivos y carpetas de la carpeta seleccionada
-            folders = await Carpeta.find({where: {parentFolderId: folder.id}});
+            folders = await Carpeta.createQueryBuilder("carpeta")
+            .where("carpeta.parentFolderId = :id", { id: folder.id })
+            .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+            .getMany();
             files = await Archivos.find({where: {folderId: folder.id}})
         }else{
             // * mostrar carpeta raiz
-            folders = await Carpeta.find({where: {parentFolderId: IsNull()}}); // * se usa la funcion IsNull() para que typeorm busque los registros con parentFolderId = null
-            files = [];
+            folders = await Carpeta.createQueryBuilder("carpeta")
+            .where("carpeta.parentFolderId IS NULL")
+            .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+            .getMany();
         }
 
 
