@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { uploadSggc } from "../middlewares/multer-config-ssgc";
-import { createFile, deleteFile, getAllFiles, getFileById, updateFile } from "../controllers/archivo_controller";
+import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, updateFile } from "../controllers/archivo_controller";
 import { validarId } from "../middlewares/validar-id";
 import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
 
@@ -19,5 +19,7 @@ router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, pars
 router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, updateFile)
 
 router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, deleteFile)
+
+router.get("/download-file/:id", authenticate, authorizeRoles(['1','4']),validarId, downloadFile)
 
 export default router;

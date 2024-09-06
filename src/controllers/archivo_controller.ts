@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Archivos } from "../entities/archivos";
 import path from "path";
 import { validate } from "class-validator";
+import fs from "fs";
 
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
     try {
@@ -42,11 +43,12 @@ export async function getFileById(req: Request, res: Response, next: NextFunctio
 export async function createFile(req: Request, res: Response, next: NextFunction) {
     try {
         const { parentFolderId } = req.query;
+        console.log(parentFolderId);
 
         // Asegúrate de que req.files sea un array de archivos
         const files = req.files as Express.Multer.File[];
 
-
+        console.log(files);
         if (!files || files.length === 0) {
             return res.status(400).json({ message: "At least one file is required" });
         }
@@ -63,7 +65,12 @@ export async function createFile(req: Request, res: Response, next: NextFunction
 
             const newFile = new Archivos();
             newFile.name = fileNameWithOutExt?.normalize('NFC');
-            newFile.path = file.path;
+
+            // * obtener la ruta relativa del archivo
+            const relativePath = path.relative(path.resolve('src', 'uploads'), file.path)
+            console.log(relativePath);
+
+            newFile.path = relativePath;
             newFile.size = file.size;
             newFile.mimeType = file.mimetype;
             newFile.folderId = parseInt(parentFolderId as string);
@@ -148,6 +155,36 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
         await file.remove();
 
         return res.status(204).json({message: "Archivo eliminado"});
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function downloadFile(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+
+        const file = await Archivos.findOne({where: {id: parseInt(id)}});
+
+        if (!file) {
+            return res.status(404).json({message: "Archivo no encontrado"});
+        }
+        console.log(file.path);
+
+        const filePath = path.resolve('src', 'uploads', file.path);
+        console.log(filePath);
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({message: "Archivo no encontrado en el servidor"});
+        }
+
+        res.download(filePath, file.nameSaved, (err) => {
+            if (err) {
+              console.error("Error al descargar el archivo: ", err);
+              res.status(500).json({ message: "Error al descargar el archivo" });
+            }
+          });
 
     } catch (error) {
         next(error)
