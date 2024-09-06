@@ -24,7 +24,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '1h' });
 
         // Enviar el token al cliente
-        res.json({  token,rol: user.rol , user: {
+        res.json({  token,Municipio: user.municipio,rol: user.rol , user: {
             id: user.id,
             dniNumber: user.dniNumber,
             email: user.email,
@@ -32,10 +32,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             apellido: user.lastName,
             rol: user.rol,
             date: user.date,
-            municipio: user.municipio,
             status: user.status,
             photo: user.photo
-        }, message: "Inicio de sesión exitoso" });
+        } ,message: "Inicio de sesión exitoso" });
     } catch (error) {
         // Pasar el error al middleware de manejo de errores
         next(error);
