@@ -98,10 +98,19 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
     }
 }
 
+/**
+ * Updates a folder in the system.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns The updated folder.
+ * @throws If an error occurs during the update process.
+ */
 export async function updateFolder(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
-        const { name, userId, parentFolderId } = req.body;
+        const { name, parentFolderId } = req.body;
 
         // Buscar la carpeta existente en la base de datos
         const folder = await Carpeta.findOneBy({ id: parseInt(id) });
@@ -141,7 +150,6 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
 
         // Actualizar la entidad Carpeta en la base de datos
         folder.name = name;
-        folder.userId = userId;
         folder.parentFolderId = parentFolderId;
         folder.path = newPath;
 
