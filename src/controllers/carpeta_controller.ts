@@ -34,24 +34,32 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
     try {
 
         const {
-            name,
-            userId,
-            parentFolderId
+            folderName,
+            municipio,
+            parentFolderId,
+            user_id
         } = req.body;
+
+        console.log(req.body);
+        console.log("id carpeta padre",parentFolderId);
 
         let folderPath: string;
         
         // * comprobar si la carpeta padre existe
 
         if (parentFolderId) {
-            const parentFolder = await Carpeta.findOneBy({id: parentFolderId});
+            const parentFolder = await Carpeta.createQueryBuilder("carpeta")
+            .where("carpeta.id = :id", { id: parentFolderId })
+            .getOne();
             if (!parentFolder) {
                 return res.status(404).json({ message: "Parent folder not found" });
             }
-            folderPath = path.join(parentFolder.path, name);
+            console.log("carpeta padre:" , parentFolder)
+            folderPath = path.join(parentFolder.path, folderName);
+            console.log(folderPath);
         }else{
             // * si es una carpeta raiz
-            folderPath = path.join(__dirname, "..", "uploads", name);
+            folderPath = path.join(__dirname, "..", "uploads", folderName);
         }
 
         const folderExists = await fsPromises.access(folderPath).then(() => true).catch(() => false);
@@ -63,10 +71,11 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
         await fsPromises.mkdir(folderPath, {recursive: true});
 
         const folder = new Carpeta();
-        folder.name = name;
-        folder.userId = userId;
+        folder.name = folderName;
+        folder.idMunicipio = municipio;
         folder.parentFolderId = parentFolderId;
         folder.path = folderPath;
+        folder.userId = user_id;
 
         const errors = await validate(folder);
 

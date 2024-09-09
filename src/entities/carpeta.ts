@@ -17,7 +17,7 @@ export class Carpeta extends BaseEntity {
     name: string;
 
     @Column({name:'user_id'})
-    @IsNotEmpty({message: "El id del usuario no puede estar vacío"})
+    // @IsNotEmpty({message: "El id del usuario no puede estar vacío"})
     userId: number;
 
     @Column({name:'carpeta_padre_id' , nullable: true})
