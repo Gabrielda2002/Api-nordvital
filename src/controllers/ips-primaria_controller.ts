@@ -128,3 +128,22 @@ export async function deleteIpsPrimaria(req: Request, res: Response, next: NextF
         next(error);
     }
 }
+
+export async function getIpsPrimariaByName(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { name } = req.body;
+
+        const ipsPrimaria = await IpsPrimaria.createQueryBuilder("ipsPrimaria")
+            .where("ipsPrimaria.name LIKE :name", { name: `%${name}%` })
+            .getOne();
+
+        if (!ipsPrimaria) {
+            return res.status(404).json({ message: "Ips Primaria not found" });
+        }
+        return res.json(ipsPrimaria);
+
+    } catch (error) {
+        next(error);
+    }
+}

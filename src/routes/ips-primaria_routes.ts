@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createIpsPrimaria, deleteIpsPrimaria, getAllIpsPrimaria, getIpsPrimaria, updateIpsPrimaria } from "../controllers/ips-primaria_controller";
+import { createIpsPrimaria, deleteIpsPrimaria, getAllIpsPrimaria, getIpsPrimaria, getIpsPrimariaByName, updateIpsPrimaria } from "../controllers/ips-primaria_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -16,5 +16,7 @@ router.post('/ips-primaria',authenticate, authorizeRoles(['1', '2']),createIpsPr
 router.put('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateIpsPrimaria);
 
 router.delete('/ips-primaria/:id',authenticate, authorizeRoles(['1']),validarId ,deleteIpsPrimaria);
+
+router.post('/ips-primaria-name',authenticate, authorizeRoles(['1', '2']), getIpsPrimariaByName);
 
 export default router;
