@@ -125,3 +125,21 @@ export async function deleteGrupoServicios(req: Request, res: Response, next: Ne
     next(error);
   }
 }
+
+export async function getGrupoServiciosByName(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { name } = req.body;
+
+    const grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
+      .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
+      .getOne();
+
+    if (!grupoServicios) {
+      return res.status(404).json({ message: "Grupo de servicios no encontrado" });
+    }
+
+    return res.json(grupoServicios);
+  } catch (error) {
+    next(error);
+  }
+}

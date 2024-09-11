@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, updateGrupoServicios } from "../controllers/grupo-servicios_controller";
+import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, getGrupoServiciosByName, updateGrupoServicios } from "../controllers/grupo-servicios_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -15,5 +15,7 @@ router.post("/grupo-servicios" ,authenticate, authorizeRoles(['1', '2']),createG
 router.put("/grupo-servicios/:id",validarId ,authenticate, authorizeRoles(['1', '2']), updateGrupoServicios);
 
 router.delete("/grupo-servicios/:id",validarId ,authenticate, authorizeRoles(['1']),deleteGrupoServicios);
+
+router.post("/grupo-servicios-name" ,authenticate, authorizeRoles(['1', '2']), getGrupoServiciosByName);
 
 export default router;

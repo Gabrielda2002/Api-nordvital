@@ -143,3 +143,27 @@ export async function deleteEspecialidad(req: Request, res: Response, next: Next
         next(error);
     }
 }
+
+export async function getEspecialidadesByName(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { name } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ message: "Name is required" });
+        }
+
+        const especialidades = await Especialidad.createQueryBuilder("especialidad")
+            .where("especialidad.name LIKE :name", { name: `%${name}%` })
+            .getMany();
+
+        if (especialidades.length === 0) {
+            return res.status(404).json({ message: "Especialidad not found" });
+        }
+
+        return res.json(especialidades);
+
+    } catch (error) {
+        next(error);
+    }
+}

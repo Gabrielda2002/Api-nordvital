@@ -125,3 +125,24 @@ export async function deleteServicio(req: Request, res: Response, next: NextFunc
         next(error);
     }
 }
+
+export async function getServiciosByName(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { name } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ message: "El nombre del servicio es requerido" });
+            
+        }
+
+        const servicios = await Servicios.createQueryBuilder("servicios")
+        .where("servicios.name LIKE :name", { name: `%${name}%` })
+        .getMany();
+
+        return res.json(servicios);
+
+    } catch (error) {
+        next(error);
+    }
+}

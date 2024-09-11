@@ -118,3 +118,23 @@ export async function deleteLugarRadicacion(req: Request, res: Response, next: N
         next(error);
     }
 }
+
+export async function getLugaresRadicacionByName(req: Request, res: Response, next: NextFunction){
+    try {
+        const { name } = req.body;
+
+
+        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
+        .getMany();
+
+        if (!lugaresRadicacion) {
+            return res.status(404).json({ message: "LugarRadicacion not found" });
+            
+        }
+
+        return res.json(lugaresRadicacion);
+    } catch (error) {
+        next(error);
+    }
+}
