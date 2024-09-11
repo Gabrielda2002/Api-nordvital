@@ -140,3 +140,25 @@ export async function deleteServicioSolicitado(req: Request, res: Response, next
     }
 
 }
+
+export async function getServiciosSolicitadosByCode(req: Request, res: Response, next: NextFunction){
+
+    try {
+        
+        const { code } = req.body;
+
+        const servicioSolicitado = await ServiciosSolicitados.createQueryBuilder("servicios_solicitados")
+        .where("servicios_solicitados.code = :code", {code})
+        .getOne();
+
+        if (!servicioSolicitado) {
+            return res.status(404).json({message: "Servicio solicitado no encontrado"});
+        }
+
+        return res.json(servicioSolicitado);
+
+    } catch (error) {
+        next(error);
+    }
+
+}

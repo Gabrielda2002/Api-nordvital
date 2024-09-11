@@ -176,3 +176,28 @@ export async function deletePaciente(
     next(error);
   }
 }
+
+export async function getPacientesByDocument(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { documentNumber } = req.body;
+    console.log(documentNumber);
+    const paciente = await Pacientes.createQueryBuilder("pacientes")
+    .where("pacientes.documentNumber = :documentNumber", { documentNumber })
+    .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
+    .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
+    .leftJoinAndSelect("pacientes.documentRelation", "documentRelation")
+    .getOne();
+
+    if (!paciente) {
+      return res.status(404).json({ message: "Paciente not found" });
+    }
+
+    return res.json(paciente); 
+  } catch (error) {
+    next(error);
+  }
+}
