@@ -142,3 +142,24 @@ export async function deleteDiagnostico(req: Request, res: Response, next: NextF
     }
 
 }
+
+export async function getDiagnosticosByName(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { code } = req.body;
+
+        const diagnosticos = await Diagnostico.createQueryBuilder("diagnostico")
+            .where("diagnostico.code = :code", {code})
+            .getMany();
+
+        if (diagnosticos.length === 0) {
+            return res.status(404).json({message: "No diagnosticos found"});
+        }
+
+        return res.json(diagnosticos);
+
+    } catch (error) {
+        next(error);
+    }
+
+}
