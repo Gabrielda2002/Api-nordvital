@@ -24,6 +24,7 @@ import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
 import { Cirugias } from "./cirugias";
+import { Diagnostico } from "./diagnostico";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -59,16 +60,6 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty({message: "La especialidad es requerida"})
   specialty: number;
 
-  @Column({ name: "CodDiagnostico" })
-  @IsString()
-  @IsNotEmpty({message: "El codigo de diagnostico es requerido"})
-  diagnosticCode: string;
-
-  @Column({ name: "DescripcionDiagnostico" })
-  @IsString()
-  @IsNotEmpty({message: "La descripcion del diagnostico es requerida"})
-  diagnosticDescription: string;
-
   @Column({ name: "GrupoServicios" })
   @IsInt()
   @IsNotEmpty({message: "El grupo de servicios es requerido"})
@@ -84,15 +75,6 @@ export class Radicacion extends BaseEntity {
   @IsInt()
   @IsNotEmpty({message: "Quien radica es requerido"})
   radicador: number;
-
-  // @Column({name: "NombreSoporte"})
-  // nameFileSupport: string
-
-  // @Column({name: "TipoSoporte"})
-  // typeFileSupport: string
-
-  // @Column({name: "contenido", type: "longblob"})
-  // contentFileSupport: string
 
   @Column({ name: "Auditora" })
   @IsString()
@@ -124,6 +106,11 @@ export class Radicacion extends BaseEntity {
   @IsInt()
   @IsNotEmpty({message: "El soporte es requerido"})
   idSoporte: number;
+
+  @Column({ name: "id_diagnostico", nullable: true })
+  @IsInt()
+  @IsNotEmpty({message: "El diagnostico es requerido"})
+  idDiagnostico: number;
 
   // * relaciones
 
@@ -166,6 +153,10 @@ export class Radicacion extends BaseEntity {
   @ManyToOne(() => Soportes, (soportes) => soportes.radicacionRelation)
   @JoinColumn({ name: "id_soportes" })
   soportesRelation: Soportes;
+
+  @ManyToOne(() => Diagnostico, (diagnostico) => diagnostico.radicacionRelation)
+  @JoinColumn({ name: "id_diagnostico" })
+  diagnosticoRelation: Diagnostico;
 
   // * rrelaciones no llaves foraneas
 

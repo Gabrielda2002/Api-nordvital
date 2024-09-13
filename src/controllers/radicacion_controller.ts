@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
-import { SeguimietoAuxiliar } from "../entities/seguimiento-auxiliar";
-import { group } from "console";
 
 export async function getAllRadicacion(
   req: Request,
@@ -66,8 +64,6 @@ export async function getRadicacionById(
       createdAt: radicacion.createdAt,
       orderDate: radicacion.orderDate,
       profetional: radicacion.profetional,
-      diagnosticCode: radicacion.diagnosticCode,
-      diagnosticDescription: radicacion.diagnosticDescription,
       groupServices: radicacion.groupServices,
       typeServices: radicacion.typeServices,
       justify: radicacion.justify,
@@ -103,32 +99,32 @@ export async function createRadicado(
       ipsRemitente,
       profetional,
       specialty,
-      diagnosticCode,
-      diagnosticDescription,
       groupServices,
       radicador,
       typeServices,
       idPatient,
-      idSoporte
+      idSoporte,
+      idDiagnostico
     } = req.body;
+
+    console.log(req.body);
 
     const radicacado = new Radicacion();
 
     radicacado.orderDate = orderDate;
-    radicacado.place = place;
-    radicacado.ipsRemitente = ipsRemitente;
+    radicacado.place = parseInt(place);
+    radicacado.ipsRemitente = parseInt(ipsRemitente);
     radicacado.profetional = profetional;
-    radicacado.specialty = specialty;
-    radicacado.diagnosticCode = diagnosticCode;
-    radicacado.diagnosticDescription = diagnosticDescription;
-    radicacado.groupServices = groupServices;
-    radicacado.typeServices = typeServices;
-    radicacado.radicador = radicador;
+    radicacado.specialty = parseInt(specialty);
+    radicacado.groupServices = parseInt(groupServices);
+    radicacado.typeServices = parseInt(typeServices);
+    radicacado.radicador = parseInt(radicador);
     radicacado.auditora = "Pendiente";
     radicacado.justify = "Pendiente";
     radicacado.auditConcept = 6;
-    radicacado.idPatient = idPatient;
-    radicacado.idSoporte = idSoporte;
+    radicacado.idPatient = parseInt(idPatient);
+    radicacado.idSoporte = parseInt(idSoporte);
+    radicacado.idDiagnostico = parseInt(idDiagnostico);
 
     const errors = await validate(radicacado);
 
@@ -188,8 +184,6 @@ export async function updateRadicado(
     radicacado.ipsRemitente = ipsRemitente;
     radicacado.profetional = profetional;
     radicacado.specialty = specialty;
-    radicacado.diagnosticCode = diagnosticCode;
-    radicacado.diagnosticDescription = diagnosticDescription;
     radicacado.groupServices = groupServices;
     radicacado.typeServices = typeServices;
     radicacado.radicador = radicador;

@@ -123,16 +123,16 @@ export async function updatePaciente(
       return res.status(404).json({ message: "Paciente not found" });
     }
 
-    paciente.documentType = documentType;
-    paciente.documentNumber = documentNumber;
-    paciente.name = name;
+    // paciente.documentType = documentType;
+    // paciente.documentNumber = documentNumber;
+    // paciente.name = name;
     paciente.phoneNumber = phoneNumber;
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = convenio;
-    paciente.ipsPrimaria = ipsPrimaria;
-    paciente.status = status;
+    // paciente.convenio = convenio;
+    // paciente.ipsPrimaria = ipsPrimaria;
+    // paciente.status = status;
 
     const errors = await validate(paciente);
 

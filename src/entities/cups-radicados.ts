@@ -13,7 +13,6 @@ export class CupsRadicados extends BaseEntity {
     @Column({ name: "CodigoCupsPacientes" })
     @IsNotEmpty({message: "El código del cups es requerido"})
     @IsInt()
-    @Min(1)
     code: number
 
     @Column({ name: "DescripcionCupsPacientes" })

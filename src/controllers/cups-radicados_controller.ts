@@ -40,39 +40,51 @@ export async function createCupsRadicados(req: Request, res: Response, next: Nex
 
     try {
         
-        const { code, DescriptionCode, status, observation, functionalUnit, idRadicacion } = req.body;
+        const { code, DescriptionCode, idRadicado } = req.body;
 
-        if (!code || !DescriptionCode || !status || !observation || !functionalUnit || !idRadicacion) {
+
+        if (!code || !DescriptionCode) {
             return res.status(400).json({ message: "All fields are required" });
         }
+        console.log(req.body);
 
+        // * se crea array de codigos y descripciones CUPS 
 
-        
+        const  codigosArray = code ?  code.split(',') : [];
+        console.log(codigosArray);
+        const  descripcionesArray = DescriptionCode ? DescriptionCode.split(',') : [];
+        console.log(descripcionesArray);
 
-        const cupsRadicados = CupsRadicados.create({
-            code,
-            DescriptionCode,
-            status,
-            observation,
-            functionalUnit,
-            idRadicacion
-        });
+        const cupCreados = [];
 
-        const errors = await validate(cupsRadicados);
+        for (let i = 0; i < codigosArray.length; i++) {
+            const cupsRadicados = new CupsRadicados();
+            cupsRadicados.code = parseInt(codigosArray[i], 10);
+            cupsRadicados.DescriptionCode = descripcionesArray[i];
+            cupsRadicados.status = 6;
+            cupsRadicados.observation = "Pendiente";
+            cupsRadicados.functionalUnit = 12;
+            cupsRadicados.idRadicacion = parseInt(idRadicado);
+            
+            const errors = await validate(cupsRadicados);
+    
+            if (errors.length > 0) {
+    
+                const errorMensage = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }))
+    
+                return res.status(400).json({ "mensaje": "Error creating cup", errorMensage });
+            }
+    
+            await cupsRadicados.save();
 
-        if (errors.length > 0) {
+            cupCreados.push(cupsRadicados);
 
-            const errorMensage = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-
-            return res.status(400).json({ "mensaje": "Error creating cup", errorMensage });
         }
 
-        await cupsRadicados.save();
-
-        return res.status(201).json(cupsRadicados);
+        return res.status(201).json();
 
     } catch (error) {
         next(error);
