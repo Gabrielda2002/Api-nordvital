@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { EstadosSeguimiento } from "./estados-seguimiento";
-import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 
 @Entity({name: "seguimientoauxiliar"})
 export class SeguimietoAuxiliar extends BaseEntity {
@@ -25,7 +25,7 @@ export class SeguimietoAuxiliar extends BaseEntity {
 
     @Column({name: "CodigoCups"})
     @IsString()
-    @IsNotEmpty({message: "El código cups es requerido"})
+    @IsOptional()
     @Length(1, 10, {message: "El código cups debe tener entre 4 y 10 caracteres"})
     codeCups: string;
 

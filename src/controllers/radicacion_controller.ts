@@ -8,17 +8,27 @@ export async function getAllRadicacion(
   next: NextFunction
 ) {
   try {
-    const radicacion = await Radicacion.find({
-      relations: [
-        "specialtyRelation",
-        "placeRelation",
-        "ipsRemiteRelation",
-        "servicesGroupRelation",
-        "servicesRelation",
-        "radicadorRelation",
-        "patientRelation",
-      ],
-    });
+    const radicacion = await Radicacion.createQueryBuilder("radicacion")
+    .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+    .leftJoinAndSelect("radicacion.placeRelation", "place")
+    .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+    .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+    .leftJoinAndSelect("radicacion.servicesRelation", "services")
+    .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+    .leftJoinAndSelect("radicacion.patientRelation", "patient")
+    .leftJoinAndSelect("patient.convenioRelation", "convenio")
+    .leftJoinAndSelect("patient.documentRelation", "document")
+    .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+    .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+    .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+    .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+    .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
+    .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
+    .orderBy("radicacion.id", "DESC")
+    .getMany();
+
     return res.json(radicacion);
   } catch (error) {
     next(error);

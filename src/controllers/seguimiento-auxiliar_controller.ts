@@ -40,16 +40,16 @@ export async function createSeguimientoAuxiliar(req: Request, res: Response, nex
         
         const { observation, status, codeCups, idRadicacion } = req.body;
 
-        if (!observation || !status || !codeCups || !idRadicacion) {
+        if (!observation || !status || !idRadicacion) {
             return res.status(400).json({message: "Todos los campos son requeridos"});
         }
 
         const seguimientoAuxiliar = new SeguimietoAuxiliar();
 
         seguimientoAuxiliar.observation = observation;
-        seguimientoAuxiliar.status = status;
+        seguimientoAuxiliar.status = parseInt(status);
         seguimientoAuxiliar.codeCups = codeCups;
-        seguimientoAuxiliar.idRadicacion = idRadicacion;
+        seguimientoAuxiliar.idRadicacion = parseInt(idRadicacion);
 
         const errors = await validate(seguimientoAuxiliar);
 
