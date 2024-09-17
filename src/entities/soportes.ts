@@ -37,6 +37,9 @@ export class Soportes extends BaseEntity {
     @UpdateDateColumn({name: "fechaActualizacion"})
     updateAt: Date;
 
+    @Column({name: "name_saved"})
+    @IsString()
+    nameSaved: string;
 
     //* Relaciones
 

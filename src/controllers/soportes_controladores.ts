@@ -67,7 +67,8 @@ export async function createSoporte(req: Request, res: Response, next: NextFunct
             name : fileNameWithoutExt?.normalize('NFC'),
             url: file?.path,
             size: file?.size,
-            type: file?.mimetype
+            type: file?.mimetype,
+            nameSaved: path.basename(file?.filename)
         });
 
         const errors = await validate(soporte);
