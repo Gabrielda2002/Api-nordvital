@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
+import { UnidadFuncional } from "../entities/unidad-funcional";
+import { CupsRadicados } from "../entities/cups-radicados";
 
 export async function getAllRadicacion(
   req: Request,
@@ -295,23 +297,28 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
+      .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimaria")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
       .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+      .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where("cupsRadicados.status = 6")
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
     const formatedRadicaciones = await radicaciones.map((r) => ({
+      id: r.id,
       radicadoDate: r.createdAt,
       documentType: r.patientRelation?.documentRelation.name || "N/A",
       documentNumber: r.patientRelation?.documentNumber || "N/A",
       namePatient: r.patientRelation?.name || "N/A",
       convenio: r.patientRelation?.convenioRelation?.name || "N/A",
-      ipsPrimary: r.patientRelation.ipsPrimaria || "N/A",
+      ipsPrimary: r.patientRelation.ipsPrimariaRelation.name || "N/A",
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
@@ -320,10 +327,15 @@ export async function tablaPorAuditar(
       typeServices: r.servicesRelation?.name || "N/A",
       radicador: r.radicadorRelation?.name || "N/A",
       statusCups:  r.cupsRadicadosRelation?.map((c) => ({
+        id: c.id,
         code: c.code,
         description: c.DescriptionCode,
-        observation: c.observation
+        observation: c.observation,
+        status: c.statusRelation.name,
+        unidadFuncional: c.functionalUnitRelation.name,
+        idRadicado: c.idRadicacion,
       })) || "N/A",
+      soportes: r.soportesRelation?.nameSaved || "N/A",
     }));
 
     return res.json(formatedRadicaciones);
@@ -356,4 +368,48 @@ export async function auditorRadicados(req: Request, res:Response, next: NextFun
   } catch (error) {
     next(error)
   }
+}
+
+export async function autorizarRadicado(req: Request, res:Response, next: NextFunction){
+
+  try {
+    
+    const { id } = req.params;
+    console.log(id)
+
+    const {auditora, fechaAuditoria, justificacion } = req.body;
+
+    console.log(req.body)
+
+    const existRadicado = await Radicacion.findOneBy({id: parseInt(id)});
+
+    if (!existRadicado) {
+      return res.status(404).json({ message: "Cups not found" });
+    }
+
+    existRadicado.auditora = auditora ;
+    existRadicado.auditDate = fechaAuditoria;
+    existRadicado.justify = justificacion;
+
+    const errors = await validate(existRadicado);
+    if (errors.length > 0) {
+      const messages = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      return res
+        .status(400)
+        .json({ message: "Error updating radicacion", messages });
+      
+    }
+
+    await existRadicado.save();
+
+    res.json(existRadicado);
+
+  } catch (error) {
+    next(error)
+  }
+  
 }
