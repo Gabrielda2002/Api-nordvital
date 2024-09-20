@@ -128,3 +128,24 @@ export async function deleteIpsRemite(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+
+export async function getIpsRemiteByName(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { name } = req.body;
+
+        const ipsRemite = await IpsRemite.createQueryBuilder("ipsRemite")
+            .where("ipsRemite.name LIKE :name", { name: `%${name}%` })
+            .getMany();
+
+        if (ipsRemite.length === 0) {
+            return res.status(404).json({ message: "Ips Remite not found" });
+            
+        }
+
+        return res.json(ipsRemite);
+
+    } catch (error) {
+        next(error);
+    }
+}

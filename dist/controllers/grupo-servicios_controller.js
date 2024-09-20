@@ -14,6 +14,7 @@ exports.getGrupoServicios = getGrupoServicios;
 exports.createGrupoServicios = createGrupoServicios;
 exports.updateGrupoServicios = updateGrupoServicios;
 exports.deleteGrupoServicios = deleteGrupoServicios;
+exports.getGrupoServiciosByName = getGrupoServiciosByName;
 const grupo_servicios_1 = require("../entities/grupo-servicios");
 const class_validator_1 = require("class-validator");
 function getAllGruposServicios(req, res, next) {
@@ -109,6 +110,23 @@ function deleteGrupoServicios(req, res, next) {
             }
             yield grupoServicios.remove();
             return res.json({ message: "Grupo de servicios eliminado" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function getGrupoServiciosByName(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            const grupoServicios = yield grupo_servicios_1.GrupoServicios.createQueryBuilder("grupo_servicios")
+                .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
+                .getMany();
+            if (!grupoServicios) {
+                return res.status(404).json({ message: "Grupo de servicios no encontrado" });
+            }
+            return res.json(grupoServicios);
         }
         catch (error) {
             next(error);

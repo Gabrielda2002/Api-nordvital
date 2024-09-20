@@ -132,7 +132,7 @@ export async function getGrupoServiciosByName(req: Request, res: Response, next:
 
     const grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
       .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
-      .getOne();
+      .getMany();
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });

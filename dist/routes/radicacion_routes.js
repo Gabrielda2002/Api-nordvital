@@ -14,4 +14,5 @@ router.delete('/radicacion/:id', auth_1.authenticate, (0, authorize_roles_1.auth
 router.get('/radicacion-table', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3', '5']), radicacion_controller_1.mostrarTabla);
 router.get('/auditoria-table', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), radicacion_controller_1.tablaPorAuditar);
 router.get('/auditoria-auditados', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), radicacion_controller_1.auditorRadicados);
+router.put('/autorizar-radicado/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), validar_id_1.validarId, radicacion_controller_1.autorizarRadicado);
 exports.default = router;

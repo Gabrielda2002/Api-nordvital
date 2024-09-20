@@ -23,6 +23,7 @@ const pacientes_1 = require("./pacientes");
 const soportes_1 = require("./soportes");
 const servicios_1 = require("./servicios");
 const cirugias_1 = require("./cirugias");
+const diagnostico_1 = require("./diagnostico");
 let Radicacion = class Radicacion extends typeorm_1.BaseEntity {
 };
 exports.Radicacion = Radicacion;
@@ -64,18 +65,6 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)({ message: "La especialidad es requerida" }),
     __metadata("design:type", Number)
 ], Radicacion.prototype, "specialty", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: "CodDiagnostico" }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)({ message: "El codigo de diagnostico es requerido" }),
-    __metadata("design:type", String)
-], Radicacion.prototype, "diagnosticCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: "DescripcionDiagnostico" }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)({ message: "La descripcion del diagnostico es requerida" }),
-    __metadata("design:type", String)
-], Radicacion.prototype, "diagnosticDescription", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: "GrupoServicios" }),
     (0, class_validator_1.IsInt)(),
@@ -133,6 +122,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Radicacion.prototype, "idSoporte", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "id_diagnostico", nullable: true }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNotEmpty)({ message: "El diagnostico es requerido" }),
+    __metadata("design:type", Number)
+], Radicacion.prototype, "idDiagnostico", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => especialidad_1.Especialidad, (Especialidad) => Especialidad.radicacionRelation),
     (0, typeorm_1.JoinColumn)({ name: "Especialidad" }),
     __metadata("design:type", especialidad_1.Especialidad)
@@ -172,6 +167,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: "id_soportes" }),
     __metadata("design:type", soportes_1.Soportes)
 ], Radicacion.prototype, "soportesRelation", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => diagnostico_1.Diagnostico, (diagnostico) => diagnostico.radicacionRelation),
+    (0, typeorm_1.JoinColumn)({ name: "id_diagnostico" }),
+    __metadata("design:type", diagnostico_1.Diagnostico)
+], Radicacion.prototype, "diagnosticoRelation", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => cups_radicados_1.CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation),
     __metadata("design:type", Array)

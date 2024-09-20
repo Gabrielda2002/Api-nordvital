@@ -17,22 +17,32 @@ exports.deleteRadicado = deleteRadicado;
 exports.mostrarTabla = mostrarTabla;
 exports.tablaPorAuditar = tablaPorAuditar;
 exports.auditorRadicados = auditorRadicados;
+exports.autorizarRadicado = autorizarRadicado;
 const radicacion_1 = require("../entities/radicacion");
 const class_validator_1 = require("class-validator");
 function getAllRadicacion(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const radicacion = yield radicacion_1.Radicacion.find({
-                relations: [
-                    "specialtyRelation",
-                    "placeRelation",
-                    "ipsRemiteRelation",
-                    "servicesGroupRelation",
-                    "servicesRelation",
-                    "radicadorRelation",
-                    "patientRelation",
-                ],
-            });
+            const radicacion = yield radicacion_1.Radicacion.createQueryBuilder("radicacion")
+                .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+                .leftJoinAndSelect("radicacion.placeRelation", "place")
+                .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+                .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+                .leftJoinAndSelect("radicacion.servicesRelation", "services")
+                .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+                .leftJoinAndSelect("radicacion.patientRelation", "patient")
+                .leftJoinAndSelect("patient.convenioRelation", "convenio")
+                .leftJoinAndSelect("patient.documentRelation", "document")
+                .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+                .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+                .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+                .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+                .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+                .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+                .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
+                .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
+                .orderBy("radicacion.id", "DESC")
+                .getMany();
             return res.json(radicacion);
         }
         catch (error) {
@@ -74,8 +84,6 @@ function getRadicacionById(req, res, next) {
                 createdAt: radicacion.createdAt,
                 orderDate: radicacion.orderDate,
                 profetional: radicacion.profetional,
-                diagnosticCode: radicacion.diagnosticCode,
-                diagnosticDescription: radicacion.diagnosticDescription,
                 groupServices: radicacion.groupServices,
                 typeServices: radicacion.typeServices,
                 justify: radicacion.justify,
@@ -102,23 +110,23 @@ function getRadicacionById(req, res, next) {
 function createRadicado(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { orderDate, place, ipsRemitente, profetional, specialty, diagnosticCode, diagnosticDescription, groupServices, radicador, typeServices, idPatient, idSoporte } = req.body;
+            const { orderDate, place, ipsRemitente, profetional, specialty, groupServices, radicador, typeServices, idPatient, idSoporte, idDiagnostico } = req.body;
+            console.log(req.body);
             const radicacado = new radicacion_1.Radicacion();
             radicacado.orderDate = orderDate;
-            radicacado.place = place;
-            radicacado.ipsRemitente = ipsRemitente;
+            radicacado.place = parseInt(place);
+            radicacado.ipsRemitente = parseInt(ipsRemitente);
             radicacado.profetional = profetional;
-            radicacado.specialty = specialty;
-            radicacado.diagnosticCode = diagnosticCode;
-            radicacado.diagnosticDescription = diagnosticDescription;
-            radicacado.groupServices = groupServices;
-            radicacado.typeServices = typeServices;
-            radicacado.radicador = radicador;
+            radicacado.specialty = parseInt(specialty);
+            radicacado.groupServices = parseInt(groupServices);
+            radicacado.typeServices = parseInt(typeServices);
+            radicacado.radicador = parseInt(radicador);
             radicacado.auditora = "Pendiente";
             radicacado.justify = "Pendiente";
             radicacado.auditConcept = 6;
-            radicacado.idPatient = idPatient;
-            radicacado.idSoporte = idSoporte;
+            radicacado.idPatient = parseInt(idPatient);
+            radicacado.idSoporte = parseInt(idSoporte);
+            radicacado.idDiagnostico = parseInt(idDiagnostico);
             const errors = yield (0, class_validator_1.validate)(radicacado);
             if (errors.length > 0) {
                 const messages = errors.map((err) => ({
@@ -151,8 +159,6 @@ function updateRadicado(req, res, next) {
             radicacado.ipsRemitente = ipsRemitente;
             radicacado.profetional = profetional;
             radicacado.specialty = specialty;
-            radicacado.diagnosticCode = diagnosticCode;
-            radicacado.diagnosticDescription = diagnosticDescription;
             radicacado.groupServices = groupServices;
             radicacado.typeServices = typeServices;
             radicacado.radicador = radicador;
@@ -233,24 +239,29 @@ function tablaPorAuditar(req, res, next) {
                 .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
                 .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
                 .leftJoinAndSelect("pacientes.documentRelation", "document")
+                .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimaria")
                 .leftJoinAndSelect("radicacion.placeRelation", "place")
                 .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
                 .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
                 .leftJoinAndSelect("radicacion.servicesRelation", "services")
                 .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
                 .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+                .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+                .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+                .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
                 .where("cupsRadicados.status = 6")
                 .orderBy("radicacion.id", "DESC")
                 .getMany();
             const formatedRadicaciones = yield radicaciones.map((r) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
                 return ({
+                    id: r.id,
                     radicadoDate: r.createdAt,
                     documentType: ((_a = r.patientRelation) === null || _a === void 0 ? void 0 : _a.documentRelation.name) || "N/A",
                     documentNumber: ((_b = r.patientRelation) === null || _b === void 0 ? void 0 : _b.documentNumber) || "N/A",
                     namePatient: ((_c = r.patientRelation) === null || _c === void 0 ? void 0 : _c.name) || "N/A",
                     convenio: ((_e = (_d = r.patientRelation) === null || _d === void 0 ? void 0 : _d.convenioRelation) === null || _e === void 0 ? void 0 : _e.name) || "N/A",
-                    ipsPrimary: r.patientRelation.ipsPrimaria || "N/A",
+                    ipsPrimary: r.patientRelation.ipsPrimariaRelation.name || "N/A",
                     orderDate: r.orderDate || "N/A",
                     place: ((_f = r.placeRelation) === null || _f === void 0 ? void 0 : _f.name) || "N/A",
                     ipsRemitente: ((_g = r.ipsRemiteRelation) === null || _g === void 0 ? void 0 : _g.name) || "N/A",
@@ -259,10 +270,15 @@ function tablaPorAuditar(req, res, next) {
                     typeServices: ((_j = r.servicesRelation) === null || _j === void 0 ? void 0 : _j.name) || "N/A",
                     radicador: ((_k = r.radicadorRelation) === null || _k === void 0 ? void 0 : _k.name) || "N/A",
                     statusCups: ((_l = r.cupsRadicadosRelation) === null || _l === void 0 ? void 0 : _l.map((c) => ({
+                        id: c.id,
                         code: c.code,
                         description: c.DescriptionCode,
-                        observation: c.observation
+                        observation: c.observation,
+                        status: c.statusRelation.name,
+                        unidadFuncional: c.functionalUnitRelation.name,
+                        idRadicado: c.idRadicacion,
                     }))) || "N/A",
+                    soportes: ((_m = r.soportesRelation) === null || _m === void 0 ? void 0 : _m.nameSaved) || "N/A",
                 });
             });
             return res.json(formatedRadicaciones);
@@ -293,6 +309,38 @@ function auditorRadicados(req, res, next) {
                 });
             });
             return res.json(formatedRadicaciones);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function autorizarRadicado(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            console.log(id);
+            const { auditora, fechaAuditoria, justificacion } = req.body;
+            console.log(req.body);
+            const existRadicado = yield radicacion_1.Radicacion.findOneBy({ id: parseInt(id) });
+            if (!existRadicado) {
+                return res.status(404).json({ message: "Cups not found" });
+            }
+            existRadicado.auditora = auditora;
+            existRadicado.auditDate = fechaAuditoria;
+            existRadicado.justify = justificacion;
+            const errors = yield (0, class_validator_1.validate)(existRadicado);
+            if (errors.length > 0) {
+                const messages = errors.map((err) => ({
+                    property: err.property,
+                    constraints: err.constraints,
+                }));
+                return res
+                    .status(400)
+                    .json({ message: "Error updating radicacion", messages });
+            }
+            yield existRadicado.save();
+            res.json(existRadicado);
         }
         catch (error) {
             next(error);

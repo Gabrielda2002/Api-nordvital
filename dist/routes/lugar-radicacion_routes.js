@@ -11,4 +11,5 @@ router.get("/lugares-radicacion/:id", auth_1.authenticate, (0, authorize_roles_1
 router.post("/lugares-radicacion", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), lugar_radicacion_controller_1.createLugarRadicacion);
 router.put("/lugares-radicacion/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, lugar_radicacion_controller_1.updateLugarRadicacion);
 router.delete("/lugares-radicacion/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, lugar_radicacion_controller_1.deleteLugarRadicacion);
+router.post("/lugares-radicacion-name", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), lugar_radicacion_controller_1.getLugaresRadicacionByName);
 exports.default = router;

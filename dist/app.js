@@ -21,11 +21,12 @@ app.use(rate_limit_1.limiter);
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
 // * Middleware para proteger la aplicación
-app.use((0, helmet_1.default)());
+app.use((0, helmet_1.default)({
+    crossOriginResourcePolicy: false, // Deshabilitar la política para recursos estáticos
+}));
 //* Middleware para loggear las peticiones
 app.use(logger_middleware_1.loggerMiddleware);
-app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
-console.log(path_1.default.join(__dirname, 'uploads'));
+app.use('/api/v1/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
 // * variable global de prefijos para las rutas
 const apiPrefix = process.env.API_PREFIX || '/api/v1';
 // * Rutas

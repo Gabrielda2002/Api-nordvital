@@ -136,7 +136,7 @@ export async function getIpsPrimariaByName(req: Request, res: Response, next: Ne
 
         const ipsPrimaria = await IpsPrimaria.createQueryBuilder("ipsPrimaria")
             .where("ipsPrimaria.name LIKE :name", { name: `%${name}%` })
-            .getOne();
+            .getMany();
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });

@@ -14,6 +14,7 @@ exports.getEspecialidad = getEspecialidad;
 exports.createEspecialidad = createEspecialidad;
 exports.updateEspecialidad = updateEspecialidad;
 exports.deleteEspecialidad = deleteEspecialidad;
+exports.getEspecialidadesByName = getEspecialidadesByName;
 const especialidad_1 = require("../entities/especialidad");
 const class_validator_1 = require("class-validator");
 function getAllEspecialidades(req, res, next) {
@@ -118,6 +119,26 @@ function deleteEspecialidad(req, res, next) {
             }
             yield especialidad.remove();
             return res.json({ message: "Especialidad deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function getEspecialidadesByName(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            if (!name) {
+                return res.status(400).json({ message: "Name is required" });
+            }
+            const especialidades = yield especialidad_1.Especialidad.createQueryBuilder("especialidad")
+                .where("especialidad.name LIKE :name", { name: `%${name}%` })
+                .getMany();
+            if (especialidades.length === 0) {
+                return res.status(404).json({ message: "Especialidad not found" });
+            }
+            return res.json(especialidades);
         }
         catch (error) {
             next(error);

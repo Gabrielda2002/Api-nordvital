@@ -14,6 +14,7 @@ exports.getIpsRemite = getIpsRemite;
 exports.createIpsRemite = createIpsRemite;
 exports.updateIpsRemite = updateIpsRemite;
 exports.deleteIpsRemite = deleteIpsRemite;
+exports.getIpsRemiteByName = getIpsRemiteByName;
 const ips_remite_1 = require("../entities/ips-remite");
 const class_validator_1 = require("class-validator");
 function getAllIpsRemite(req, res, next) {
@@ -109,6 +110,23 @@ function deleteIpsRemite(req, res, next) {
             }
             yield ipsRemite.remove();
             return res.json({ message: "Ips Remite deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function getIpsRemiteByName(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            const ipsRemite = yield ips_remite_1.IpsRemite.createQueryBuilder("ipsRemite")
+                .where("ipsRemite.name LIKE :name", { name: `%${name}%` })
+                .getMany();
+            if (ipsRemite.length === 0) {
+                return res.status(404).json({ message: "Ips Remite not found" });
+            }
+            return res.json(ipsRemite);
         }
         catch (error) {
             next(error);

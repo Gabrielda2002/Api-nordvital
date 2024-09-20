@@ -14,6 +14,7 @@ exports.getLugarRadicacion = getLugarRadicacion;
 exports.createLugarRadicacion = createLugarRadicacion;
 exports.updateLugarRadicacion = updateLugarRadicacion;
 exports.deleteLugarRadicacion = deleteLugarRadicacion;
+exports.getLugaresRadicacionByName = getLugaresRadicacionByName;
 const lugar_radicacion_1 = require("../entities/lugar-radicacion");
 const class_validator_1 = require("class-validator");
 function getAllLugaresRadicacion(req, res, next) {
@@ -109,6 +110,23 @@ function deleteLugarRadicacion(req, res, next) {
             }
             yield lugarRadicacion.remove();
             return res.json({ message: "LugarRadicacion deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function getLugaresRadicacionByName(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            const lugaresRadicacion = yield lugar_radicacion_1.LugarRadicacion.createQueryBuilder("lugar_radicacion")
+                .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
+                .getMany();
+            if (!lugaresRadicacion) {
+                return res.status(404).json({ message: "LugarRadicacion not found" });
+            }
+            return res.json(lugaresRadicacion);
         }
         catch (error) {
             next(error);

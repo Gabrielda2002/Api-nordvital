@@ -14,6 +14,7 @@ exports.getIpsPrimaria = getIpsPrimaria;
 exports.createIpsPrimaria = createIpsPrimaria;
 exports.updateIpsPrimaria = updateIpsPrimaria;
 exports.deleteIpsPrimaria = deleteIpsPrimaria;
+exports.getIpsPrimariaByName = getIpsPrimariaByName;
 const ips_primaria_1 = require("../entities/ips-primaria");
 const class_validator_1 = require("class-validator");
 function getAllIpsPrimaria(req, res, next) {
@@ -109,6 +110,23 @@ function deleteIpsPrimaria(req, res, next) {
             }
             yield ipsPrimaria.remove();
             return res.json({ message: "Ips Primaria deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function getIpsPrimariaByName(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { name } = req.body;
+            const ipsPrimaria = yield ips_primaria_1.IpsPrimaria.createQueryBuilder("ipsPrimaria")
+                .where("ipsPrimaria.name LIKE :name", { name: `%${name}%` })
+                .getMany();
+            if (!ipsPrimaria) {
+                return res.status(404).json({ message: "Ips Primaria not found" });
+            }
+            return res.json(ipsPrimaria);
         }
         catch (error) {
             next(error);

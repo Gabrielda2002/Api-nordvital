@@ -11,4 +11,5 @@ router.get("/grupo-servicios/:id", auth_1.authenticate, (0, authorize_roles_1.au
 router.post("/grupo-servicios", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), grupo_servicios_controller_1.createGrupoServicios);
 router.put("/grupo-servicios/:id", validar_id_1.validarId, auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), grupo_servicios_controller_1.updateGrupoServicios);
 router.delete("/grupo-servicios/:id", validar_id_1.validarId, auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), grupo_servicios_controller_1.deleteGrupoServicios);
+router.post("/grupo-servicios-name", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), grupo_servicios_controller_1.getGrupoServiciosByName);
 exports.default = router;

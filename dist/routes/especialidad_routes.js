@@ -11,4 +11,5 @@ router.get("/especialidades/:id", auth_1.authenticate, (0, authorize_roles_1.aut
 router.post("/especialidades", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), especialidad_controller_1.createEspecialidad);
 router.put("/especialidades/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, especialidad_controller_1.updateEspecialidad);
 router.delete("/especialidades/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, especialidad_controller_1.deleteEspecialidad);
+router.post("/especialidades-name", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), especialidad_controller_1.getEspecialidadesByName);
 exports.default = router;
