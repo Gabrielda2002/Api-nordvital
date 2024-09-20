@@ -3,6 +3,13 @@ import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
 export class AlterTableSoportesCupspacientes1726588929303 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+
+        await queryRunner.addColumn("soportes", new TableColumn({
+            name: "name_saved",
+            type: "varchar",
+            isNullable: true
+        }));
+
         // Eliminar las columnas FechaRegistro y UltimaModificacion de la tabla cupspaciente
         await queryRunner.dropColumn("cupspaciente", "FechaRegistro");
         await queryRunner.dropColumn("cupspaciente", "UltimaModificacion");
