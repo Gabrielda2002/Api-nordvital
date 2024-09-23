@@ -31,7 +31,7 @@ app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // * variable global de prefijos para las rutas
-const apiPrefix = process.env.API_PREFIX || '/api/v1';
+const apiPrefix = process.env.API_PREFIX || '';
 
 // * Rutas
 
