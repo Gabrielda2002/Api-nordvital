@@ -5,7 +5,7 @@ const typeorm_1 = require("typeorm");
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "mysql",
     host: process.env.DB_HOST || "localhost",
-    username: process.env.DB_USER || "root",
+    username: process.env.DB_USER || "nordvita_Developers",
     password: process.env.DB_PASS || "NaRDViToL1.0.5.58p",
     database: process.env.DB_NAME || "nordvita_nordvitalips-api-test",
     charset: "utf8mb4",
