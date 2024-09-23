@@ -16,6 +16,7 @@ const path_1 = __importDefault(require("path"));
 // * cargar variables de entorno
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+app.set('trust proxy', 1);
 app.use((0, cors_1.default)());
 app.use(rate_limit_1.limiter);
 app.use((0, morgan_1.default)('dev'));
@@ -28,7 +29,7 @@ app.use((0, helmet_1.default)({
 app.use(logger_middleware_1.loggerMiddleware);
 app.use('/api/v1/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
 // * variable global de prefijos para las rutas
-const apiPrefix = process.env.API_PREFIX || '';
+const apiPrefix = process.env.API_PREFIX || '/api/v1';
 // * Rutas
 app.use(apiPrefix, index_1.default);
 // Middleware para manejar errores
