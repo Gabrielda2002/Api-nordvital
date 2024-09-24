@@ -16,6 +16,11 @@ dotenv.config();
 
 const app = express();
 
+app.get('/ping', (req, res) => {
+    res.send('API funcionando correctamente');
+  });
+  
+
 app.set('trust proxy', 1);
 app.use(cors());
 app.use(limiter);

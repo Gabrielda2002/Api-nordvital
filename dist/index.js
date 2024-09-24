@@ -8,7 +8,7 @@ const app_1 = __importDefault(require("./app"));
 const conexion_1 = require("./db/conexion");
 try {
     conexion_1.AppDataSource.initialize();
-    const PUERTO = process.env.PORT || 3600;
+    const PUERTO = 3600;
     app_1.default.listen(PUERTO, () => {
         console.log(`Servidor corriendo en el puerto http://localhost:${PUERTO}`);
     });

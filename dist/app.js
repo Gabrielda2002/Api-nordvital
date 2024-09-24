@@ -16,6 +16,9 @@ const path_1 = __importDefault(require("path"));
 // * cargar variables de entorno
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+app.get('/ping', (req, res) => {
+    res.send('API funcionando correctamente');
+});
 app.set('trust proxy', 1);
 app.use((0, cors_1.default)());
 app.use(rate_limit_1.limiter);
