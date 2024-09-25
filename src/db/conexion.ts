@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
   charset: "utf8mb4",
   synchronize: false,
   port: parseInt(process.env.DB_PORT || "3306"),
-  entities: [__dirname + "/../entities/*{.ts, .js}"],
+  entities: [__dirname + "/../entities/*{.ts,.js}"],
   logging: true,
   // migrationsRun: true,
   migrations:  [__dirname + "/../migrations/*{.ts,.js}"],
