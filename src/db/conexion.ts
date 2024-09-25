@@ -2,9 +2,9 @@ import { DataSource } from "typeorm";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
-  host: process.env.DB_HOST || "localhost",
+  host: process.env.DB_HOST || "44.222.149.53",
   username: process.env.DB_USER || "nordvitalDb",
-password: process.env.DB_PASS || "nordvital-ips-db",
+  password: process.env.DB_PASS || "nordvital-api-db",
   database: process.env.DB_NAME || "nordvitalips",
   charset: "utf8mb4",
   synchronize: false,
