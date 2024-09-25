@@ -14,5 +14,6 @@ exports.AppDataSource = new typeorm_1.DataSource({
     entities: [__dirname + "/../entities/*{.ts, .js}"],
     logging: true,
     // migrationsRun: true,
-    migrations: [__dirname + "/../migrations/*{.ts, .js}"],
+    migrations: [__dirname + "/../migrations/*{.ts,.js}"],
+    connectTimeout: 20000, // 20 segundos de tiempo de espera
 });

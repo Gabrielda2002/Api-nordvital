@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import path from 'path';
 
 // * cargar variables de entorno
-dotenv.config();
+// dotenv.config();
 
 
 
