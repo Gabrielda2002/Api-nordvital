@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const soportes_controladores_1 = require("../controllers/soportes_controladores");
+const validar_id_1 = require("../middlewares/validar-id");
+const multer_config_1 = require("../middlewares/multer-config");
+const authorize_roles_1 = require("../middlewares/authorize-roles");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.get("/soportes", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3', '5']), soportes_controladores_1.getAllSorportes);
+router.get("/soportes/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3', '5']), validar_id_1.validarId, soportes_controladores_1.getSoporteById);
+router.post("/soportes", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3', '5']), multer_config_1.upload.single('file'), soportes_controladores_1.createSoporte);
+router.put("/soportes/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), multer_config_1.upload.single('file'), validar_id_1.validarId, soportes_controladores_1.updateSoporte);
+router.delete("/soportes/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, soportes_controladores_1.deleteSoporte);
+exports.default = router;

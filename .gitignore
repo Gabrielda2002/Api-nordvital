@@ -4,5 +4,4 @@
 
 src/uploads/*
 *.log
-dist/
 .idea/

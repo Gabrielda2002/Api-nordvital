@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middlewares/auth");
+const authorize_roles_1 = require("../middlewares/authorize-roles");
+const report_excel_controller_1 = require("../controllers/report-excel_controller");
+const router = (0, express_1.Router)();
+router.get('/report-excel', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), report_excel_controller_1.downloadReportExcel);
+router.post('/report-excel-filtro', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), report_excel_controller_1.downloadReportExcelFilter);
+exports.default = router;

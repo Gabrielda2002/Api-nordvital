@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const unidad_funcional_controller_1 = require("../controllers/unidad-funcional_controller");
+const validar_id_1 = require("../middlewares/validar-id");
+const authorize_roles_1 = require("../middlewares/authorize-roles");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.get('/unidad-funcional', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), unidad_funcional_controller_1.getAllUnidadFuncional);
+router.get('/unidad-funcional/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, unidad_funcional_controller_1.getUnidadFuncionalById);
+router.post('/unidad-funcional', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), unidad_funcional_controller_1.createUnidadFuncional);
+router.put('/unidad-funcional/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, unidad_funcional_controller_1.updateUnidadFuncional);
+router.delete('/unidad-funcional/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, unidad_funcional_controller_1.deleteUnidadFuncional);
+exports.default = router;

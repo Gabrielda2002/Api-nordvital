@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const permisos_rol_controller_1 = require("../controllers/permisos-rol_controller");
+const validar_id_1 = require("../middlewares/validar-id");
+const authorize_roles_1 = require("../middlewares/authorize-roles");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.get("/permisos-rol", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), permisos_rol_controller_1.getAllPermisosRol);
+router.get("/permisos-rol/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, permisos_rol_controller_1.getPermisosRolById);
+router.post("/permisos-rol", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), permisos_rol_controller_1.createPermisosRol);
+router.put("/permisos-rol/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, permisos_rol_controller_1.updatePermisosRol);
+router.delete("/permisos-rol/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, permisos_rol_controller_1.deletePermisosRol);
+exports.default = router;

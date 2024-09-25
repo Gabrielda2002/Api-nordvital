@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middlewares/auth");
+const authorize_roles_1 = require("../middlewares/authorize-roles");
+const multer_config_ssgc_1 = require("../middlewares/multer-config-ssgc");
+const archivo_controller_1 = require("../controllers/archivo_controller");
+const validar_id_1 = require("../middlewares/validar-id");
+const parse_parent_folder_id_1 = require("../middlewares/parse-parent-folder-id");
+const router = (0, express_1.Router)();
+router.get("/archivo", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), archivo_controller_1.getAllFiles);
+router.get("/archivo/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), validar_id_1.validarId, archivo_controller_1.getFileById);
+router.post("/archivo", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), multer_config_ssgc_1.uploadSggc, parse_parent_folder_id_1.parseParentFolderId, archivo_controller_1.createFile);
+router.put("/archivo/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), validar_id_1.validarId, archivo_controller_1.updateFile);
+router.delete("/archivo/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), validar_id_1.validarId, archivo_controller_1.deleteFile);
+router.get("/download-file/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '4']), validar_id_1.validarId, archivo_controller_1.downloadFile);
+exports.default = router;
