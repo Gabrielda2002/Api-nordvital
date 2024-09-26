@@ -218,3 +218,46 @@ export async function autorizarCups(
     next(error);
   }
 }
+
+export async function updateAuditados(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    const { observation, status } = req.body;
+    
+
+    
+    const cupExist = await CupsRadicados.createQueryBuilder("cupsRadicados")
+    .where("cupsRadicados.id = :id", { id: id })
+    .getOne();
+
+    if (!cupExist) {
+      return res.status(404).json({ message: "Cups Radicados not found" });
+    }
+
+    cupExist.status = parseInt(status, 10);
+    cupExist.observation = observation;
+
+    const errors = await validate(cupExist);
+    if (errors.length > 0) {
+      const errorMensage = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      return res
+        .status(400)
+        .json({ message: "Error updating cups", errorMensage });
+    }
+
+    await cupExist.save();
+
+    return res.json({ message: "Cups actualizado exitosamente!" });
+  } catch (error) {
+    next(error);
+  }
+}

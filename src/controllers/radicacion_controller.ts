@@ -119,8 +119,6 @@ export async function createRadicado(
       idDiagnostico
     } = req.body;
 
-    console.log(req.body);
-
     const radicacado = new Radicacion();
 
     radicacado.orderDate = orderDate;
@@ -352,15 +350,23 @@ export async function auditorRadicados(req: Request, res:Response, next: NextFun
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .orderBy("radicacion.id", "DESC")
+      .where("cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id")
       .getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
-      codeCup: r.cupsRadicadosRelation?.map((c) => c.code) || "N/A",
-      descriptionCup: r.cupsRadicadosRelation?.map((c) => c.DescriptionCode) || "N/A",
+      CUPS: r.cupsRadicadosRelation?.map((c) => ({
+        id: c.id,
+        code: c.code,
+        description: c.DescriptionCode,
+        status: c.statusRelation.name,
+        observation: c.observation,
+        modifyDate: c.updatedAt,
+      }))
     }));
 
     return res.json(formatedRadicaciones);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { autorizarCups, createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateCupsRadicados } from "../controllers/cups-radicados_controller";
+import { autorizarCups, createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateAuditados, updateCupsRadicados } from "../controllers/cups-radicados_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -17,5 +17,7 @@ router.put("/cups-radicados/:id",authenticate, authorizeRoles(['1', '2', '3' , '
 router.delete("/cups-radicados/:id",authenticate, authorizeRoles(['1']), validarId,deleteCupsRadicados);
 
 router.put("/autorizar-cups/:id", authenticate, authorizeRoles(['1', '2', '3']), validarId,   autorizarCups);
+
+router.put("/actualizar-cups/:id", authenticate, authorizeRoles(['1', '2', '3']), validarId,   updateAuditados);
 
 export default router;
