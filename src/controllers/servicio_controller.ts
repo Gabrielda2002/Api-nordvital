@@ -146,3 +146,39 @@ export async function getServiciosByName(req: Request, res: Response, next: Next
         next(error);
     }
 }
+
+// actualizar el estado de servicio
+
+export async function updateStatusServicio(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const servicio = await Servicios.findOneBy({id: parseInt(id)});
+
+        if (!servicio) {
+            return res.status(404).json({ message: "Servicio no encontrado" });
+            
+        }
+
+        servicio.status = status === '1';
+
+        const errors = await validate(servicio);
+
+        if (errors.length > 0) {
+            const message = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({ "messages": "ocurrio un error" , message });
+        }
+
+        await servicio.save();
+
+        return res.json(servicio);
+
+    } catch (error) {
+        next(error);
+    }
+}
