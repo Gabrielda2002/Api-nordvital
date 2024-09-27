@@ -167,3 +167,37 @@ export async function getEspecialidadesByName(req: Request, res: Response, next:
         next(error);
     }
 }
+
+// actualizar el estado de especialidad
+export async function updateStatusEspecialidad(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
+
+        if (!especialidad) {
+            return res.status(404).json({ message: "Especialidad not found" });
+        }
+
+        especialidad.status = status === '1';
+
+        const errors = await validate(especialidad);
+        if (errors.length > 0) {
+            const errorsMessage = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }));
+
+            return res.status(400).json({ message: "Error updating especialidad", errors: errorsMessage });
+            
+        }
+        await especialidad.save();
+
+        return res.json(especialidad);
+
+    } catch (error) {
+        next(error);
+    }
+}

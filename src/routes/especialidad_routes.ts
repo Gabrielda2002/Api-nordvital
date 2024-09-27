@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, getEspecialidadesByName, updateEspecialidad } from "../controllers/especialidad_controller";
+import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, getEspecialidadesByName, updateEspecialidad, updateStatusEspecialidad } from "../controllers/especialidad_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -17,5 +17,7 @@ router.put("/especialidades/:id",authenticate, authorizeRoles(['1', '2']), valid
 router.delete("/especialidades/:id",authenticate, authorizeRoles(['1']), validarId, deleteEspecialidad);
 
 router.post("/especialidades-name",authenticate, authorizeRoles(['1', '2']), getEspecialidadesByName);
+
+router.put("/update-status-especialidad/:id",authenticate, authorizeRoles(['1', '2']), validarId, updateStatusEspecialidad);  
 
 export default router;
