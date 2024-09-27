@@ -149,3 +149,39 @@ export async function getIpsRemiteByName(req: Request, res: Response, next: Next
         next(error);
     }
 }
+
+// actualizar el estado de la ips remite
+export async function updateStatusIpsRemite(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
+
+        if (!ipsRemite) {
+            return res.status(404).json({ message: "Ips Remite not found" });
+        }
+
+        ipsRemite.status = status == '1';
+
+        const errors = await validate(ipsRemite);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }));
+
+            return res.status(400).json({ message: "Error updating ips Remite", messages });
+
+        }
+
+        await ipsRemite.save();
+
+        return res.json(ipsRemite);
+
+    } catch (error) {
+        next(error);
+    }
+}
