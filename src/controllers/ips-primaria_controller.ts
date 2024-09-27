@@ -147,3 +147,38 @@ export async function getIpsPrimariaByName(req: Request, res: Response, next: Ne
         next(error);
     }
 }
+
+// actualizar el estado de la ips primaria
+export async function updateStatusIpsPrimaria(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
+
+        if (!ipsPrimaria) {
+            return res.status(404).json({ message: "Ips Primaria not found" });
+        }
+
+        ipsPrimaria.status = status == "1";
+
+        const errors = await validate(ipsPrimaria);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: 'Error actualizando estado radicador', messages });
+        }
+
+        await ipsPrimaria.save();
+
+        return res.json(ipsPrimaria);
+
+    } catch (error) {
+        next(error);
+    }
+}
