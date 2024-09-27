@@ -138,3 +138,40 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
         next(error);
     }
 }
+
+// actualizar el estadod de lugar radicacion
+
+export async function updateStatusLugarRadicacion(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
+
+        if (!lugarRadicacion) {
+            return res.status(404).json({ message: "LugarRadicacion not found" });
+        }
+
+        lugarRadicacion.status = status == '1';
+
+        const errors = await validate(lugarRadicacion);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: "Error updating lugar radicador", messages });
+
+        }
+
+        await lugarRadicacion.save();
+
+        return res.json(lugarRadicacion);
+
+    } catch (error) {
+        next(error);
+    }
+}

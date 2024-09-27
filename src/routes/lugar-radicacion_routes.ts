@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion } from "../controllers/lugar-radicacion_controller";
+import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -17,5 +17,7 @@ router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),va
 router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId ,deleteLugarRadicacion);
 
 router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1', '2']), getLugaresRadicacionByName);
+
+router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),validarId , updateStatusLugarRadicacion);
 
 export default router;
