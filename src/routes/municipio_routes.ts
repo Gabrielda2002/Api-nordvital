@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio } from "../controllers/municipio_controller";
+import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio, updateStatusMunicipio } from "../controllers/municipio_controller";
 import { validarId } from "../middlewares/validar-id";
 import { Municipio } from "../entities/municipio";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -16,5 +16,7 @@ router.post('/municipios',authenticate, authorizeRoles(['1', '2']), createMunici
 router.put('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateMunicipio);
 
 router.delete('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, deleteMunicipio);
+
+router.put("/update-status-municipio/:id",authenticate, authorizeRoles(['1']), validarId, updateStatusMunicipio);
 
 export default router;

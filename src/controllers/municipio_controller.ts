@@ -127,3 +127,37 @@ export async function deleteMunicipio(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+
+export async function updateStatusMunicipio(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const municipio = await Municipio.findOneBy({ id: parseInt(id) });
+
+        if (!municipio) {
+            return res.status(404).json({ message: "Municipio not found" });
+        }
+
+        municipio.status = status == "1";
+
+        const errors = await validate(municipio);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: "Error updating status municipio", messages });
+        }
+
+        await municipio.save();
+
+        return res.json(municipio);
+
+    } catch (error) {
+        next(error);
+    }
+}
