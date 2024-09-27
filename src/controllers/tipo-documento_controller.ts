@@ -115,3 +115,41 @@ export async function deleteDocumentType(req: Request, res: Response, next: Next
         next(error);
     }
 }
+
+// actualizar el estado de un tipo de documento
+
+export async function updateStatusDocumentType(req: Request, res: Response, next: NextFunction){
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        
+        console.log(status)
+        console.log(Boolean(status));
+
+        const tipoDocumento = await TipoDocumento.findOneBy({ id: parseInt(id) });
+
+        if (!tipoDocumento) {
+            return res.status(404).json({ message: 'Document type not fond' });
+        }
+
+        tipoDocumento.status = status == "1";
+
+        const errors = await validate(tipoDocumento);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: 'Error actualizando estado tipo documento', messages });
+        }
+
+        await tipoDocumento.save();
+
+        return res.json(tipoDocumento);
+
+    } catch (error) {
+        next(error);
+    }
+}
