@@ -121,3 +121,40 @@ export async function deleteRadicador(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+// controlador actualizar estado radicador
+export async function updateStatusRadicador(req: Request, res: Response, next: NextFunction){
+    try {
+
+        const { id } = req.params;
+        const { status } = req.body;
+        
+        console.log(status)
+        console.log(Boolean(status));
+
+        const radicador = await Radicador.findOneBy({ id: parseInt(id) });
+
+        if (!radicador) {
+            return res.status(404).json({ message: 'Radicador not fond' });
+        }
+
+        radicador.status = status == "1";
+
+        const errors = await validate(radicador);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: 'Error actualizando estado radicador', messages });
+        }
+
+        await radicador.save();
+
+        return res.json(radicador);
+
+    } catch (error) {
+        next(error);
+    }
+}
