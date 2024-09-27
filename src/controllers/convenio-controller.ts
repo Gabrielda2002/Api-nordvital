@@ -147,3 +147,40 @@ export async function deleteConvenio(req: Request, res: Response, next: NextFunc
         next(error);
     }
 }
+
+
+// actualizar el estado de los convenios
+
+export async function updateStatusConvenio(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
+
+        if (!convenio) {
+            return res.status(404).json({ message: "Convenio not found" });
+        }
+
+        convenio.status = status == "1";
+
+        const errors = await validate(convenio);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ message: "Error updating status convenio", messages });
+        }
+
+        await convenio.save();
+
+        return res.json(convenio);
+
+    } catch (error) {
+        next(error);
+    }
+}
