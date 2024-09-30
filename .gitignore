@@ -1,7 +1,9 @@
-./dist
+
 /node_modules/
 
 .env
 src/uploads/*
 *.log
 .idea/
+.vscode/
+dist/
