@@ -6,4 +6,3 @@ src/uploads/*
 *.log
 .idea/
 .vscode/
-dist/
