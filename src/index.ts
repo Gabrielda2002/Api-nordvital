@@ -3,7 +3,6 @@ import app from "./app";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
 
-dotenv.config();
 
     const start = async () => {
 
@@ -12,7 +11,7 @@ dotenv.config();
             await AppDataSource.initialize();
             console.log('Conexión a la base de datos establecida');
         
-            const PUERTO = 3600;
+            const PUERTO = process.env.DB_PORT;
             app.listen(PUERTO, () => {
                 console.log(`Servidor corriendo en el puerto http://localhost:${PUERTO}`);
             });
