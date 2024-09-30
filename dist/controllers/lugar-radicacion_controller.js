@@ -15,6 +15,7 @@ exports.createLugarRadicacion = createLugarRadicacion;
 exports.updateLugarRadicacion = updateLugarRadicacion;
 exports.deleteLugarRadicacion = deleteLugarRadicacion;
 exports.getLugaresRadicacionByName = getLugaresRadicacionByName;
+exports.updateStatusLugarRadicacion = updateStatusLugarRadicacion;
 const lugar_radicacion_1 = require("../entities/lugar-radicacion");
 const class_validator_1 = require("class-validator");
 function getAllLugaresRadicacion(req, res, next) {
@@ -127,6 +128,33 @@ function getLugaresRadicacionByName(req, res, next) {
                 return res.status(404).json({ message: "LugarRadicacion not found" });
             }
             return res.json(lugaresRadicacion);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estadod de lugar radicacion
+function updateStatusLugarRadicacion(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const lugarRadicacion = yield lugar_radicacion_1.LugarRadicacion.findOneBy({ id: parseInt(id) });
+            if (!lugarRadicacion) {
+                return res.status(404).json({ message: "LugarRadicacion not found" });
+            }
+            lugarRadicacion.status = status == '1';
+            const errors = yield (0, class_validator_1.validate)(lugarRadicacion);
+            if (errors.length > 0) {
+                const messages = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error updating lugar radicador", messages });
+            }
+            yield lugarRadicacion.save();
+            return res.json(lugarRadicacion);
         }
         catch (error) {
             next(error);

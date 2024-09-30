@@ -4,13 +4,13 @@ exports.AppDataSource = void 0;
 const typeorm_1 = require("typeorm");
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "mysql",
-    host: process.env.DB_HOST || "44.222.149.53",
-    username: process.env.DB_USER || "nordvitalDb",
-    password: process.env.DB_PASS || "nordvital-api-db",
-    database: process.env.DB_NAME || "nordvitalips",
+    host: process.env.DB_HOST || "localhost",
+    username: process.env.DB_USERNAME || "root",
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || "nordvitalips-api-test",
     charset: "utf8mb4",
     synchronize: false,
-    port: parseInt(process.env.DB_PORT || "3306"),
+    port: parseInt("3306"),
     entities: [__dirname + "/../entities/*{.ts,.js}"],
     logging: true,
     // migrationsRun: true,

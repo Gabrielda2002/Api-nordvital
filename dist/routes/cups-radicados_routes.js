@@ -12,4 +12,5 @@ router.post("/cups-radicados", auth_1.authenticate, (0, authorize_roles_1.author
 router.put("/cups-radicados/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3', '5']), validar_id_1.validarId, cups_radicados_controller_1.updateCupsRadicados);
 router.delete("/cups-radicados/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, cups_radicados_controller_1.deleteCupsRadicados);
 router.put("/autorizar-cups/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), validar_id_1.validarId, cups_radicados_controller_1.autorizarCups);
+router.put("/actualizar-cups/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2', '3']), validar_id_1.validarId, cups_radicados_controller_1.updateAuditados);
 exports.default = router;

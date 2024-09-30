@@ -15,6 +15,7 @@ exports.createIpsRemite = createIpsRemite;
 exports.updateIpsRemite = updateIpsRemite;
 exports.deleteIpsRemite = deleteIpsRemite;
 exports.getIpsRemiteByName = getIpsRemiteByName;
+exports.updateStatusIpsRemite = updateStatusIpsRemite;
 const ips_remite_1 = require("../entities/ips-remite");
 const class_validator_1 = require("class-validator");
 function getAllIpsRemite(req, res, next) {
@@ -126,6 +127,33 @@ function getIpsRemiteByName(req, res, next) {
             if (ipsRemite.length === 0) {
                 return res.status(404).json({ message: "Ips Remite not found" });
             }
+            return res.json(ipsRemite);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estado de la ips remite
+function updateStatusIpsRemite(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const ipsRemite = yield ips_remite_1.IpsRemite.findOneBy({ id: parseInt(id) });
+            if (!ipsRemite) {
+                return res.status(404).json({ message: "Ips Remite not found" });
+            }
+            ipsRemite.status = status == '1';
+            const errors = yield (0, class_validator_1.validate)(ipsRemite);
+            if (errors.length > 0) {
+                const messages = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error updating ips Remite", messages });
+            }
+            yield ipsRemite.save();
             return res.json(ipsRemite);
         }
         catch (error) {

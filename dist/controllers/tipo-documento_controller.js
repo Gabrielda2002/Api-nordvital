@@ -14,6 +14,7 @@ exports.getDocumentTypeById = getDocumentTypeById;
 exports.createDocumentType = createDocumentType;
 exports.updateDocumentType = updateDocumentType;
 exports.deleteDocumentType = deleteDocumentType;
+exports.updateStatusDocumentType = updateStatusDocumentType;
 const tipo_documento_1 = require("../entities/tipo-documento");
 const class_validator_1 = require("class-validator");
 function getAllDocumentType(req, res, next) {
@@ -106,6 +107,35 @@ function deleteDocumentType(req, res, next) {
             }
             yield documentType.remove();
             return res.json({ message: "Tipo de documento eliminado" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estado de un tipo de documento
+function updateStatusDocumentType(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            console.log(status);
+            console.log(Boolean(status));
+            const tipoDocumento = yield tipo_documento_1.TipoDocumento.findOneBy({ id: parseInt(id) });
+            if (!tipoDocumento) {
+                return res.status(404).json({ message: 'Document type not fond' });
+            }
+            tipoDocumento.status = status == "1";
+            const errors = yield (0, class_validator_1.validate)(tipoDocumento);
+            if (errors.length > 0) {
+                const messages = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: 'Error actualizando estado tipo documento', messages });
+            }
+            yield tipoDocumento.save();
+            return res.json(tipoDocumento);
         }
         catch (error) {
             next(error);

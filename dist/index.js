@@ -14,14 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const app_1 = __importDefault(require("./app"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const conexion_1 = require("./db/conexion");
-dotenv_1.default.config();
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield conexion_1.AppDataSource.initialize();
         console.log('Conexión a la base de datos establecida');
-        const PUERTO = 3600;
+        const PUERTO = process.env.DB_PORT;
         app_1.default.listen(PUERTO, () => {
             console.log(`Servidor corriendo en el puerto http://localhost:${PUERTO}`);
         });

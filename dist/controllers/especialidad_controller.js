@@ -15,6 +15,7 @@ exports.createEspecialidad = createEspecialidad;
 exports.updateEspecialidad = updateEspecialidad;
 exports.deleteEspecialidad = deleteEspecialidad;
 exports.getEspecialidadesByName = getEspecialidadesByName;
+exports.updateStatusEspecialidad = updateStatusEspecialidad;
 const especialidad_1 = require("../entities/especialidad");
 const class_validator_1 = require("class-validator");
 function getAllEspecialidades(req, res, next) {
@@ -139,6 +140,33 @@ function getEspecialidadesByName(req, res, next) {
                 return res.status(404).json({ message: "Especialidad not found" });
             }
             return res.json(especialidades);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estado de especialidad
+function updateStatusEspecialidad(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const especialidad = yield especialidad_1.Especialidad.findOneBy({ id: parseInt(id) });
+            if (!especialidad) {
+                return res.status(404).json({ message: "Especialidad not found" });
+            }
+            especialidad.status = status === '1';
+            const errors = yield (0, class_validator_1.validate)(especialidad);
+            if (errors.length > 0) {
+                const errorsMessage = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error updating especialidad", errors: errorsMessage });
+            }
+            yield especialidad.save();
+            return res.json(especialidad);
         }
         catch (error) {
             next(error);

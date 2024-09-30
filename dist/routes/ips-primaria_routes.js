@@ -12,4 +12,5 @@ router.post('/ips-primaria', auth_1.authenticate, (0, authorize_roles_1.authoriz
 router.put('/ips-primaria/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, ips_primaria_controller_1.updateIpsPrimaria);
 router.delete('/ips-primaria/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, ips_primaria_controller_1.deleteIpsPrimaria);
 router.post('/ips-primaria-name', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), ips_primaria_controller_1.getIpsPrimariaByName);
+router.put('/update-status-ips-primaria/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, ips_primaria_controller_1.updateStatusIpsPrimaria);
 exports.default = router;

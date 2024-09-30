@@ -15,6 +15,7 @@ exports.createServicio = createServicio;
 exports.updateServicio = updateServicio;
 exports.deleteServicio = deleteServicio;
 exports.getServiciosByName = getServiciosByName;
+exports.updateStatusServicio = updateStatusServicio;
 const servicios_1 = require("../entities/servicios");
 const class_validator_1 = require("class-validator");
 function getAllServicios(req, res, next) {
@@ -125,6 +126,33 @@ function getServiciosByName(req, res, next) {
                 .where("servicios.name LIKE :name", { name: `%${name}%` })
                 .getMany();
             return res.json(servicios);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estado de servicio
+function updateStatusServicio(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const servicio = yield servicios_1.Servicios.findOneBy({ id: parseInt(id) });
+            if (!servicio) {
+                return res.status(404).json({ message: "Servicio no encontrado" });
+            }
+            servicio.status = status === '1';
+            const errors = yield (0, class_validator_1.validate)(servicio);
+            if (errors.length > 0) {
+                const message = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ "messages": "ocurrio un error", message });
+            }
+            yield servicio.save();
+            return res.json(servicio);
         }
         catch (error) {
             next(error);

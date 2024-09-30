@@ -12,4 +12,5 @@ router.post("/ips-remite", auth_1.authenticate, (0, authorize_roles_1.authorizeR
 router.put("/ips-remite/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, ips_remite_controller_1.updateIpsRemite);
 router.delete("/ips-remite/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, ips_remite_controller_1.deleteIpsRemite);
 router.post("/ips-remite-name", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), ips_remite_controller_1.getIpsRemiteByName);
+router.put("/update-status-ips-remite/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, ips_remite_controller_1.updateStatusIpsRemite);
 exports.default = router;

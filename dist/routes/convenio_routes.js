@@ -11,4 +11,5 @@ router.get('/convenio/:id', auth_1.authenticate, (0, authorize_roles_1.authorize
 router.post('/convenio', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), convenio_controller_1.createConvenio);
 router.put('/convenio/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, convenio_controller_1.updateConvenio);
 router.delete('/convenio/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, convenio_controller_1.deleteConvenio);
+router.put("/update-status-convenio/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, convenio_controller_1.updateStatusConvenio);
 exports.default = router;

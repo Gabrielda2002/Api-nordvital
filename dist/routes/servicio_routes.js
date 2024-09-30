@@ -12,4 +12,5 @@ router.post("/servicios", auth_1.authenticate, (0, authorize_roles_1.authorizeRo
 router.put("/servicios/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, servicio_controller_1.updateServicio);
 router.delete("/servicios/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, servicio_controller_1.deleteServicio);
 router.post("/servicios-name", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), servicio_controller_1.getServiciosByName);
+router.put("/update-status-servicio/:id", validar_id_1.validarId, auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), servicio_controller_1.updateStatusServicio);
 exports.default = router;

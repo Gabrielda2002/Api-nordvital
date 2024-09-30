@@ -11,4 +11,5 @@ router.get("/radicador/:id", auth_1.authenticate, (0, authorize_roles_1.authoriz
 router.post("/radicador", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), radicador_controller_1.createRadicador);
 router.put("/radicador/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, radicador_controller_1.updateRadicador);
 router.delete("/radicador/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, radicador_controller_1.deleteRadicador);
+router.put("/update-status-radicador/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, radicador_controller_1.updateStatusRadicador);
 exports.default = router;

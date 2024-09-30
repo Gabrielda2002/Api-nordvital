@@ -15,6 +15,7 @@ exports.createIpsPrimaria = createIpsPrimaria;
 exports.updateIpsPrimaria = updateIpsPrimaria;
 exports.deleteIpsPrimaria = deleteIpsPrimaria;
 exports.getIpsPrimariaByName = getIpsPrimariaByName;
+exports.updateStatusIpsPrimaria = updateStatusIpsPrimaria;
 const ips_primaria_1 = require("../entities/ips-primaria");
 const class_validator_1 = require("class-validator");
 function getAllIpsPrimaria(req, res, next) {
@@ -126,6 +127,33 @@ function getIpsPrimariaByName(req, res, next) {
             if (!ipsPrimaria) {
                 return res.status(404).json({ message: "Ips Primaria not found" });
             }
+            return res.json(ipsPrimaria);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// actualizar el estado de la ips primaria
+function updateStatusIpsPrimaria(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const ipsPrimaria = yield ips_primaria_1.IpsPrimaria.findOneBy({ id: parseInt(id) });
+            if (!ipsPrimaria) {
+                return res.status(404).json({ message: "Ips Primaria not found" });
+            }
+            ipsPrimaria.status = status == "1";
+            const errors = yield (0, class_validator_1.validate)(ipsPrimaria);
+            if (errors.length > 0) {
+                const messages = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: 'Error actualizando estado radicador', messages });
+            }
+            yield ipsPrimaria.save();
             return res.json(ipsPrimaria);
         }
         catch (error) {

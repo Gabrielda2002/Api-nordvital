@@ -14,6 +14,7 @@ exports.getMunicipioById = getMunicipioById;
 exports.createMunicipio = createMunicipio;
 exports.updateMunicipio = updateMunicipio;
 exports.deleteMunicipio = deleteMunicipio;
+exports.updateStatusMunicipio = updateStatusMunicipio;
 const municipio_1 = require("../entities/municipio");
 const class_validator_1 = require("class-validator");
 function getAllMunicipios(req, res, next) {
@@ -111,6 +112,32 @@ function deleteMunicipio(req, res, next) {
             }
             yield municipio.remove();
             return res.json({ message: "Municipio deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function updateStatusMunicipio(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const municipio = yield municipio_1.Municipio.findOneBy({ id: parseInt(id) });
+            if (!municipio) {
+                return res.status(404).json({ message: "Municipio not found" });
+            }
+            municipio.status = status == "1";
+            const errors = yield (0, class_validator_1.validate)(municipio);
+            if (errors.length > 0) {
+                const messages = errors.map(err => ({
+                    property: err.property,
+                    constraints: err.constraints
+                }));
+                return res.status(400).json({ message: "Error updating status municipio", messages });
+            }
+            yield municipio.save();
+            return res.json(municipio);
         }
         catch (error) {
             next(error);

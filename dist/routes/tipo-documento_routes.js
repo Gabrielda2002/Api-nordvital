@@ -11,4 +11,5 @@ router.get('/documento/:id', auth_1.authenticate, (0, authorize_roles_1.authoriz
 router.post('/documento', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), tipo_documento_controller_1.createDocumentType);
 router.put('/documento/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1', '2']), validar_id_1.validarId, tipo_documento_controller_1.updateDocumentType);
 router.delete('/documento/:id', auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, tipo_documento_controller_1.deleteDocumentType);
+router.put("/update-status-documento/:id", auth_1.authenticate, (0, authorize_roles_1.authorizeRoles)(['1']), validar_id_1.validarId, tipo_documento_controller_1.updateStatusDocumentType);
 exports.default = router;

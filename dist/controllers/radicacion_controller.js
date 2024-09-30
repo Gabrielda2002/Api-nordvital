@@ -111,7 +111,6 @@ function createRadicado(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { orderDate, place, ipsRemitente, profetional, specialty, groupServices, radicador, typeServices, idPatient, idSoporte, idDiagnostico } = req.body;
-            console.log(req.body);
             const radicacado = new radicacion_1.Radicacion();
             radicacado.orderDate = orderDate;
             radicacado.place = parseInt(place);
@@ -296,16 +295,24 @@ function auditorRadicados(req, res, next) {
                 .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
                 .leftJoinAndSelect("pacientes.documentRelation", "document")
                 .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+                .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
                 .orderBy("radicacion.id", "DESC")
+                .where("cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id")
                 .getMany();
             const formatedRadicaciones = radicaciones.map((r) => {
-                var _a, _b, _c, _d;
+                var _a, _b, _c;
                 return ({
                     id: r.id,
                     document: ((_a = r.patientRelation) === null || _a === void 0 ? void 0 : _a.documentNumber) || "N/A",
                     patientName: ((_b = r.patientRelation) === null || _b === void 0 ? void 0 : _b.name) || "N/A",
-                    codeCup: ((_c = r.cupsRadicadosRelation) === null || _c === void 0 ? void 0 : _c.map((c) => c.code)) || "N/A",
-                    descriptionCup: ((_d = r.cupsRadicadosRelation) === null || _d === void 0 ? void 0 : _d.map((c) => c.DescriptionCode)) || "N/A",
+                    CUPS: (_c = r.cupsRadicadosRelation) === null || _c === void 0 ? void 0 : _c.map((c) => ({
+                        id: c.id,
+                        code: c.code,
+                        description: c.DescriptionCode,
+                        status: c.statusRelation.name,
+                        observation: c.observation,
+                        modifyDate: c.updatedAt,
+                    }))
                 });
             });
             return res.json(formatedRadicaciones);
