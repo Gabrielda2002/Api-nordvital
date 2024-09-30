@@ -7,7 +7,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     host: process.env.DB_HOST || "localhost",
     username: process.env.DB_USERNAME || "root",
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || "nordvitalips-api-test",
+    database: process.env.DB_DATABASE || "nordvitalips-api-test",
     charset: "utf8mb4",
     synchronize: false,
     port: parseInt("3306"),
