@@ -20,10 +20,24 @@ app.get('/ping', (req, res) => {
     res.send('API funcionando correctamente');
 });
 app.set('trust proxy', 1);
-app.use((0, cors_1.default)());
+const allowedOrigins = ['http://localhost:3000', 'https://test.nordvitalips.com'];
+app.use((0, cors_1.default)({
+    origin: function (origin, callback) {
+        // * permitir la solicitud si esta ene el array
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}));
 app.use(rate_limit_1.limiter);
 app.use((0, morgan_1.default)('dev'));
-app.use(express_1.default.json());
+app.use(express_1.default.json({ limit: '50mb' }));
+app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
 // * Middleware para proteger la aplicación
 app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: false, // Deshabilitar la política para recursos estáticos
