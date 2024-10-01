@@ -48,7 +48,7 @@ export async function createSeguimientoAuxiliar(req: Request, res: Response, nex
 
         seguimientoAuxiliar.observation = observation;
         seguimientoAuxiliar.status = parseInt(status);
-        seguimientoAuxiliar.codeCups = codeCups;
+        seguimientoAuxiliar.codeCups = codeCups ? codeCups : 0;
         seguimientoAuxiliar.idRadicacion = parseInt(idRadicacion);
 
         const errors = await validate(seguimientoAuxiliar);

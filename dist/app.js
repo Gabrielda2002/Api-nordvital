@@ -20,7 +20,7 @@ app.get('/ping', (req, res) => {
     res.send('API funcionando correctamente');
 });
 app.set('trust proxy', 1);
-const allowedOrigins = ['http://localhost:3000', 'https://test.nordvitalips.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://test.nordvitalips.com'];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
         // * permitir la solicitud si esta ene el array

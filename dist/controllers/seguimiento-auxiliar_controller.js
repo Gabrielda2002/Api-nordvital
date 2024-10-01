@@ -57,7 +57,7 @@ function createSeguimientoAuxiliar(req, res, next) {
             const seguimientoAuxiliar = new seguimiento_auxiliar_1.SeguimietoAuxiliar();
             seguimientoAuxiliar.observation = observation;
             seguimientoAuxiliar.status = parseInt(status);
-            seguimientoAuxiliar.codeCups = codeCups;
+            seguimientoAuxiliar.codeCups = codeCups ? codeCups : 0;
             seguimientoAuxiliar.idRadicacion = parseInt(idRadicacion);
             const errors = yield (0, class_validator_1.validate)(seguimientoAuxiliar);
             if (errors.length > 0) {

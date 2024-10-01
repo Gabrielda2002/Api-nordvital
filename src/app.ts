@@ -23,7 +23,7 @@ app.get('/ping', (req, res) => {
 
 app.set('trust proxy', 1);
 
-const allowedOrigins = ['http://localhost:3000', 'https://test.nordvitalips.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://test.nordvitalips.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
