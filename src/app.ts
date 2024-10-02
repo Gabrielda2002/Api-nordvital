@@ -8,6 +8,7 @@ import { loggerMiddleware } from './middlewares/logger_middleware';
 import { limiter } from './middlewares/rate-limit';
 import helmet from 'helmet';
 import path from 'path';
+import { errorLoggerMiddleware } from './middlewares/error-logger-middleware';
 
 // * cargar variables de entorno
 dotenv.config();
@@ -63,6 +64,9 @@ app.use(apiPrefix, routes);
 
 // Middleware para manejar errores
 app.use(errorHandler);
+
+// * middleware para manejar los errores en los logs
+app.use(errorLoggerMiddleware)
 
 
 export default app;
