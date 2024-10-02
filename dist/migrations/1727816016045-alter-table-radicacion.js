@@ -20,7 +20,8 @@ class AlterTableRadicacion1727816016045 {
             yield queryRunner.dropColumn("radicacion", "TipoSoporte");
             yield queryRunner.dropColumn("radicacion", "ObservacionAuditoria");
             yield queryRunner.dropColumn("radicacion", "Informacion");
-            // ? se busca la llave foranea de pacientes y si se encuentra se elimina
+            yield queryRunner.dropColumn("radicacion", "contenido");
+            //? se busca la llave foranea de pacientes y si se encuentra se elimina
             const unidadFuncionalExist = yield queryRunner.hasColumn("radicacion", "UnidadFuncional");
             if (unidadFuncionalExist) {
                 const table = yield queryRunner.getTable("radicacion");
@@ -60,7 +61,7 @@ class AlterTableRadicacion1727816016045 {
                 isNullable: true
             }));
             yield queryRunner.addColumn("radicacion", new typeorm_1.TableColumn({
-                name: "unidadFuncional",
+                name: "UnidadFuncional",
                 type: "varchar",
                 isNullable: true
             }));
