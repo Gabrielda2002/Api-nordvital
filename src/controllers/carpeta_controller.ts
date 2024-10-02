@@ -59,7 +59,7 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
             console.log(folderPath);
         }else{
             // * si es una carpeta raiz
-            folderPath = path.join(__dirname, "..", "uploads", folderName);
+            folderPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", folderName);
         }
 
         const folderExists = await fsPromises.access(folderPath).then(() => true).catch(() => false);
@@ -120,14 +120,14 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
 
         let newPath: string;
 
-        if (parentFolderId !== undefined) {
+        if (parentFolderId !== null) {
             const parentFolder = await Carpeta.findOneBy({ id: parentFolderId });
             if (!parentFolder) {
                 return res.status(404).json({ message: "Parent folder not found" });
             }
             newPath = path.join(parentFolder.path, name);
         } else {
-            newPath = path.join(__dirname, "..", "uploads", name);
+            newPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", name);
         }
 
         // Verificar si la nueva ruta ya existe con el nuevo nombre
@@ -141,7 +141,9 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
         // Verificar si la nueva ruta no es un subdirectorio de la ruta antigua
         const resolvedOldPath = path.resolve(folder.path);
         const resolvedNewPath = path.resolve(newPath);
-        if (resolvedNewPath.startsWith(resolvedOldPath)) {
+
+        const relativePath = path.relative(resolvedOldPath, resolvedNewPath);
+        if (!relativePath.startsWith('..') && relativePath !== '') {
             return res.status(400).json({ message: "New path is within the old path" });
         }
 

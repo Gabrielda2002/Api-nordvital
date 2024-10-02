@@ -5,4 +5,5 @@
 src/uploads/*
 *.log
 .idea/
-.vscod
+.vscode
+dist/

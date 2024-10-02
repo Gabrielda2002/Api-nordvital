@@ -4,24 +4,26 @@ import { Carpeta } from "../entities/carpeta";
 
 export const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
+    // * carpeta padre en la que se guardará el archivo
     const {parentFolderId}  = req.query;
-
-
-
 
     let uploadPath: string;
 
+    // ? si existe un valor en parentFolderId, se buscará la carpeta padre
     if (parentFolderId) {
+      // * se busca la carpeta padre
       const parentFolder = await Carpeta.findOneBy({ id: parseInt(parentFolderId as string) });
 
+      // ? si no se encuentra la carpeta padre, se lanza un error
       if (!parentFolder) {
         return cb(new Error("ruta de carpeta padre no encontrada"), "");
       }
 
+      // * se asigna la ruta de la carpeta padre si se encuentra
       uploadPath = parentFolder.path;
     } else {
       // * ruta predeterminada en caso de que el archivo no tenga
-      uploadPath = path.join(__dirname, '../uploads');
+      uploadPath = path.join(__dirname, '../uploads/SistemaGestionCalidad');
     }
 
     cb(null, uploadPath);
