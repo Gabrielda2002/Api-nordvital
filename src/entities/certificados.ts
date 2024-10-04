@@ -24,6 +24,9 @@ export class Certificados extends BaseEntity{
     @Column({name: "size"})
     size: number;
 
+    @Column({name: "nombre_guardado"})
+    nameSaved: string;
+
     @CreateDateColumn({name: "fecha_creacion"})
     createAt: Date;
 }

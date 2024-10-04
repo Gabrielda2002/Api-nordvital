@@ -32,7 +32,8 @@ export async function createCertificate(req: Request, res: Response, next: NextF
                     dni: dni,
                     path: file?.path,
                     type: file?.mimetype,
-                    size: file?.size
+                    size: file?.size,
+                    nameSaved: file ? path.basename(file.filename) : ''
 
         })
 
@@ -90,7 +91,7 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
             return res.status(404).json({message: "Certificado no encontrado en el servidor"});
         }
 
-        res.download(filePath, certificate.name, (err) => {
+        res.download(filePath, certificate.nameSaved, (err) => {
             if (err) {
               console.error("Error al descargar el certificado: ", err);
             }
