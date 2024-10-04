@@ -11,6 +11,7 @@ export class fillPacienteIdInRadicacion1721999188716 implements MigrationInterfa
                 SELECT p.IdUsuarios
                 FROM pacientes p
                 WHERE p.NombreCompleto = r.NombreCompleto
+                LIMIT 1
             )
         `);
     }
