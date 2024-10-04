@@ -173,6 +173,7 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
         }
         console.log(file.path);
 
+        // * Obtener la ruta absoluta del archivo
         const filePath = path.resolve('src', 'uploads', file.path);
         console.log(filePath);
         if (!fs.existsSync(filePath)) {
