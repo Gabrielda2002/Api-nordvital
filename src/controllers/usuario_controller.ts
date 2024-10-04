@@ -56,24 +56,24 @@ export async function createUsuario(
       dniType,
       email,
       password,
-      date,
       municipio,
       rol,
+      date
     } = req.body;
 
     const usuario = new Usuarios();
-    usuario.dniNumber = dniNumber;
+    usuario.dniNumber = parseInt(dniNumber);
     usuario.name = name;
     usuario.lastName = lastName;
-    usuario.dniType = dniType;
+    usuario.dniType = parseInt(dniType);
     usuario.email = email;
 
     const saltRounds = 10;
     usuario.password = await bcrypt.hash(password, saltRounds); 
-    usuario.date = date;
     usuario.status = true;
-    usuario.municipio = municipio;
-    usuario.rol = rol;
+    usuario.municipio = parseInt(municipio);
+    usuario.rol = parseInt(rol);
+    usuario.date = date;
 
     const errors = await validate(usuario);
 

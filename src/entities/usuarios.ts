@@ -16,7 +16,6 @@ export class Usuarios extends BaseEntity {
     @Column({name: "CedulaUsuario"})
     @IsInt()
     @IsNotEmpty({message: "El número de cédula es requerido"})
-    // @Length(1, 10, {message: "El número de cédula debe tener entre 1 y 10 dígitos"})
     dniNumber: number;
 
     @Column({name: "NombreUsuario"})
@@ -34,12 +33,12 @@ export class Usuarios extends BaseEntity {
     @Column({name: "TipoCedula"})
     @IsInt()
     @IsNotEmpty({message: "El tipo de cédula es requerido"})
-    // @Length(0,3, {message: "El tipo de cédula debe tener entre 1 y 3 dígitos"})
     dniType: number;
 
     @Column({name: "EmailUsuario"})
     @IsEmail()
     @IsOptional()
+    @Length(10, 150, {message: "El email del usuario debe tener entre 10 y 150 caracteres"})
     email: string;
 
     @Column({name: "ClaveUsuario"})
@@ -70,7 +69,7 @@ export class Usuarios extends BaseEntity {
     @Column({name: "Tipo_rol"})
     @IsInt()
     @IsNotEmpty({message: "El rol es requerido"})
-    rol: string;
+    rol: number;
 
     @Column({name: "imagen"})
     @IsString()
