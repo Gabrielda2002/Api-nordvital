@@ -42,7 +42,10 @@ export const uploadSggc = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
-      !["application/pdf", "application/docx", "application/msword", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].includes(
+      ![  "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+        "application/msword", // DOC
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].includes(
         file.mimetype
       )
     ) {
