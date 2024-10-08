@@ -155,6 +155,49 @@ export async function updateUsuario(
   }
 }
 
+// * funcion para actualizar los datos basicos del usuario
+export async function updateUsuarioBasicData(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      lastName,
+      email
+    } = req.body;
+
+    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario not found" });
+    }
+
+    usuario.name = name;
+    usuario.lastName = lastName;
+    usuario.email = email;
+
+    const errors = await validate(usuario);
+
+    if (errors.length > 0) {
+        const messageError = errors.map((error) => ({
+            property: error.property,
+            constraints: error.constraints
+        }));
+
+        return res.status(400).json({"message" : "Ocurrio un error: ", messageError});
+    }
+
+    await usuario.save();
+
+    return res.json(usuario);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function deleteUsuario(
   req: Request,
   res: Response,
