@@ -31,13 +31,13 @@ export class Pacientes extends BaseEntity {
 
     @Column({name: "NumeroCelular"})
     @IsNotEmpty({message: "El campo NumeroCelular no puede estar vacio"})
-    @Length(10, 15, {message: "El campo NumeroCelular debe tener 10 caracteres"})
+    @Length(1, 15, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber: string;
 
     @Column({name: "TelefonoFijo"})
     @IsString()
     @IsOptional()
-    @Length(7, 20, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(1, 20, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
     landline?: string;
 
     @Column({name: "Email"})
