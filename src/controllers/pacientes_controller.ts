@@ -8,9 +8,12 @@ export async function getAllPacientes(
   next: NextFunction
 ) {
   try {
-    const pacientes = await Pacientes.find({
-      relations: ["convenioRelation", "ipsPrimariaRelation","documentRelation"],
-    });
+    const pacientes = await Pacientes.createQueryBuilder("pacientes")
+    .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
+    .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
+    .leftJoinAndSelect("pacientes.documentRelation", "documentRelation")
+    .limit(100)
+    .getMany();
     return res.json(pacientes);
   } catch (error) {
     next(error);
