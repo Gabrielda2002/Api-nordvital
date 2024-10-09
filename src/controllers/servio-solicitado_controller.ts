@@ -162,3 +162,43 @@ export async function getServiciosSolicitadosByCode(req: Request, res: Response,
     }
 
 }
+
+export async function updateServicioSolicitadoTable(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { name, status } = req.body;
+  
+      const servicioSolicitado = await ServiciosSolicitados.findOneBy({ id: parseInt(id) });
+  
+      if (!servicioSolicitado) {
+        return res.status(404).json({ message: "Servicio solicitado not found" });
+      }
+  
+      // Actualizar solo si se recibe "name"
+      if (name) {
+        servicioSolicitado.name = name;
+      }
+  
+      // Actualizar solo si se recibe "status"
+      if (status !== undefined && status !== "") {
+        servicioSolicitado.status = status == "1";
+      }
+  
+      const errors = await validate(servicioSolicitado);
+      if (errors.length > 0) {
+        const message = errors.map(err => ({
+          constraint: err.constraints,
+          property: err.property
+        }));
+  
+        return res.status(400).json({ "messages": "Ocurrio un error: ", message });
+      }
+  
+      await servicioSolicitado.save();
+  
+      return res.json({ message: "Servicio solicitado actualizado" });
+    } catch (error) {
+      next(error);
+    }
+  }
+  

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createServicioSolicitado, deleteServicioSolicitado, getAllServiciosSolicitados, getServicioSolicitado, getServiciosSolicitadosByCode, updateServicioSolicitado } from "../controllers/servio-solicitado_controller";
+import { createServicioSolicitado, deleteServicioSolicitado, getAllServiciosSolicitados, getServicioSolicitado, getServiciosSolicitadosByCode, updateServicioSolicitado, updateServicioSolicitadoTable } from "../controllers/servio-solicitado_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -16,6 +16,8 @@ router.put("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5
 
 router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,deleteServicioSolicitado);
 
-router.post("/servicio-solicitado-documento",authenticate, authorizeRoles(['1', '2', '5']), getServiciosSolicitadosByCode);
+router.post("/servicio-solicitado-code",authenticate, authorizeRoles(['1', '2', '5']), getServiciosSolicitadosByCode);
+
+router.put("/servicio-solicitado-update-table/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateServicioSolicitadoTable);
 
 export default router;
