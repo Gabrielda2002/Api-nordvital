@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Radicacion } from "./radicacion";
 import { Cirugias } from "./cirugias";
 
@@ -21,12 +21,13 @@ export class Pacientes extends BaseEntity {
     @Column({name: "Identificacion"})
     @IsInt()
     @IsNotEmpty({message: "El campo Identificacion no puede estar vacio"})
+    @Min(5, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
     documentNumber: number;
 
     @Column({name: "NombreCompleto"})
     @IsString()
     @IsNotEmpty({message: "El campo NombreCompleto no puede estar vacio"})
-    @Length(3, 50, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(3, 100, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string;
 
     @Column({name: "NumeroCelular"})

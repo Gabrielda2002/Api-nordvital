@@ -12,7 +12,6 @@ export async function getAllPacientes(
     .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
     .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
     .leftJoinAndSelect("pacientes.documentRelation", "documentRelation")
-    .limit(100)
     .getMany();
     return res.json(pacientes);
   } catch (error) {
@@ -61,6 +60,8 @@ export async function createPaciente(
       ipsPrimaria
     } = req.body;
 
+    console.log(req.body);
+
     const pacienteExist = await Pacientes.findOneBy({ documentNumber });
 
     if (pacienteExist) {
@@ -68,16 +69,19 @@ export async function createPaciente(
     }
 
     const paciente = new Pacientes();
-    paciente.documentType = documentType;
-    paciente.documentNumber = documentNumber;
-    paciente.name = name;
+    paciente.documentType = parseInt(documentType);
+    paciente.documentNumber = parseInt(documentNumber);
+    paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = convenio;
-    paciente.ipsPrimaria = ipsPrimaria;
+    paciente.convenio = parseInt(convenio);
+    paciente.ipsPrimaria = parseInt(ipsPrimaria);
     paciente.status = true;
+
+    console.log(parseInt(documentNumber));
+
 
     const errors = await validate(paciente);
 
@@ -200,6 +204,64 @@ export async function getPacientesByDocument(
     }
 
     return res.json(paciente); 
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updatePacienteTable(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const {
+      documentType,
+      documentNumber,
+      name,
+      phoneNumber,
+      landline,
+      email,
+      address,
+      convenio,
+      ipsPrimaria
+    } = req.body;
+
+    console.log(req.body);
+
+    const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
+
+    if (!paciente) {
+      return res.status(404).json({ message: "Paciente not found" });
+    }
+
+    paciente.documentType = parseInt(documentType);
+    paciente.documentNumber = parseInt(documentNumber);
+    paciente.name = name.toUpperCase();
+    paciente.phoneNumber = phoneNumber;
+    paciente.landline = landline;
+    paciente.email = email;
+    paciente.address = address;
+    paciente.convenio = parseInt(convenio);
+    paciente.ipsPrimaria = parseInt(ipsPrimaria);
+
+    const errors = await validate(paciente);
+
+    if (errors.length > 0) {
+      const messages = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      return res
+        .status(400)
+        .json({ message: "Error updating paciente", messages });
+    }
+
+    await paciente.save();
+
+    return res.json(paciente);
   } catch (error) {
     next(error);
   }
