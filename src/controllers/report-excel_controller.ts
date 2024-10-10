@@ -19,7 +19,7 @@ export async function downloadReportExcel(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ips_remitente")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "grupo_servicios")
       .leftJoinAndSelect("radicacion.servicesRelation", "servicios")
-      .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect(
@@ -97,7 +97,7 @@ export async function downloadReportExcel(
         Especialidad: data.specialtyRelation?.name || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
-        Radicador: data.radicadorRelation?.name || "N/A",
+        Radicador: data.usuarioRelation?.name || "N/A",
         Auditora: data.auditora || "N/A",
         Fecha_de_auditoria: data.auditDate || "N/A",
       };
@@ -182,7 +182,7 @@ export async function downloadReportExcelFilter(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ips_remitente")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "grupo_servicios")
       .leftJoinAndSelect("radicacion.servicesRelation", "servicios")
-      .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect(
@@ -290,7 +290,7 @@ export async function downloadReportExcelFilter(
         Especialidad: data.specialtyRelation?.name || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
-        Radicador: data.radicadorRelation?.name || "N/A",
+        Radicador: data.usuarioRelation?.name || "N/A",
         Auditora: data.auditora || "N/A",
         Fecha_de_auditoria: data.auditDate || "N/A",
       };

@@ -25,6 +25,4 @@ export class Radicador  extends BaseEntity {
 
     // * relaciones
 
-    @OneToMany(() => Radicacion, (radicacion) => radicacion.radicadorRelation)
-    radicacionRelation: Radicacion[]
 }

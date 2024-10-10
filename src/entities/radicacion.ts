@@ -25,6 +25,7 @@ import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
 import { Cirugias } from "./cirugias";
 import { Diagnostico } from "./diagnostico";
+import { Usuarios } from "./usuarios";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -142,9 +143,9 @@ export class Radicacion extends BaseEntity {
   servicesRelation: Servicios;
 
   // ? relacion con quien radica
-  @ManyToOne(() => Radicador, (radicador) => radicador.radicacionRelation)
+  @ManyToOne(() => Usuarios, (usuario) => usuario.radicacionRelation)
   @JoinColumn({ name: "QuienRadica" })
-  radicadorRelation: Radicador;
+  usuarioRelation: Usuarios;
 
   @ManyToOne(() => Pacientes, (pacientes) => pacientes.radicacionRelation)
   @JoinColumn({ name: "Paciente_id" })

@@ -52,7 +52,7 @@ export async function getRadicacionById(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .getOne();
@@ -71,7 +71,7 @@ export async function getRadicacionById(
       ipsRemite: radicacion.ipsRemiteRelation?.name,
       servicesGroup: radicacion.servicesGroupRelation?.name,
       services: radicacion.servicesRelation?.name,
-      radicador: radicacion.radicadorRelation?.name,
+      radicador: radicacion.usuarioRelation?.name,
       auditDate: radicacion.auditDate,
       createdAt: radicacion.createdAt,
       orderDate: radicacion.orderDate,
@@ -300,7 +300,7 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.radicadorRelation", "radicador")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
@@ -323,7 +323,7 @@ export async function tablaPorAuditar(
       profetional: r.profetional || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
-      radicador: r.radicadorRelation?.name || "N/A",
+      radicador: r.usuarioRelation?.name || "N/A",
       statusCups:  r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
         code: c.code,
