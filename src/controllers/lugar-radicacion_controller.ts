@@ -145,7 +145,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
@@ -153,7 +153,13 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
             return res.status(404).json({ message: "LugarRadicacion not found" });
         }
 
-        lugarRadicacion.status = status == '1';
+        if (name) {
+            lugarRadicacion.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            lugarRadicacion.status = status == "1";
+        }
 
         const errors = await validate(lugarRadicacion);
 

@@ -173,7 +173,7 @@ export async function updateStatusEspecialidad(req: Request, res: Response, next
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
 
@@ -181,7 +181,13 @@ export async function updateStatusEspecialidad(req: Request, res: Response, next
             return res.status(404).json({ message: "Especialidad not found" });
         }
 
-        especialidad.status = status === '1';
+        if (name) {
+            especialidad.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            especialidad.status = status == "1";
+        }
 
         const errors = await validate(especialidad);
         if (errors.length > 0) {

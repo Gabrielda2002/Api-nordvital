@@ -10,7 +10,7 @@ export class Radicador  extends BaseEntity {
     @Column({name: "NombreRadicador"})
     @IsString()
     @IsNotEmpty({message: 'El nombre del radicador es requerido'})
-    @Length(3, 200, {message: 'El nombre del radicador debe tener entre $constraint1 y $constraint2 caracteres'})
+    @Length(2, 200, {message: 'El nombre del radicador debe tener entre $constraint1 y $constraint2 caracteres'})
     name: string
 
     @Column({name: "Estado"})

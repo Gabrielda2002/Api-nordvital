@@ -155,7 +155,7 @@ export async function updateStatusIpsRemite(req: Request, res: Response, next: N
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
 
@@ -163,7 +163,13 @@ export async function updateStatusIpsRemite(req: Request, res: Response, next: N
             return res.status(404).json({ message: "Ips Remite not found" });
         }
 
-        ipsRemite.status = status == '1';
+        if (name) {
+            ipsRemite.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            ipsRemite.status = status == "1";
+        }
 
         const errors = await validate(ipsRemite);
 

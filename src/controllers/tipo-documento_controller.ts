@@ -121,18 +121,21 @@ export async function deleteDocumentType(req: Request, res: Response, next: Next
 export async function updateStatusDocumentType(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
         
-        console.log(status)
-        console.log(Boolean(status));
-
         const tipoDocumento = await TipoDocumento.findOneBy({ id: parseInt(id) });
 
         if (!tipoDocumento) {
             return res.status(404).json({ message: 'Document type not fond' });
         }
 
-        tipoDocumento.status = status == "1";
+        if (name) {
+            tipoDocumento.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            tipoDocumento.status = status == "1";
+        }
 
         const errors = await validate(tipoDocumento);
 

@@ -153,7 +153,7 @@ export async function updateStatusServicio(req: Request, res: Response, next: Ne
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const servicio = await Servicios.findOneBy({id: parseInt(id)});
 
@@ -162,7 +162,13 @@ export async function updateStatusServicio(req: Request, res: Response, next: Ne
             
         }
 
-        servicio.status = status === '1';
+        if (name) {
+            servicio.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            servicio.status = status == "1";
+        }
 
         const errors = await validate(servicio);
 

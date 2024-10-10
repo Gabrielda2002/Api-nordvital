@@ -126,10 +126,8 @@ export async function updateStatusRadicador(req: Request, res: Response, next: N
     try {
 
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
         
-        console.log(status)
-        console.log(Boolean(status));
 
         const radicador = await Radicador.findOneBy({ id: parseInt(id) });
 
@@ -137,7 +135,13 @@ export async function updateStatusRadicador(req: Request, res: Response, next: N
             return res.status(404).json({ message: 'Radicador not fond' });
         }
 
-        radicador.status = status == "1";
+        if (name) {
+            radicador.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            radicador.status = status == "1";
+        }
 
         const errors = await validate(radicador);
 

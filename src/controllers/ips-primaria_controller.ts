@@ -153,7 +153,7 @@ export async function updateStatusIpsPrimaria(req: Request, res: Response, next:
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
 
@@ -161,7 +161,13 @@ export async function updateStatusIpsPrimaria(req: Request, res: Response, next:
             return res.status(404).json({ message: "Ips Primaria not found" });
         }
 
-        ipsPrimaria.status = status == "1";
+        if (name) {
+            ipsPrimaria.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            ipsPrimaria.status = status == "1";
+        }
 
         const errors = await validate(ipsPrimaria);
 

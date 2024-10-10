@@ -155,7 +155,7 @@ export async function updateStatusConvenio(req: Request, res: Response, next: Ne
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name } = req.body;
 
         const convenio = await Convenio.findOneBy({ id: parseInt(id) });
 
@@ -163,7 +163,14 @@ export async function updateStatusConvenio(req: Request, res: Response, next: Ne
             return res.status(404).json({ message: "Convenio not found" });
         }
 
-        convenio.status = status == "1";
+
+        if (name) {
+            convenio.name = name;
+        }
+
+        if (status !== undefined && status !== "") {
+            convenio.status = status == "1";
+        }
 
         const errors = await validate(convenio);
 
