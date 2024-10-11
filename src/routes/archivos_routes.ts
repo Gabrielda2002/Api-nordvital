@@ -10,16 +10,16 @@ import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
 
 const router = Router();
 
-router.get("/archivo", authenticate, authorizeRoles(['1','4']) , getAllFiles)
+router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']) , getAllFiles);
 
-router.get("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId  ,getFileById)
+router.get("/archivo/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']),validarId  ,getFileById);
 
-router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, parseParentFolderId, createFile)
+router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, parseParentFolderId, createFile);
 
-router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, updateFile)
+router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, updateFile);
 
-router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, deleteFile)
+router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, deleteFile);
 
-router.get("/download-file/:id", authenticate, authorizeRoles(['1','4']),validarId, downloadFile)
+router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']),validarId, downloadFile);
 
 export default router;

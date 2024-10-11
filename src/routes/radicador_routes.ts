@@ -7,7 +7,7 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/radicador",authenticate, authorizeRoles(['1', '2']), getAllRadicador);
+router.get("/radicador",authenticate, authorizeRoles(['1', '2', '10']), getAllRadicador);
 
 router.get("/radicador/:id",authenticate, authorizeRoles(['1', '2']), validarId, getRadicador);
 

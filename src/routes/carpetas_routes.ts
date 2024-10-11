@@ -6,16 +6,16 @@ import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
-router.get('/carpetas',authenticate , authorizeRoles(['1', '2']), getAllFolders);
+router.get('/carpetas',authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), getAllFolders);
 
-router.get('/carpetas/:id',authenticate , authorizeRoles(['1', '2']), validarId, getFolderById);
+router.get('/carpetas/:id',authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16' ]), validarId, getFolderById);
 
-router.post('/carpetas', authenticate, authorizeRoles(['1', '2']), createFolder);
+router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), createFolder);
 
-router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '2']), validarId, updateFolder);
+router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '4' ]), validarId, updateFolder);
 
-router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '2']), validarId, deleteFolder);
+router.delete('/carpetas/:id',authenticate , authorizeRoles(['1']), validarId, deleteFolder);
 
-router.get('/sistema-calidad/:id?' ,authenticate , authorizeRoles(['1', '2']), getSgcFoldersFiles);
+router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), getSgcFoldersFiles);
 
 export default router;
