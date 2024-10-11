@@ -419,3 +419,44 @@ export async function autorizarRadicado(req: Request, res:Response, next: NextFu
   }
   
 }
+
+export async function cirugiasTable(req: Request, res: Response, next: NextFunction){
+  try {
+    const radicacion = await Radicacion.createQueryBuilder("radicacion")
+    .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+    .leftJoinAndSelect("radicacion.placeRelation", "place")
+    .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+    .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+    .leftJoinAndSelect("radicacion.servicesRelation", "services")
+    .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+    .leftJoinAndSelect("radicacion.patientRelation", "patient")
+    .leftJoinAndSelect("patient.convenioRelation", "convenio")
+    .leftJoinAndSelect("patient.documentRelation", "document")
+    .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+    .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+    .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+    .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+    .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
+    .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
+    .where("specialty.name LIKE :name", { name: "Cirugía%" })
+    .orderBy("radicacion.id", "DESC")
+    .getMany();
+
+    const cirugiasFormat = radicacion.map((r) => ({
+      fechaRadicado: r.createdAt,
+      id: r.id,
+      convenio: r.patientRelation?.convenioRelation?.name || "N/A",
+      numeroDocumento: r.patientRelation?.documentNumber || "N/A",
+      nombrePaciente: r.patientRelation?.name || "N/A",
+      fechaAuditoria: r.auditDate,
+      nombreAuditor: r.usuarioRelation?.name || "N/A",
+    }));
+
+    return res.json(cirugiasFormat);
+
+  } catch (error) {
+    next(error)
+  }
+}
