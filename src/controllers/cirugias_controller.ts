@@ -37,30 +37,21 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         
         const {
             orderingDate,
-            paraclinicalDate,
-            anesthesiaAssessmentDate,
             surgeryDate,
             scheduledTime,
             ipsRemite,
             observation,
-            specialistName,
-            specialityId,
-            status,
             radicadoId
         } = req.body;
 
         const surgery = new Cirugias();
         surgery.orderingDate = orderingDate;
-        surgery.paraclinicalDate = paraclinicalDate;
-        surgery.anesthesiaAssessmentDate = anesthesiaAssessmentDate;
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
-        surgery.ipsRemite = ipsRemite;
+        surgery.ipsRemite = parseInt(ipsRemite);
         surgery.observation = observation;
-        surgery.specialistName = specialistName;
-        surgery.specialityId = specialityId;
-        surgery.status = status;
-        surgery.radicadoId = radicadoId;
+        surgery.status = true;
+        surgery.radicadoId = parseInt(radicadoId);
 
         const errors = await validate(surgery);
 
@@ -88,14 +79,10 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
 
         const {
             orderingDate,
-            paraclinicalDate,
-            anesthesiaAssessmentDate,
             surgeryDate,
             scheduledTime,
             ipsRemite,
             observation,
-            specialistName,
-            specialityId,
             status,
             radicadoId
         } = req.body;
@@ -107,14 +94,10 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
         }
 
         surgery.orderingDate = orderingDate;
-        surgery.paraclinicalDate = paraclinicalDate;
-        surgery.anesthesiaAssessmentDate = anesthesiaAssessmentDate;
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
         surgery.ipsRemite = ipsRemite;
         surgery.observation = observation;
-        surgery.specialistName = specialistName;
-        surgery.specialityId = specialityId;
         surgery.status = status;
         surgery.radicadoId = radicadoId;
 

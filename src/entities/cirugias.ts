@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, NumericType, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Pacientes } from "./pacientes";
 import { Especialidad } from "./especialidad";
@@ -16,14 +16,6 @@ export class Cirugias extends BaseEntity {
     @IsNotEmpty({message: 'La fecha de ordenamiento es requerida'})
     orderingDate: Date;
 
-    @Column({name: 'fecha_paraclinicos'})
-    @IsNotEmpty({message: 'La fecha de paraclinicos es requerida'})
-    paraclinicalDate: Date;
-
-    @Column({name: 'fecha_valoracion_anestencia'})
-    @IsNotEmpty({message: 'La fecha de valoracion de anestesia es requerida'})
-    anesthesiaAssessmentDate: Date;
-
     @Column({name: 'fecha_cirugia'})
     @IsNotEmpty({message: 'La fecha de cirugia es requerida'})
     surgeryDate: Date;
@@ -38,15 +30,8 @@ export class Cirugias extends BaseEntity {
 
     @Column({name: 'observaciones'})
     @IsNotEmpty({message: 'Las observaciones son requeridas'})
+    @Length(5, 150, {message: 'Las observaciones deben tener entre $constraint1 y $constraint2 caracteres'})
     observation: string;
-
-    @Column({name: 'nombre_especialista'})
-    @IsNotEmpty({message: 'El nombre del especialista es requerido'})
-    specialistName: string;
-
-    @Column({name: 'especialidad_id'})
-    @IsNotEmpty({message: 'La especialidad es requerida'})
-    specialityId: number;
 
     @Column({name: 'estado'})
     @IsNotEmpty({message: 'el estado es requerido'})
@@ -63,11 +48,6 @@ export class Cirugias extends BaseEntity {
     updatedAt: Date;
 
     // * relaciones
-
-    // * relacion con especialidades
-    @ManyToOne(() => Especialidad, (especialidades) => especialidades.cirugiasRelation)
-    @JoinColumn({name: 'especialidad_id'})
-    specialityRelation: Especialidad;
 
     // * relacion con radicacion
     @ManyToOne(() => Radicacion, (radicacion) => radicacion.cirugiasRelation)

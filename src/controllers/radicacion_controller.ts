@@ -440,7 +440,8 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
     .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
     .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
     .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
-    .where("specialty.name LIKE :name", { name: "Cirugía%" })
+    .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
+    .where("servicesGroup.id = 6 || servicesGroup.id = 9")
     .orderBy("radicacion.id", "DESC")
     .getMany();
 
@@ -450,8 +451,23 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
       convenio: r.patientRelation?.convenioRelation?.name || "N/A",
       numeroDocumento: r.patientRelation?.documentNumber || "N/A",
       nombrePaciente: r.patientRelation?.name || "N/A",
+      numeroPaciente: r.patientRelation?.phoneNumber || "N/A",
+      telefonoFijo: r.patientRelation?.landline || "N/A",
+      email: r.patientRelation?.email || "N/A",
       fechaAuditoria: r.auditDate,
-      nombreAuditor: r.usuarioRelation?.name || "N/A",
+      especialidad: r.specialtyRelation?.name || "N/A",
+      cups: r.cupsRadicadosRelation?.map((c) => ({
+        id: c.id,
+        code: c.code,
+        description: c.DescriptionCode
+      })),
+      grupoServicios: r.servicesGroupRelation?.name || "N/A",
+      idGrupoServicios: r.servicesGroupRelation?.id || "N/A",
+      diagnostico: r.diagnosticoRelation?.description || "N/A",
+      programacionCirugia: r.cirugiasRelation?.map((c) => ({
+        id: c.id || "N/A",
+      }))
+      
     }));
 
     return res.json(cirugiasFormat);
