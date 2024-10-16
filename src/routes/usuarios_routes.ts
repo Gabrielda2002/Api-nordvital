@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, updateUsuario, updateUsuarioBasicData, uploadPhoto } from "../controllers/usuario_controller";
+import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, updatePassword, updateUsuario, updateUsuarioBasicData, uploadPhoto } from "../controllers/usuario_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -24,5 +24,7 @@ router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '2']), val
 router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuariosTable);
 
 router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateUsuarioBasicData);
+
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '2']), validarId, updatePassword);
 
 export default router;

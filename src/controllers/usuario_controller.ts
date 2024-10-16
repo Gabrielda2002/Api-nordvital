@@ -317,3 +317,39 @@ export async function getUsuariosTable(
     next(error);
   }
 }
+
+export async function updatePassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Las contraseñas no coinciden" });
+    }
+
+    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, usuario.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Contraseña actual incorrecta" });
+    }
+
+    const saltRounds = 10;
+    usuario.password = await bcrypt.hash(newPassword, saltRounds);
+
+    await usuario.save();
+
+    return res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    next(error);
+  }
+}
