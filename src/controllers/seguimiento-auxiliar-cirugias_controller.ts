@@ -35,17 +35,18 @@ export async function createAuxiliarySurgery(req:Request, res: Response, next: N
     try {
         
         const {
-            obersevation,
+            observation,
             status,
-            cupsId,
             surgeryId
         } = req.body;
 
+        console.log(req.body);
+
         const auxiliarySurgery = new SeguimientoAuxiliarCirugias();
-        auxiliarySurgery.observation = obersevation;
+        auxiliarySurgery.observation = observation;
         auxiliarySurgery.status = status;
-        auxiliarySurgery.cupsId = cupsId;
-        auxiliarySurgery.surgeryId = surgeryId;
+        auxiliarySurgery.cupsId = 1;
+        auxiliarySurgery.surgeryId = parseInt(surgeryId);
 
 
 

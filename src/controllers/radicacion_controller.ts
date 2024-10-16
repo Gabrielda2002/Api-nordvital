@@ -441,6 +441,9 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
     .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
     .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
     .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
+    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
+    .leftJoinAndSelect("cirugias.statusRelation", "gestionAuxiliarCirugia")
+    .leftJoinAndSelect("gestionAuxiliarCirugia.estadoSeguimientoRelation", "statusGestionAuxiliarCirugia")
     .where("servicesGroup.id = 6 || servicesGroup.id = 9")
     .orderBy("radicacion.id", "DESC")
     .getMany();
@@ -466,6 +469,16 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
       diagnostico: r.diagnosticoRelation?.description || "N/A",
       programacionCirugia: r.cirugiasRelation?.map((c) => ({
         id: c.id || "N/A",
+        fechaProgramada: c.orderingDate || "N/A",
+        fechaCirugia: c.surgeryDate || "N/A",
+        ipsRemite: c.ipsRemiteRelation?.name || "N/A",
+        observacion: c.observation || "N/A",
+        gestionAuxiliarCirugia: c.statusRelation?.map((g) =>({
+          id: g.id,
+          estado: g.estadoSeguimientoRelation?.name,
+          observacion: g.observation,
+          fechaCreacion: g.createdAt
+        }))
       }))
       
     }));
