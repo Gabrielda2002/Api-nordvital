@@ -473,6 +473,7 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
         fechaCirugia: c.surgeryDate || "N/A",
         ipsRemite: c.ipsRemiteRelation?.name || "N/A",
         observacion: c.observation || "N/A",
+        hora: c.scheduledTime || "N/A",
         gestionAuxiliarCirugia: c.statusRelation?.map((g) =>({
           id: g.id,
           estado: g.estadoSeguimientoRelation?.name,
