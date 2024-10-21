@@ -10,7 +10,7 @@ router.get('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '
 
 router.get('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1', '2']), validarId, getAuxiliarySurgery);
 
-router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '2']), createAuxiliarySurgery);
+router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '15']), createAuxiliarySurgery);
 
 router.put('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateAuxiliarySurgery);
 

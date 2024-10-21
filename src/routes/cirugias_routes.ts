@@ -7,14 +7,14 @@ import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
-router.get('/cirugias', authenticate, authorizeRoles(['1', '2']), getAllSurgery);
+router.get('/cirugias', authenticate, authorizeRoles(['1', '15']), getAllSurgery);
 
-router.get('/cirugias/:id', authenticate, authorizeRoles(['1', '2']), validarId, getSurgery);
+router.get('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, getSurgery);
 
-router.post('/cirugias', authenticate, authorizeRoles(['1', '2']), createSurgery);
+router.post('/cirugias', authenticate, authorizeRoles(['1', '15']), createSurgery);
 
-router.put('/cirugias/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateSurgery);
+router.put('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, updateSurgery);
 
-router.delete('/cirugias/:id', authenticate, authorizeRoles(['1', '2']), validarId, deleteSurgery);
+router.delete('/cirugias/:id', authenticate, authorizeRoles(['1']), validarId, deleteSurgery);
 
 export default router;

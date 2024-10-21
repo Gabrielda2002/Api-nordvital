@@ -16,7 +16,7 @@ router.put("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5
 
 router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,deleteServicioSolicitado);
 
-router.post("/servicio-solicitado-code",authenticate, authorizeRoles(['1', '2', '5']), getServiciosSolicitadosByCode);
+router.post("/servicio-solicitado-code",authenticate, authorizeRoles(['1', '2', '5', '15']), getServiciosSolicitadosByCode);
 
 router.put("/servicio-solicitado-update-table/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateServicioSolicitadoTable);
 

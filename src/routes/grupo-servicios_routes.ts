@@ -16,6 +16,6 @@ router.put("/grupo-servicios/:id",validarId ,authenticate, authorizeRoles(['1', 
 
 router.delete("/grupo-servicios/:id",validarId ,authenticate, authorizeRoles(['1']),deleteGrupoServicios);
 
-router.post("/grupo-servicios-name" ,authenticate, authorizeRoles(['1', '2']), getGrupoServiciosByName);
+router.post("/grupo-servicios-name" ,authenticate, authorizeRoles(['1', '15']), getGrupoServiciosByName);
 
 export default router;

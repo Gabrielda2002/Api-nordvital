@@ -6,7 +6,7 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/ips-remite",authenticate, authorizeRoles(['1', '2']), getAllIpsRemite);
+router.get("/ips-remite",authenticate, authorizeRoles(['1']), getAllIpsRemite);
 
 router.get("/ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId ,getIpsRemite);
 
@@ -16,7 +16,7 @@ router.put("/ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId 
 
 router.delete("/ips-remite/:id",authenticate, authorizeRoles(['1']),validarId ,deleteIpsRemite);
 
-router.post("/ips-remite-name",authenticate, authorizeRoles(['1', '2']), getIpsRemiteByName);
+router.post("/ips-remite-name",authenticate, authorizeRoles(['1', '15']), getIpsRemiteByName);
 
 router.put("/update-status-ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateStatusIpsRemite);
 
