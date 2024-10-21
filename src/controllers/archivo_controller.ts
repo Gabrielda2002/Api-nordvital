@@ -3,6 +3,8 @@ import { Archivos } from "../entities/archivos";
 import path from "path";
 import { validate } from "class-validator";
 import fs from "fs";
+import { promises as fsPromises } from "fs";
+
 
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
     try {
@@ -151,6 +153,23 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
         if (!file) {
             return res.status(404).json({message: "Archivo no encontrado"});
         }
+
+         // Obtener la ruta absoluta del archivo
+         const filePath = path.resolve('src', 'uploads', file.path);
+
+         // Verificar si el archivo existe en el sistema
+         if (fs.existsSync(filePath)) {
+             try {
+                 // Eliminar el archivo del sistema de archivos
+                 await fsPromises.unlink(filePath);
+                 console.log(`Archivo eliminado: ${filePath}`);
+             } catch (error) {
+                 console.error(`Error al eliminar el archivo: ${error}`);
+                 return res.status(500).json({ message: "Error al eliminar el archivo físico" });
+             }
+         } else {
+             console.warn(`El archivo no existe en la ruta: ${filePath}`);
+         }
 
         await file.remove();
 
