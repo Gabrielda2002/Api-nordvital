@@ -16,7 +16,7 @@ router.put("/ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId 
 
 router.delete("/ips-remite/:id",authenticate, authorizeRoles(['1']),validarId ,deleteIpsRemite);
 
-router.post("/ips-remite-name",authenticate, authorizeRoles(['1', '15']), getIpsRemiteByName);
+router.post("/ips-remite-name",authenticate, authorizeRoles(['1', '10', '15']), getIpsRemiteByName);
 
 router.put("/update-status-ips-remite/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateStatusIpsRemite);
 

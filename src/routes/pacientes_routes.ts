@@ -12,11 +12,11 @@ router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3' , '5'])
 
 router.post("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), createPaciente);
 
-router.put("/pacientes/:id",authenticate, authorizeRoles(['1', '2', '3' , '5', '15']), validarId, updatePaciente);
+router.put("/pacientes/:id",authenticate, authorizeRoles(['1' , '10', '15']), validarId, updatePaciente);
 
 router.delete("/pacientes/:id",authenticate, authorizeRoles(['1']), validarId, deletePaciente);
 
-router.post("/pacientes-documento",authenticate, authorizeRoles(['1', '2', '3' , '5', '15']), getPacientesByDocument);
+router.post("/pacientes-documento",authenticate, authorizeRoles(['1', '10', '15']), getPacientesByDocument);
 
 router.put("/pacientes-actualizar-tablet/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, updatePacienteTable);
 

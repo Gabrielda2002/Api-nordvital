@@ -17,14 +17,14 @@ router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
 
 router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteUsuario);
 
-router.put('/upload-photo/:id', authenticate, authorizeRoles(['1', '2']), uploadPhotoUser.single('photo') , validarId, uploadPhoto);
+router.put('/upload-photo/:id', authenticate, authorizeRoles(['1', '10', '15']), uploadPhotoUser.single('photo') , validarId, uploadPhoto);
 
-router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '2']), validarId, deletePhoto);
+router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '10', '15']), validarId, deletePhoto);
 
 router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuariosTable);
 
-router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateUsuarioBasicData);
+router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '15', '10']), validarId, updateUsuarioBasicData);
 
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '2']), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '15', '10']), validarId, updatePassword);
 
 export default router;
