@@ -14,7 +14,7 @@ router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), createFolder
 
 router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '4' ]), validarId, updateFolder);
 
-router.delete('/carpetas/:id',authenticate , authorizeRoles(['1']), validarId, deleteFolder);
+router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validarId, deleteFolder);
 
 router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), getSgcFoldersFiles);
 
