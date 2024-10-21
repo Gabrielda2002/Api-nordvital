@@ -16,7 +16,7 @@ router.put("/especialidades/:id",authenticate, authorizeRoles(['1', '2']), valid
 
 router.delete("/especialidades/:id",authenticate, authorizeRoles(['1']), validarId, deleteEspecialidad);
 
-router.post("/especialidades-name",authenticate, authorizeRoles(['1', '10','15']), getEspecialidadesByName);
+router.post("/especialidades-name",authenticate, authorizeRoles(['1', '3','10','15']), getEspecialidadesByName);
 
 router.put("/update-status-especialidad/:id",authenticate, authorizeRoles(['1', '2']), validarId, updateStatusEspecialidad);  
 

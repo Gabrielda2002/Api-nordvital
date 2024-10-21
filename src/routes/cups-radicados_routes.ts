@@ -10,7 +10,7 @@ router.get("/cups-radicados",authenticate, authorizeRoles(['1', '2', '3' , '5'])
 
 router.get("/cups-radicados/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, getCupsRadicados);
 
-router.post("/cups-radicados",authenticate, authorizeRoles(['1', '10','15']), createCupsRadicados)
+router.post("/cups-radicados",authenticate, authorizeRoles(['1','3','10','15']), createCupsRadicados)
 
 router.put("/cups-radicados/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId,updateCupsRadicados);
 

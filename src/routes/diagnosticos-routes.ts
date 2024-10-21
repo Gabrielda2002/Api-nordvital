@@ -16,6 +16,6 @@ router.put("/diagnosticos/:id",authenticate, authorizeRoles(['1', '2']),validarI
 
 router.delete("/diagnosticos/:id",authenticate, authorizeRoles(['1']), validarId, deleteDiagnostico);
 
-router.post("/diagnosticos-name",authenticate, authorizeRoles(['1', '10','15']), getDiagnosticosByName);
+router.post("/diagnosticos-name",authenticate, authorizeRoles(['1', '3','10','15']), getDiagnosticosByName);
 
 export default router;

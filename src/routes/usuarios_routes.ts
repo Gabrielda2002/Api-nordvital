@@ -23,8 +23,8 @@ router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '10', '15'
 
 router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuariosTable);
 
-router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '15', '10']), validarId, updateUsuarioBasicData);
+router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '3','15', '10']), validarId, updateUsuarioBasicData);
 
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '15', '10']), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '3','15', '10']), validarId, updatePassword);
 
 export default router;

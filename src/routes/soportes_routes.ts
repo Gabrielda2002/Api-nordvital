@@ -11,7 +11,7 @@ router.get("/soportes",authenticate, authorizeRoles(['1', '2','3', '5']), getAll
 
 router.get("/soportes/:id",authenticate, authorizeRoles(['1', '2','3', '5']), validarId , getSoporteById);
 
-router.post("/soportes",authenticate, authorizeRoles(['1', '10', '15']), upload.single('file') , createSoporte);
+router.post("/soportes",authenticate, authorizeRoles(['1', '3','10', '15']), upload.single('file') , createSoporte);
 
 router.put("/soportes/:id",authenticate, authorizeRoles(['1', '2','3']),upload.single('file') ,validarId, updateSoporte);
 

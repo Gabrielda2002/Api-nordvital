@@ -6,7 +6,7 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/unidad-funcional',authenticate, authorizeRoles(['1' , '2']), getAllUnidadFuncional);
+router.get('/unidad-funcional',authenticate, authorizeRoles(['1' , '3']), getAllUnidadFuncional);
 
 router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),validarId ,getUnidadFuncionalById);
 

@@ -5,8 +5,8 @@ import { downloadReportExcel, downloadReportExcelFilter } from "../controllers/r
 
 const router = Router();
 
-router.get('/report-excel', authenticate, authorizeRoles(['1', '2', '6', '2', '14', '3', '15', ]) , downloadReportExcel)
+router.get('/report-excel', authenticate, authorizeRoles(['1', '3', '6', '2', '14', '3', '15', ]) , downloadReportExcel)
 
-router.post('/report-excel-filtro', authenticate, authorizeRoles(['1', '2', '6', '14', '3', '15', ]) , downloadReportExcelFilter)
+router.post('/report-excel-filtro', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15', ]) , downloadReportExcelFilter)
 
 export default router;
