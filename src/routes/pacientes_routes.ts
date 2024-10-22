@@ -6,7 +6,7 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), getAllPacientes);
+router.get("/pacientes",authenticate, authorizeRoles(['1', '3', '10' , '15']), getAllPacientes);
 
 router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3' , '5']),validarId, getPaciente);
 
