@@ -17,6 +17,9 @@ export class AlterTableGestionAuxiliar1729622852022 implements MigrationInterfac
              }
          }
 
+          // actualizar todos los datos de la columna a 1 
+        await queryRunner.query(`UPDATE seguimientoauxiliar SET Radicacion = 1`);
+
         // // rename the column
         // await queryRunner.renameColumn("seguimientoauxiliar", "Radicacion", "idCups");
 
