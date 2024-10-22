@@ -10,7 +10,7 @@ router.get("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), get
 
 router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3' , '5']),validarId, getPaciente);
 
-router.post("/pacientes",authenticate, authorizeRoles(['1', '2', '3' , '5']), createPaciente);
+router.post("/pacientes",authenticate, authorizeRoles(['1', '3', '10' , '15']), createPaciente);
 
 router.put("/pacientes/:id",authenticate, authorizeRoles(['1' , '3','10', '15']), validarId, updatePaciente);
 

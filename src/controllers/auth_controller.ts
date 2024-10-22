@@ -21,7 +21,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
 
         // Generar el token JWT
-        const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '5h' });
 
         // Enviar el token al cliente
         res.json({  token,Municipio: user.municipio,rol: user.rol , user: {

@@ -191,7 +191,6 @@ export async function getPacientesByDocument(
 ) {
   try {
     const { documentNumber } = req.body;
-    console.log(documentNumber);
     const paciente = await Pacientes.createQueryBuilder("pacientes")
     .where("pacientes.documentNumber = :documentNumber", { documentNumber })
     .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
