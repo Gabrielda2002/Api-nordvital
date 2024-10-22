@@ -7,7 +7,7 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/ips-primaria',authenticate, authorizeRoles(['1', '2']), getAllIpsPrimaria);
+router.get('/ips-primaria',authenticate, authorizeRoles(['1', '3', '10', '15']), getAllIpsPrimaria);
 
 router.get('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']),validarId ,getIpsPrimaria);
 

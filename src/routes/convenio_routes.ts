@@ -6,7 +6,7 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get('/convenio',authenticate, authorizeRoles(['1', '2']), getAllConvenio);
+router.get('/convenio',authenticate, authorizeRoles(['1', '3', '10', '15']), getAllConvenio);
 
 router.get('/convenio/:id',authenticate, authorizeRoles(['1', '2']), validarId, getConvenioById);
 

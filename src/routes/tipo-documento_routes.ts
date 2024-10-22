@@ -8,7 +8,7 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 
 const router = Router();
 
-router.get('/documento',authenticate, authorizeRoles(['1' , '2']), getAllDocumentType);
+router.get('/documento',authenticate, authorizeRoles(['1' , '3', '10', '15']), getAllDocumentType);
 
 router.get('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId, getDocumentTypeById);
 
