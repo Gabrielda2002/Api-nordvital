@@ -26,6 +26,7 @@ import { Servicios } from "./servicios";
 import { Cirugias } from "./cirugias";
 import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
+import { Estados } from "./estados";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -158,6 +159,10 @@ export class Radicacion extends BaseEntity {
   @ManyToOne(() => Diagnostico, (diagnostico) => diagnostico.radicacionRelation)
   @JoinColumn({ name: "id_diagnostico" })
   diagnosticoRelation: Diagnostico;
+
+  @ManyToOne(() => Estados, (estados) => estados.radicacionRelation)
+  @JoinColumn({ name: "ConceptoAuditoria" })
+  statusRelation: Estados;
 
   // * rrelaciones no llaves foraneas
 

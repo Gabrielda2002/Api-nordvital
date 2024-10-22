@@ -18,6 +18,7 @@ export async function getAllRadicacion(
     .leftJoinAndSelect("radicacion.servicesRelation", "services")
     .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
     .leftJoinAndSelect("radicacion.patientRelation", "patient")
+    .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
     .leftJoinAndSelect("patient.convenioRelation", "convenio")
     .leftJoinAndSelect("patient.documentRelation", "document")
     .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
