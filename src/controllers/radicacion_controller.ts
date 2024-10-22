@@ -26,7 +26,7 @@ export async function getAllRadicacion(
     .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
     .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
     .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-    .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
+    .leftJoinAndSelect("cupsRadicados.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
     .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
     .orderBy("radicacion.id", "DESC")
     .getMany();
@@ -245,45 +245,45 @@ export async function deleteRadicado(
     next(error);
   }
 }
-export async function mostrarTabla(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
-      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
-      .leftJoinAndSelect("pacientes.documentRelation", "document")
-      .leftJoinAndSelect(
-        "radicacion.seguimientoAuxiliarRelation",
-        "seguimientoAuxiliar"
-      )
-      .orderBy("radicacion.id", "DESC")
-      .getMany();
+// export async function mostrarTabla(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   try {
+//     const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+//       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+//       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
+//       .leftJoinAndSelect("pacientes.documentRelation", "document")
+//       .leftJoinAndSelect(
+//         "radicacion.seguimientoAuxiliarRelation",
+//         "seguimientoAuxiliar"
+//       )
+//       .orderBy("radicacion.id", "DESC")
+//       .getMany();
 
-    const formatedRadicaciones = radicaciones.map((r) => {
-      const latestSeguimiento = r.seguimientoAuxiliarRelation?.sort(
-        (a, b) => b.id - a.id
-      )[0];
+//     const formatedRadicaciones = radicaciones.map((r) => {
+//       const latestSeguimiento = r.seguimientoAuxiliarRelation?.sort(
+//         (a, b) => b.id - a.id
+//       )[0];
 
-      return {
-        createdAt: r.createdAt,
-        typeDocument: r.patientRelation?.documentRelation?.name || "N/A",
-        id: r.id,
-        convenio: r.patientRelation?.convenioRelation?.name || "N/A",
-        document: r.patientRelation?.documentNumber || "N/A",
-        patientName: r.patientRelation?.name || "N/A",
-        auditDate: r.auditDate,
-        management: latestSeguimiento ? latestSeguimiento.observation : "N/A",
-      };
-    });
+//       return {
+//         createdAt: r.createdAt,
+//         typeDocument: r.patientRelation?.documentRelation?.name || "N/A",
+//         id: r.id,
+//         convenio: r.patientRelation?.convenioRelation?.name || "N/A",
+//         document: r.patientRelation?.documentNumber || "N/A",
+//         patientName: r.patientRelation?.name || "N/A",
+//         auditDate: r.auditDate,
+//         management: latestSeguimiento ? latestSeguimiento.observation : "N/A",
+//       };
+//     });
 
-    return res.json(formatedRadicaciones);
-  } catch (error) {
-    next(error);
-  }
-}
+//     return res.json(formatedRadicaciones);
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
 export async function tablaPorAuditar(
   req: Request,

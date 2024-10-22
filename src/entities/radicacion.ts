@@ -163,11 +163,7 @@ export class Radicacion extends BaseEntity {
 
   // ? relacion con cups radicados
   @OneToMany(() => CupsRadicados, (cupsRadicados) => cupsRadicados.radicacionRelation)
-  cupsRadicadosRelation: CupsRadicados[];
-
-  // * relacion con seguimiento auxiliar
-  @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.radicacionRelation)
-  seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+  cupsRadicadosRelation: CupsRadicados[]; 
 
   // * relacion con cirugias
   @OneToMany(() => Cirugias, (cirugias) => cirugias.radicacionRelation)

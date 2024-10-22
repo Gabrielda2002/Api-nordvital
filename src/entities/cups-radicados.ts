@@ -3,6 +3,7 @@ import { Radicacion } from "./radicacion";
 import { UnidadFuncional } from "./unidad-funcional";
 import { IsInt, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
 import { Estados } from "./estados";
+import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
 @Entity("cupspaciente")
 export class CupsRadicados extends BaseEntity {
@@ -59,6 +60,9 @@ export class CupsRadicados extends BaseEntity {
     @ManyToOne(() => UnidadFuncional, (unidadFuncional) => unidadFuncional.cupsRadicadosRelation)
     @JoinColumn({ name: "UnidadFuncional" })
     functionalUnitRelation: UnidadFuncional
+
+    @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.cupsRadicadosRelation)
+    seguimientoAuxiliarRelation: SeguimietoAuxiliar[]
 
 }
 

@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, Pr
 import { Radicacion } from "./radicacion";
 import { EstadosSeguimiento } from "./estados-seguimiento";
 import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { CupsRadicados } from "./cups-radicados";
 
 @Entity({name: "seguimientoauxiliar"})
 export class SeguimietoAuxiliar extends BaseEntity {
@@ -38,9 +39,9 @@ export class SeguimietoAuxiliar extends BaseEntity {
 
     // * relacion
 
-    @ManyToOne(() => Radicacion, (radicacion) => radicacion.seguimientoAuxiliarRelation)
+    @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.seguimientoAuxiliarRelation)
     @JoinColumn({name: "Radicacion"})
-    radicacionRelation: Radicacion;
+    cupsRadicadosRelation: CupsRadicados;
 
     // * relacion con estados seguimiento
     @ManyToOne(()=> EstadosSeguimiento, (estadoSeguimiento) => estadoSeguimiento.seguimientoAuxiliarRelation)

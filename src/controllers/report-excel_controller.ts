@@ -23,7 +23,7 @@ export async function downloadReportExcel(
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect(
-        "radicacion.seguimientoAuxiliarRelation",
+        "cups.seguimientoAuxiliarRelation",
         "seguimiento_auxiliar"
       )
       .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
@@ -119,13 +119,17 @@ export async function downloadReportExcel(
       }
 
       // * agregar filas por cada seguimiento auxiliar
-      if (data.seguimientoAuxiliarRelation?.length > 0) {
-        data.seguimientoAuxiliarRelation.forEach((seguimiento) => {
-          worksheet.addRow({
-            ...row,
-            Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
-            Fecha_registro: seguimiento.createdAt || "N/A",
-          });
+      if (data.cupsRadicadosRelation?.length > 0) {
+        data.cupsRadicadosRelation.forEach((cups) => {
+          if (cups.seguimientoAuxiliarRelation?.length > 0) {
+            cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
+              worksheet.addRow({
+                ...row,
+                Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
+                Fecha_registro: seguimiento.createdAt || "N/A",
+              });
+            });
+          }
         });
       }
     });
@@ -312,13 +316,17 @@ export async function downloadReportExcelFilter(
       }
 
       // * agregar filas por cada seguimiento auxiliar
-      if (data.seguimientoAuxiliarRelation?.length > 0) {
-        data.seguimientoAuxiliarRelation.forEach((seguimiento) => {
-          worksheet.addRow({
-            ...row,
-            Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
-            Fecha_registro: seguimiento.createdAt || "N/A",
-          });
+      if (data.cupsRadicadosRelation?.length > 0) {
+        data.cupsRadicadosRelation.forEach((cups) => {
+          if (cups.seguimientoAuxiliarRelation?.length > 0) {
+            cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
+              worksheet.addRow({
+                ...row,
+                Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
+                Fecha_registro: seguimiento.createdAt || "N/A",
+              });
+            });
+          }
         });
       }
     });
