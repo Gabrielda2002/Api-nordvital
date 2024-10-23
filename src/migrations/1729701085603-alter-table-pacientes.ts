@@ -9,7 +9,7 @@ export class AlterTablePacientes1729701085603 implements MigrationInterface {
 
         await queryRunner.query(`
             ALTER TABLE pacientes
-            MODIFY COLUMN NumeroCelular VARCHAR(10);
+            MODIFY COLUMN NumeroCelular VARCHAR(11);
         `);
 
         await queryRunner.query(`
