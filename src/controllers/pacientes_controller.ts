@@ -51,6 +51,7 @@ export async function createPaciente(
     const {
       documentType,
       documentNumber,
+      phoneNumber2,
       name,
       phoneNumber,
       landline,
@@ -73,6 +74,7 @@ export async function createPaciente(
     paciente.documentNumber = parseInt(documentNumber);
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
+    paciente.phoneNumber2 = phoneNumber2 || null;
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
@@ -116,6 +118,7 @@ export async function updatePaciente(
       documentNumber,
       name,
       phoneNumber,
+      phoneNumber2,
       landline,
       email,
       address,
@@ -123,6 +126,7 @@ export async function updatePaciente(
       ipsPrimaria,
       status
     } = req.body;
+    console.log(req.body);
 
     const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
 
@@ -137,6 +141,7 @@ export async function updatePaciente(
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
+    paciente.phoneNumber2 = phoneNumber2 || null;
     // paciente.convenio = convenio;
     // paciente.ipsPrimaria = ipsPrimaria;
     // paciente.status = status;
@@ -220,6 +225,7 @@ export async function updatePacienteTable(
       documentNumber,
       name,
       phoneNumber,
+      phoneNumber2,
       landline,
       email,
       address,
@@ -239,6 +245,7 @@ export async function updatePacienteTable(
     paciente.documentNumber = parseInt(documentNumber);
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
+    paciente.phoneNumber2 = phoneNumber2 || null;
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;

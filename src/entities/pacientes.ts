@@ -32,14 +32,20 @@ export class Pacientes extends BaseEntity {
 
     @Column({name: "NumeroCelular"})
     @IsNotEmpty({message: "El campo NumeroCelular no puede estar vacio"})
-    @Length(1, 15, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(1, 10, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber: string;
 
     @Column({name: "TelefonoFijo"})
     @IsString()
     @IsOptional()
-    @Length(1, 20, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(1, 10, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
     landline?: string;
+
+    @Column({name: "numeroCelular2", nullable: true})
+    @IsOptional()
+    @IsString()
+    @Length(1, 10, {message: "El campo numeroCelular2 debe tener entre $constraint1 y $constraint2 caracteres"})
+    phoneNumber2: string
 
     @Column({name: "Email"})
     @IsEmail()
