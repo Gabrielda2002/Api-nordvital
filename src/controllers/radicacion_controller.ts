@@ -439,8 +439,6 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
     .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
     .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
     .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-    .leftJoinAndSelect("radicacion.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
-    .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
     .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
     .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
     .leftJoinAndSelect("cirugias.statusRelation", "gestionAuxiliarCirugia")
