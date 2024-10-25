@@ -91,7 +91,7 @@ export class Radicacion extends BaseEntity {
   @Column({ name: "JustificacionAuditoria" })
   @IsString()
   @IsNotEmpty({message: "La justificacion de la auditoria es requerida"})
-  @Length(3, 100, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
+  @Length(3, 500, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
   justify: string;
 
   @Column({ name: "ConceptoAuditoria" })
