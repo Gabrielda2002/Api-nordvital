@@ -308,8 +308,11 @@ export async function getUsuariosTable(
       createdAt: usuario.createdAt,
       updatedAt: usuario.updatedAt,
       documento: usuario.typeDocumentRelation?.name,
+      idDocumento: usuario.typeDocumentRelation?.id,
       roles: usuario.rolesRelation?.name,
+      idRol: usuario.rolesRelation?.id,
       municipio: usuario.municipioRelation?.name,
+      idMunicipio: usuario.municipioRelation?.id,
     }))
 
     return res.json(usuarios);
@@ -349,6 +352,49 @@ export async function updatePassword(
     await usuario.save();
 
     return res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// actualizar datos del usuario
+export async function updateUsuarioTable(request: Request, response: Response, next: NextFunction){
+  try {
+    
+    const {id} = request.params;
+    const { dniNumber, name, lastName, dniType, email, password, municipio, rol } = request.body;
+    console.log(request.body);
+
+    const usuario = await Usuarios.findOneBy({id: parseInt(id)});
+    if(!usuario){
+      return response.status(404).json({message: 'Usuario no encontrado'});
+    }
+
+    usuario.dniNumber = parseInt(dniNumber);
+    usuario.name = name;
+    usuario.lastName = lastName;
+    usuario.dniType = parseInt(dniType);
+    usuario.email = email;
+    if (password) {
+      const saltRounds = 10;
+      usuario.password = await bcrypt.hash(password, saltRounds);
+    }
+    usuario.municipio = parseInt(municipio);
+    usuario.rol = parseInt(rol);
+
+    const errors = await validate(usuario);
+    if(errors.length > 0){
+      const messageError = errors.map(error => ({
+        property: error.property,
+        constraints: error.constraints
+      }));
+      return response.status(400).json({message: 'Ocurrio un error', messageError});
+    }
+
+    await usuario.save();
+
+    return response.json(usuario);
+
   } catch (error) {
     next(error);
   }
