@@ -3,6 +3,7 @@ import { Radicacion } from "../entities/radicacion";
 import ExcelJS from "exceljs";
 import { format } from "path";
 import { randomBytes } from "crypto";
+import { Cirugias } from "../entities/cirugias";
 
 export async function downloadReportExcel(
   req: Request,
@@ -351,6 +352,81 @@ export async function downloadReportExcelFilter(
 
     // Escribir el archivo en la respuesta
     await workbook.xlsx.write(res);
+
+    res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export async function reportExcelCirugias(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const dataCirugias = await Cirugias.createQueryBuilder("cirugias")
+    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
+    .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
+    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
+    .getMany();
+
+    const worjbook = new ExcelJS.Workbook();
+    const worksheet = worjbook.addWorksheet("Reporte Cirugias");
+
+    worksheet.columns = [
+      { header: "Fecha de Ordenamiento", key: "Fecha_ordenamiento", width: 20 },
+      { header: "Fecha de Cirugia", key: "Fecha_cirugia", width: 20 },
+      { header: "Hora Programada", key: "Hora_programada", width: 20 },
+      { header: "IPS Remitente", key: "IPS_Remitente", width: 30 },
+      { header: "Observaciones", key: "Observaciones", width: 30 },
+      { header: "Codigo CUPS", key: "Codigo_cups", width: 30 },
+      { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
+      { header: "Diagnostico", key: "diagnostico_name", width: 30 },
+      { header: "Codigo Diagnostico", key: "diagnostico_code", width: 30 },
+    ];
+
+    dataCirugias.forEach((data) => {
+      const row = {
+        Fecha_ordenamiento: data.orderingDate || "N/A",
+        Fecha_cirugia: data.surgeryDate || "N/A",
+        Hora_programada: data.scheduledTime || "N/A",
+        IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
+        Observaciones: data.observation || "N/A",
+        diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
+        diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
+      }
+      
+      // agregar gilas por cada cups
+      if (data.radicacionRelation?.cupsRadicadosRelation?.length > 0) {
+        data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
+          worksheet.addRow({
+            ...row,
+            Codigo_cups: cups.code || "N/A",
+            Descripcion_cups: cups.DescriptionCode || "N/A",
+          });
+        });
+      }else {
+        worksheet.addRow(row);
+      }
+
+
+
+    })
+
+
+    const randomStr = randomBytes(4).toString("hex");
+
+    const fileName = `Reporte_Cirugias_${randomStr}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+
+    await worjbook.xlsx.write(res);
 
     res.end();
   } catch (error) {
