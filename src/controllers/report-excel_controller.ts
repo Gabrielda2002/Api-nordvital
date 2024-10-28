@@ -366,6 +366,8 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
     const dataCirugias = await Cirugias.createQueryBuilder("cirugias")
     .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
     .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
+    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
+    .leftJoinAndSelect("gestionCirugias.estadoSeguimientoRelation", "estadoSeguimiento")
     .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
     .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
     .getMany();
@@ -383,6 +385,12 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
       { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
       { header: "Diagnostico", key: "diagnostico_name", width: 30 },
       { header: "Codigo Diagnostico", key: "diagnostico_code", width: 30 },
+      { header: "Especialista", key: "especialista", width: 30 },
+      { header: "Fecha paraclinico", key: "fecha_paraclinico", width: 30 },
+      { header: "Fecha anesteciologia", key: "fecha_anesteciologia", width: 30 },
+      { header: "Estado", key: "Estado", width: 20 },
+      { header: "Observaciones", key: "Observaciones", width: 30 },
+      { header: "Fecha de Registro", key: "Fecha_registro", width: 20 },
     ];
 
     dataCirugias.forEach((data) => {
@@ -394,6 +402,9 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
         Observaciones: data.observation || "N/A",
         diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
         diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
+        especialista: data.specialist || "N/A",
+        fecha_paraclinico: data.paraclinicalDate || "N/A",
+        fecha_anesteciologia: data.anesthesiologyDate || "N/A",
       }
       
       // agregar gilas por cada cups
@@ -408,6 +419,19 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
       }else {
         worksheet.addRow(row);
       }
+
+      // agregar filas por seguimiento cirugias
+      if (data.gestionCirugiasRelation.length > 0) {
+        data.gestionCirugiasRelation.forEach((gestion) => {
+          worksheet.addRow({
+            ...row,
+            Estado: gestion.estadoSeguimientoRelation?.name || "N/A",
+            Observaciones: gestion.observation || "N/A",
+            Fecha_registro: gestion.createdAt || "N/A",
+          });
+        });
+      }
+      
 
 
 
