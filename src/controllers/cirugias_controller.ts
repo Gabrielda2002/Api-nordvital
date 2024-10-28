@@ -41,7 +41,10 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
             scheduledTime,
             ipsRemite,
             observation,
-            radicadoId
+            radicadoId, 
+            paraclinicalDate,
+            anesthesiologyDate,
+            specialist
         } = req.body;
 
         const surgery = new Cirugias();
@@ -52,6 +55,9 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         surgery.observation = observation;
         surgery.status = true;
         surgery.radicadoId = parseInt(radicadoId);
+        surgery.paraclinicalDate = paraclinicalDate;
+        surgery.anesthesiologyDate = anesthesiologyDate;
+        surgery.specialist = specialist.toUpperCase();
 
         const errors = await validate(surgery);
 

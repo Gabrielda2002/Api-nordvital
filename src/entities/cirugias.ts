@@ -41,6 +41,19 @@ export class Cirugias extends BaseEntity {
     @IsNotEmpty({message: 'El radicado es requerido'})
     radicadoId: number;
 
+    @Column({name: 'fecha_paraclinico'})
+    @IsNotEmpty({message: 'La fecha paraclinico es requerida'})
+    paraclinicalDate: Date;
+
+    @Column({name: 'fecha_anesteciologia'})
+    @IsNotEmpty({message: 'La fecha de anesteciologia es requerida'})
+    anesthesiologyDate: Date;
+
+    @Column({name: 'especialista'})
+    @IsNotEmpty({message: 'El especialista es requerido'})
+    @Length(3, 255, {message: 'El especialista debe tener entre $constraint1 y $constraint2 caracteres'})
+    specialist: string;
+
     @CreateDateColumn({name: 'createdAt'})
     createdAt: Date;
 
@@ -61,5 +74,5 @@ export class Cirugias extends BaseEntity {
 
     // * relacion con seguimiento auxiliar cirugias
     @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoAuxiliarCirugias) => seguimientoAuxiliarCirugias.cirugiasRelation)
-    statusRelation: SeguimientoAuxiliarCirugias[];
+    gestionCirugiasRelation: SeguimientoAuxiliarCirugias[];
 }

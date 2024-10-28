@@ -40,7 +40,7 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity{
     estadoSeguimientoRelation: EstadosSeguimiento;
 
     // * relacion con cirugias
-    @ManyToOne(() => Cirugias, (cirugias) => cirugias.statusRelation)
+    @ManyToOne(() => Cirugias, (cirugias) => cirugias.gestionCirugiasRelation)
     @JoinColumn({name: 'cirugia_id'})
     cirugiasRelation: Cirugias;
 

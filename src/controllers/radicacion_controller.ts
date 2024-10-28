@@ -441,7 +441,7 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
     .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
     .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
     .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
-    .leftJoinAndSelect("cirugias.statusRelation", "gestionAuxiliarCirugia")
+    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionAuxiliarCirugia")
     .leftJoinAndSelect("gestionAuxiliarCirugia.estadoSeguimientoRelation", "statusGestionAuxiliarCirugia")
     .where("servicesGroup.id = 6 || servicesGroup.id = 9")
     .orderBy("radicacion.id", "DESC")
@@ -473,7 +473,10 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
         ipsRemite: c.ipsRemiteRelation?.name || "N/A",
         observacion: c.observation || "N/A",
         hora: c.scheduledTime || "N/A",
-        gestionAuxiliarCirugia: c.statusRelation?.map((g) =>({
+        fechaParaclinoco: c.paraclinicalDate || "N/A",
+        fechaAnesteciologia: c.anesthesiologyDate || "N/A",
+        especialista: c.specialist || "N/A",
+        gestionAuxiliarCirugia: c.gestionCirugiasRelation?.map((g) =>({
           id: g.id,
           estado: g.estadoSeguimientoRelation?.name,
           observacion: g.observation,
