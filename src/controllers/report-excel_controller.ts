@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, query, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import ExcelJS from "exceljs";
 import { format } from "path";
@@ -427,6 +427,116 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
             ...row,
             Estado: gestion.estadoSeguimientoRelation?.name || "N/A",
             Observaciones: gestion.observation || "N/A",
+            Fecha_registro: gestion.createdAt || "N/A",
+          });
+        });
+      }
+      
+
+
+
+    })
+
+
+    const randomStr = randomBytes(4).toString("hex");
+
+    const fileName = `Reporte_Cirugias_${randomStr}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+
+    await worjbook.xlsx.write(res);
+
+    res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// reporte cirugias con filtros de Fecha_ordenamiento
+export async function reportExcelCirugiasFiltros(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const { fechaOrdenamientoStart, fechaOrdenamientoEnd   } = req.body;
+
+    const query = await Cirugias.createQueryBuilder("cirugias")
+    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
+    .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
+    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
+    .leftJoinAndSelect("gestionCirugias.estadoSeguimientoRelation", "estadoSeguimiento")
+    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
+    
+    if (fechaOrdenamientoStart && fechaOrdenamientoEnd) {
+      query.andWhere("cirugias.orderingDate BETWEEN :dateStart AND :dateEnd", {      dateStart: fechaOrdenamientoStart, dateEnd: fechaOrdenamientoEnd });
+    }else{
+      return res.status(400).json({ message: "Debe enviar la fecha de ordenamiento" });
+    }
+
+    query.orderBy("cirugias.orderingDate", "DESC");
+
+    const dataCirugias = await query.getMany();
+    
+    const worjbook = new ExcelJS.Workbook();
+    const worksheet = worjbook.addWorksheet("Reporte Cirugias");
+
+    worksheet.columns = [
+      { header: "Fecha de Ordenamiento", key: "Fecha_ordenamiento", width: 20 },
+      { header: "Fecha de Cirugia", key: "Fecha_cirugia", width: 20 },
+      { header: "Hora Programada", key: "Hora_programada", width: 20 },
+      { header: "IPS Remitente", key: "IPS_Remitente", width: 30 },
+      { header: "Observacion", key: "Observaciones", width: 30 },
+      { header: "Codigo Diagnostico", key: "diagnostico_code", width: 30 },
+      { header: "Diagnostico", key: "diagnostico_name", width: 30 },
+      { header: "Especialista", key: "especialista", width: 30 },
+      { header: "Fecha anesteciologia", key: "fecha_anesteciologia", width: 30 },
+      { header: "Fecha paraclinico", key: "fecha_paraclinico", width: 30 },
+      { header: "Codigo CUPS", key: "Codigo_cups", width: 30 },
+      { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
+      { header: "Observacion Gestion", key: "Observacionesgestion", width: 30 },
+      { header: "Estado", key: "Estado", width: 20 },
+      { header: "Fecha de Registro", key: "Fecha_registro", width: 20 },
+    ];
+
+    dataCirugias.forEach((data) => {
+      const row = {
+        Fecha_ordenamiento: data.orderingDate || "N/A",
+        Fecha_cirugia: data.surgeryDate || "N/A",
+        Hora_programada: data.scheduledTime || "N/A",
+        IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
+        Observaciones: data.observation || "N/A",
+        diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
+        diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
+        especialista: data.specialist || "N/A",
+        fecha_paraclinico: data.paraclinicalDate || "N/A",
+        fecha_anesteciologia: data.anesthesiologyDate || "N/A",
+      }
+      
+      // agregar gilas por cada cups
+      if (data.radicacionRelation?.cupsRadicadosRelation?.length > 0) {
+        data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
+          worksheet.addRow({
+            ...row,
+            Codigo_cups: cups.code || "N/A",
+            Descripcion_cups: cups.DescriptionCode || "N/A",
+          });
+        });
+      }else {
+        worksheet.addRow(row);
+      }
+
+      // agregar filas por seguimiento cirugias
+      if (data.gestionCirugiasRelation.length > 0) {
+        data.gestionCirugiasRelation.forEach((gestion) => {
+          worksheet.addRow({
+            ...row,
+            Estado: gestion.estadoSeguimientoRelation?.name || "N/A",
+            Observacionesgestion: gestion.observation || "N/A",
             Fecha_registro: gestion.createdAt || "N/A",
           });
         });
