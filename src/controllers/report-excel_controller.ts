@@ -119,7 +119,7 @@ export async function downloadReportExcel(
         worksheet.addRow(row);
       }
 
-      // * agregar filas por cada seguimiento auxiliar
+      // * agregar filas por cada seguimiento auxiliar de CUPS
       if (data.cupsRadicadosRelation?.length > 0) {
         data.cupsRadicadosRelation.forEach((cups) => {
           if (cups.seguimientoAuxiliarRelation?.length > 0) {
@@ -191,7 +191,7 @@ export async function downloadReportExcelFilter(
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect(
-        "radicacion.seguimientoAuxiliarRelation",
+        "cups.seguimientoAuxiliarRelation",
         "seguimiento_auxiliar"
       )
       .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
@@ -316,8 +316,8 @@ export async function downloadReportExcelFilter(
         worksheet.addRow(row);
       }
 
-      // * agregar filas por cada seguimiento auxiliar
-      if (data.cupsRadicadosRelation?.length > 0) {
+      // * agregar filas por cada seguimiento auxiliar de CUPS radicacion
+      if (data.cupsRadicadosRelation.length > 0) {
         data.cupsRadicadosRelation.forEach((cups) => {
           if (cups.seguimientoAuxiliarRelation?.length > 0) {
             cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
