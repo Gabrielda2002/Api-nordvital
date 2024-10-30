@@ -36,7 +36,6 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
     try {
         
         const {
-            orderingDate,
             surgeryDate,
             scheduledTime,
             ipsRemite,
@@ -48,7 +47,6 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         } = req.body;
 
         const surgery = new Cirugias();
-        surgery.orderingDate = orderingDate;
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
         surgery.ipsRemite = parseInt(ipsRemite);
@@ -84,7 +82,6 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
         const { id } = req.params;
 
         const {
-            orderingDate,
             surgeryDate,
             scheduledTime,
             ipsRemite,
@@ -99,7 +96,6 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
             return res.status(404).json({ message: "Surgery not found" });
         }
 
-        surgery.orderingDate = orderingDate;
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
         surgery.ipsRemite = ipsRemite;

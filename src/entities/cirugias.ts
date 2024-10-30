@@ -12,10 +12,6 @@ export class Cirugias extends BaseEntity {
     @PrimaryGeneratedColumn({name: 'id'})
     id: number;
 
-    @Column({name: 'fecha_ordenamiento'})
-    @IsNotEmpty({message: 'La fecha de ordenamiento es requerida'})
-    orderingDate: Date;
-
     @Column({name: 'fecha_cirugia'})
     @IsNotEmpty({message: 'La fecha de cirugia es requerida'})
     surgeryDate: Date;

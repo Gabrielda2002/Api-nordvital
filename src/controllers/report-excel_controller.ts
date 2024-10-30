@@ -395,7 +395,7 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
 
     dataCirugias.forEach((data) => {
       const row = {
-        Fecha_ordenamiento: data.orderingDate || "N/A",
+        Fecha_ordenamiento: data.radicacionRelation.orderDate || "N/A",
         Fecha_cirugia: data.surgeryDate || "N/A",
         Hora_programada: data.scheduledTime || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
@@ -505,7 +505,7 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
 
     dataCirugias.forEach((data) => {
       const row = {
-        Fecha_ordenamiento: data.orderingDate || "N/A",
+        Fecha_ordenamiento: data.radicacionRelation.orderDate || "N/A",
         Fecha_cirugia: data.surgeryDate || "N/A",
         Hora_programada: data.scheduledTime || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
