@@ -28,6 +28,8 @@ const allowedOrigins = [
   "https://nordvitalips.com",
   "https://www.nordvitalips.com",
   "https://nordvitalips.com",
+  "https://www.app.nordvitalips.com",
+  "https://app.nordvitalips.com",
 ];
 
 app.use(
