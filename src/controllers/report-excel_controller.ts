@@ -173,8 +173,8 @@ export async function downloadReportExcelFilter(
     const {
       auditDateStart,
       auditDateEnd,
-      radicadoDateStart,
-      radicadoDateEnd,
+      dateStart,
+      dateEnd,
       cupsCode,
     } = req.body;
 
@@ -207,10 +207,10 @@ export async function downloadReportExcelFilter(
       );
     }
     // * filtro por fecha de radicado
-    if (radicadoDateStart && radicadoDateEnd) {
+    if (dateStart && dateEnd) {
       query.andWhere(
-        "radicacion.createdAt BETWEEN :radicadoDateStart AND :radicadoDateEnd",
-        { radicadoDateStart, radicadoDateEnd }
+        "radicacion.createdAt BETWEEN :dateStart AND :dateEnd",
+        { dateStart, dateEnd }
       );
     }
 
@@ -462,7 +462,7 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
 export async function reportExcelCirugiasFiltros(req: Request, res: Response, next: NextFunction){
   try {
     
-    const { fechaOrdenamientoStart, fechaOrdenamientoEnd   } = req.body;
+    const { dateStart, dateEnd   } = req.body;
 
     const query = await Cirugias.createQueryBuilder("cirugias")
     .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
@@ -472,8 +472,8 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
     .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
     
-    if (fechaOrdenamientoStart && fechaOrdenamientoEnd) {
-      query.andWhere("cirugias.orderingDate BETWEEN :dateStart AND :dateEnd", {      dateStart: fechaOrdenamientoStart, dateEnd: fechaOrdenamientoEnd });
+    if (dateStart && dateEnd) {
+      query.andWhere("cirugias.orderingDate BETWEEN :dateStart AND :dateEnd", {      dateStart: dateStart, dateEnd: dateEnd });
     }else{
       return res.status(400).json({ message: "Debe enviar la fecha de ordenamiento" });
     }
