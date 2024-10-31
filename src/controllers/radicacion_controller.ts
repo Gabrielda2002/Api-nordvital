@@ -29,6 +29,7 @@ export async function getAllRadicacion(
     .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
     .leftJoinAndSelect("cupsRadicados.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
     .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
+    .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
     .orderBy("radicacion.id", "DESC")
     .getMany();
 
@@ -459,6 +460,7 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
       fechaAuditoria: r.auditDate,
       fechaOrden: r.orderDate,
       especialidad: r.specialtyRelation?.name || "N/A",
+      nombreSoporte: r.soportesRelation?.nameSaved || "N/A",
       cups: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
         code: c.code,
