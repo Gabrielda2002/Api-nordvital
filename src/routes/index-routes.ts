@@ -35,6 +35,7 @@ import certificateRoutes from './certificados_routes';
 import accesoriosRoutes from './accesorios-equipos-routes';
 import equiposRoutes from './equipos_routes';
 import dispositivoRedRoutes from './dispositivos-red_routes';
+import seguimientoEquipos from './seguimiento-equipos-routes';
 
 const router = Router();
 
@@ -74,6 +75,7 @@ router.use(certificateRoutes);
 router.use(accesoriosRoutes);
 router.use(equiposRoutes);+
 router.use(dispositivoRedRoutes);
+router.use(seguimientoEquipos);
 
 
 export default router;

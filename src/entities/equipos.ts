@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
+import { seguimientoEquipos } from "./seguimiento-equipos";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -55,4 +56,7 @@ export class Equipos extends BaseEntity {
     // relacion con accesorios equipo
     @OneToMany(() => AccesoriosEquipos, (accesorios) => accesorios.equipmentRelation)
     accessoriesRelation: AccesoriosEquipos[]
+
+    @OneToMany(() => seguimientoEquipos, (seguimiento) => seguimiento.equipmentRelation)
+    seguimientoEquipos: seguimientoEquipos[]
 }
