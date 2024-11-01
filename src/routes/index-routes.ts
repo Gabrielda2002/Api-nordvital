@@ -34,6 +34,7 @@ import reportExcelRoutes from './report-excel_routes';
 import certificateRoutes from './certificados_routes';
 import accesoriosRoutes from './accesorios-equipos-routes';
 import equiposRoutes from './equipos_routes';
+import dispositivoRedRoutes from './dispositivos-red_routes';
 
 const router = Router();
 
@@ -71,7 +72,8 @@ router.use(seguimientoAuxiliarCirugiasRoutes);
 router.use(reportExcelRoutes);
 router.use(certificateRoutes);
 router.use(accesoriosRoutes);
-router.use(equiposRoutes);
+router.use(equiposRoutes);+
+router.use(dispositivoRedRoutes);
 
 
 export default router;
