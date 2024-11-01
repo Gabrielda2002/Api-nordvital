@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, On
 import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 
-@Entity("lugarradicacion")
+@Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
 
     @PrimaryGeneratedColumn({name: "IdLugar"})
@@ -18,6 +18,15 @@ export class LugarRadicacion extends BaseEntity{
     @IsBoolean()
     @IsNotEmpty({message: "El estado del lugar es requerido"})
     status: boolean
+
+    @Column({name: "direccion"})
+    address: string
+
+    @Column({name: "departamento"})
+    departamento: string
+
+    @Column({name: "ciudad"})
+    city: string
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date
