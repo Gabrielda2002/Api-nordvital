@@ -1,11 +1,15 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator"
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Equipos } from "./equipos"
 
 @Entity({name: "accesorios_equipos"})
 export class AccesoriosEquipos extends BaseEntity {
 
     @PrimaryGeneratedColumn({name: "id"})
     id: number
+
+    @Column({name: "equipo_id "})
+    sedeId: number
 
     @Column({name: "nombre"})
     @IsString()
@@ -30,4 +34,9 @@ export class AccesoriosEquipos extends BaseEntity {
 
     @Column({name: "numero_inventario"})
     inventoryNumber: string
+
+    @ManyToOne(() => Equipos, equipment => equipment.accessoriesRelation)
+    @JoinColumn({name: "equipo_id"})
+    equipmentRelation: Equipos
+
 }
