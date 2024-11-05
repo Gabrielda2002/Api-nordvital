@@ -25,7 +25,7 @@ export class LugarRadicacion extends BaseEntity{
     address: string
 
     @Column({name: "departamento"})
-    departamento: string
+    departamento: number
 
     @Column({name: "ciudad"})
     city: number
@@ -44,6 +44,11 @@ export class LugarRadicacion extends BaseEntity{
     // relacion con dispositivos red
     @OneToMany(() => dispositivosRed, (dispositivo) => dispositivo.placeRelation)
     devicesRelation: dispositivosRed[]
+
+    // relacion con departamento
+    @OneToMany(() => Municipio, (municipio) => municipio.placeRelation)
+    @JoinColumn({name: "departamento"})
+    departmentRelation: Municipio;
 
     // relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
