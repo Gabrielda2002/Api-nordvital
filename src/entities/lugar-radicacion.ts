@@ -1,7 +1,8 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "./dispositivos-red";
+import { Municipio } from "./municipio";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -27,7 +28,7 @@ export class LugarRadicacion extends BaseEntity{
     departamento: string
 
     @Column({name: "ciudad"})
-    city: string
+    city: number
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date
@@ -43,4 +44,9 @@ export class LugarRadicacion extends BaseEntity{
     // relacion con dispositivos red
     @OneToMany(() => dispositivosRed, (dispositivo) => dispositivo.placeRelation)
     devicesRelation: dispositivosRed[]
+
+    // relacion con municipio
+    @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
+    @JoinColumn({name: "ciudad"})
+    municipioRelation: Municipio;
 }

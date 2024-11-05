@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 import { Usuarios } from "./usuarios";
 import { IsBoolean, IsInt, IsNotEmpty, IsString, Length, Max, Min } from "class-validator";
 import { Carpeta } from "./carpeta";
+import { LugarRadicacion } from "./lugar-radicacion";
 
 @Entity("municipio")
 export class Municipio extends BaseEntity {
@@ -40,4 +41,8 @@ export class Municipio extends BaseEntity {
   // * relacion con usuarios
   @OneToMany(() => Usuarios, (usuarios) => usuarios.municipioRelation)
   usuarioRelation: Usuarios[];
+
+  // * relacion con lugar radicacion
+  @OneToMany(() => LugarRadicacion, (lugar) => lugar.municipioRelation)
+  placeRelation: LugarRadicacion[];
 }
