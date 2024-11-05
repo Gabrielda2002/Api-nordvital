@@ -302,12 +302,13 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
+      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
-      .where("cupsRadicados.status = 6")
+      .where("cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9")
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
