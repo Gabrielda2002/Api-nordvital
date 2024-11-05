@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner, TableForeignKey } from "typeorm";
 export class AlterTableSedes1730824242884 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
 
-        await queryRunner.query(`ALTER TABLE sedes MODIFY COLUMN ciudad INT`);
+        await queryRunner.query(`ALTER TABLE sedes MODIFY COLUMN ciudad INT DEFAULT 1`);
 
         await queryRunner.createForeignKey("sedes", new TableForeignKey({
             columnNames: ["ciudad"],
