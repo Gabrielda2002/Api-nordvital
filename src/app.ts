@@ -10,6 +10,10 @@ import helmet from "helmet";
 import path from "path";
 import { errorLoggerMiddleware } from "./middlewares/error-logger-middleware";
 
+import swaggerUi from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
+import { options } from "./swagger-options";
+
 // * cargar variables de entorno
 dotenv.config();
 
@@ -67,7 +71,10 @@ const apiPrefix = process.env.API_PREFIX || "/api/v1";
 
 // * Rutas
 
+const spects = swaggerJsDoc(options)
+
 app.use(apiPrefix, routes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
 
 // Middleware para manejar errores
 app.use(errorHandler);

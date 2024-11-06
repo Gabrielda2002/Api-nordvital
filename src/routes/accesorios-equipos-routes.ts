@@ -6,6 +6,41 @@ import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
+/*
+* @swagger
+* components:
+*   schemas:
+*       AccesorioEquipo:
+*               type: object
+*               properties:
+*                   id:
+*                       type: integer
+*                       description: Identificador del accesorio
+*                   name:
+*                       type: string
+*                       description: Nombre del accesorio
+*             required:
+*              - name
+*            example:
+*              id: 1
+*              name: Mouse
+*/
+
+/*
+* @swagger
+* /accesorios-equipos:
+* get:
+*  summary: Listar todos los accesorios de equipos
+*  resopnses:
+*   200:
+*     description: Lista de accesorios de equipos
+*     content: 
+*        application/json:
+*          schema: 
+*           type: array
+*           items:
+*             
+*/
 router.get("/accesorios-equipos", authenticate, authorizeRoles(['1']), getAllAccessories);
 
 router.get("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']),validarId, getAccessory);
