@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IsString, Length } from "class-validator";
 
@@ -20,7 +20,7 @@ export class departamentos extends BaseEntity{
     updatedAt: Date
 
     // relacion con sedes
-    @ManyToOne(() => LugarRadicacion, (lugar) => lugar.departmentRelation)
+    @OneToMany(() => LugarRadicacion, (lugar) => lugar.departmentRelation)
     placeRelation: LugarRadicacion[];
 
 }

@@ -46,7 +46,7 @@ export class LugarRadicacion extends BaseEntity{
     devicesRelation: dispositivosRed[]
 
     // relacion con departamento
-    @OneToMany(() => Municipio, (municipio) => municipio.placeRelation)
+    @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
     @JoinColumn({name: "departamento"})
     departmentRelation: Municipio;
 
