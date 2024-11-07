@@ -45,7 +45,7 @@ export class Equipos extends BaseEntity {
     warrantyTime: number
 
     @Column({name: "garantia"})
-    warranty: string
+    warranty: boolean
 
     @Column({name: "fecha_entrega"})
     deliveryDate: Date
