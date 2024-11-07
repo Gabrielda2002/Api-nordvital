@@ -187,3 +187,22 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         next(error);
     }
 }
+
+// buscar sede por id departamento
+export async function getLugaresRadicacionByDepartment(req: Request, res: Response, next: NextFunction){
+    try {
+        const { id } = req.params;
+
+        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        .where("lugar_radicacion.departamento = :id", { id: parseInt(id) })
+        .getMany();
+
+        if (!lugaresRadicacion) {
+            return res.status(404).json({ message: "LugarRadicacion not found" });
+        }
+
+        return res.json(lugaresRadicacion);
+    } catch (error) {
+        next(error);
+    }
+}
