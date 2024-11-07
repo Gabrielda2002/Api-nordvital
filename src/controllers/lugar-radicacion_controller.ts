@@ -5,7 +5,10 @@ import { parse } from "path";
 
 export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
-        const lugaresRadicacion = await LugarRadicacion.find();
+        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        .leftJoinAndSelect("lugar_radicacion.departmentRelation", "departamento")
+        .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
+        .getMany();
         return res.json(lugaresRadicacion);
     } catch (error) {
         next(error);
