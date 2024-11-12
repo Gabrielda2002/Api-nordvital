@@ -100,7 +100,6 @@ export async function updateDevice(
     const { id } = req.params;
 
     const {
-      sedeId,
       name,
       brand,
       model,
@@ -120,7 +119,6 @@ export async function updateDevice(
       });
     }
 
-    device.sedeId = sedeId;
     device.name = name;
     device.brand = brand;
     device.model = model;

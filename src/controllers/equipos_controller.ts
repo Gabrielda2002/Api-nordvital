@@ -50,7 +50,7 @@ export async function createEquipment(
       brand,
       model,
       serial,
-      operatuingSystem,
+      operationalSystem,
       addressIp,
       mac,
       purchaseDate,
@@ -68,7 +68,7 @@ export async function createEquipment(
     equipment.brand = brand;
     equipment.model = model;
     equipment.serial = serial;
-    equipment.operatuingSystem = operatuingSystem;
+    equipment.operationalSystem = operationalSystem;
     equipment.addressIp = addressIp;
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
@@ -103,7 +103,6 @@ export async function updateEquipment(
     const { id } = req.params;
 
     const {
-      sedeId,
       name,
       area,
       typeEquipment,
@@ -128,19 +127,18 @@ export async function updateEquipment(
       });
     }
 
-    equipment.sedeId = sedeId;
     equipment.name = name;
     equipment.area = area;
     equipment.typeEquipment = typeEquipment;
     equipment.brand = brand;
     equipment.model = model;
     equipment.serial = serial;
-    equipment.operatuingSystem = operatuingSystem;
+    equipment.operationalSystem = operatuingSystem;
     equipment.addressIp = addressIp;
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime;
-    equipment.warranty = warranty;
+    equipment.warranty = warranty == 1;
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
 

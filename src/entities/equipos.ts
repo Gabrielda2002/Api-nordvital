@@ -30,7 +30,7 @@ export class Equipos extends BaseEntity {
     serial: string
 
     @Column({name: "sistema_operativo"})
-    operatuingSystem: string
+    operationalSystem: string
 
     @Column({name: "direccion_ip"})
     addressIp: string
