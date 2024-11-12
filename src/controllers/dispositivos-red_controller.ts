@@ -63,7 +63,7 @@ export async function createDevice(
     } = req.body;
 
     const device = new dispositivosRed();
-    device.sedeId = sedeId;
+    device.sedeId = parseInt(sedeId);
     device.name = name;
     device.brand = brand;
     device.model = model;

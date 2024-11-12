@@ -1,6 +1,7 @@
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
+import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -9,48 +10,87 @@ export class Equipos extends BaseEntity {
     id: number;
 
     @Column({name: "sede_id"})
+    @IsNumber()
+    @IsNotEmpty({message: "La sede es requerida"})
     sedeId: number;
 
     @Column({name: "nombre_equipo"})
+    @IsString()
+    @IsNotEmpty({message: "El nombre del equipo es requerido"})
+    @Length(3, 200, {message: "El nombre del equipo debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
     @Column({name: "ubicacion"})
+    @IsString()
+    @IsNotEmpty({message: "La ubicación es requerida"})
+    @Length(3, 200, {message: "La ubicación debe tener entre $constraint1 y $constraint2 caracteres"})
     area: string
 
     @Column({name: "tipo_equipo"})
+    @IsString()
+    @IsNotEmpty({message: "El tipo de equipo es requerido"})
+    @Length(3, 200, {message: "El tipo de equipo debe tener entre $constraint1 y $constraint2 caracteres"})
     typeEquipment: string
 
     @Column({name: "marca"})
+    @IsString()
+    @IsNotEmpty({message: "La marca es requerida"})
+    @Length(3, 200, {message: "La marca debe tener entre $constraint1 y $constraint2 caracteres"})
     brand: string
 
     @Column({name: "modelo"})
+    @IsString()
+    @IsNotEmpty({message: "El modelo es requerido"})
+    @Length(3, 200, {message: "El modelo debe tener entre $constraint1 y $constraint2 caracteres"})
     model: string
 
     @Column({name: "serial"})
+    @IsString()
+    @IsNotEmpty({message: "El serial es requerido"})
+    @Length(3, 200, {message: "El serial debe tener entre $constraint1 y $constraint2 caracteres"})
     serial: string
 
     @Column({name: "sistema_operativo"})
+    @IsString()
+    @IsNotEmpty({message: "El sistema operativo es requerido"})
+    @Length(3, 200, {message: "El sistema operativo debe tener entre $constraint1 y $constraint2 caracteres"})
     operationalSystem: string
 
     @Column({name: "direccion_ip"})
+    @IsString()
+    @IsNotEmpty({message: "La dirección ip es requerida"})
+    @Length(3, 200, {message: "La dirección ip debe tener entre $constraint1 y $constraint2 caracteres"})
     addressIp: string
 
     @Column({name: "mac"})
+    @IsString()
+    @IsNotEmpty({message: "La mac es requerida"})
+    @Length(3, 200, {message: "La mac debe tener entre $constraint1 y $constraint2 caracteres"})
     mac: string
 
     @Column({name: "fecha_compra"})
+    @IsNotEmpty({message: "La fecha de compra es requerida"})
     purchaseDate: Date
 
     @Column({name: "tiempo_garantia"})
-    warrantyTime: number
+    @IsString()
+    @IsNotEmpty({message: "El tiempo de garantía es requerido"})
+    @Length(3, 200, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
+    warrantyTime: string
 
     @Column({name: "garantia"})
+    @IsNotEmpty({message: "La garantía es requerida"})
+    @IsBoolean()
     warranty: boolean
 
     @Column({name: "fecha_entrega"})
+    @IsNotEmpty({message: "La fecha de entrega es requerida"})
     deliveryDate: Date
 
     @Column({name: "numero_intentario"})
+    @IsString()
+    @IsNotEmpty({message: "El número de inventario es requerido"})
+    @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
 
     // relacion con accesorios equipo

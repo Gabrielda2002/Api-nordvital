@@ -61,7 +61,7 @@ export async function createEquipment(
     } = req.body;
 
     const equipment = new Equipos();
-    equipment.sedeId = sedeId;
+    equipment.sedeId = parseInt(sedeId);
     equipment.name = name;
     equipment.area = area;
     equipment.typeEquipment = typeEquipment;
@@ -109,7 +109,7 @@ export async function updateEquipment(
       brand,
       model,
       serial,
-      operatuingSystem,
+      operationalSystem,
       addressIp,
       mac,
       purchaseDate,
@@ -133,7 +133,7 @@ export async function updateEquipment(
     equipment.brand = brand;
     equipment.model = model;
     equipment.serial = serial;
-    equipment.operationalSystem = operatuingSystem;
+    equipment.operationalSystem = operationalSystem;
     equipment.addressIp = addressIp;
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
