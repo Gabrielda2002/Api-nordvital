@@ -10,7 +10,7 @@ router.get("/seguimiento-equipos", authenticate, authorizeRoles(['1']), getAllFo
 
 router.get("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']),validarId, getFollowEquipment);
 
-router.post("/seguimiento-equipos", authenticate, authorizeRoles(['1']),validarId, createFollowEquipment);
+router.post("/seguimiento-equipos", authenticate, authorizeRoles(['1']), createFollowEquipment);
 
 router.put("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']),validarId, updateFollowEquipment);
 
