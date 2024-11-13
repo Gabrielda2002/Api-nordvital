@@ -14,6 +14,10 @@ export class SeguimientoDispositivosRed extends BaseEntity {
     @IsNotEmpty({message: 'El id del dispositivo es requerido'})
     deviceId: number
 
+    @Column({name: 'fecha_evento'})
+    @IsNotEmpty({message: 'La fecha del evento es requerida'})
+    dateEvent: Date
+
     @Column({name: 'tipo_evento'})
     @IsString()
     @IsNotEmpty({message: 'El tipo de evento es requerido'})
