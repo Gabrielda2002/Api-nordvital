@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
@@ -92,6 +92,12 @@ export class Equipos extends BaseEntity {
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
+
+    @CreateDateColumn({name: "fecha_creacion"})
+    createAt: Date
+
+    @UpdateDateColumn({name: "fecha_actualizacion"})
+    updateAt: Date
 
     // relacion con accesorios equipo
     @OneToMany(() => AccesoriosEquipos, (accesorios) => accesorios.equipmentRelation)

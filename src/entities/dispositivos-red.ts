@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
@@ -67,6 +67,12 @@ export class dispositivosRed extends BaseEntity {
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
+
+    @CreateDateColumn({name: "fecha_creacion"})
+    createAt: Date
+
+    @UpdateDateColumn({name: "fecha_actualizacion"})
+    updateAt: Date
 
     // relacion con lugar radicacion
     @ManyToOne(() => LugarRadicacion, (lugar) => lugar.devicesRelation)
