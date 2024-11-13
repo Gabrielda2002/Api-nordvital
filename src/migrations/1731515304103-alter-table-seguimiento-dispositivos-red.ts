@@ -14,7 +14,7 @@ export class AlterTableSeguimientoDispositivosRed1731515304103 implements Migrat
 
         await queryRunner.addColumns("dispositivos_red", [
             new TableColumn({
-                name: "fecha_creacion",
+                name: "created_at",
                 type: "timestamp",
                 default: "CURRENT_TIMESTAMP",
             }),
@@ -39,6 +39,11 @@ export class AlterTableSeguimientoDispositivosRed1731515304103 implements Migrat
                 onUpdate: "CURRENT_TIMESTAMP",
             }),
         ]);
+
+        await queryRunner.addColumn("seguimiento_dispositivos_red", new TableColumn({
+            name: "fecha_evento",
+            type: "date",
+        }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -49,5 +54,7 @@ export class AlterTableSeguimientoDispositivosRed1731515304103 implements Migrat
 
         await queryRunner.dropColumn("equipos", "created_at");
         await queryRunner.dropColumn("equipos", "updated_at");
+
+        await queryRunner.dropColumn("seguimiento_dispositivos_red", "fecha_evento");
     }
 }
