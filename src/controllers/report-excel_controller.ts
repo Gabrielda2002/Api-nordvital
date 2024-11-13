@@ -187,6 +187,7 @@ export async function downloadReportExcelFilter(
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ips_remitente")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "grupo_servicios")
       .leftJoinAndSelect("radicacion.servicesRelation", "servicios")
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
@@ -233,6 +234,7 @@ export async function downloadReportExcelFilter(
       { header: "ID", key: "Id", width: 10 },
       { header: "Tipo de Documento", key: "Tipo_de_documento", width: 20 },
       { header: "Nombre del Paciente", key: "Nombre_del_paciente", width: 30 },
+      { header: "Número Documento", key: "Numero_documento", width: 30 },
       { header: "Teléfono Celular", key: "Telefono_celular", width: 20 },
       { header: "Teléfono Fijo", key: "Telefono_fijo", width: 20 },
       { header: "Correo Electrónico", key: "Correo_electronico", width: 30 },
@@ -244,10 +246,10 @@ export async function downloadReportExcelFilter(
       { header: "IPS Remitente", key: "IPS_Remitente", width: 30 },
       { header: "Profesional", key: "Profesional", width: 30 },
       { header: "Especialidad", key: "Especialidad", width: 30 },
-      { header: "Código Diagnóstico", key: "Codigo_diagnostico", width: 20 },
+      { header: "Código Diagnóstico", key: "codigo_diagnostico", width: 20 },
       {
         header: "Descripción Diagnóstico",
-        key: "Descripcion_diagnostico",
+        key: "descripcion_diagnostico",
         width: 30,
       },
       { header: "Grupo de Servicios", key: "Grupo_de_servicios", width: 20 },
@@ -282,6 +284,7 @@ export async function downloadReportExcelFilter(
         Id: data.id || "N/A",
         Tipo_de_documento: data.patientRelation?.documentRelation.name || "N/A",
         Nombre_del_paciente: data.patientRelation?.name || "N/A",
+        Numero_documento: data.patientRelation?.documentNumber || "N/A",
         Telefono_celular: data.patientRelation?.phoneNumber || "N/A",
         Telefono_fijo: data.patientRelation?.landline || "N/A",
         Correo_electronico: data.patientRelation?.email || "N/A",
@@ -293,6 +296,8 @@ export async function downloadReportExcelFilter(
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
         Profesional: data.profetional || "N/A",
         Especialidad: data.specialtyRelation?.name || "N/A",
+        codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
+        descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
         Radicador: data.usuarioRelation?.name || "N/A",
@@ -334,6 +339,7 @@ export async function downloadReportExcelFilter(
 
     // const dateStr = format(new Date(), "yyyyMMdd_HHmmss");
 
+    console.log(dataRadicacion)
     const randomStr = randomBytes(4).toString("hex");
 
     const fileName = `Reporte_Radicacion_${randomStr}.xlsx`;
