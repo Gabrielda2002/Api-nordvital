@@ -181,6 +181,8 @@ export async function getDevicesBySede(
   try {
     const {id} = req.params;
     const devices = await dispositivosRed.createQueryBuilder("dispositivosRed")
+    .leftJoinAndSelect("dispositivosRed.seguimientoDispositivosRedRelation", "seguimiento")
+    .leftJoinAndSelect("seguimiento.userRelation", "user")
     .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
     .getMany();
 

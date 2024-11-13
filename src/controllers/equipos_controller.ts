@@ -192,6 +192,8 @@ export async function getEquipmentBySede(
   try {
     const { id } = req.params;
     const equipment = await Equipos.createQueryBuilder("equipos")
+    .leftJoinAndSelect("equipos.seguimientoEquipos", "seguimientoEquipos")
+    .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
     .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
     .getMany();
 
