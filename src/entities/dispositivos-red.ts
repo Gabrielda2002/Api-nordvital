@@ -1,6 +1,7 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 
 @Entity({name: "dispositivos_red"})
 export class dispositivosRed extends BaseEntity {
@@ -71,5 +72,9 @@ export class dispositivosRed extends BaseEntity {
     @ManyToOne(() => LugarRadicacion, (lugar) => lugar.devicesRelation)
     @JoinColumn({name: "sede_id"})
     placeRelation: LugarRadicacion
+
+    // releacion con seguimiento dispositivos red
+    @OneToMany(() => SeguimientoDispositivosRed, (seguimiento) => seguimiento.deviceRelation)
+    seguimientoDispositivosRedRelation: SeguimientoDispositivosRed[]
 
 }

@@ -37,6 +37,7 @@ import equiposRoutes from './equipos_routes';
 import dispositivoRedRoutes from './dispositivos-red_routes';
 import seguimientoEquipos from './seguimiento-equipos-routes';
 import departamentoRoutes from './departamentos_routes';
+import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
 
 const router = Router();
 
@@ -78,6 +79,7 @@ router.use(equiposRoutes);+
 router.use(dispositivoRedRoutes);
 router.use(seguimientoEquipos);
 router.use(departamentoRoutes);
+router.use(seguimientoDispositivosRed);
 
 
 export default router;
