@@ -44,11 +44,11 @@ export async function createFollowEquipment(req: Request, res: Response, next: N
         const { equipmentId, eventDate, eventType, description, responsible } = req.body
 
         const data = new seguimientoEquipos()
-        data.equipmentId = equipmentId
+        data.equipmentId = parseInt(equipmentId)
         data.eventDate = eventDate
         data.eventType = eventType
         data.description = description
-        data.responsible = responsible
+        data.responsible = parseInt(responsible)
 
         const errors = await validate(data)
 
@@ -81,11 +81,11 @@ export async function updateFollowEquipment(req: Request, res: Response, next: N
             })
         }
 
-        data.equipmentId = equipmentId
+        data.equipmentId = parseInt(equipmentId)
         data.eventDate = eventDate
         data.eventType = eventType
         data.description = description
-        data.responsible = responsible
+        data.responsible = parseInt(responsible)
 
         const errors = await validate(data)
 
