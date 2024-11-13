@@ -42,11 +42,12 @@ export async function getMonitoringDevicesNetwork(req: Request, res: Response, n
 export async function createMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
 
-        const { deviceId, eventType, description, responsible } = req.body
+        const { equipmentId, eventType, eventDate, description, responsible } = req.body
 
         const data = new SeguimientoDispositivosRed()
-        data.deviceId = parseInt(deviceId)
+        data.deviceId = parseInt(equipmentId)
         data.eventType = eventType
+        data.dateEvent = eventDate
         data.description = description
         data.responsible = parseInt(responsible)
 
@@ -72,7 +73,7 @@ export async function createMonitoringDevicesNetwork(req: Request, res: Response
 export async function updateMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
         const id = req.params.id
-        const { deviceId, eventType, description, responsible } = req.body
+        const { equipmentId, eventType, eventDate, description, responsible } = req.body
 
         const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(id)})
 
@@ -82,8 +83,9 @@ export async function updateMonitoringDevicesNetwork(req: Request, res: Response
             })
         }
 
-        data.deviceId = parseInt(deviceId)
+        data.deviceId = parseInt(equipmentId)
         data.eventType = eventType
+        data.dateEvent = eventDate
         data.description = description
         data.responsible = parseInt(responsible)
         
