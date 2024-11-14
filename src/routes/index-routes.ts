@@ -38,6 +38,7 @@ import dispositivoRedRoutes from './dispositivos-red_routes';
 import seguimientoEquipos from './seguimiento-equipos-routes';
 import departamentoRoutes from './departamentos_routes';
 import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
+import componenteRoutes from './componentes_routes';
 
 const router = Router();
 
@@ -75,11 +76,11 @@ router.use(seguimientoAuxiliarCirugiasRoutes);
 router.use(reportExcelRoutes);
 router.use(certificateRoutes);
 router.use(accesoriosRoutes);
-router.use(equiposRoutes);+
+router.use(equiposRoutes);
 router.use(dispositivoRedRoutes);
 router.use(seguimientoEquipos);
 router.use(departamentoRoutes);
 router.use(seguimientoDispositivosRed);
-
+router.use(componenteRoutes);
 
 export default router;

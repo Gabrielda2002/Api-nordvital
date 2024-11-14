@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { Componentes } from "./componentes";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -105,4 +106,8 @@ export class Equipos extends BaseEntity {
 
     @OneToMany(() => seguimientoEquipos, (seguimiento) => seguimiento.equipmentRelation)
     seguimientoEquipos: seguimientoEquipos[]
+
+    // relacion con componente
+    @OneToMany(() => Componentes, (component) => component.equipmentsRelation)
+    componentRelation: Componentes[]
 }
