@@ -3,6 +3,8 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm
 export class CreateTableDepartamentos1730835815294 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
 
+        await queryRunner.query(`UPDATE sedes SET departamento = 1 WHERE departamento = ''`);
+        
         await queryRunner.query(`ALTER TABLE sedes MODIFY COLUMN departamento int DEFAULT 1`);
 
         await queryRunner.createTable(new Table({
