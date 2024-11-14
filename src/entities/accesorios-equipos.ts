@@ -14,25 +14,42 @@ export class AccesoriosEquipos extends BaseEntity {
     @Column({name: "nombre"})
     @IsString()
     @IsNotEmpty({message: "El nombre del accesorio es requerido"})
-    @Length(3, 50, {message: "El nombre del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(3, 255, {message: "El nombre del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
     @Column({name: "marca"})
+    @IsString()
+    @IsNotEmpty({message: "La marca del accesorio es requerida"})
+    @Length(3, 255, {message: "La marca del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     brand: string
 
     @Column({name: "modelo"})
+    @IsString()
+    @IsNotEmpty({message: "El modelo del accesorio es requerido"})
     model: string
 
     @Column({name: "serial"})
+    @IsString()
+    @IsNotEmpty({message: "El serial del accesorio es requerido"})
+    @Length(3, 255, {message: "El serial del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     serial: string
 
     @Column({name: "otros_datos"})
+    @IsString()
+    @IsNotEmpty({message: "Otros datos del accesorio son requeridos"})
+    @Length(3, 255, {message: "Los otros datos del accesorio deben tener entre $constraint1 y $constraint2 caracteres"})
     otherData: string
 
     @Column({name: "estado"})
+    @IsBoolean()
+    @IsNotEmpty({message: "El estado del accesorio es requerido"})
+    @Length(3, 255, {message: "El estado del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     status: string
 
     @Column({name: "numero_inventario"})
+    @IsString()
+    @IsNotEmpty({message: "El número de inventario del accesorio es requerido"})
+    @Length(3, 255, {message: "El número de inventario del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
 
     @ManyToOne(() => Equipos, equipment => equipment.accessoriesRelation)
