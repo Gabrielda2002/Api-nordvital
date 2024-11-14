@@ -16,7 +16,7 @@ router.put("/servicios/:id",authenticate, authorizeRoles(['1', '2']),validarId ,
 
 router.delete("/servicios/:id",authenticate, authorizeRoles(['1']),validarId , deleteServicio)
 
-router.post("/servicios-name",authenticate, authorizeRoles(['1', '3','10','15']), getServiciosByName)
+router.post("/servicios-name",authenticate, authorizeRoles(['1', '3','10','15', '6']), getServiciosByName)
 
 router.put("/update-status-servicio/:id",validarId ,authenticate, authorizeRoles(['1', '2']), updateStatusServicio);
 

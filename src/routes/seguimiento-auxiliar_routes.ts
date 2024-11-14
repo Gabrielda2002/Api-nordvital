@@ -10,7 +10,7 @@ router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '5
 
 router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,getSeguimientoAuxiliar);
 
-router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '10']), createSeguimientoAuxiliar);
+router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '10', '6']), createSeguimientoAuxiliar);
 
 router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateSeguimientoAuxiliar);
 

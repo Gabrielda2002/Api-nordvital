@@ -10,13 +10,13 @@ router.get("/pacientes",authenticate, authorizeRoles(['1', '3', '10' , '15']), g
 
 router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3' , '5']),validarId, getPaciente);
 
-router.post("/pacientes",authenticate, authorizeRoles(['1', '3', '10' , '15']), createPaciente);
+router.post("/pacientes",authenticate, authorizeRoles(['1', '3', '10' , '15', '6']), createPaciente);
 
-router.put("/pacientes/:id",authenticate, authorizeRoles(['1' , '3','10', '15']), validarId, updatePaciente);
+router.put("/pacientes/:id",authenticate, authorizeRoles(['1' , '3','10', '15', '6']), validarId, updatePaciente);
 
 router.delete("/pacientes/:id",authenticate, authorizeRoles(['1']), validarId, deletePaciente);
 
-router.post("/pacientes-documento",authenticate, authorizeRoles(['1', '3','10', '15']), getPacientesByDocument);
+router.post("/pacientes-documento",authenticate, authorizeRoles(['1', '3','10', '15', '6']), getPacientesByDocument);
 
 router.put("/pacientes-actualizar-tablet/:id",authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, updatePacienteTable);
 

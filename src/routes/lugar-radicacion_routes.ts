@@ -16,7 +16,7 @@ router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),va
 
 router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId ,deleteLugarRadicacion);
 
-router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1', '3p','10','15']), getLugaresRadicacionByName);
+router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1', '3','10','15', '6']), getLugaresRadicacionByName);
 
 router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),validarId , updateStatusLugarRadicacion);
 

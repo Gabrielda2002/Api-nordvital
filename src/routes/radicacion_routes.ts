@@ -8,11 +8,11 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/radicacion',authenticate, authorizeRoles(['1','10', '3', '15']), getAllRadicacion);
+router.get('/radicacion',authenticate, authorizeRoles(['1','10', '3', '15', 6]), getAllRadicacion);
 
 router.get('/radicacion/:id',authenticate, authorizeRoles(['1', '10', '3', '15']), validarId,  getRadicacionById);
 
-router.post('/radicacion',authenticate, authorizeRoles(['1', '10', '3', '15']), createRadicado);
+router.post('/radicacion',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), createRadicado);
 
 router.put('/radicacion/:id',authenticate, authorizeRoles(['1', '10', '3']), validarId, updateRadicado);
 
