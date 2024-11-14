@@ -51,7 +51,7 @@ export async function createComponent(
     ) {
     try {
         const {
-            idEquipments,
+            equipmentId,
             name,
             brand,
             capacity,
@@ -63,7 +63,7 @@ export async function createComponent(
     
         const component = new Componentes()
 
-        component.idEquipments = parseInt(idEquipments);
+        component.idEquipments = parseInt(equipmentId);
         component.name = name;
         component.brand = brand;
         component.capacity = capacity;

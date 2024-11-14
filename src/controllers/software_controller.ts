@@ -51,22 +51,24 @@ export async function createSoftware(
     ) {
     try {
         const {
+            name,
             equipmentId,
-            versions,
+            version,
             license,
             otherData,
-            installDate,
+            dateInstallation,
             status,
         } = req.body;
 
-        const software = Software.create({
-            equipmentId,
-            versions,
-            license,
-            otherData,
-            installDate,
-            status,
-        });
+        const software =  new Software()
+
+        software.equipmentId = parseInt(equipmentId);
+        software.name = name;
+        software.versions = version;
+        software.license = license;
+        software.otherData = otherData;
+        software.installDate = dateInstallation;
+        software.status = status;
 
         const errors = await validate(software);
 
