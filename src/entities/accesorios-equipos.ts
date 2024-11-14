@@ -8,8 +8,8 @@ export class AccesoriosEquipos extends BaseEntity {
     @PrimaryGeneratedColumn({name: "id"})
     id: number
 
-    @Column({name: "equipo_id "})
-    sedeId: number
+    @Column({name: "equipo_id"})
+    equipmentId: number
 
     @Column({name: "nombre"})
     @IsString()
@@ -41,7 +41,7 @@ export class AccesoriosEquipos extends BaseEntity {
     otherData: string
 
     @Column({name: "estado"})
-    @IsBoolean()
+    @IsString()
     @IsNotEmpty({message: "El estado del accesorio es requerido"})
     @Length(3, 255, {message: "El estado del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     status: string

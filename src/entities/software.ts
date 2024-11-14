@@ -12,6 +12,12 @@ export class Software extends BaseEntity{
     @IsNumber()
     equipmentId: number
 
+    @Column({name: "nombre"})
+    @IsString()
+    @IsNotEmpty({message: "El nombre es requerido"})
+    @Length(3, 200, {message: "El nombre debe tener entre $constraint1 y $constraint2 caracteres"})
+    name: string
+
     @Column({name: "version"})
     @IsString()
     @IsNotEmpty({message: "La version es requerida"})
