@@ -8,12 +8,12 @@ const router = Router();
 
 router.get("/software", authenticate, authorizeRoles(["1"]), getAllSoftware);
 
-router.get("/componentes/:id", authenticate, authorizeRoles(["1"]),validarId , getSoftware);
+router.get("/software/:id", authenticate, authorizeRoles(["1"]),validarId , getSoftware);
 
-router.post("/componentes", authenticate, authorizeRoles(["1"]), createSoftware);
+router.post("/software", authenticate, authorizeRoles(["1"]), createSoftware);
 
-router.put("/componentes/:id", authenticate, authorizeRoles(["1"]), validarId, updateSoftware);
+router.put("/software/:id", authenticate, authorizeRoles(["1"]), validarId, updateSoftware);
 
-router.delete("/componentes/:id", authenticate, authorizeRoles(["1"]), validarId, deleteSoftware);
+router.delete("/software/:id", authenticate, authorizeRoles(["1"]), validarId, deleteSoftware);
 
 export default router;
