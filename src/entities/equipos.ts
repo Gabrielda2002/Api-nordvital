@@ -3,6 +3,7 @@ import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { Componentes } from "./componentes";
+import { Software } from "./software";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -110,4 +111,8 @@ export class Equipos extends BaseEntity {
     // relacion con componente
     @OneToMany(() => Componentes, (component) => component.equipmentsRelation)
     componentRelation: Componentes[]
+
+    //relacion con software
+    @OneToMany(() => Software, (software) => software.equipmentRelation)
+    softwareRelation: Software[]
 }

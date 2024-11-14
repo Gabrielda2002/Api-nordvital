@@ -39,6 +39,7 @@ import seguimientoEquipos from './seguimiento-equipos-routes';
 import departamentoRoutes from './departamentos_routes';
 import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
 import componenteRoutes from './componentes_routes';
+import softwareRoutes from './software_routes';
 
 const router = Router();
 
@@ -82,5 +83,6 @@ router.use(seguimientoEquipos);
 router.use(departamentoRoutes);
 router.use(seguimientoDispositivosRed);
 router.use(componenteRoutes);
+router.use(softwareRoutes);
 
 export default router;
