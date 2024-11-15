@@ -20,6 +20,11 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
 
+        // validar que el usuario este activo
+        if (user.status === false) {
+            return res.status(401).json({ message: "Usuario inactivo" });
+        }
+
         // Generar el token JWT
         const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '5h' });
 
