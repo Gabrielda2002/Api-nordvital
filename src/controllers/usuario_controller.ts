@@ -362,7 +362,7 @@ export async function updateUsuarioTable(request: Request, response: Response, n
   try {
     
     const {id} = request.params;
-    const { dniNumber, name, lastName, dniType, email, password, municipio, rol } = request.body;
+    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol } = request.body;
     console.log(request.body);
 
     const usuario = await Usuarios.findOneBy({id: parseInt(id)});
@@ -371,6 +371,7 @@ export async function updateUsuarioTable(request: Request, response: Response, n
     }
 
     usuario.dniNumber = parseInt(dniNumber);
+    usuario.status = status == 1;
     usuario.name = name;
     usuario.lastName = lastName;
     usuario.dniType = parseInt(dniType);
