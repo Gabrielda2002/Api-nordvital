@@ -309,7 +309,7 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where("cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9")
-      .orderBy("radicacion.id", "DESC")
+      .orderBy("radicacion.createdAt", "ASC")
       .getMany();
 
     const formatedRadicaciones = await radicaciones.map((r) => ({
