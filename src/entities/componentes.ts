@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Equipos } from "./equipos";
 
 @Entity({name: "componentes"})
@@ -54,6 +54,12 @@ export class Componentes extends BaseEntity{
     @IsNotEmpty({message: "El serial es requerido"})
     @Length(3, 200, {message: "El serial debe tener entre $constraint1 y $constraint2 caracteres"})
     serial: string
+
+    @UpdateDateColumn({name: "updated_at"})
+    updatedAt: Date
+
+    @CreateDateColumn({name: "created_at"})
+    createdAt: Date
 
     // relacion con la tabla equipos
     @ManyToOne(() => Equipos, equipos => equipos.componentRelation)

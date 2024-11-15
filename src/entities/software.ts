@@ -1,5 +1,5 @@
 import { IS_ALPHA, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Equipos } from "./equipos";
 
 @Entity({name: "software"})
@@ -45,6 +45,12 @@ export class Software extends BaseEntity{
     @IsNotEmpty({message: "El estado es requerido"})
     @Length(3, 200, {message: "El estado debe tener entre $constraint1 y $constraint2 caracteres"})
     status: string
+
+    @UpdateDateColumn({name: "updated_at"})
+    updatedAt: Date
+
+    @CreateDateColumn({name: "created_at"})
+    createdAt: Date
 
     //relacion con equipos
     @ManyToOne(() => Equipos, equipos => equipos.softwareRelation)

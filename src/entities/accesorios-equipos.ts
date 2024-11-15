@@ -52,6 +52,12 @@ export class AccesoriosEquipos extends BaseEntity {
     @Length(3, 255, {message: "El número de inventario del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
 
+    @CreateDateColumn({name: "created_at"})
+    createdAt: Date
+
+    @UpdateDateColumn({name: "updated_at"})
+    updatedAt: Date
+
     @ManyToOne(() => Equipos, equipment => equipment.accessoriesRelation)
     @JoinColumn({name: "equipo_id"})
     equipmentRelation: Equipos
