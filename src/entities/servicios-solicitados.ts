@@ -17,7 +17,7 @@ export class ServiciosSolicitados extends BaseEntity {
     @Column({name: "NombreSolicitado"})
     @IsString()
     @IsNotEmpty({message: "El nombre es requerido"})
-    @Length(1, 100, {message: "El nombre debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(1, 150, {message: "El nombre debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string;
 
     @Column({name: "Estado"}) 
