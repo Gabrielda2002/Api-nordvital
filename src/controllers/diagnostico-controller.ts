@@ -38,11 +38,7 @@ export async function getDiagnosticoById(req: Request, res: Response, next: Next
 
 export async function createDiagnostico(req: Request, res: Response, next: NextFunction) {
     try {
-        const { code, description } = req.body;
-
-        if (!code || !description) {
-            return res.status(400).json({ message: "Todos los campos son requeridos." });
-        }
+        const { code, name } = req.body;
 
         const diagnosticoExists = await Diagnostico.findOneBy({ code });
 
@@ -50,10 +46,9 @@ export async function createDiagnostico(req: Request, res: Response, next: NextF
             return res.status(409).json({ message: "El diagnóstico ya existe." });
         }
 
-        const diagnostico = Diagnostico.create({
-            code,
-            description,
-        });
+        const diagnostico = new  Diagnostico()
+        diagnostico.code = code;
+        diagnostico.description = name
 
         const errors = await validate(diagnostico);
 
@@ -80,15 +75,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
         
         const { id } = req.params;
 
-        if (!id) {
-            return res.status(400).json({message: "Id is required"});
-        }
-
-        const { code, description } = req.body;
-
-        if (!code || !description) {
-            return res.status(400).json({message: "All fields are required"});
-        }
+        const {  name } = req.body;
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
 
@@ -96,8 +83,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
             return res.status(404).json({message: "Diagnostico not found"});
         }
 
-        diagnostico.code = code;
-        diagnostico.description = description;
+        diagnostico.description = name;
 
         const errors = await validate(diagnostico);
         if (errors.length > 0) {
@@ -163,3 +149,4 @@ export async function getDiagnosticosByName(req: Request, res: Response, next: N
     }
 
 }
+
