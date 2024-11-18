@@ -63,7 +63,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             newFile.name = fileNameWithoutExt?.normalize("NFC");
 
             // Obtener ruta relativa uniforme
-            const uploadsFolder = path.resolve(__dirname, "../../uploads");
+            const uploadsFolder = path.resolve(__dirname, "uploads");
             const relativePath = path.relative(uploadsFolder, file.path).replace(/\\/g, "/");
             console.log(relativePath)
 
