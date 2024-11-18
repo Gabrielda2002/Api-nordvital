@@ -45,32 +45,27 @@ export async function getFileById(req: Request, res: Response, next: NextFunctio
 export async function createFile(req: Request, res: Response, next: NextFunction) {
     try {
         const { parentFolderId } = req.query;
-        console.log(parentFolderId);
-
-        // Asegúrate de que req.files sea un array de archivos
         const files = req.files as Express.Multer.File[];
 
-        console.log(files);
         if (!files || files.length === 0) {
             return res.status(400).json({ message: "At least one file is required" });
         }
 
-        // Procesa cada archivo
         const fileResponses = await Promise.all(files.map(async (file) => {
             const fileExists = await Archivos.findOne({ where: { name: file.originalname } });
-
             if (fileExists) {
                 return { status: 409, message: `File ${file.originalname} already exists` };
             }
 
-            const fileNameWithOutExt = path.basename(file.originalname, path.extname(file.originalname));
+            const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
 
             const newFile = new Archivos();
-            newFile.name = fileNameWithOutExt?.normalize('NFC');
+            newFile.name = fileNameWithoutExt?.normalize("NFC");
 
-            // * obtener la ruta relativa del archivo
-            const relativePath = path.relative(path.resolve('src', 'uploads'), file.path)
-            console.log(relativePath);
+            // Obtener ruta relativa uniforme
+            const uploadsFolder = path.resolve(__dirname, "../../uploads");
+            const relativePath = path.relative(uploadsFolder, file.path).replace(/\\/g, "/");
+            console.log(relativePath)
 
             newFile.path = relativePath;
             newFile.size = file.size;
@@ -79,11 +74,10 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             newFile.nameSaved = path.basename(file.filename);
 
             const errors = await validate(newFile);
-
             if (errors.length > 0) {
                 const message = errors.map(err => ({
                     property: err.property,
-                    constraints: err.constraints
+                    constraints: err.constraints,
                 }));
                 return { status: 400, message };
             }
@@ -92,18 +86,17 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             return { status: 201, file: newFile };
         }));
 
-        // Filtra las respuestas fallidas y devuelve un mensaje combinado
         const errors = fileResponses.filter(response => response.status !== 201);
         if (errors.length > 0) {
             return res.status(errors[0].status).json(errors.map(error => error.message));
         }
 
         return res.status(201).json(fileResponses.map(response => response.file));
-
     } catch (error) {
         next(error);
     }
 }
+
 
 
 export async function updateFile(req: Request, res: Response, next: NextFunction){
