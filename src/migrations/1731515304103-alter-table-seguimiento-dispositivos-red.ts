@@ -14,7 +14,7 @@ export class AlterTableSeguimientoDispositivosRed1731515304103 implements Migrat
 
         await queryRunner.addColumns("dispositivos_red", [
             new TableColumn({
-                name: "created_at",
+                name: "fecha_creacion",
                 type: "timestamp",
                 default: "CURRENT_TIMESTAMP",
             }),
