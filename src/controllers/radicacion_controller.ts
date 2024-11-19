@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
+import { Between } from 'typeorm';
+import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { UnidadFuncional } from "../entities/unidad-funcional";
 import { CupsRadicados } from "../entities/cups-radicados";
 
@@ -494,4 +496,40 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
   } catch (error) {
     next(error)
   }
+}
+
+// radicacion_controller.ts
+export async function registrosUltimosTresMeses(req: Request, res: Response, next: NextFunction) {
+    try {
+        const now = new Date();
+        const threeMonthsAgo = subMonths(now, 3);
+
+        const registros = await Radicacion.createQueryBuilder("radicacion")
+            .where("radicacion.createdAt BETWEEN :start AND :end", { start: threeMonthsAgo, end: now })
+            .getMany();
+
+        const registrosPorMes = registros.reduce((acc: { [key: string]: number }, registro) => {
+            const mes = registro.createdAt.getMonth();
+            const año = registro.createdAt.getFullYear();
+            const key = `${año}-${mes + 1}`; // Meses en JavaScript son 0-indexados
+
+            if (!acc[key]) {
+                acc[key] = 0;
+            }
+            acc[key]++;
+            return acc;
+        }, {});
+
+        const data = Object.keys(registrosPorMes).map(key => {
+            const [año, mes] = key.split('-');
+            return {
+                mes: `${año}-${mes}`,
+                cantidad: registrosPorMes[key]
+            };
+        });
+
+        return res.json(data);
+    } catch (error) {
+        next(error);
+    }
 }
