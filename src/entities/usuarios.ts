@@ -31,6 +31,7 @@ import { Carpeta } from "./carpeta";
 import { Radicacion } from "./radicacion";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
+import { Equipos } from "./equipos";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -160,4 +161,9 @@ export class Usuarios extends BaseEntity {
   // * relacion con seguimiento dispositivos red
   @OneToMany(() => SeguimientoDispositivosRed, (seguimientoDispositivosRed) => seguimientoDispositivosRed.userRelation)
   seguimientoDispositivosRedRelation: SeguimientoDispositivosRed[];
+
+  // relacion con equipos
+  @OneToMany(() => Equipos, (equipos) => equipos.userRelation)
+  equipmentRelation: Equipos[];
+
 }

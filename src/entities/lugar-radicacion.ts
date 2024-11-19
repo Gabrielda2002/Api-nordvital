@@ -21,6 +21,9 @@ export class LugarRadicacion extends BaseEntity{
     @IsNotEmpty({message: "El estado del lugar es requerido"})
     status: boolean
 
+    @Column({name: "numero_sede", nullable: true})
+    numeroSede: number
+
     @Column({name: "direccion"})
     address: string
 

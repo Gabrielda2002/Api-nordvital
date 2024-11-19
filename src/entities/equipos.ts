@@ -1,9 +1,10 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { Componentes } from "./componentes";
 import { Software } from "./software";
+import { Usuarios } from "./usuarios";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -95,6 +96,14 @@ export class Equipos extends BaseEntity {
     @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
 
+    @Column({name: "DHCP", nullable: true})
+    @IsBoolean()
+    dhcp: boolean;
+
+    @Column({name: "id_usuario", nullable: true})
+    @IsInt()
+    idUsuario: number;
+
     @CreateDateColumn({name: "fecha_creacion"})
     createAt: Date
 
@@ -115,4 +124,9 @@ export class Equipos extends BaseEntity {
     //relacion con software
     @OneToMany(() => Software, (software) => software.equipmentRelation)
     softwareRelation: Software[]
+
+    // relacion con usuarios
+    @ManyToOne(() => Usuarios, usuarios => usuarios.equipmentRelation)
+    @JoinColumn({ name: "id_usuario" })
+    userRelation: Usuarios;
 }
