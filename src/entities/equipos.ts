@@ -38,7 +38,7 @@ export class Equipos extends BaseEntity {
     @Column({name: "marca"})
     @IsString()
     @IsNotEmpty({message: "La marca es requerida"})
-    @Length(3, 200, {message: "La marca debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(2, 200, {message: "La marca debe tener entre $constraint1 y $constraint2 caracteres"})
     brand: string
 
     @Column({name: "modelo"})
