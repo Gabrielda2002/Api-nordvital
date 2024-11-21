@@ -27,7 +27,7 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost",
+  "http://localhost:3600",
   "https://test.nordvitalips.com",
   "https://nordvitalips.com",
   "https://www.nordvitalips.com",
