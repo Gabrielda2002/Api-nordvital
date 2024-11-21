@@ -4,7 +4,7 @@ export const options = {
         info: {
             title: "Nordvitalips API",
             version: "1.0.0",
-             description: "API para la aplicación intranet de Nordvitalips",
+            description: "API para la aplicación intranet de Nordvitalips",
         },
         servers:[
             {
@@ -36,7 +36,45 @@ export const options = {
                     bearerFormat: 'JWT'
                 }
             }
-        }
+        },
+        tags: [
+            {
+                name: 'Autenticación',
+                description: 'Endpoints relacionados con la autenticación de usuarios'
+            },
+            {
+                name: 'Carpetas',
+                description: 'Endpoints para la gestión de carpetas del sistema'
+            },
+            {
+                name: 'Certificados',
+                description: 'Endpoints para la gestión de certificados'
+            },
+            {
+                name: 'Cirugías',
+                description: 'Endpoints para la gestión de cirugías programadas'
+            },
+            {
+                name: 'Componentes',
+                description: 'Endpoints para la gestión de componentes de equipos'
+            },
+            {
+                name: 'Convenios',
+                description: 'Endpoints para la gestión de convenios'
+            },
+            {
+                name: 'CUPS Radicados',
+                description: 'Endpoints para la gestión de CUPS (Clasificación Única de Procedimientos en Salud)'
+            },
+            {
+                name: 'Departamentos',
+                description: 'Endpoints para la gestión de departamentos'
+            },
+            {
+                name: 'Diagnósticos',
+                description: 'Endpoints para la gestión de diagnósticos médicos'
+            }
+        ]
     },
     apis: ["./src/routes/*.ts"]
 }
