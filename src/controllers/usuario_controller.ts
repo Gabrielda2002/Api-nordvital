@@ -400,3 +400,21 @@ export async function updateUsuarioTable(request: Request, response: Response, n
     next(error);
   }
 }
+
+// buscar usuarios por nombre
+export async function searchUsuarios(req: Request, res: Response, next: NextFunction){
+  try {
+    const { name } = req.body;
+    const usuarios = await Usuarios.createQueryBuilder('usuarios')
+    .where('usuarios.name like :name', {name: `%${name}%`})
+    .getMany();
+
+    if(usuarios.length === 0){
+      return res.status(404).json({message: 'Usuario no encontrado'});
+    }
+
+    return res.json(usuarios);
+  } catch (error) {
+    next(error);
+  }
+}

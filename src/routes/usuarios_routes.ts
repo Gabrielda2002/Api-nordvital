@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, updatePassword, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario_controller";
+import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, searchUsuarios, updatePassword, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
@@ -28,5 +28,7 @@ router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '3',
 router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '3', '4','15', '10']), validarId, updatePassword);
 
 router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1']), validarId, updateUsuarioTable);
+
+router.post("/search-user-by-name", authenticate, authorizeRoles(['1', '2']), searchUsuarios);
 
 export default router;
