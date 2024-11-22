@@ -121,6 +121,8 @@ export async function updateEquipment(
       warranty,
       deliveryDate,
       inventoryNumber,
+      dhcp,
+      managerId
     } = req.body;
 
     const equipment = await Equipos.findOneBy({ id: parseInt(id) });
@@ -145,6 +147,8 @@ export async function updateEquipment(
     equipment.warranty = warranty == 1;
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
+    equipment.dhcp = dhcp == "true";
+    equipment.idUsuario = managerId || null;
 
     const errors = await validate(equipment);
 
