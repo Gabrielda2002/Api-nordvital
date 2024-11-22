@@ -77,7 +77,7 @@ export async function createEquipment(
     equipment.warranty = warranty == 1;
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
-    equipment.dhcp = dhcp == 1;
+    equipment.dhcp = dhcp == "true";
 
     const errors = await validate(equipment);
 
