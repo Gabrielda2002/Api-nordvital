@@ -58,7 +58,8 @@ export async function createEquipment(
       warranty,
       deliveryDate,
       inventoryNumber,
-      dhcp
+      dhcp,
+      managerId
     } = req.body;
 
     const equipment = new Equipos();
@@ -78,6 +79,7 @@ export async function createEquipment(
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
     equipment.dhcp = dhcp == "true";
+    equipment.idUsuario = managerId || null;
 
     const errors = await validate(equipment);
 

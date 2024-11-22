@@ -101,8 +101,7 @@ export class Equipos extends BaseEntity {
     dhcp: boolean;
 
     @Column({name: "id_usuario", nullable: true})
-    @IsInt()
-    idUsuario: number;
+    idUsuario: number | null;
 
     @CreateDateColumn({name: "fecha_creacion"})
     createAt: Date
