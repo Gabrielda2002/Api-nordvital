@@ -73,6 +73,10 @@ export const options = {
             {
                 name: 'Diagnósticos',
                 description: 'Endpoints para la gestión de diagnósticos médicos'
+            },
+            {
+                name: 'Dispositivos de Red',
+                description: 'Endpoints para la gestión de dispositivos de red'
             }
         ]
     },
