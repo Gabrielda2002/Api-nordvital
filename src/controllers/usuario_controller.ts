@@ -406,14 +406,21 @@ export async function searchUsuarios(req: Request, res: Response, next: NextFunc
   try {
     const { name } = req.body;
     const usuarios = await Usuarios.createQueryBuilder('usuarios')
-    .where('usuarios.name like :name', {name: `%${name}%`})
+    .where('CONCAT(usuarios.name, " ", usuarios.lastName) like :name', {name: `%${name}%`})
     .getMany();
 
     if(usuarios.length === 0){
       return res.status(404).json({message: 'Usuario no encontrado'});
     }
 
-    return res.json(usuarios);
+    // Transformar el resultado para concatenar nombre y apellido
+    const usuariosTransformed = usuarios.map(usuario => ({
+      ...usuario,
+      name: `${usuario.name} ${usuario.lastName}`,
+      id: usuario.id,
+    }));
+
+    return res.json(usuariosTransformed);
   } catch (error) {
     next(error);
   }
