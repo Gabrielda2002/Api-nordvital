@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
-import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
 import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "./usuarios";
@@ -59,9 +59,9 @@ export class Equipos extends BaseEntity {
     @Length(3, 200, {message: "El sistema operativo debe tener entre $constraint1 y $constraint2 caracteres"})
     operationalSystem: string
 
-    @Column({name: "direccion_ip"})
+    @Column({name: "direccion_ip", nullable: true})
     @IsString()
-    @IsNotEmpty({message: "La dirección ip es requerida"})
+    @IsOptional({message: "La dirección ip es opcional"})
     @Length(3, 200, {message: "La dirección ip debe tener entre $constraint1 y $constraint2 caracteres"})
     addressIp: string
 

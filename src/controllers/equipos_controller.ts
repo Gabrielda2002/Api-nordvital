@@ -58,6 +58,7 @@ export async function createEquipment(
       warranty,
       deliveryDate,
       inventoryNumber,
+      dhcp
     } = req.body;
 
     const equipment = new Equipos();
@@ -69,13 +70,14 @@ export async function createEquipment(
     equipment.model = model;
     equipment.serial = serial;
     equipment.operationalSystem = operationalSystem;
-    equipment.addressIp = addressIp;
+    equipment.addressIp = addressIp || "DHCP";
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime;
     equipment.warranty = warranty == 1;
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
+    equipment.dhcp = dhcp == 1;
 
     const errors = await validate(equipment);
 
