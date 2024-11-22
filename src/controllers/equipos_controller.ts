@@ -204,6 +204,7 @@ export async function getEquipmentBySede(
     .leftJoinAndSelect("equipos.accessoriesRelation", "accesoriosEquipos")
     .leftJoinAndSelect("equipos.componentRelation", "componentRelation")
     .leftJoinAndSelect("equipos.softwareRelation", "softwareRelation")
+    .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
     .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
     .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
     .getMany();
