@@ -40,40 +40,37 @@ export async function getCupsRadicados(
   }
 }
 
+interface CupsRadicado {
+  code: string;
+  description: string;
+}
+
 export async function createCupsRadicados(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { code, DescriptionCode, idRadicado } = req.body;
+    // se recibe un array de objetos con los cups a radicar y el id de la radicación
+    const cupsRadicados: CupsRadicado[] = JSON.parse(req.body.items);
+    const { idRadicado } = req.body;
 
-    if (!code || !DescriptionCode) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    console.log(req.body);
+    // se crea un array para almacenar los cups creados
+    const cupsCreados = []
 
-    // * se crea array de codigos y descripciones CUPS
+    // se recorre el array de cups a
+    for (const item of cupsRadicados) {
+      // se crea un nuevo objeto de la clase CupsRadicados y se asignan los valores
+      const createCupsRadicado = new CupsRadicados();
+      createCupsRadicado.code = Number(item.code);
+      createCupsRadicado.DescriptionCode = item.description;
+      createCupsRadicado.status = 6;
+      createCupsRadicado.observation = "Pendiente";
+      createCupsRadicado.functionalUnit = 12;
+      createCupsRadicado.idRadicacion = Number(idRadicado);
 
-    const codigosArray = code ? code.split(",") : [];
-    console.log(codigosArray);
-    const descripcionesArray = DescriptionCode
-      ? DescriptionCode.split(",")
-      : [];
-    console.log(descripcionesArray);
 
-    const cupCreados = [];
-
-    for (let i = 0; i < codigosArray.length; i++) {
-      const cupsRadicados = new CupsRadicados();
-      cupsRadicados.code = parseInt(codigosArray[i], 10);
-      cupsRadicados.DescriptionCode = descripcionesArray[i];
-      cupsRadicados.status = 6;
-      cupsRadicados.observation = "Pendiente";
-      cupsRadicados.functionalUnit = 12;
-      cupsRadicados.idRadicacion = parseInt(idRadicado);
-
-      const errors = await validate(cupsRadicados);
+      const errors = await validate(createCupsRadicado);
 
       if (errors.length > 0) {
         const errorMensage = errors.map((err) => ({
@@ -83,15 +80,15 @@ export async function createCupsRadicados(
 
         return res
           .status(400)
-          .json({ mensaje: "Error creating cup", errorMensage });
+          .json({ message: "Error creating cups", errorMensage });
       }
+      // se guarda el objeto en la base de datos
+      await createCupsRadicado.save();
 
-      await cupsRadicados.save();
-
-      cupCreados.push(cupsRadicados);
+      // se almacena el objeto en el array de cups creados
+      cupsCreados.push(createCupsRadicado);
     }
-
-    return res.status(201).json();
+    return res.status(200).json(cupsRadicados);
   } catch (error) {
     next(error);
   }
@@ -191,9 +188,11 @@ export async function autorizarCups(
 
     console.log(cupsDetails);
 
-    const cupsRadicados = await CupsRadicados.createQueryBuilder("cupsRadicados")
-    .where("cupsRadicados.idRadicado = :id", { id: id })
-    .getMany();
+    const cupsRadicados = await CupsRadicados.createQueryBuilder(
+      "cupsRadicados"
+    )
+      .where("cupsRadicados.idRadicado = :id", { id: id })
+      .getMany();
 
     console.log("resultados busqueda" + cupsRadicados);
 
@@ -202,15 +201,17 @@ export async function autorizarCups(
     }
 
     for (const cup of cupsRadicados) {
-        const updateCup = cupsDetails.find((detail: any) => detail.idCupsRadicado === cup.id);
-        if (updateCup) {
-            console.log(updateCup);
-            cup.status = parseInt(updateCup.estadoCups, 10);
-            cup.observation = updateCup.observacionCups;
-            cup.functionalUnit = parseInt(updateCup.unidadFuncional, 10);
+      const updateCup = cupsDetails.find(
+        (detail: any) => detail.idCupsRadicado === cup.id
+      );
+      if (updateCup) {
+        console.log(updateCup);
+        cup.status = parseInt(updateCup.estadoCups, 10);
+        cup.observation = updateCup.observacionCups;
+        cup.functionalUnit = parseInt(updateCup.unidadFuncional, 10);
 
-            await cup.save();
-        }
+        await cup.save();
+      }
     }
 
     return res.json({ message: "Cups Radicados exitosamente!" });
@@ -228,12 +229,10 @@ export async function updateAuditados(
     const { id } = req.params;
 
     const { observation, status } = req.body;
-    
 
-    
     const cupExist = await CupsRadicados.createQueryBuilder("cupsRadicados")
-    .where("cupsRadicados.id = :id", { id: id })
-    .getOne();
+      .where("cupsRadicados.id = :id", { id: id })
+      .getOne();
 
     if (!cupExist) {
       return res.status(404).json({ message: "Cups Radicados not found" });
