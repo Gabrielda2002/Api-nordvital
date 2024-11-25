@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { PermisosUsuarios } from "./permisos-usuario";
 import { Municipio } from "./municipio";
 import { Roles } from "./roles";
 import { TipoDocumento } from "./tipo-documento";
@@ -118,13 +117,6 @@ export class Usuarios extends BaseEntity {
   // * relaciones
 
   // * relaciones sin llaves foraneas
-
-  // * relaciones con permisos usuario
-  @OneToMany(
-    () => PermisosUsuarios,
-    (permisosUsuarios) => permisosUsuarios.userRelation
-  )
-  permisosUsuariosRelation: PermisosUsuarios[];
 
   // * relaciones con llaves foraneas
 

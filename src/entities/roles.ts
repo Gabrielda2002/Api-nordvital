@@ -1,6 +1,4 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Permisos } from "./permisos";
-import { PermisosRol } from "./permisos-rol";
 import { Usuarios } from "./usuarios";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 
@@ -24,8 +22,6 @@ export class Roles extends BaseEntity {
 
     // * relaciones
 
-    @OneToMany(() => PermisosRol, (permisosRol) => permisosRol.rolRelation)
-    permisosRolRelation: PermisosRol[]
 
     @OneToMany(() => Usuarios, (usuarios) => usuarios.rolesRelation)
     usuarioRelation: Usuarios[]
