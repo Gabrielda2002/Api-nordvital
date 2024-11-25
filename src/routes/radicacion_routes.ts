@@ -211,8 +211,8 @@ router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, 
  *     responses:
  *       200:
  *         description: Lista de radicaciones por auditar
- *      404:
- *        description: No hay radicaciones por auditar
+ *       404:
+ *         description: No hay radicaciones por auditar
  */
 router.get('/auditoria-table', authenticate, authorizeRoles(['1','3']), tablaPorAuditar);
 

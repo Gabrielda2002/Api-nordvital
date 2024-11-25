@@ -51,7 +51,7 @@ router.get("/servicio-solicitado",authenticate, authorizeRoles(['1', '2', '5']),
  *               $ref: '#/components/schemas/ServicioSolicitado'
  *       404:
  *         description: Servicio solicitado no encontrado
- *
+ */
 router.get("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,getServicioSolicitado);
 
 /**

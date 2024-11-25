@@ -29,8 +29,8 @@ const router = Router();
  *   get:
  *     summary: Obtiene todos los estados
  *     tags: [Estados]
- *    security:
- *      - bearerAuth: []
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de estados
