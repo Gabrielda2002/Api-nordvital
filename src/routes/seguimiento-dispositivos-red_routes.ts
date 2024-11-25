@@ -11,7 +11,7 @@ const router = Router();
  * /seguimiento-dispositivos-red:
  *   get:
  *     summary: Obtiene todos los seguimientos de dispositivos de red
- *     tags: [Seguimeito de Dispositivos de Red]
+ *     tags: [Seguimiento Dispositivos de Red]
  *     security:
  *       - bearerAuth: []
  *     responses:
