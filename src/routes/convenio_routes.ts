@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio, updateStatusConvenio } from "../controllers/convenio-controller";
+import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio, updateStatusConvenio } from "../controllers/convenio_controller";
 import { validarId } from "../middlewares/validar-id";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
