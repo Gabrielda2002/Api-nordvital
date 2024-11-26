@@ -47,7 +47,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get('/documento',authenticate, authorizeRoles(['1' , '3', '10', '15']), getAllDocumentType);
+router.get('/documento',authenticate, authorizeRoles(['1' , '3', '10', '15', '6']), getAllDocumentType);
 
 /**
  * @swagger

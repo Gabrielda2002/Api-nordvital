@@ -44,7 +44,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Convenio'
  */
-router.get('/convenio', authenticate, authorizeRoles(['1', '3', '10', '15']), getAllConvenio);
+router.get('/convenio', authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getAllConvenio);
 
 /**
  * @swagger
