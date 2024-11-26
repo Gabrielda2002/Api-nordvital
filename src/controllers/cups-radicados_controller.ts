@@ -52,10 +52,7 @@ export async function createCupsRadicados(
 ) {
   try {
     // se recibe un array de objetos con los cups a radicar y el id de la radicación
-    console.log(req.body);
     const cupsRadicados: CupsRadicado[] = JSON.parse(req.body.items);
-    console.log(typeof cupsRadicados);
-    console.log(cupsRadicados)
     const { idRadicado } = req.body;
 
     // se crea un array para almacenar los cups creados
