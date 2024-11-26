@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auditorRadicados, autorizarRadicado, cirugiasTable, createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateRadicado } from "../controllers/radicacion_controller";
+import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateRadicado } from "../controllers/radicacion_controller";
 import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -303,5 +303,36 @@ router.get('/tabla-cirugias',authenticate, authorizeRoles(['1', '10', '3', '15']
  *         description: Estadísticas mensuales de radicaciones
  */
 router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '15']), registrosUltimosTresMeses);
+
+/**
+ * @swagger
+ * /radicado-doc-patient:
+ *   post:
+ *     tags:
+ *       - Radicación
+ *     summary: Busca radicaciones por número de documento del paciente
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - documento
+ *             properties:
+ *               documento:
+ *                 type: string
+ *                 description: Número de documento del paciente
+ *     responses:
+ *       200:
+ *         description: Lista de radicaciones encontradas para el documento
+ *       400:
+ *         description: Documento es requerido
+ *       404:
+ *         description: No se encontraron radicaciones para ese documento
+ */
+router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), buscarRadicadoPorDocumento); 
 
 export default router;

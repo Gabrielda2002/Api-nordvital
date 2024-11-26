@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
-import { Between } from 'typeorm';
-import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { Between } from "typeorm";
+import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { UnidadFuncional } from "../entities/unidad-funcional";
 import { CupsRadicados } from "../entities/cups-radicados";
 
@@ -13,27 +13,36 @@ export async function getAllRadicacion(
 ) {
   try {
     const radicacion = await Radicacion.createQueryBuilder("radicacion")
-    .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-    .leftJoinAndSelect("radicacion.placeRelation", "place")
-    .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-    .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-    .leftJoinAndSelect("radicacion.servicesRelation", "services")
-    .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-    .leftJoinAndSelect("radicacion.patientRelation", "patient")
-    .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
-    .leftJoinAndSelect("patient.convenioRelation", "convenio")
-    .leftJoinAndSelect("patient.documentRelation", "document")
-    .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
-    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-    .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-    .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
-    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
-    .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-    .leftJoinAndSelect("cupsRadicados.seguimientoAuxiliarRelation", "seguimientoAuxiliar")
-    .leftJoinAndSelect("seguimientoAuxiliar.estadoSeguimientoRelation", "estadoSeguimiento")
-    .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
-    .orderBy("radicacion.id", "DESC")
-    .getMany();
+      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+      .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+      .leftJoinAndSelect("radicacion.servicesRelation", "services")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+      .leftJoinAndSelect("radicacion.patientRelation", "patient")
+      .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
+      .leftJoinAndSelect("patient.convenioRelation", "convenio")
+      .leftJoinAndSelect("patient.documentRelation", "document")
+      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .leftJoinAndSelect(
+        "cupsRadicados.functionalUnitRelation",
+        "unidadFuncional"
+      )
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+      .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+      .leftJoinAndSelect(
+        "cupsRadicados.seguimientoAuxiliarRelation",
+        "seguimientoAuxiliar"
+      )
+      .leftJoinAndSelect(
+        "seguimientoAuxiliar.estadoSeguimientoRelation",
+        "estadoSeguimiento"
+      )
+      .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
+      .orderBy("radicacion.id", "DESC")
+      .getMany();
 
     return res.json(radicacion);
   } catch (error) {
@@ -120,7 +129,7 @@ export async function createRadicado(
       typeServices,
       idPatient,
       idSoporte,
-      idDiagnostico
+      idDiagnostico,
     } = req.body;
 
     const radicacado = new Radicacion();
@@ -308,9 +317,14 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
+      .leftJoinAndSelect(
+        "cupsRadicados.functionalUnitRelation",
+        "unidadFuncional"
+      )
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
-      .where("cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9")
+      .where(
+        "cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9"
+      )
       .orderBy("radicacion.createdAt", "ASC")
       .getMany();
 
@@ -329,15 +343,16 @@ export async function tablaPorAuditar(
       speciality: r.specialtyRelation?.name || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
       radicador: r.usuarioRelation?.name || "N/A",
-      statusCups:  r.cupsRadicadosRelation?.map((c) => ({
-        id: c.id,
-        code: c.code,
-        description: c.DescriptionCode,
-        observation: c.observation,
-        status: c.statusRelation.name,
-        unidadFuncional: c.functionalUnitRelation.name,
-        idRadicado: c.idRadicacion,
-      })) || "N/A",
+      statusCups:
+        r.cupsRadicadosRelation?.map((c) => ({
+          id: c.id,
+          code: c.code,
+          description: c.DescriptionCode,
+          observation: c.observation,
+          status: c.statusRelation.name,
+          unidadFuncional: c.functionalUnitRelation.name,
+          idRadicado: c.idRadicacion,
+        })) || "N/A",
       soportes: r.soportesRelation?.nameSaved || "N/A",
     }));
 
@@ -347,9 +362,12 @@ export async function tablaPorAuditar(
   }
 }
 
-export async function auditorRadicados(req: Request, res:Response, next: NextFunction){
+export async function auditorRadicados(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const radicaciones = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
@@ -357,7 +375,9 @@ export async function auditorRadicados(req: Request, res:Response, next: NextFun
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .orderBy("radicacion.id", "DESC")
-      .where("cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id")
+      .where(
+        "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
+      )
       .getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
@@ -371,34 +391,35 @@ export async function auditorRadicados(req: Request, res:Response, next: NextFun
         status: c.statusRelation.name,
         observation: c.observation,
         modifyDate: c.updatedAt,
-      }))
+      })),
     }));
 
     return res.json(formatedRadicaciones);
-
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-export async function autorizarRadicado(req: Request, res:Response, next: NextFunction){
-
+export async function autorizarRadicado(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const { id } = req.params;
-    console.log(id)
+    console.log(id);
 
-    const {auditora, fechaAuditoria, justificacion } = req.body;
+    const { auditora, fechaAuditoria, justificacion } = req.body;
 
-    console.log(req.body)
+    console.log(req.body);
 
-    const existRadicado = await Radicacion.findOneBy({id: parseInt(id)});
+    const existRadicado = await Radicacion.findOneBy({ id: parseInt(id) });
 
     if (!existRadicado) {
       return res.status(404).json({ message: "Cups not found" });
     }
 
-    existRadicado.auditora = auditora ;
+    existRadicado.auditora = auditora;
     existRadicado.auditDate = fechaAuditoria;
     existRadicado.justify = justificacion;
 
@@ -412,44 +433,54 @@ export async function autorizarRadicado(req: Request, res:Response, next: NextFu
       return res
         .status(400)
         .json({ message: "Error updating radicacion", messages });
-      
     }
 
     await existRadicado.save();
 
     res.json(existRadicado);
-
   } catch (error) {
-    next(error)
+    next(error);
   }
-  
 }
 
-export async function cirugiasTable(req: Request, res: Response, next: NextFunction){
+export async function cirugiasTable(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const radicacion = await Radicacion.createQueryBuilder("radicacion")
-    .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-    .leftJoinAndSelect("radicacion.placeRelation", "place")
-    .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-    .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-    .leftJoinAndSelect("radicacion.servicesRelation", "services")
-    .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-    .leftJoinAndSelect("radicacion.patientRelation", "patient")
-    .leftJoinAndSelect("patient.convenioRelation", "convenio")
-    .leftJoinAndSelect("patient.documentRelation", "document")
-    .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
-    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-    .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-    .leftJoinAndSelect("cupsRadicados.functionalUnitRelation", "unidadFuncional")
-    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
-    .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-    .leftJoinAndSelect("radicacion.cirugiasRelation" , "cirugias")
-    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
-    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionAuxiliarCirugia")
-    .leftJoinAndSelect("gestionAuxiliarCirugia.estadoSeguimientoRelation", "statusGestionAuxiliarCirugia")
-    .where("servicesGroup.id = 6 || servicesGroup.id = 9")
-    .orderBy("radicacion.id", "DESC")
-    .getMany();
+      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+      .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+      .leftJoinAndSelect("radicacion.servicesRelation", "services")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+      .leftJoinAndSelect("radicacion.patientRelation", "patient")
+      .leftJoinAndSelect("patient.convenioRelation", "convenio")
+      .leftJoinAndSelect("patient.documentRelation", "document")
+      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .leftJoinAndSelect(
+        "cupsRadicados.functionalUnitRelation",
+        "unidadFuncional"
+      )
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+      .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+      .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
+      .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
+      .leftJoinAndSelect(
+        "cirugias.gestionCirugiasRelation",
+        "gestionAuxiliarCirugia"
+      )
+      .leftJoinAndSelect(
+        "gestionAuxiliarCirugia.estadoSeguimientoRelation",
+        "statusGestionAuxiliarCirugia"
+      )
+      .where("servicesGroup.id = 6 || servicesGroup.id = 9")
+      .orderBy("radicacion.id", "DESC")
+      .getMany();
 
     const cirugiasFormat = radicacion.map((r) => ({
       fechaRadicado: r.createdAt,
@@ -467,7 +498,7 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
       cups: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
         code: c.code,
-        description: c.DescriptionCode
+        description: c.DescriptionCode,
       })),
       grupoServicios: r.servicesGroupRelation?.name || "N/A",
       idGrupoServicios: r.servicesGroupRelation?.id || "N/A",
@@ -481,55 +512,118 @@ export async function cirugiasTable(req: Request, res: Response, next: NextFunct
         fechaParaclinoco: c.paraclinicalDate || "N/A",
         fechaAnesteciologia: c.anesthesiologyDate || "N/A",
         especialista: c.specialist || "N/A",
-        gestionAuxiliarCirugia: c.gestionCirugiasRelation?.map((g) =>({
+        gestionAuxiliarCirugia: c.gestionCirugiasRelation?.map((g) => ({
           id: g.id,
           estado: g.estadoSeguimientoRelation?.name,
           observacion: g.observation,
-          fechaCreacion: g.createdAt
-        }))
-      }))
-      
+          fechaCreacion: g.createdAt,
+        })),
+      })),
     }));
 
     return res.json(cirugiasFormat);
-
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
 // radicacion_controller.ts
-export async function registrosUltimosTresMeses(req: Request, res: Response, next: NextFunction) {
-    try {
-        const now = new Date();
-        const threeMonthsAgo = subMonths(now, 3);
+export async function registrosUltimosTresMeses(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const now = new Date();
+    const threeMonthsAgo = subMonths(now, 3);
 
-        const registros = await Radicacion.createQueryBuilder("radicacion")
-            .where("radicacion.createdAt BETWEEN :start AND :end", { start: threeMonthsAgo, end: now })
-            .getMany();
+    const registros = await Radicacion.createQueryBuilder("radicacion")
+      .where("radicacion.createdAt BETWEEN :start AND :end", {
+        start: threeMonthsAgo,
+        end: now,
+      })
+      .getMany();
 
-        const registrosPorMes = registros.reduce((acc: { [key: string]: number }, registro) => {
-            const mes = registro.createdAt.getMonth();
-            const año = registro.createdAt.getFullYear();
-            const key = `${año}-${mes + 1}`; // Meses en JavaScript son 0-indexados
+    const registrosPorMes = registros.reduce(
+      (acc: { [key: string]: number }, registro) => {
+        const mes = registro.createdAt.getMonth();
+        const año = registro.createdAt.getFullYear();
+        const key = `${año}-${mes + 1}`; // Meses en JavaScript son 0-indexados
 
-            if (!acc[key]) {
-                acc[key] = 0;
-            }
-            acc[key]++;
-            return acc;
-        }, {});
+        if (!acc[key]) {
+          acc[key] = 0;
+        }
+        acc[key]++;
+        return acc;
+      },
+      {}
+    );
 
-        const data = Object.keys(registrosPorMes).map(key => {
-            const [año, mes] = key.split('-');
-            return {
-                mes: `${año}-${mes}`,
-                cantidad: registrosPorMes[key]
-            };
-        });
+    const data = Object.keys(registrosPorMes).map((key) => {
+      const [año, mes] = key.split("-");
+      return {
+        mes: `${año}-${mes}`,
+        cantidad: registrosPorMes[key],
+      };
+    });
 
-        return res.json(data);
-    } catch (error) {
-        next(error);
+    return res.json(data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// buscar radicado por numero documento paciente
+export async function buscarRadicadoPorDocumento(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { documento } = req.body;
+
+    if (!documento) {
+      return res.status(400).json({ message: "Documento es requerido" });
     }
+
+    const radicacion = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "patient")
+      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
+      .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
+      .leftJoinAndSelect("radicacion.servicesRelation", "services")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+      .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
+      .leftJoinAndSelect("patient.convenioRelation", "convenio")
+      .leftJoinAndSelect("patient.documentRelation", "document")
+      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .leftJoinAndSelect(
+        "cupsRadicados.functionalUnitRelation",
+        "unidadFuncional"
+      )
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
+      .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
+      .leftJoinAndSelect(
+        "cupsRadicados.seguimientoAuxiliarRelation",
+        "seguimientoAuxiliar"
+      )
+      .leftJoinAndSelect(
+        "seguimientoAuxiliar.estadoSeguimientoRelation",
+        "estadoSeguimiento"
+      )
+      .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
+      .where("patient.documentNumber = :documento", { documento })
+      .getMany();
+
+    if (!radicacion) {
+      return res.status(404).json({ message: "Radicacion not found" });
+    }
+
+    return res.json(radicacion);
+  } catch (error) {
+    next(error);
+  }
 }
