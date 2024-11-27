@@ -573,3 +573,176 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     next(error);
   }
 }
+
+export async function reportExcelRadicacion(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
+
+    const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+      .leftJoinAndSelect("pacientes.documentRelation", "tipo_documento")
+      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
+      .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ips_primaria")
+      .leftJoinAndSelect("radicacion.placeRelation", "lugar_radicacion")
+      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ips_remitente")
+      .leftJoinAndSelect("radicacion.servicesGroupRelation", "grupo_servicios")
+      .leftJoinAndSelect("radicacion.servicesRelation", "servicios")
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
+      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+      .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+      .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
+      .leftJoinAndSelect("cups.statusRelation", "estado_cups");
+
+    // Filtro por estado de CUPS
+    if (statusCups) {
+      query.andWhere("estado_cups.id = :statusCups", { statusCups });
+    }
+
+    // Filtro por rango de fechas de radicación
+    if (dateStart && dateEnd) {
+      query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd
+      });
+    }
+
+    // Filtro por código CUPS
+    if (cupsCode) {
+      query.andWhere("cups.code = :cupsCode", { cupsCode });
+    }
+
+    const data = await query.getMany();
+
+    // Crear workbook y worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte CUPS");
+
+    // Definir las columnas en la hoja de Excel
+    worksheet.columns = [
+      { header: "Fecha-hora", key: "radicadoDate", width: 20 },
+      { header: "Numero Radicado", key: "Id", width: 10 },
+      { header: "Tipo Documento", key: "Tipo_de_documento", width: 20 },
+      { header: "Nombre Paciente", key: "Nombre_del_paciente", width: 30 },
+      { header: "Número Documento", key: "Numero_documento", width: 30 },
+      { header: "Número Celular", key: "Telefono_celular", width: 20 },
+      { header: "Telefono Fijo", key: "Telefono_fijo", width: 20 },
+      { header: "Email", key: "Correo_electronico", width: 30 },
+      { header: "Direccion", key: "Direccion", width: 30 },
+      { header: "Convenio", key: "Convenio", width: 20 },
+      { header: "IPS Primaria", key: "IPS_Primaria", width: 20 },
+      { header: "Fecha Orden", key: "Fecha_de_orden", width: 20 },
+      { header: "Lugar Radicación", key: "Lugar_de_radicacion", width: 30 },
+      { header: "IPS Remite", key: "IPS_Remitente", width: 30 },
+      { header: "Profesional", key: "Profesional", width: 30 },
+      { header: "Especialidad", key: "Especialidad", width: 30 },
+      { header: "Cod Diagnostico", key: "codigo_diagnostico", width: 20 },
+      {
+        header: "Descripcion Diagnostico",
+        key: "descripcion_diagnostico",
+        width: 30,
+      },
+      { header: "Grupo Servicio", key: "Grupo_de_servicios", width: 20 },
+      { header: "Tipo Servicio", key: "Servicios", width: 20 },
+      { header: "Auxiliar Radicador", key: "Radicador", width: 20 },
+      { header: "Nombre Auditora", key: "Auditora", width: 20 },
+      { header: "Fecha Auditoria", key: "Fecha_de_auditoria", width: 20 },
+      { header: "Codigo CUPS", key: "Codigo_cups", width: 30 },
+      { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
+      { header: "Estado CUPS", key: "Estado_cups", width: 20 },
+      { header: "Unidad Funcional", key: "Unidad_funcional", width: 30 },
+      {
+        header: "Ultima Modificacion",
+        key: "Fecha_actualizacion",
+        width: 20,
+      },
+      {
+        header: "Seguimiento Auxiliar",
+        key: "Observacion_seguimiento_auxiliar",
+        width: 30,
+      },
+      {
+        header: "Fecha Seguimiento",
+        key: "Fecha_registro",
+        width: 20,
+      },
+    ];
+
+    data.forEach((data) => {
+      const row = {
+        radicadoDate: data.createdAt || "N/A",
+        Id: data.id || "N/A",
+        Tipo_de_documento: data.patientRelation?.documentRelation.name || "N/A",
+        Nombre_del_paciente: data.patientRelation?.name || "N/A",
+        Numero_documento: data.patientRelation?.documentNumber || "N/A",
+        Telefono_celular: data.patientRelation?.phoneNumber || "N/A",
+        Telefono_fijo: data.patientRelation?.landline || "N/A",
+        Correo_electronico: data.patientRelation?.email || "N/A",
+        Direccion: data.patientRelation?.address || "N/A",
+        Convenio: data.patientRelation?.convenioRelation.name || "N/A",
+        IPS_Primaria: data.patientRelation?.ipsPrimariaRelation.name || "N/A",
+        Fecha_de_orden: data.orderDate || "N/A",
+        Lugar_de_radicacion: data.placeRelation?.name || "N/A",
+        IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
+        Profesional: data.profetional || "N/A",
+        Especialidad: data.specialtyRelation?.name || "N/A",
+        codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
+        descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
+        Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
+        Servicios: data.servicesRelation?.name || "N/A",
+        Radicador: data.usuarioRelation?.name || "N/A",
+        Auditora: data.auditora || "N/A",
+        Fecha_de_auditoria: data.auditDate || "N/A",
+      };
+
+      // * agregar filas por cada CUPS
+      if (data.cupsRadicadosRelation?.length > 0) {
+        data.cupsRadicadosRelation.forEach((cups) => {
+          worksheet.addRow({
+            ...row,
+            Codigo_cups: cups.code || "N/A",
+            Descripcion_cups: cups.DescriptionCode || "N/A",
+            Estado_cups: cups.statusRelation?.name || "N/A",
+            Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
+            Fecha_actualizacion: cups.updatedAt || "N/A",
+          });
+        });
+      } else {
+        worksheet.addRow(row);
+      }
+
+      // * agregar filas por cada seguimiento auxiliar de CUPS radicacion
+      // if (data.cupsRadicadosRelation.length > 0) {
+      //   data.cupsRadicadosRelation.forEach((cups) => {
+      //     if (cups.seguimientoAuxiliarRelation?.length > 0) {
+      //       cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
+      //         worksheet.addRow({
+      //           ...row,
+      //           Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
+      //           Fecha_registro: seguimiento.createdAt || "N/A",
+      //         });
+      //       });
+      //     }
+      //   });
+      // }
+    });
+
+    // Configurar respuesta
+    const fileName = `Reporte_CUPS_${randomBytes(4).toString("hex")}.xlsx`;
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    next(error);
+  }
+}
