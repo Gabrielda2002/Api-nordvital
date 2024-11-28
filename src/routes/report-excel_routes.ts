@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { downloadReportExcel, downloadReportExcelFilter, reportExcelCirugias, reportExcelCirugiasFiltros, reportExcelRadicacion } from "../controllers/report-excel_controller";
+import { downloadReportExcel, downloadReportExcelFilter, reporteGestionAuxiliar, reportExcelCirugias, reportExcelCirugiasFiltros, reportExcelRadicacion } from "../controllers/report-excel_controller";
 
 const router = Router();
 
@@ -112,5 +112,7 @@ router.get('/report-excel-cirugias', authenticate, authorizeRoles(['1', '3', '6'
  *         description: Error del servidor
  */
 router.post('/report-excel-cirugias-filtro', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reportExcelCirugiasFiltros)
+
+router.post('/report-excel-gestion-auxiliar', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reporteGestionAuxiliar)
 
 export default router;

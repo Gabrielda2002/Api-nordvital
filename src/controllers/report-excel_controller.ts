@@ -746,3 +746,79 @@ export async function reportExcelRadicacion(
     next(error);
   }
 }
+
+export async function reporteGestionAuxiliar(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+      .leftJoinAndSelect("cups.seguimientoAuxiliarRelation", "seguimiento_auxiliar")
+      .leftJoinAndSelect("seguimiento_auxiliar.estadoSeguimientoRelation", "estado_seguimiento");
+
+    // Aplicar filtro de fechas si se proporcionan
+    if (dateStart && dateEnd) {
+      query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd
+      });
+    }
+
+    const data = await query.getMany();
+
+    // Crear workbook y worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Gestion Auxiliar");
+
+    // Definir columnas
+    worksheet.columns = [
+      { header: "ID Radicado", key: "id_radicado", width: 15 },
+      {header: "Fecha-hora", key: "radicadoDate", width: 20 },
+      { header: "Número Documento", key: "numero_documento", width: 20 },
+      { header: "Nombre Paciente", key: "nombre_paciente", width: 30 },
+      { header: "Código CUPS", key: "codigo_cups", width: 15 },
+      { header: "Descripción CUPS", key: "descripcion_cups", width: 40 },
+      { header: "Estado Gestión", key: "estado_gestion", width: 20 },
+      {header: "Observación", key: "observacion", width: 30},
+      { header: "Fecha Registro", key: "fecha_registro", width: 20 }
+    ];
+
+    // Agregar datos
+    data.forEach((radicado) => {
+      if (radicado.cupsRadicadosRelation.length > 0) {
+        radicado.cupsRadicadosRelation.forEach((cups) => {
+          if (cups.seguimientoAuxiliarRelation?.length > 0) {
+            cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
+              worksheet.addRow({
+                id_radicado: radicado.id,
+                radicadoDate: radicado.createdAt || "N/A",
+                numero_documento: radicado.patientRelation?.documentNumber || "N/A",
+                nombre_paciente: radicado.patientRelation?.name || "N/A",
+                codigo_cups: cups.code || "N/A",
+                descripcion_cups: cups.DescriptionCode || "N/A",
+                estado_gestion: seguimiento.estadoSeguimientoRelation?.name || "N/A",
+                observacion: seguimiento.observation || "N/A",
+                fecha_registro: seguimiento.createdAt || "N/A"
+              });
+            });
+          }
+        });
+      }
+    });
+
+    // Configurar respuesta
+    const fileName = `Reporte_Gestion_Auxiliar_${randomBytes(4).toString("hex")}.xlsx`;
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    next(error);
+  }
+}
