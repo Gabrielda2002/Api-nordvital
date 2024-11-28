@@ -755,7 +755,9 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect("cups.seguimientoAuxiliarRelation", "seguimiento_auxiliar")
-      .leftJoinAndSelect("seguimiento_auxiliar.estadoSeguimientoRelation", "estado_seguimiento");
+      .leftJoinAndSelect("seguimiento_auxiliar.estadoSeguimientoRelation", "estado_seguimiento")
+      .leftJoinAndSelect("seguimiento_auxiliar.usuarioRelation", "usuario")
+      .orderBy("radicacion.createdAt", "DESC");
 
     // Aplicar filtro de fechas si se proporcionan
     if (dateStart && dateEnd) {
@@ -781,7 +783,8 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
       { header: "Descripción CUPS", key: "descripcion_cups", width: 40 },
       { header: "Estado Gestión", key: "estado_gestion", width: 20 },
       {header: "Observación", key: "observacion", width: 30},
-      { header: "Fecha Registro", key: "fecha_registro", width: 20 }
+      { header: "Fecha Registro", key: "fecha_registro", width: 20 },
+      { header: "Usuario Registro", key: "usuario_registro", width: 20 }
     ];
 
     // Agregar datos
@@ -799,7 +802,8 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
                 descripcion_cups: cups.DescriptionCode || "N/A",
                 estado_gestion: seguimiento.estadoSeguimientoRelation?.name || "N/A",
                 observacion: seguimiento.observation || "N/A",
-                fecha_registro: seguimiento.createdAt || "N/A"
+                fecha_registro: seguimiento.createdAt || "N/A",
+                usuario_registro: seguimiento.usuarioRelation?.name || "N/A"
               });
             });
           }
