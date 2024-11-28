@@ -378,6 +378,7 @@ export async function auditorRadicados(
       .where(
         "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
       )
+      .orderBy("radicacion.id", "ASC")
       .getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
@@ -616,6 +617,7 @@ export async function buscarRadicadoPorDocumento(
       )
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .where("patient.documentNumber = :documento", { documento })
+      .orderBy("radicacion.id", "DESC")
       .getMany();
 
     if (!radicacion) {
