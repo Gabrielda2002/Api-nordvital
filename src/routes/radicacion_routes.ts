@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, deleteRadicado, getAllRadicacion, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateRadicado } from "../controllers/radicacion_controller";
+import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, deleteRadicado, getAllRadicacion, getCupsEstadisticasPorMes, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateRadicado } from "../controllers/radicacion_controller";
 import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -334,5 +334,7 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  *         description: No se encontraron radicaciones para ese documento
  */
 router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), buscarRadicadoPorDocumento); 
+
+router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', '3', '15']), getCupsEstadisticasPorMes);
 
 export default router;

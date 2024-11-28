@@ -629,3 +629,37 @@ export async function buscarRadicadoPorDocumento(
     next(error);
   }
 }
+
+export async function getCupsEstadisticasPorMes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const now = new Date();
+    const firstDayOfMonth = startOfMonth(now);
+
+    const cupsRadicados = await CupsRadicados.createQueryBuilder("cupsRadicados")
+      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .select([
+        "status.name as estado",
+        "COUNT(*) as cantidad"
+      ])
+      .where("cupsRadicados.createdAt BETWEEN :start AND :end", {
+        start: firstDayOfMonth,
+        end: now,
+      })
+      .groupBy("status.name")
+      .getRawMany();
+
+    // Formatear los resultados en una estructura más simple
+    const resultado = cupsRadicados.map(record => ({
+      estado: record.estado,
+      cantidad: parseInt(record.cantidad)
+    }));
+
+    return res.json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
