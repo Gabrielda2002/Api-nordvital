@@ -31,6 +31,7 @@ import { Radicacion } from "./radicacion";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 import { Equipos } from "./equipos";
+import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -115,9 +116,6 @@ export class Usuarios extends BaseEntity {
   createdAt: Date;
 
   // * relaciones
-
-  // * relaciones sin llaves foraneas
-
   // * relaciones con llaves foraneas
 
   // * relacion con municipio
@@ -157,5 +155,9 @@ export class Usuarios extends BaseEntity {
   // relacion con equipos
   @OneToMany(() => Equipos, (equipos) => equipos.userRelation)
   equipmentRelation: Equipos[];
+
+  // * relacion con seguimiento auxiliar
+  @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.usuarioRelation)
+  seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
 
 }

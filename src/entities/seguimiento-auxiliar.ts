@@ -3,6 +3,7 @@ import { Radicacion } from "./radicacion";
 import { EstadosSeguimiento } from "./estados-seguimiento";
 import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { CupsRadicados } from "./cups-radicados";
+import { Usuarios } from "./usuarios";
 
 @Entity({name: "seguimientoauxiliar"})
 export class SeguimietoAuxiliar extends BaseEntity {
@@ -34,6 +35,11 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @IsInt()
     idRadicacion: number;
 
+    @Column({name: "usuario_id"})
+    @IsInt()
+    @IsNotEmpty({message: "El usuario es requerido"})
+    userId: number;
+
     @UpdateDateColumn({ name: "fecha-actualizacion" })
     updatedAt: Date;
 
@@ -48,4 +54,8 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @JoinColumn({name: "EstadoSeguimiento"})
     estadoSeguimientoRelation: EstadosSeguimiento
 
+    // relacion con usuarios
+    @ManyToOne(() => Usuarios, usuarios => usuarios.seguimientoAuxiliarRelation)
+    @JoinColumn({name: "usuario_id"})
+    usuarioRelation: Usuarios
 }
