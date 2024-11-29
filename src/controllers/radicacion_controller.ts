@@ -383,6 +383,7 @@ export async function auditorRadicados(
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
+      radicadoDate: r.createdAt,
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
       CUPS: r.cupsRadicadosRelation?.map((c) => ({
