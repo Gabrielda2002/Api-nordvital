@@ -333,7 +333,7 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  *       404:
  *         description: No se encontraron radicaciones para ese documento
  */
-router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), buscarRadicadoPorDocumento); 
+router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10','6', '3', '15', '6']), buscarRadicadoPorDocumento); 
 
 /**
  * @swagger
