@@ -335,6 +335,19 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  */
 router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), buscarRadicadoPorDocumento); 
 
+/**
+ * @swagger
+ * /estadistica-cups-estado:
+ *   get:
+ *     tags:
+ *       - Radicación
+ *     summary: Obtiene estadísticas de radicaciones por estado de los CUPS
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas de radicaciones por estado de los CUPS
+ */
 router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', '3', '15']), getCupsEstadisticasPorMes);
 
 export default router;
