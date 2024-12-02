@@ -23,11 +23,14 @@ export class Equipos extends BaseEntity {
     @Length(3, 200, {message: "El nombre del equipo debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
-    @Column({name: "ubicacion"})
+    @Column({name: "area"})
     @IsString()
     @IsNotEmpty({message: "La ubicación es requerida"})
     @Length(3, 200, {message: "La ubicación debe tener entre $constraint1 y $constraint2 caracteres"})
     area: string
+
+    @Column({name: "ubicacion"})
+    ubicacion: string
 
     @Column({name: "tipo_equipo"})
     @IsString()

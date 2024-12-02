@@ -135,6 +135,7 @@ export async function updateEquipment(
 
     equipment.name = name;
     equipment.area = area || "Sin área" ;
+    equipment.ubicacion = "Sin ubicación" ;
     equipment.typeEquipment = typeEquipment;
     equipment.brand = brand;
     equipment.model = model;
