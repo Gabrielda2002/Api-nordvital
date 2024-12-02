@@ -3,6 +3,7 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentBySede, updateEquipment } from "../controllers/equipos_controller";
 import { validarId } from "../middlewares/validar-id";
+import { generateInventoryNumber } from "../middlewares/generate-inventory-number";
 
 const router = Router();
 
@@ -124,7 +125,7 @@ router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAl
  *       400:
  *         description: Datos inválidos
  */
-router.post("/equipos", authenticate, authorizeRoles(['1']), createEquipment);
+router.post("/equipos", authenticate, authorizeRoles(['1']), generateInventoryNumber, createEquipment);
 
 /**
  * @swagger

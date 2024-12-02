@@ -59,8 +59,9 @@ export async function createEquipment(
       deliveryDate,
       inventoryNumber,
       dhcp,
-      managerId
+      managerId,
     } = req.body;
+    console.log(inventoryNumber)
 
     const equipment = new Equipos();
     equipment.sedeId = parseInt(sedeId);
