@@ -65,7 +65,8 @@ export async function createEquipment(
     const equipment = new Equipos();
     equipment.sedeId = parseInt(sedeId);
     equipment.name = name;
-    equipment.area = area;
+    equipment.area = area || "Sin área" ;
+    equipment.ubicacion = "Sin ubicación" ;
     equipment.typeEquipment = typeEquipment;
     equipment.brand = brand;
     equipment.model = model;
