@@ -20,7 +20,7 @@ export class AccesoriosEquipos extends BaseEntity {
     @Column({name: "marca"})
     @IsString()
     @IsNotEmpty({message: "La marca del accesorio es requerida"})
-    @Length(3, 255, {message: "La marca del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(2, 255, {message: "La marca del accesorio debe tener entre $constraint1 y $constraint2 caracteres"})
     brand: string
 
     @Column({name: "modelo"})
