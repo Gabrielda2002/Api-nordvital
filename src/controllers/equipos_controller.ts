@@ -60,6 +60,8 @@ export async function createEquipment(
       inventoryNumber,
       dhcp,
       managerId,
+      lock,
+      codeLock
     } = req.body;
     console.log(inventoryNumber)
 
@@ -75,12 +77,14 @@ export async function createEquipment(
     equipment.addressIp = addressIp || "DHCP";
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
-    equipment.warrantyTime = warrantyTime;
-    equipment.warranty = warranty == 1;
+    equipment.warrantyTime = warrantyTime || "Sin garantía";
+    equipment.warranty = warranty == "true";
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
     equipment.dhcp = dhcp == "true";
     equipment.idUsuario = managerId || null;
+    equipment.lock = lock == "true";
+    equipment.lockKey = parseInt(codeLock) || null;
 
     const errors = await validate(equipment);
 
@@ -109,7 +113,6 @@ export async function updateEquipment(
 
     const {
       name,
-      area,
       typeEquipment,
       brand,
       model,
@@ -121,9 +124,11 @@ export async function updateEquipment(
       warrantyTime,
       warranty,
       deliveryDate,
-      inventoryNumber,
+      // inventoryNumber,
       dhcp,
-      managerId
+      managerId,
+      lock,
+      codeLock
     } = req.body;
 
     const equipment = await Equipos.findOneBy({ id: parseInt(id) });
@@ -133,6 +138,8 @@ export async function updateEquipment(
         message: "Equipo no encontrado",
       });
     }
+
+    console.log(equipment)
 
     equipment.name = name;
     equipment.ubicacion = "Sin ubicación" ;
@@ -145,11 +152,13 @@ export async function updateEquipment(
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime;
-    equipment.warranty = warranty == 1;
+    equipment.warranty = warranty == "true";
     equipment.deliveryDate = deliveryDate;
-    equipment.inventoryNumber = inventoryNumber;
+    // equipment.inventoryNumber = inventoryNumber;
     equipment.dhcp = dhcp == "true";
     equipment.idUsuario = managerId || null;
+    equipment.lock = lock == "true";
+    equipment.lockKey = parseInt(codeLock) || null;
 
     const errors = await validate(equipment);
 

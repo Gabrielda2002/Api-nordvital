@@ -108,6 +108,7 @@ export class Equipos extends BaseEntity {
     @Column({name: "clave_candado", nullable: true, type: "int"})
     @IsInt()
     @IsOptional({message: "La clave del candado es opcional"})
+    @Length(1, 4, {message: "La clave del candado debe tener entre $constraint1 y $constraint2 caracteres"})
     lockKey: number | null
 
     @CreateDateColumn({name: "fecha_creacion"})
