@@ -15,17 +15,16 @@ export class Municipio extends BaseEntity {
   @Length(3, 50, {message: 'El nombre del municipio debe tener entre $constraint1 y $constraint2 caracteres'})
   name: string;
 
-  @Column({ name: "NitMunicipio" })
-  @IsInt()
-  @IsNotEmpty({message: 'El nit del municipio no puede estar vacio'})
-  @Min(1, {message: 'El nit del municipio debe tener 1 caracteres'})
-  // @Max(9, {message: 'El nit del municipio debe tener 9 caracteres'})
-  nitMunicipio: number;
-
   @Column({ name: "Estado" })
   @IsBoolean()
   @IsNotEmpty({message: 'El estado del municipio no puede estar vacio'})
   status: boolean;
+
+  @Column({ name: "codigo_municipio" })
+  @IsInt()
+  @IsNotEmpty({message: 'El codigo del municipio no puede estar vacio'})
+  @Min(1, {message: 'El codigo del municipio debe tener 1 caracteres'})
+  municipioCode: number;
 
   @UpdateDateColumn({ name: "fecha-actualizacion" })
   updatedAt: Date

@@ -32,6 +32,7 @@ import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 import { Equipos } from "./equipos";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
+import { LugarRadicacion } from "./lugar-radicacion";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -109,6 +110,28 @@ export class Usuarios extends BaseEntity {
   @IsOptional()
   photo: string;
 
+  @Column({ name: "area" })
+  @IsString()
+  @IsNotEmpty({ message: "El área es requerida" })
+  @Length(2, 100, { message: "El área debe tener entre 2 y 100 caracteres" })
+  area: string;
+
+  @Column({ name: "cargo" })
+  @IsString()
+  @Length(2, 200, { message: "El cargo debe tener entre 2 y 200 caracteres" })
+  @IsNotEmpty({ message: "El cargo es requerido" })
+  position: string;
+
+  @Column({ name: "sede_id" })
+  @IsInt()
+  @IsNotEmpty({ message: "La sede es requerida" })
+  headquarters: number;
+
+  @Column({ name: "celular" })
+  @IsInt()
+  @IsNotEmpty({ message: "El número de celular es requerido" })
+  phoneNumber: number;
+
   @UpdateDateColumn({ name: "fecha-actualizacion" })
   updatedAt: Date;
 
@@ -134,6 +157,11 @@ export class Usuarios extends BaseEntity {
   )
   @JoinColumn({ name: "TipoCedula" })
   typeDocumentRelation: TipoDocumento;
+
+  // * relacion con sede
+  @ManyToOne(() => LugarRadicacion, (sede) => sede.userRelation)
+  @JoinColumn({ name: "sede_id" })
+  sedeRelation: LugarRadicacion;
 
   // * relacion con carpeta
 

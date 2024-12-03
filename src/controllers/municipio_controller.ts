@@ -34,9 +34,9 @@ export async function getMunicipioById(req: Request, res: Response, next: NextFu
 export async function createMunicipio(req: Request, res: Response, next: NextFunction) {
     try {
         
-        const { name, nitMunicipio } = req.body;
+        const { name, code } = req.body;
 
-        if (!name || !nitMunicipio) {
+        if (!name || !code) {
             return res.status(400).json({ message: "Name and nitMunicipio are required" });
         }
 
@@ -48,8 +48,8 @@ export async function createMunicipio(req: Request, res: Response, next: NextFun
 
         const municipio = new Municipio();
         municipio.name = name;
-        municipio.nitMunicipio = nitMunicipio;
         municipio.status = true;
+        municipio.municipioCode = code;
 
         const errors = await validate(municipio);
 
@@ -76,7 +76,7 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
     try {
         
         const { id } = req.params;
-        const { name, nitMunicipio, status } = req.body;
+        const { name, code, status } = req.body;
 
         const municipio = await Municipio.findOneBy({ id: parseInt(id) });
 
@@ -85,7 +85,7 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
         }
 
         municipio.name = name;
-        municipio.nitMunicipio = nitMunicipio;
+        municipio.municipioCode = code;
         municipio.status = status;
 
         const errors = await validate(municipio);

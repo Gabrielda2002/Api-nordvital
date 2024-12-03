@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { LugarRadicacion } from "./lugar-radicacion";
-import { IsString, Length } from "class-validator";
+import { IsInt, IsString, Length } from "class-validator";
 
 @Entity("departamentos")
 export class departamentos extends BaseEntity{
@@ -12,6 +12,10 @@ export class departamentos extends BaseEntity{
     @IsString()
     @Length(3, 50, {message: "El nombre del departamento debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
+
+    @Column({name: "codigo_departamento", nullable: true})
+    @IsInt()
+    code: number
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date

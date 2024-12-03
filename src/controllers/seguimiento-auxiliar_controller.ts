@@ -38,7 +38,7 @@ export async function getSeguimientoAuxiliar(req: Request, res: Response, next: 
 export async function createSeguimientoAuxiliar(req: Request, res: Response, next: NextFunction){
     try {
         
-        const { observation, status, codeCups, idRadicacion, userId } = req.body;
+        const { observation, status, idRadicacion, userId } = req.body;
 
         if (!observation || !status || !idRadicacion) {
             return res.status(400).json({message: "Todos los campos son requeridos"});
@@ -48,7 +48,6 @@ export async function createSeguimientoAuxiliar(req: Request, res: Response, nex
 
         seguimientoAuxiliar.observation = observation;
         seguimientoAuxiliar.status = parseInt(status);
-        seguimientoAuxiliar.codeCups = codeCups || "00000";
         seguimientoAuxiliar.idRadicacion = parseInt(idRadicacion);
         seguimientoAuxiliar.userId = parseInt(userId);
 
@@ -77,7 +76,7 @@ export async function updateSeguimientoAuxiliar(req: Request, res: Response, nex
         
         const { id } = req.params;
 
-        const { observation, status, codeCups } = req.body;
+        const { observation, status } = req.body;
 
         const seguimientoAuxiliar = await SeguimietoAuxiliar.findOneBy({id: parseInt(id)});
 
@@ -87,7 +86,6 @@ export async function updateSeguimientoAuxiliar(req: Request, res: Response, nex
 
         seguimientoAuxiliar.observation = observation;
         seguimientoAuxiliar.status = status;
-        seguimientoAuxiliar.codeCups = codeCups;
 
         const errors = await validate(seguimientoAuxiliar);
 

@@ -25,12 +25,6 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @IsNotEmpty({message: "El estado es requerido"})
     status: number;
 
-    @Column({name: "CodigoCups"})
-    @IsString()
-    @IsOptional()
-    @Length(1, 10, {message: "El código cups debe tener entre 4 y 10 caracteres"})
-    codeCups: string;
-
     @Column({name: "Radicacion"})
     @IsInt()
     idRadicacion: number;

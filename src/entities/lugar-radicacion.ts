@@ -3,6 +3,7 @@ import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "./dispositivos-red";
 import { Municipio } from "./municipio";
+import { Usuarios } from "./usuarios";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -47,6 +48,10 @@ export class LugarRadicacion extends BaseEntity{
     // relacion con dispositivos red
     @OneToMany(() => dispositivosRed, (dispositivo) => dispositivo.placeRelation)
     devicesRelation: dispositivosRed[]
+
+    // relacion con usuarios
+    @OneToMany(() => Usuarios, (usuario) => usuario.sedeRelation)
+    userRelation: Usuarios[]
 
     // relacion con departamento
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
