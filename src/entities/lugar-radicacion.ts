@@ -4,6 +4,7 @@ import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "./dispositivos-red";
 import { Municipio } from "./municipio";
 import { Usuarios } from "./usuarios";
+import { departamentos } from "./departamentos";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -54,9 +55,9 @@ export class LugarRadicacion extends BaseEntity{
     userRelation: Usuarios[]
 
     // relacion con departamento
-    @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
+    @ManyToOne(() => departamentos, (departamento) => departamento.placeRelation)
     @JoinColumn({name: "departamento"})
-    departmentRelation: Municipio;
+    departmentRelation: departamentos;
 
     // relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
