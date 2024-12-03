@@ -41,7 +41,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Estado'
  */
-router.get("/estados", authenticate, authorizeRoles(['1', '2', '3']), getAllEstados);
+router.get("/estados", authenticate, authorizeRoles(['1', '2', '3', '6']), getAllEstados);
 
 /**
  * @swagger
