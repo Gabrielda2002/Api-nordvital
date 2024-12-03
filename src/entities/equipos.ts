@@ -23,12 +23,6 @@ export class Equipos extends BaseEntity {
     @Length(3, 200, {message: "El nombre del equipo debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
-    @Column({name: "area"})
-    @IsString()
-    @IsNotEmpty({message: "La ubicación es requerida"})
-    @Length(3, 200, {message: "La ubicación debe tener entre $constraint1 y $constraint2 caracteres"})
-    area: string
-
     @Column({name: "ubicacion"})
     ubicacion: string
 
@@ -105,6 +99,16 @@ export class Equipos extends BaseEntity {
 
     @Column({name: "id_usuario", nullable: true})
     idUsuario: number | null;
+
+    @Column({name: "candado"})
+    @IsBoolean()
+    @IsNotEmpty({message: "El candado es requerido"})
+    lock: boolean
+
+    @Column({name: "clave_candado", nullable: true, type: "int"})
+    @IsInt()
+    @IsOptional({message: "La clave del candado es opcional"})
+    lockKey: number | null
 
     @CreateDateColumn({name: "fecha_creacion"})
     createAt: Date

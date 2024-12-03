@@ -16,7 +16,8 @@ export class AlterTableEquipos1733240778632 implements MigrationInterface {
         await queryRunner.addColumn('equipos', new TableColumn({
             name: 'clave_candado',
             type: 'int',
-            default: null
+            default: null,
+            isNullable: true
         }));
 
     }
