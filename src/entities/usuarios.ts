@@ -33,6 +33,7 @@ import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 import { Equipos } from "./equipos";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { LugarRadicacion } from "./lugar-radicacion";
+import { PausasActivas } from "./pausas-activas";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -187,5 +188,9 @@ export class Usuarios extends BaseEntity {
   // * relacion con seguimiento auxiliar
   @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.usuarioRelation)
   seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+
+  // relacion con pausas activas
+  @OneToMany(() => PausasActivas, (pausasActivas) => pausasActivas.userRelation)
+  activeBrakesRelation: PausasActivas[];
 
 }
