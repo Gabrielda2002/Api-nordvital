@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
 
@@ -10,8 +10,9 @@ export class PausasActivas extends BaseEntity {
 
     @Column({ name: "observacion", type: "text", nullable: true })
     @IsString()
+    @IsOptional()
     @Length(1, 200, { message: "La observación debe tener entre $constraint1 y $constraint2 caracteres" })
-    observation: string;
+    observation: string | null;
 
     @Column({ name: "usuario_id", type: "int" })
     @IsInt()

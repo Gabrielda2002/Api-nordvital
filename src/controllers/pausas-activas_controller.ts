@@ -49,7 +49,7 @@ export async function createActiveBrake(
         const { observation, userId } = req.body;
 
         const activeBrake = new PausasActivas();
-        activeBrake.observation = observation;
+        activeBrake.observation = observation || null;
         activeBrake.userId = parseInt(userId);
 
         const errors = await validate(activeBrake);
