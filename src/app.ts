@@ -38,6 +38,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
+    exposedHeaders: ["token-status"],
     origin: function (origin, callback) {
       // * permitir la solicitud si esta ene el array
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {

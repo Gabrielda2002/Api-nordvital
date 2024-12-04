@@ -37,6 +37,7 @@ import departamentoRoutes from './departamentos_routes';
 import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
 import componenteRoutes from './componentes_routes';
 import softwareRoutes from './software_routes';
+import activeBrakesRoutes from './pausas-activas_routes';
 
 const router = Router();
 
@@ -78,5 +79,6 @@ router.use(departamentoRoutes);
 router.use(seguimientoDispositivosRed);
 router.use(componenteRoutes);
 router.use(softwareRoutes);
+router.use(activeBrakesRoutes);
 
 export default router;

@@ -524,6 +524,29 @@ export const options = {
                             description: 'Fecha de creación'
                         }
                     }
+                },
+                PausasActivas: {
+                    type: 'object',
+                    required: ['observation', 'userId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la pausa activa'
+                        },
+                        observation: {
+                            type: 'string',
+                            description: 'Observación de la pausa activa'
+                        },
+                        userId: {
+                            type: 'integer',
+                            description: 'ID del usuario que registra la pausa'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        }
+                    }
                 }
             }
         },
@@ -675,6 +698,10 @@ export const options = {
             {
                 name: 'Usuarios',
                 description: 'Endpoints para la gestión de usuarios del sistema'
+            },
+            {
+                name: 'Pausas Activas',
+                description: 'Endpoints para la gestión de pausas activas'
             }
         ]
     },
