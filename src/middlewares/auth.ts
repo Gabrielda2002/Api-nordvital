@@ -19,7 +19,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
     jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
         if (err) {
-            return res.status(403).json({ message: "Token inválido o expirado." });
+            return res.status(401).header('token-status', 'expired').json({ message: "Token inválido o expirado." });
         }
         
         if (decoded) {
