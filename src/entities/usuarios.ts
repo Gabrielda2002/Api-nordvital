@@ -86,10 +86,6 @@ export class Usuarios extends BaseEntity {
   })
   password: string;
 
-  @Column({ name: "fecha" })
-  @IsOptional()
-  date: Date;
-
   @Column({ name: "Estado" })
   @IsBoolean()
   @IsNotEmpty({ message: "El estado del usuario es requerido" })

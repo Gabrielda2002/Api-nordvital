@@ -36,7 +36,6 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             nombre: user.name,
             apellido: user.lastName,
             rol: user.rol,
-            date: user.date,
             status: user.status,
             photo: user.photo
         } ,message: "Inicio de sesión exitoso" });
