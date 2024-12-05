@@ -58,7 +58,6 @@ export async function createUsuario(
       password,
       municipio,
       rol,
-      date,
     } = req.body;
 
     const usuario = new Usuarios();
@@ -73,7 +72,6 @@ export async function createUsuario(
     usuario.status = true;
     usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
-    usuario.date = date;
 
     const errors = await validate(usuario);
 
@@ -109,7 +107,6 @@ export async function updateUsuario(
       dniType,
       email,
       password,
-      date,
       status,
       municipio,
       rol,
@@ -131,7 +128,6 @@ export async function updateUsuario(
         const saltRounds = 10;
         usuario.password = await bcrypt.hash(password, saltRounds);
     }
-    usuario.date = date;
     usuario.status = status;
     usuario.municipio = municipio;
     usuario.rol = rol;
