@@ -299,20 +299,24 @@ export async function getUsuariosTable(
     .getMany();
 
     const usuarios = usuariosData.map((usuario) => ({
-      id: usuario.id,
-      dniNumber: usuario.dniNumber,
-      name: usuario.name,
-      lastName: usuario.lastName,
-      email: usuario.email,
-      status: usuario.status,
-      createdAt: usuario.createdAt,
-      updatedAt: usuario.updatedAt,
-      documento: usuario.typeDocumentRelation?.name,
-      idDocumento: usuario.typeDocumentRelation?.id,
-      roles: usuario.rolesRelation?.name,
-      idRol: usuario.rolesRelation?.id,
-      municipio: usuario.municipioRelation?.name,
-      idMunicipio: usuario.municipioRelation?.id,
+      id: usuario.id || "N/A",
+      dniNumber: usuario.dniNumber || "N/A",
+      name: usuario.name  || "N/A",
+      lastName: usuario.lastName || "N/A",
+      email: usuario.email || "N/A",
+      status: usuario.status || "N/A",
+      createdAt: usuario.createdAt || "N/A",
+      updatedAt: usuario.updatedAt || "N/A",
+      documento: usuario.typeDocumentRelation?.name || "N/A",
+      idDocumento: usuario.typeDocumentRelation?.id || "N/A",
+      roles: usuario.rolesRelation?.name || "N/A",
+      idRol: usuario.rolesRelation?.id || "N/A",
+      municipio: usuario.municipioRelation?.name || "N/A",
+      idMunicipio: usuario.municipioRelation?.id || "N/A",
+      area: usuario.area|| "N/A",
+      cargo: usuario.position || "N/A",
+      sedeId: usuario.headquarters || "N/A",
+      celular: usuario.phoneNumber || "N/A",
     }))
 
     return res.json(usuarios);
