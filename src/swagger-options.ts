@@ -522,7 +522,24 @@ export const options = {
                             type: 'string',
                             format: 'date',
                             description: 'Fecha de creación'
+                        },
+                        area: {
+                            type: 'string',
+                            description: 'Área de trabajo'
+                        },
+                        cargo: {
+                            type: 'string',
+                            description: 'Cargo del usuario'
+                        },
+                        phoneNumber: {
+                            type: 'integer',
+                            description: 'Número de teléfono'
+                        },
+                        headquarters:{
+                            type: 'integer',
+                            description: 'ID de la sede del usuario'
                         }
+
                     }
                 },
                 PausasActivas: {
