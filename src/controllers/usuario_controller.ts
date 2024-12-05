@@ -58,7 +58,7 @@ export async function createUsuario(
       password,
       municipio,
       rol,
-      date
+      date,
     } = req.body;
 
     const usuario = new Usuarios();
@@ -299,20 +299,24 @@ export async function getUsuariosTable(
     .getMany();
 
     const usuarios = usuariosData.map((usuario) => ({
-      id: usuario.id,
-      dniNumber: usuario.dniNumber,
-      name: usuario.name,
-      lastName: usuario.lastName,
-      email: usuario.email,
-      status: usuario.status,
-      createdAt: usuario.createdAt,
-      updatedAt: usuario.updatedAt,
-      documento: usuario.typeDocumentRelation?.name,
-      idDocumento: usuario.typeDocumentRelation?.id,
-      roles: usuario.rolesRelation?.name,
-      idRol: usuario.rolesRelation?.id,
-      municipio: usuario.municipioRelation?.name,
-      idMunicipio: usuario.municipioRelation?.id,
+      id: usuario.id || "N/A",
+      dniNumber: usuario.dniNumber || "N/A",
+      name: usuario.name  || "N/A",
+      lastName: usuario.lastName || "N/A",
+      email: usuario.email || "N/A",
+      status: usuario.status || "N/A",
+      createdAt: usuario.createdAt || "N/A",
+      updatedAt: usuario.updatedAt || "N/A",
+      documento: usuario.typeDocumentRelation?.name || "N/A",
+      idDocumento: usuario.typeDocumentRelation?.id || "N/A",
+      roles: usuario.rolesRelation?.name || "N/A",
+      idRol: usuario.rolesRelation?.id || "N/A",
+      municipio: usuario.municipioRelation?.name || "N/A",
+      idMunicipio: usuario.municipioRelation?.id || "N/A",
+      area: usuario.area|| "N/A",
+      cargo: usuario.position || "N/A",
+      sedeId: usuario.headquarters || "N/A",
+      celular: usuario.phoneNumber || "N/A",
     }))
 
     return res.json(usuarios);
@@ -362,7 +366,7 @@ export async function updateUsuarioTable(request: Request, response: Response, n
   try {
     
     const {id} = request.params;
-    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol } = request.body;
+    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol, area, position, headquarters, phoneNumber } = request.body;
     console.log(request.body);
 
     const usuario = await Usuarios.findOneBy({id: parseInt(id)});
@@ -382,6 +386,10 @@ export async function updateUsuarioTable(request: Request, response: Response, n
     }
     usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
+    usuario.area = area.toUpperCase();
+    usuario.position = position.toUpperCase();
+    usuario.headquarters = parseInt(headquarters);
+    usuario.phoneNumber = parseInt(phoneNumber);
 
     const errors = await validate(usuario);
     if(errors.length > 0){

@@ -20,8 +20,6 @@ const router = Router();
  *           type: integer
  *         name:
  *           type: string
- *         area:
- *           type: string
  *         typeEquipment:
  *           type: string
  *         brand:
@@ -53,7 +51,12 @@ const router = Router();
  *         idUsuario:
  *           type: integer
  *           nullable: true
- */
+ *         lock: 
+ *           type: boolean
+ *         lockKey:
+ *           type: string
+ *           nullable: true
+ */        
 
 /**
  * @swagger

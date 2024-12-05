@@ -17,15 +17,19 @@ const router = Router();
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de municipios
+ *         description: Lista de municipios obtenida exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Municipio'
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  */
-router.get('/municipios',authenticate, authorizeRoles(['1', '2']), getAllMunicipios);
+router.get('/municipios', authenticate, authorizeRoles(['1', '2']), getAllMunicipios);
 
 /**
  * @swagger
@@ -39,19 +43,24 @@ router.get('/municipios',authenticate, authorizeRoles(['1', '2']), getAllMunicip
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID numérico del municipio
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Municipio encontrado
+ *         description: Municipio encontrado exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Municipio'
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  *       404:
  *         description: Municipio no encontrado
  */
-router.get('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId, getMunicipioById);
+router.get('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarId, getMunicipioById);
 
 /**
  * @swagger
@@ -67,25 +76,38 @@ router.get('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, nitMunicipio]
+ *             required: [name, code]
  *             properties:
  *               name:
  *                 type: string
- *               nitMunicipio:
- *                 type: string
+ *                 description: Nombre del municipio
+ *                 minLength: 3
+ *                 maxLength: 50
+ *               code:
+ *                 type: integer
+ *                 description: Código del municipio
+ *                 minimum: 1
  *     responses:
  *       200:
- *         description: Municipio creado
+ *         description: Municipio creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Municipio'
  *       400:
- *         description: Datos inválidos
+ *         description: Datos inválidos en la solicitud
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  */
-router.post('/municipios',authenticate, authorizeRoles(['1', '2']), createMunicipio);
+router.post('/municipios', authenticate, authorizeRoles(['1', '2']), createMunicipio);
 
 /**
  * @swagger
  * /municipios/{id}:
  *   put:
- *     summary: Actualiza un municipio
+ *     summary: Actualiza un municipio existente
  *     tags: [Municipios]
  *     security:
  *       - bearerAuth: []
@@ -93,6 +115,7 @@ router.post('/municipios',authenticate, authorizeRoles(['1', '2']), createMunici
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID numérico del municipio a actualizar
  *         schema:
  *           type: integer
  *     requestBody:
@@ -104,17 +127,33 @@ router.post('/municipios',authenticate, authorizeRoles(['1', '2']), createMunici
  *             properties:
  *               name:
  *                 type: string
- *               nitMunicipio:
- *                 type: string
+ *                 description: Nombre del municipio
+ *                 minLength: 3
+ *                 maxLength: 50
+ *               code:
+ *                 type: integer
+ *                 description: Código del municipio
+ *                 minimum: 1
  *               status:
  *                 type: boolean
+ *                 description: Estado del municipio
  *     responses:
  *       200:
- *         description: Municipio actualizado
+ *         description: Municipio actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Municipio'
+ *       400:
+ *         description: Datos inválidos en la solicitud
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  *       404:
  *         description: Municipio no encontrado
  */
-router.put('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateMunicipio);
+router.put('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateMunicipio);
 
 /**
  * @swagger
@@ -128,15 +167,28 @@ router.put('/municipios/:id',authenticate, authorizeRoles(['1', '2']), validarId
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID numérico del municipio a eliminar
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Municipio eliminado
+ *         description: Municipio eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Municipio deleted"
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  *       404:
  *         description: Municipio no encontrado
  */
-router.delete('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, deleteMunicipio);
+router.delete('/municipios/:id', authenticate, authorizeRoles(['1']), validarId, deleteMunicipio);
 
 /**
  * @swagger
@@ -150,6 +202,7 @@ router.delete('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, 
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID numérico del municipio
  *         schema:
  *           type: integer
  *     requestBody:
@@ -163,12 +216,23 @@ router.delete('/municipios/:id',authenticate, authorizeRoles(['1']), validarId, 
  *               status:
  *                 type: string
  *                 enum: ['0', '1']
+ *                 description: Estado del municipio (0 = inactivo, 1 = activo)
  *     responses:
  *       200:
- *         description: Estado del municipio actualizado
+ *         description: Estado del municipio actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Municipio'
+ *       400:
+ *         description: Datos inválidos en la solicitud
+ *       401:
+ *         description: No autorizado - Token inválido o expirado
+ *       403:
+ *         description: Prohibido - No tiene permisos suficientes
  *       404:
  *         description: Municipio no encontrado
  */
-router.put("/update-status-municipio/:id",authenticate, authorizeRoles(['1']), validarId, updateStatusMunicipio);
+router.put("/update-status-municipio/:id", authenticate, authorizeRoles(['1']), validarId, updateStatusMunicipio);
 
 export default router;
