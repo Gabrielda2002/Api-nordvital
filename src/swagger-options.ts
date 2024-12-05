@@ -97,9 +97,9 @@ export const options = {
                             type: 'string',
                             description: 'Nombre del municipio'
                         },
-                        nitMunicipio: {
-                            type: 'string',
-                            description: 'NIT del municipio'
+                        municipioCode: {
+                            type: 'integer',
+                            description: 'Código del municipio'
                         },
                         status: {
                             type: 'boolean',
