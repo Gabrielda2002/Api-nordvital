@@ -58,7 +58,7 @@ export async function createUsuario(
       password,
       municipio,
       rol,
-      date
+      date,
     } = req.body;
 
     const usuario = new Usuarios();
@@ -366,7 +366,7 @@ export async function updateUsuarioTable(request: Request, response: Response, n
   try {
     
     const {id} = request.params;
-    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol } = request.body;
+    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol, area, position, headquarters, phoneNumber } = request.body;
     console.log(request.body);
 
     const usuario = await Usuarios.findOneBy({id: parseInt(id)});
@@ -386,6 +386,10 @@ export async function updateUsuarioTable(request: Request, response: Response, n
     }
     usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
+    usuario.area = area.toUpperCase();
+    usuario.position = position.toUpperCase();
+    usuario.headquarters = parseInt(headquarters);
+    usuario.phoneNumber = parseInt(phoneNumber);
 
     const errors = await validate(usuario);
     if(errors.length > 0){
