@@ -58,6 +58,10 @@ export async function createUsuario(
       password,
       municipio,
       rol,
+      area,
+      cargo,
+      sedeId,
+      phoneNumber
     } = req.body;
 
     const usuario = new Usuarios();
@@ -72,6 +76,10 @@ export async function createUsuario(
     usuario.status = true;
     usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
+    usuario.area = area.toUpperCase();
+    usuario.position = cargo.toUpperCase();
+    usuario.headquarters = parseInt(sedeId);
+    usuario.phoneNumber = parseInt(phoneNumber);
 
     const errors = await validate(usuario);
 
