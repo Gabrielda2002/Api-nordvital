@@ -564,6 +564,38 @@ export const options = {
                             description: 'Fecha de creación'
                         }
                     }
+                },
+                Evento: {
+                    type: 'object',
+                    required: ['title', 'dateStart', 'dateEnd', 'color'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del evento'
+                        },
+                        title: {
+                            type: 'string',
+                            description: 'Título del evento'
+                        },
+                        dateStart: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de inicio del evento'
+                        },
+                        dateEnd: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de fin del evento'
+                        },
+                        color: {
+                            type: 'string',
+                            description: 'Color del evento en formato hexadecimal'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del evento'
+                        }
+                    }
                 }
             }
         },
@@ -719,6 +751,10 @@ export const options = {
             {
                 name: 'Pausas Activas',
                 description: 'Endpoints para la gestión de pausas activas'
+            },
+            {
+                name: 'Eventos',
+                description: 'Endpoints para la gestión de eventos del calendario'
             }
         ]
     },
