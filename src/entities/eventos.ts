@@ -13,11 +13,11 @@ export class Eventos extends BaseEntity{
     @Length(2, 200, {message: "El titulo debe tener entre $constraint1 y $constraint2 caracteres"})
     title: string;
 
-    @Column({name: "fecha_inicio", type: "date"})
+    @Column({name: "fecha_inicio", type: "timestamp"})
     @IsNotEmpty()
     dateStart: Date;
 
-    @Column({name: "fecha_fin", type: "date"})
+    @Column({name: "fecha_fin", type: "timestamp"})
     @IsNotEmpty()
     dateEnd: Date;
 
