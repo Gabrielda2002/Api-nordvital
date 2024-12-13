@@ -4,6 +4,7 @@ import ExcelJS from "exceljs";
 import { format } from "path";
 import { randomBytes } from "crypto";
 import { Cirugias } from "../entities/cirugias";
+import { PausasActivas } from "../entities/pausas-activas";
 
 export async function downloadReportExcel(
   req: Request,
@@ -813,6 +814,65 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
 
     // Configurar respuesta
     const fileName = `Reporte_Gestion_Auxiliar_${randomBytes(4).toString("hex")}.xlsx`;
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+// controlador para reporte de pausas activas.
+export async function getReportBreakesActive(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await PausasActivas.createQueryBuilder("pausas_activas")
+      .leftJoinAndSelect("pausas_activas.userRelation", "usuario")
+      .orderBy("pausas_activas.createdAt", "DESC");
+
+    // Aplicar filtro de fechas si se proporcionan
+    if (dateStart && dateEnd) {
+      query.andWhere("pausas_activas.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd
+      });
+    }
+
+    const data = await query.getMany();
+
+    // Crear workbook y worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Pausas Activas");
+
+    // Definir columnas
+    worksheet.columns = [
+      { header: "Fecha Registro", key: "fecha_creacion", width: 20 },
+      { header: "Observación", key: "observacion", width: 30 },
+      { header: "Nombre del Usuario", key: "nombre_usuario", width: 30 },
+      { header: "Área", key: "area", width: 20 },
+      { header: "Cargo", key: "cargo", width: 20 }
+    ];
+
+    // Agregar datos
+    data.forEach((pausa) => {
+      worksheet.addRow({
+        fecha_creacion: pausa.createdAt || "N/A",
+        observacion: pausa.observation || "N/A",
+        nombre_usuario: pausa.userRelation?.name || "N/A",
+        area: pausa.userRelation?.area || "N/A",
+        cargo: pausa.userRelation?.position || "N/A"
+      });
+    });
+
+    // Configurar respuesta
+    const fileName = `Reporte_Pausas_Activas_${randomBytes(4).toString("hex")}.xlsx`;
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
