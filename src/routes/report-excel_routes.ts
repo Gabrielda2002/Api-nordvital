@@ -191,6 +191,6 @@ router.post('/report-excel-gestion-auxiliar', authenticate, authorizeRoles(['1',
  *       500:
  *         description: Error del servidor
  */
-router.post('/report-breakes-active', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), getReportBreakesActive)
+router.post('/report-breakes-active', authenticate, authorizeRoles(['1', '2', '6']), getReportBreakesActive)
 
 export default router;
