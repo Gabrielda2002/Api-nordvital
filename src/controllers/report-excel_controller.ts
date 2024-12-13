@@ -853,9 +853,10 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     // Definir columnas
     worksheet.columns = [
-      { header: "Fecha Registro", key: "fecha_creacion", width: 20 },
+      { header: "Fecha Registro", key: "fecha_creacion", width: 20, style: { numFmt: "dd/mm/yyyy hh:mm:ss" } },
       { header: "Observación", key: "observacion", width: 30 },
       { header: "Nombre del Usuario", key: "nombre_usuario", width: 30 },
+      { header: "Apellidos", key: "apellidos_usuario", width: 30 },
       { header: "Área", key: "area", width: 20 },
       { header: "Cargo", key: "cargo", width: 20 }
     ];
@@ -866,6 +867,7 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
         fecha_creacion: pausa.createdAt || "N/A",
         observacion: pausa.observation || "N/A",
         nombre_usuario: pausa.userRelation?.name || "N/A",
+        apellidos_usuario: pausa.userRelation?.lastName || "N/A",
         area: pausa.userRelation?.area || "N/A",
         cargo: pausa.userRelation?.position || "N/A"
       });
