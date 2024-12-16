@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { downloadReportExcel, downloadReportExcelFilter, reporteGestionAuxiliar, reportExcelCirugias, reportExcelCirugiasFiltros, reportExcelRadicacion } from "../controllers/report-excel_controller";
+import { downloadReportExcel, downloadReportExcelFilter, getReportBreakesActive, reporteGestionAuxiliar, reportExcelCirugias, reportExcelCirugiasFiltros, reportExcelRadicacion } from "../controllers/report-excel_controller";
 
 const router = Router();
 
@@ -113,6 +113,84 @@ router.get('/report-excel-cirugias', authenticate, authorizeRoles(['1', '3', '6'
  */
 router.post('/report-excel-cirugias-filtro', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reportExcelCirugiasFiltros)
 
+/**
+ * @swagger
+ * /api/v1/report-excel-gestion-auxiliar:
+ *   post:
+ *     summary: Descarga reporte de gestión auxiliar en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Parámetros inválidos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post('/report-excel-gestion-auxiliar', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reporteGestionAuxiliar)
+
+/**
+ * @swagger
+ * /api/v1/report-breakes-active:
+ *   post:
+ *     summary: Descarga reporte de pausas activas en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Parámetros inválidos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/report-breakes-active', authenticate, authorizeRoles(['1', '2', '6']), getReportBreakesActive)
 
 export default router;
