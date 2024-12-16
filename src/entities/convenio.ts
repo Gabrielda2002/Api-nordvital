@@ -2,6 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, One
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 import { IsBoolean, IsNotEmpty, Length } from "class-validator";
+import { NotasTecnicas } from "./notas-tecnicas";
 
 @Entity("convenio")
 export class Convenio extends BaseEntity{
@@ -28,4 +29,8 @@ export class Convenio extends BaseEntity{
 
     @OneToMany(() => Pacientes, (pacientes) => pacientes.convenioRelation)
     patientRelation: Pacientes[]
+
+    // relacion con notas tecnicas
+    @OneToMany(() => NotasTecnicas, notasTecnicas => notasTecnicas.convenioRelation)
+    notasTecnicasRelation: NotasTecnicas[];
 }
