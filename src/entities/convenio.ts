@@ -3,6 +3,7 @@ import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 import { IsBoolean, IsNotEmpty, Length } from "class-validator";
 import { NotasTecnicas } from "./notas-tecnicas";
+import { ServiciosEjecutados } from "./servicios-ejecutados";
 
 @Entity("convenio")
 export class Convenio extends BaseEntity{
@@ -33,4 +34,9 @@ export class Convenio extends BaseEntity{
     // relacion con notas tecnicas
     @OneToMany(() => NotasTecnicas, notasTecnicas => notasTecnicas.convenioRelation)
     notasTecnicasRelation: NotasTecnicas[];
+    
+    // relacion con servicios ejecutados
+    @OneToMany(() => ServiciosEjecutados, servicios => servicios.convenioRelation)
+    serviciosEjecutadosRelation: Radicacion[]
+
 }

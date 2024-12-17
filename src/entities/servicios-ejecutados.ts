@@ -3,6 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, Pr
 import { LugarRadicacion } from "./lugar-radicacion";
 import { ServiciosGenerales } from "./servicios-generales";
 import { TipoDocumento } from "./tipo-documento";
+import { Convenio } from "./convenio";
 
 @Entity("servicios_ejecutados")
 export class ServiciosEjecutados extends BaseEntity {
@@ -92,11 +93,6 @@ export class ServiciosEjecutados extends BaseEntity {
     @IsNotEmpty()
     medicoSpc: string;
 
-    @Column({name: 'sede_atenc'})
-    @IsString()
-    @IsNotEmpty()
-    attentionHeadquarters: string;
-
     @Column({name: 'nombre_contrato'})
     @IsString()
     @IsNotEmpty()
@@ -141,7 +137,7 @@ export class ServiciosEjecutados extends BaseEntity {
     @IsNotEmpty()
     userGenerated: string;
 
-    @Column({name: 'convenio'})
+    @Column({name: 'id_convenio'})
     @IsString()
     @IsNotEmpty()
     convenio: string;
@@ -171,5 +167,9 @@ export class ServiciosEjecutados extends BaseEntity {
     @ManyToOne(() => TipoDocumento, document => document.serviciosEjecutadosRelation)
     @JoinColumn({name: 'tipo_documento'})
     documentTypeRelation: TipoDocumento;
-    
+
+    // relacion con convenio
+    @ManyToOne(() => Convenio, convenio => convenio.serviciosEjecutadosRelation)
+    @JoinColumn({name: 'id_convenio'})
+    convenioRelation: Convenio;
 }
