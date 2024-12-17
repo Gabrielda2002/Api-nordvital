@@ -39,6 +39,7 @@ import componenteRoutes from './componentes_routes';
 import softwareRoutes from './software_routes';
 import activeBrakesRoutes from './pausas-activas_routes';
 import eventosRoutes from './eventos_routes';
+import serviciosEjecutadosRoutes from './servicios-ejecutados_routes';
 
 const router = Router();
 
@@ -82,5 +83,6 @@ router.use(componenteRoutes);
 router.use(softwareRoutes);
 router.use(activeBrakesRoutes);
 router.use(eventosRoutes);
+router.use(serviciosEjecutadosRoutes);
 
 export default router;
