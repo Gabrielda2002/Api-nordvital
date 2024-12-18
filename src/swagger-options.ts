@@ -596,6 +596,58 @@ export const options = {
                             description: 'Descripción del evento'
                         }
                     }
+                },
+                NotaTecnica: {
+                    type: 'object',
+                    required: ['idEps', 'idService', 'frecuencyUse', 'amount', 'subgroup', 'group', 'idSede', 'rate'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la nota técnica'
+                        },
+                        idEps: {
+                            type: 'integer',
+                            description: 'ID de la EPS'
+                        },
+                        idService: {
+                            type: 'integer',
+                            description: 'ID del servicio'
+                        },
+                        frecuencyUse: {
+                            type: 'string',
+                            description: 'Frecuencia de uso'
+                        },
+                        amount: {
+                            type: 'integer',
+                            description: 'Cantidad'
+                        },
+                        subgroup: {
+                            type: 'string',
+                            description: 'Subgrupo del servicio'
+                        },
+                        group: {
+                            type: 'string',
+                            description: 'Grupo del servicio'
+                        },
+                        idSede: {
+                            type: 'integer',
+                            description: 'ID de la sede'
+                        },
+                        rate: {
+                            type: 'integer',
+                            description: 'Tarifa'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
                 }
             }
         },
@@ -755,6 +807,10 @@ export const options = {
             {
                 name: 'Eventos',
                 description: 'Endpoints para la gestión de eventos del calendario'
+            },
+            {
+                name: 'Notas Técnicas',
+                description: 'Endpoints para la gestión de notas técnicas'
             }
         ]
     },
