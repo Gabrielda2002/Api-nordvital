@@ -648,6 +648,34 @@ export const options = {
                             description: 'Fecha de actualización'
                         }
                     }
+                },
+                ServiciosGenerales: {
+                    type: 'object',
+                    required: ['code', 'description'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del servicio general'
+                        },
+                        code: {
+                            type: 'string',
+                            description: 'Código del servicio general'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del servicio general'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
                 }
             }
         },
@@ -811,6 +839,10 @@ export const options = {
             {
                 name: 'Notas Técnicas',
                 description: 'Endpoints para la gestión de notas técnicas'
+            },
+            {
+                name: "Servicios Generales",
+                description: "Endpoints para la gestión de servicios generales"
             }
         ]
     },
