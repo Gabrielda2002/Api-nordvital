@@ -308,7 +308,7 @@ export async function getUsuariosTable(
       name: usuario.name  || "N/A",
       lastName: usuario.lastName || "N/A",
       email: usuario.email || "N/A",
-      status: usuario.status || "N/A",
+      status: usuario.status !== undefined ? usuario.status : "N/A",
       createdAt: usuario.createdAt || "N/A",
       updatedAt: usuario.updatedAt || "N/A",
       documento: usuario.typeDocumentRelation?.name || "N/A",
