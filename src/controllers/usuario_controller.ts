@@ -308,7 +308,7 @@ export async function getUsuariosTable(
       name: usuario.name  || "N/A",
       lastName: usuario.lastName || "N/A",
       email: usuario.email || "N/A",
-      status: usuario.status || "N/A",
+      status: usuario.status !== undefined ? usuario.status : "N/A",
       createdAt: usuario.createdAt || "N/A",
       updatedAt: usuario.updatedAt || "N/A",
       documento: usuario.typeDocumentRelation?.name || "N/A",
@@ -433,6 +433,29 @@ export async function searchUsuarios(req: Request, res: Response, next: NextFunc
     }));
 
     return res.json(usuariosTransformed);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// funcion para actualizar contrasenas de usuarios a claves genenericas
+export  async function updatePasswordGeneric(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const genericPassword = 'Colombia24@';
+
+    const saltRounds = 10;
+
+    const hashedPassword = await bcrypt.hash(genericPassword, saltRounds);
+
+    await Usuarios.createQueryBuilder()
+    .update(Usuarios)
+    .set({password: hashedPassword})
+    .where('id > 72')
+    .execute();
+
+    return res.json({message: 'Contraseñas actualizadas correctamente'});
+
   } catch (error) {
     next(error);
   }

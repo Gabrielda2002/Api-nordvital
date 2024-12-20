@@ -596,6 +596,234 @@ export const options = {
                             description: 'Descripción del evento'
                         }
                     }
+                },
+                NotaTecnica: {
+                    type: 'object',
+                    required: ['idEps', 'idService', 'frecuencyUse', 'amount', 'subgroup', 'group', 'idSede', 'rate'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la nota técnica'
+                        },
+                        idEps: {
+                            type: 'integer',
+                            description: 'ID de la EPS'
+                        },
+                        idService: {
+                            type: 'integer',
+                            description: 'ID del servicio'
+                        },
+                        frecuencyUse: {
+                            type: 'string',
+                            description: 'Frecuencia de uso'
+                        },
+                        amount: {
+                            type: 'integer',
+                            description: 'Cantidad'
+                        },
+                        subgroup: {
+                            type: 'string',
+                            description: 'Subgrupo del servicio'
+                        },
+                        group: {
+                            type: 'string',
+                            description: 'Grupo del servicio'
+                        },
+                        idSede: {
+                            type: 'integer',
+                            description: 'ID de la sede'
+                        },
+                        rate: {
+                            type: 'integer',
+                            description: 'Tarifa'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
+                },
+                ServiciosGenerales: {
+                    type: 'object',
+                    required: ['code', 'description'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del servicio general'
+                        },
+                        code: {
+                            type: 'string',
+                            description: 'Código del servicio general'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del servicio general'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
+                },
+                ServiciosEjecutados: {
+                    type: 'object',
+                    required: [
+                        'idSede',
+                        'idService',
+                        'amount',
+                        'rate',
+                        'statusService',
+                        'subGroup',
+                        'documentType',
+                        'identification',
+                        'patientName',
+                        'patientSex',
+                        'dateBirth',
+                        'riasGroup',
+                        'mainDx',
+                        'medicoCode',
+                        'medicoName',
+                        'medicoSpc',
+                        'nameContract',
+                        'userRegimen',
+                        'authorizationNumber',
+                        'orderDate',
+                        'prestDate',
+                        'appointmentStatus',
+                        'appointmentType',
+                        'userGenerated',
+                        'convenio',
+                        'servicePgp'
+                    ],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del servicio ejecutado'
+                        },
+                        idSede: {
+                            type: 'integer',
+                            description: 'ID de la sede'
+                        },
+                        idService: {
+                            type: 'integer',
+                            description: 'ID del servicio'
+                        },
+                        amount: {
+                            type: 'integer',
+                            description: 'Cantidad'
+                        },
+                        rate: {
+                            type: 'integer',
+                            description: 'Tarifa'
+                        },
+                        statusService: {
+                            type: 'string',
+                            description: 'Estado del servicio'
+                        },
+                        group: {
+                            type: 'string',
+                            description: 'Grupo del servicio'
+                        },
+                        subGroup: {
+                            type: 'string',
+                            description: 'Subgrupo del servicio'
+                        },
+                        documentType: {
+                            type: 'integer',
+                            description: 'Tipo de documento'
+                        },
+                        identification: {
+                            type: 'integer',
+                            description: 'Número de identificación'
+                        },
+                        patientName: {
+                            type: 'string',
+                            description: 'Nombre del paciente'
+                        },
+                        patientSex: {
+                            type: 'string',
+                            description: 'Sexo del paciente'
+                        },
+                        dateBirth: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha de nacimiento'
+                        },
+                        riasGroup: {
+                            type: 'string',
+                            description: 'Grupo RIAS'
+                        },
+                        mainDx: {
+                            type: 'string',
+                            description: 'Diagnóstico principal'
+                        },
+                        medicoCode: {
+                            type: 'string',
+                            description: 'Código del médico remisor'
+                        },
+                        medicoName: {
+                            type: 'string',
+                            description: 'Nombre del médico remisor'
+                        },
+                        medicoSpc: {
+                            type: 'string',
+                            description: 'Especialidad del médico remisor'
+                        },
+                        nameContract: {
+                            type: 'string',
+                            description: 'Nombre del contrato'
+                        },
+                        userRegimen: {
+                            type: 'string',
+                            description: 'Régimen del usuario'
+                        },
+                        authorizationNumber: {
+                            type: 'string',
+                            description: 'Número de autorización'
+                        },
+                        orderDate: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha de la orden'
+                        },
+                        prestDate: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha de prestación'
+                        },
+                        appointmentStatus: {
+                            type: 'string',
+                            description: 'Estado de la cita'
+                        },
+                        appointmentType: {
+                            type: 'string',
+                            description: 'Tipo de cita'
+                        },
+                        userGenerated: {
+                            type: 'string',
+                            description: 'Usuario que generó el servicio'
+                        },
+                        convenio: {
+                            type: 'string',
+                            description: 'Convenio'
+                        },
+                        servicePgp: {
+                            type: 'boolean',
+                            description: 'Servicio PGP'
+                        }
+                    }
                 }
             }
         },
@@ -755,6 +983,18 @@ export const options = {
             {
                 name: 'Eventos',
                 description: 'Endpoints para la gestión de eventos del calendario'
+            },
+            {
+                name: 'Notas Técnicas',
+                description: 'Endpoints para la gestión de notas técnicas'
+            },
+            {
+                name: "Servicios Generales",
+                description: "Endpoints para la gestión de servicios generales"
+            },
+            {
+                name: "Servicios Ejecutados",
+                description: "Endpoints para la gestión de servicios ejecutados"
             }
         ]
     },

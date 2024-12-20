@@ -3,6 +3,7 @@ import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
+import { ServiciosEjecutados } from "./servicios-ejecutados";
 
 @Entity("documento")
 export class TipoDocumento extends BaseEntity {
@@ -34,5 +35,8 @@ export class TipoDocumento extends BaseEntity {
     @OneToMany(()=> Usuarios, (usuarios) => usuarios.typeDocumentRelation)
     usuarioRelation: Usuarios[]
 
+    // relacion con servicios ejecutados
+    @OneToMany(() => ServiciosEjecutados, servicio => servicio.documentTypeRelation)
+    serviciosEjecutadosRelation: ServiciosEjecutados[];
     
 }

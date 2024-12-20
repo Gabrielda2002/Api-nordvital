@@ -5,6 +5,8 @@ import { dispositivosRed } from "./dispositivos-red";
 import { Municipio } from "./municipio";
 import { Usuarios } from "./usuarios";
 import { departamentos } from "./departamentos";
+import { NotasTecnicas } from "./notas-tecnicas";
+import { ServiciosEjecutados } from "./servicios-ejecutados";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -63,4 +65,13 @@ export class LugarRadicacion extends BaseEntity{
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
     @JoinColumn({name: "ciudad"})
     municipioRelation: Municipio;
+
+    // relacion con notas tecnicas
+    @OneToMany(() => NotasTecnicas, (notasTecnicas) => notasTecnicas.placeRelation)
+    notasTecnicasRelation: NotasTecnicas[];
+
+    //relacion con sercicios ejecutas
+    @OneToMany(() => ServiciosEjecutados, servicio => servicio.placeRelation)
+    serviciosEjecutadosRelation: ServiciosEjecutados[]
+
 }
