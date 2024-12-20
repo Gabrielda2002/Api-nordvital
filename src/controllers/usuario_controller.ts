@@ -437,3 +437,26 @@ export async function searchUsuarios(req: Request, res: Response, next: NextFunc
     next(error);
   }
 }
+
+// funcion para actualizar contrasenas de usuarios a claves genenericas
+export  async function updatePasswordGeneric(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const genericPassword = 'Colombia24@';
+
+    const saltRounds = 10;
+
+    const hashedPassword = await bcrypt.hash(genericPassword, saltRounds);
+
+    await Usuarios.createQueryBuilder()
+    .update(Usuarios)
+    .set({password: hashedPassword})
+    .where('id > 72')
+    .execute();
+
+    return res.json({message: 'Contraseñas actualizadas correctamente'});
+
+  } catch (error) {
+    next(error);
+  }
+}
