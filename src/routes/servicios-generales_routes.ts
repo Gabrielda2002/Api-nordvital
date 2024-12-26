@@ -156,6 +156,62 @@ router.put('/servicios-generales/:id', authenticate, authorizeRoles(['1']), vali
  */
 router.delete('/servicios-generales/:id', authenticate, authorizeRoles(['1']), validarId, deleteServicioGeneral);
 
+/**
+ * @swagger
+ * /servicios-generales/contratados:
+ *   post:
+ *     summary: Consulta servicios contratados por código
+ *     tags: [Servicios Generales]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 description: Código del servicio a consultar
+ *     responses:
+ *       200:
+ *         description: Lista de servicios contratados encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: ID del servicio o N/A
+ *                   code:
+ *                     type: string
+ *                     description: Código del servicio o N/A
+ *                   description:
+ *                     type: string
+ *                     description: Descripción del servicio o N/A
+ *                   Relations:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         nameConvenio:
+ *                           type: string
+ *                           description: Nombre del convenio
+ *                         nameSede:
+ *                           type: string
+ *                           description: Nombre de la sede
+ *                         isContrated:
+ *                           type: boolean
+ *                           description: Indica si está contratado
+ *       404:
+ *         description: Servicio no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/servicio-contratado", authenticate, authorizeRoles(['1']), getServicioContratado);
 
 export default router;
