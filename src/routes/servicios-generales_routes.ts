@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createServicioGeneral, deleteServicioGeneral, getServicioGeneral, getServicioGeneralById, updateServicioGeneral } from "../controllers/servicios-generales_controller";
+import { createServicioGeneral, deleteServicioGeneral, getServicioContratado, getServicioGeneral, getServicioGeneralById, updateServicioGeneral } from "../controllers/servicios-generales_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -155,5 +155,7 @@ router.put('/servicios-generales/:id', authenticate, authorizeRoles(['1']), vali
  *         description: Servicio no encontrado
  */
 router.delete('/servicios-generales/:id', authenticate, authorizeRoles(['1']), validarId, deleteServicioGeneral);
+
+router.post("/servicio-contratado", authenticate, authorizeRoles(['1']), getServicioContratado);
 
 export default router;
