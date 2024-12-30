@@ -124,3 +124,44 @@ export async function deleteServicioGeneral(req: Request, res: Response, next: N
         next(error);
     }
 }
+
+// controlador para consultar servicios contratados 
+export async function getServicioContratado(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const {code} = req.body;
+
+        const servicios = await ServiciosGenerales.createQueryBuilder("servicios_generales")
+        .leftJoinAndSelect("servicios_generales.notasTecnicasRelation", "notas_tecnicas")
+        .leftJoinAndSelect("notas_tecnicas.convenioRelation", "convenio")
+        .leftJoinAndSelect("notas_tecnicas.placeRelation", "sede")
+        .leftJoinAndSelect("sede.municipioRelation", "municipio")
+        .andWhere("servicios_generales.code = :code", { code })
+        .getMany();
+
+        console.log(servicios)
+
+        if (servicios.length === 0) {
+            return res.status(404).json({ message: "Servicio not found" });
+        }
+
+        const result = servicios.map(servicio => {
+            const isContrated = servicio.notasTecnicasRelation.length > 0;
+            return {
+                id: servicio.id || "N/A",
+                code: servicio.code || "N/A",
+                description: servicio.description || "N/A",
+                Relations: servicio.notasTecnicasRelation.map((nota) => ({
+                    nameConvenio: nota.placeRelation.municipioRelation?.name,
+                    nameSede: nota.placeRelation?.name,
+                    isContrated
+                })  ) || [],
+            }
+        });
+
+        return res.json(result);
+
+    } catch (error) {
+        next(error);
+    }
+}
