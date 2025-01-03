@@ -11,7 +11,7 @@ import { AppDataSource } from "./db/conexion";
             await AppDataSource.initialize();
             console.log('Conexión a la base de datos establecida');
         
-            const PUERTO = process.env.DB_PORT;
+            const PUERTO = process.env.PORT;
             app.listen(PUERTO, () => {
                 console.log(`Servidor corriendo en el puerto http://localhost:${PUERTO}`);
             });
