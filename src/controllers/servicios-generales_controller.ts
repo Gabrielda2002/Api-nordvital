@@ -152,7 +152,7 @@ export async function getServicioContratado(req: Request, res: Response, next: N
                 code: servicio.code || "N/A",
                 description: servicio.description || "N/A",
                 Relations: servicio.notasTecnicasRelation.map((nota) => ({
-                    nameConvenio: nota.placeRelation.municipioRelation?.name,
+                    nameConvenio: nota.convenioRelation?.name,
                     nameSede: nota.placeRelation?.name,
                     isContrated
                 })  ) || [],
