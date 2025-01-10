@@ -6,7 +6,7 @@ import { Usuarios } from "./usuarios";
 @Entity({ name: "carta_recobro" })
 export class CartaRecobro extends BaseEntity {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: "id"})
     id: number;
 
     @Column({name: "id_radicado"})
@@ -17,11 +17,11 @@ export class CartaRecobro extends BaseEntity {
     @IsInt()
     idUserRequest: number;
 
-    @Column({name: "id_usuario_audita", nullable: true})
+    @Column({name: "id_usuario_audita", nullable: true, type: "int"})
     @IsInt()
     idUserAudit: number | null;
 
-    @Column({name: "observacion", nullable: true})
+    @Column({name: "observacion", nullable: true, type: "text"})
     @IsString()
     observacion: string | null;
 
@@ -29,7 +29,7 @@ export class CartaRecobro extends BaseEntity {
     @IsString()
     justification: string;
 
-    @Column({name: "fecha_impresion", nullable: true})
+    @Column({name: "fecha_impresion", nullable: true, type: "date"})
     @IsString()
     dateImpression: Date | null;
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createRecoveryLetter, deleteRecoveryLetter, getAllRecoveryLetter, getRecoveryLetterById, updateRecoveryLetter } from "../controllers/tabla-recobro_controller";
+import { createRecoveryLetter, deleteRecoveryLetter, getAllRecoveryLetter, getRecoveryLetterById, updateRecoveryLetter } from "../controllers/carta-recobro_controller";
 
 const router = Router();
 
