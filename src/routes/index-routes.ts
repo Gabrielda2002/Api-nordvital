@@ -42,6 +42,7 @@ import eventosRoutes from './eventos_routes';
 import serviciosEjecutadosRoutes from './servicios-ejecutados_routes';
 import serviciosGeneralesRoutes from './servicios-generales_routes';
 import notaTencicaRoutes from './notas-tecnicas_routes';
+import cartaRecobroRoutes from './carpetas_routes';
 
 const router = Router();
 
@@ -88,5 +89,6 @@ router.use(eventosRoutes);
 router.use(serviciosEjecutadosRoutes);
 router.use(serviciosGeneralesRoutes);
 router.use(notaTencicaRoutes);
+router.use(cartaRecobroRoutes); 
 
 export default router;
