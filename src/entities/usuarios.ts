@@ -34,6 +34,7 @@ import { Equipos } from "./equipos";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { PausasActivas } from "./pausas-activas";
+import { CartaRecobro } from "./Carta_recobro";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -187,5 +188,11 @@ export class Usuarios extends BaseEntity {
   // relacion con pausas activas
   @OneToMany(() => PausasActivas, (pausasActivas) => pausasActivas.userRelation)
   activeBrakesRelation: PausasActivas[];
+
+  @OneToMany(() => CartaRecobro, carta => carta.userAuditRelation)
+  cartaUserAuditRelation: CartaRecobro[];
+
+  @OneToMany(() => CartaRecobro, carta => carta.userRequestRelation)
+  cartaUserRequestRelation: CartaRecobro[];
 
 }
