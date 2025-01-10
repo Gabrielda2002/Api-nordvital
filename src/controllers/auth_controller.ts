@@ -8,10 +8,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
 export async function login(req: Request, res: Response, next: NextFunction) {
     try {
         const { dniNumber, password } = req.body;
-        console.log(dniNumber, password);
 
         // Buscar el usuario por dniNumber
-        const user = await Usuarios.findOneBy({ dniNumber });
+        const user = await Usuarios.createQueryBuilder("usuario")
+        .leftJoinAndSelect("usuario.municipioRelation", "municipio")
+        .leftJoinAndSelect("usuario.sedeRelation", "sede")
+        .where("usuario.CedulaUsuario = :dniNumber", { dniNumber })
+        .getOne();
 
         const passwordMatch = await bcrypt.compare(password, user?.password || '');
 
@@ -33,14 +36,18 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             id: user.id,
             dniNumber: user.dniNumber,
             email: user.email,
-            nombre: user.name,
-            apellido: user.lastName,
+            name: user.name,
+            lastname: user.lastName,
             rol: user.rol,
             status: user.status,
-            photo: user.photo
+            photo: user.photo,
+            phone: user.phoneNumber,
+            municipality: user.municipioRelation.name,
+            area: user.area,
+            position: user.position,
+            headquarters: user.sedeRelation.name,
         } ,message: "Inicio de sesión exitoso" });
     } catch (error) {
-        // Pasar el error al middleware de manejo de errores
         next(error);
     }
 }

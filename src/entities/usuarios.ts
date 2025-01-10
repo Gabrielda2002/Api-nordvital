@@ -135,7 +135,6 @@ export class Usuarios extends BaseEntity {
   @CreateDateColumn({ name: "fecha-creacion" })
   createdAt: Date;
 
-  // * relaciones
   // * relaciones con llaves foraneas
 
   // * relacion con municipio
