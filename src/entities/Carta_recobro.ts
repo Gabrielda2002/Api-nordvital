@@ -1,5 +1,5 @@
 import { IsIn, IsInt, IsString } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Usuarios } from "./usuarios";
 
@@ -40,15 +40,15 @@ export class CartaRecobro extends BaseEntity {
     updateAt: Date;
 
     // ? relaciones
-    @OneToMany(() => Radicacion, radicacion => radicacion.cartaRelation)
+    @ManyToOne(() => Radicacion, radicacion => radicacion.cartaRelation)
     @JoinColumn({name: "id_radicado"})
     radicacionRelation: Radicacion;
 
-    @OneToMany(() => Usuarios, usuario => usuario.cartaUserRequestRelation)
+    @ManyToOne(() => Usuarios, usuario => usuario.cartaUserRequestRelation)
     @JoinColumn({name: "id_usuario_solicita"})
     userRequestRelation: Usuarios;
 
-    @OneToMany(() => Usuarios, usuario => usuario.cartaUserAuditRelation)
+    @ManyToOne(() => Usuarios, usuario => usuario.cartaUserAuditRelation)
     @JoinColumn({name: "id_usuario_audita"})
     userAuditRelation: Usuarios;
 
