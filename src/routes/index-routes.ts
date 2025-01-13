@@ -42,7 +42,7 @@ import eventosRoutes from './eventos_routes';
 import serviciosEjecutadosRoutes from './servicios-ejecutados_routes';
 import serviciosGeneralesRoutes from './servicios-generales_routes';
 import notaTencicaRoutes from './notas-tecnicas_routes';
-import cartaRecobroRoutes from './carpetas_routes';
+import cartaRecobroRoutes from './carta-recobro_routes';
 
 const router = Router();
 
