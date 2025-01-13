@@ -3,6 +3,7 @@ import { CartaRecobro } from "../entities/Carta_recobro";
 import { validate } from "class-validator";
 import { Radicacion } from "../entities/radicacion";
 import { ADDRGETNETWORKPARAMS } from "dns";
+import { CupsRadicados } from "../entities/cups-radicados";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -253,5 +254,65 @@ export async function createRequestLetter(req: Request, res: Response, next: Nex
 
     } catch (error) {
         next(error);
+    }
+}
+
+// auditar solicitud de carta
+export async function creatAuditRequestLetter (req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+
+        const { idUserAudit, observacion, idRadicado, cupsDetails  } = req.body;
+        
+        // * se valida si existe la solicitud
+        const requestExist = await CartaRecobro.createQueryBuilder("carta_recobro")
+        .where("carta_recobro.id = :id", {id})
+        .getOne();
+
+        if (requestExist == undefined) {
+            return res.status(404).json({message: "No existe una solicitud de carta de recobro para este radicado"});
+        }
+
+        // * se actualiza el registro de solicitud
+        requestExist.idUserAudit = parseInt(idUserAudit);
+        requestExist.observacion = observacion;
+        
+        const erros = await validate(requestExist);
+
+        if (erros.length > 0) {
+            const errorsMessage = erros.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({"message" : "Ocurrio un error",errorsMessage});
+        }
+
+        // * actualiza el cups afectados
+
+        const cups = await CupsRadicados.createQueryBuilder("cups_radicados")
+        .where("cups_radicados.idRadicacion = :idRadicado", {idRadicado})
+        .getMany();
+
+        for (const cup of cups) {
+            const updateCup = cupsDetails.find(
+              (detail: any) => detail.idCupsRadicado === cup.id
+            );
+            console.log(updateCup);
+            if (updateCup) {
+              cup.statusRecoveryLatter = updateCup.statusRecoveryLatter,
+              cup.dateAuditRecoveryLatter = updateCup.dateAuditRecoveryLatter
+
+              await cup.save();
+            }
+          }
+
+        await requestExist.save();
+
+        return res.json({message: "Carta de recobro auditada"});
+
+    } catch (error) {
+        next(error);
+        
     }
 }
