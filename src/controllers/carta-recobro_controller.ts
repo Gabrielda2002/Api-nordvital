@@ -142,7 +142,7 @@ export async function deleteRecoveryLetter (req: Request, res: Response, next: N
 }
 
 // radicados autorizados por auditoria para solicitar carta de recobro
-export async function getRequestLatter(req: Request, res: Response, next: NextFunction){
+export async function getRequestLetter(req: Request, res: Response, next: NextFunction){
     try {
         
         const requestLatter = await Radicacion.createQueryBuilder("radicacion")
@@ -179,21 +179,79 @@ export async function getRequestLatter(req: Request, res: Response, next: NextFu
 }
 
 // solicitudes de carta de recobro
-export async function getResponseLatter(req: Request, res: Response, next: NextFunction){
+export async function getResponseLetter(req: Request, res: Response, next: NextFunction){
     try {
         
-        const responseLatter = await CartaRecobro.createQueryBuilder("carta_recobro")
+        const responseLetter = await CartaRecobro.createQueryBuilder("carta_recobro")
         .leftJoinAndSelect("carta_recobro.radicacionRelation", "radicacion")
+        .leftJoinAndSelect("radicacion.patientRelation", "patient")
+        .leftJoinAndSelect("patient.documentRelation", "document")
+        .leftJoinAndSelect("patient.convenioRelation", "convenio")
         .leftJoinAndSelect("carta_recobro.userRequestRelation", "usuario_solicita")
         .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
+        .where("cups_radicados.status = 1")
         .getMany();
 
-        return res.json(responseLatter);
+        const responseLetterFormated = responseLetter.map(r => ({
+            id: r.id,
+            profetional: r.radicacionRelation.profetional,
+            creatAt: r.radicacionRelation.createdAt,
+            dniNumber: r.radicacionRelation.patientRelation.documentNumber,
+            dniType: r.radicacionRelation.patientRelation.documentRelation.name,
+            agreement: r.radicacionRelation.patientRelation.convenioRelation.name,
+            cupsAuthorized: r.radicacionRelation.cupsRadicadosRelation.map(c => ({
+                id: c.id,
+                code: c.code,
+                DescriptionCode: c.DescriptionCode,
+                status: c.statusRelation.name
+            })),
+        }))
+        
+        return res.json(responseLetterFormated);
 
     } catch (error) {
         next(error);
         
     }
 } 
+
+// crear solicitud
+export async function createRequestLetter(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { idRadicado, idUserRequest, justification } = req.body;
+
+        const requestExist = await CartaRecobro.createQueryBuilder("carta_recobro")
+        .where("carta_recobro.id_radicado = :idRadicado", {idRadicado})
+        .getOne();
+
+        if (requestExist != undefined) {
+            return res.status(400).json({message: "Ya existe una solicitud de carta de recobro para este radicado"});
+
+        }
+
+        const requestLatter = new CartaRecobro();
+        requestLatter.idRadicado = parseInt(idRadicado);
+        requestLatter.idUserRequest = parseInt(idUserRequest);
+        requestLatter.justification = justification;
+
+        const erros = await validate(requestLatter);
+
+        if (erros.length > 0) {
+            const errorsMessage = erros.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({"message" : "Ocurrio un error",errorsMessage});
+        }
+
+        await requestLatter.save();
+
+        return res.json(requestLatter);
+
+    } catch (error) {
+        next(error);
+    }
+}

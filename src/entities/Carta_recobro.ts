@@ -1,5 +1,5 @@
-import { IsIn, IsInt, IsString } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { IsInt, IsOptional, IsString } from "class-validator";
+import { BaseEntity, Column, CreateDateColumn, Entity, IsNull, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Usuarios } from "./usuarios";
 
@@ -19,10 +19,12 @@ export class CartaRecobro extends BaseEntity {
 
     @Column({name: "id_usuario_audita", nullable: true, type: "int"})
     @IsInt()
+    @IsOptional()
     idUserAudit: number | null;
 
     @Column({name: "observacion", nullable: true, type: "text"})
     @IsString()
+    @IsOptional()
     observacion: string | null;
 
     @Column({name: "justificacion"})
@@ -31,6 +33,7 @@ export class CartaRecobro extends BaseEntity {
 
     @Column({name: "fecha_impresion", nullable: true, type: "date"})
     @IsString()
+    @IsOptional()
     dateImpression: Date | null;
 
     @CreateDateColumn({name: "created_at"})
