@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CartaRecobro } from "../entities/Carta_recobro";
 import { validate } from "class-validator";
+import { Radicacion } from "../entities/radicacion";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -132,6 +133,43 @@ export async function deleteRecoveryLetter (req: Request, res: Response, next: N
         await recoveryLatter.remove();
 
         return res.json({message: "Carta de recobro eliminada"});
+
+    } catch (error) {
+        next(error);
+        
+    }
+}
+
+// radicados autorizados por auditoria para solicitar carta de recobro
+export async function getRequestLatter(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const requestLatter = await Radicacion.createQueryBuilder("radicacion")
+        .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
+        .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+        .leftJoinAndSelect("radicacion.patientRelation", "patient")
+        .leftJoinAndSelect("patient.documentRelation", "document")
+        .leftJoinAndSelect("patient.convenioRelation", "convenio")
+        .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
+        .where("cups_radicados.status = 1")
+        .getMany();
+
+        const responseFormated = requestLatter.map(r => ({
+            id: r.id,
+            profetional: r.profetional,
+            creatAt: r.createdAt,
+            dniNumber: r.patientRelation.documentNumber,
+            dniType: r.patientRelation.documentRelation.name,
+            agreement: r.patientRelation.convenioRelation.name,
+            cupsAuthorized: r.cupsRadicadosRelation.map(c => ({
+                id: c.id,
+                code: c.code,
+                DescriptionCode: c.DescriptionCode,
+                status: c.statusRelation.name
+            })),
+        }))
+
+        return res.json(responseFormated);
 
     } catch (error) {
         next(error);
