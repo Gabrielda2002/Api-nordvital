@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CartaRecobro } from "../entities/Carta_recobro";
 import { validate } from "class-validator";
 import { Radicacion } from "../entities/radicacion";
+import { ADDRGETNETWORKPARAMS } from "dns";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -176,3 +177,23 @@ export async function getRequestLatter(req: Request, res: Response, next: NextFu
         
     }
 }
+
+// solicitudes de carta de recobro
+export async function getResponseLatter(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const responseLatter = await CartaRecobro.createQueryBuilder("carta_recobro")
+        .leftJoinAndSelect("carta_recobro.radicacionRelation", "radicacion")
+        .leftJoinAndSelect("carta_recobro.userRequestRelation", "usuario_solicita")
+        .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
+        .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+        .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
+        .getMany();
+
+        return res.json(responseLatter);
+
+    } catch (error) {
+        next(error);
+        
+    }
+} 

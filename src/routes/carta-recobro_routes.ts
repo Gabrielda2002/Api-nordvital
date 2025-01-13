@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createRecoveryLetter, deleteRecoveryLetter, getAllRecoveryLetter, getRecoveryLetterById, getRequestLatter, updateRecoveryLetter } from "../controllers/carta-recobro_controller";
+import { createRecoveryLetter, deleteRecoveryLetter, getAllRecoveryLetter, getRecoveryLetterById, getRequestLatter, getResponseLatter, updateRecoveryLetter } from "../controllers/carta-recobro_controller";
 
 const router = Router();
 
@@ -16,5 +16,7 @@ router.put("/tabla-recobro/:id", authenticate, authorizeRoles(["1"]), updateReco
 router.delete("/tabla-recobro/:id", authenticate, authorizeRoles(["1"]), deleteRecoveryLetter)
 
 router.get("/tabla-recobro-solicitar", authenticate, authorizeRoles(["1"]), getRequestLatter)
+
+router.get("/tabla-recobro-auditar", authenticate, authorizeRoles(["1"]), getResponseLatter)
 
 export default router;
