@@ -168,7 +168,8 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
                 id: c.id,
                 code: c.code,
                 DescriptionCode: c.DescriptionCode,
-                status: c.statusRelation.name
+                status: c.statusRelation.name,
+                statusLetter: c.statusRecoveryLatter || "N/A",
             })),
         }))
 
