@@ -162,6 +162,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
             creatAt: r.createdAt,
             dniNumber: r.patientRelation.documentNumber,
             dniType: r.patientRelation.documentRelation.name,
+            patientName: r.patientRelation.name,
             agreement: r.patientRelation.convenioRelation.name,
             cupsAuthorized: r.cupsRadicadosRelation.map(c => ({
                 id: c.id,
