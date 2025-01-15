@@ -27,6 +27,7 @@ import { Cirugias } from "./cirugias";
 import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
 import { Estados } from "./estados";
+import { CartaRecobro } from "./Carta_recobro";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -174,6 +175,7 @@ export class Radicacion extends BaseEntity {
   @OneToMany(() => Cirugias, (cirugias) => cirugias.radicacionRelation)
   cirugiasRelation: Cirugias[];
 
-
+  @OneToMany(() => CartaRecobro, carta => carta.radicacionRelation)
+  cartaRelation: CartaRecobro[];
 
 }

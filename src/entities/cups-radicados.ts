@@ -39,7 +39,14 @@ export class CupsRadicados extends BaseEntity {
     @Min(1)
     @Max(999999)
     idRadicacion: number
+
+    @Column({name: "estado_carta_recobro", nullable: true, type: "varchar", length: 50})
+    @IsString()
+    statusRecoveryLatter: string | null;
     
+    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"}) 
+    dateAuditRecoveryLatter: Date | null;
+
     @UpdateDateColumn({ name: "UltimaModificacion" })
     updatedAt: Date
 
