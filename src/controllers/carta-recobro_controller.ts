@@ -4,6 +4,10 @@ import { validate } from "class-validator";
 import { Radicacion } from "../entities/radicacion";
 import { ADDRGETNETWORKPARAMS } from "dns";
 import { CupsRadicados } from "../entities/cups-radicados";
+import path from "path";
+import { PDFDocument, rgb } from "pdf-lib";
+import { format } from "date-fns";
+import fs from "fs";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -317,4 +321,135 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
         next(error);
         
     }
+}
+
+export async function generatePdf(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { idRadicado } = req.params;
+
+        // Obtener la información del radicado y sus CUPS autorizados
+        const radicado = await Radicacion.createQueryBuilder("radicacion")
+            .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+            .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
+            .leftJoinAndSelect("carta_recobro.userRequestRelation", "userRequest")
+            .leftJoinAndSelect("carta_recobro.userAuditRelation", "userAudit")
+            .leftJoinAndSelect("radicacion.patientRelation", 'paciente_radicado')
+            .leftJoinAndSelect("paciente_radicado.documentRelation", 'documento_paciente')
+            .where("radicacion.id = :idRadicado", { idRadicado })
+            .andWhere("cups_radicados.statusRecoveryLatter = 'AUTORIZADO'")
+            .getOne();
+
+        if (!radicado) {
+            return res.status(404).json({ message: "Radicado no encontrado" });
+        }
+
+        // Cargar el formato del PDF
+        const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+        if (!fs.existsSync(pdfPath)) {
+            return res.status(404).json({ message: "Formato PDF no encontrado" });
+        }
+
+        const pdfBytes = fs.readFileSync(pdfPath);
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+
+        // Obtener la primera página del PDF
+        const page = pdfDoc.getPages()[0];
+
+        // funcion para dividir el texto en lineas
+        function splitTextIntoLines(text: string, maxLenght: number): string[] {
+            const words = text.split(' ');
+            const lines: string[] = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLenght) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                }else{
+                    currentLine += word + ' ';
+                }
+            })
+
+            if (currentLine.trim().length > 0) {
+                lines.push(currentLine.trim());
+            }
+
+            return lines;
+
+        } 
+
+        // Agregar la información del pacientee
+
+        // fecha hoy
+        const dateNow = format(new Date(), 'dd/MM/yyyy');
+
+        page.drawText(`${dateNow}`, { x: 182, y: 744, size: 10, color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].id}`, { x: 500, y: 743, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 540, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}`, { x: 80, y: 100, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 100, size: 10, color: rgb(0, 0, 0) });
+
+        // Agregar la información de los CUPS autorizados al PDF
+        radicado.cupsRadicadosRelation.forEach((cup, index) => {
+            if (cup.statusRecoveryLatter === 'Autorizado') {
+
+                const xCode = 90;
+                const yCode = 450 - (index * 30);
+                const xDescription = 155;
+                const yDescription = 455 - (index * 30);
+
+                // page.drawText(`CUPS ${index + 1}:`, { x: 50, y: yPosition, size: 12, color: rgb(0, 0, 0) });
+                page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
+
+                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 50);
+                descriptionLines.forEach((line, lineIndex) => {
+                    page.drawText(line, { x: xDescription, y: yDescription - (lineIndex * 12), size: 8, color: rgb(0, 0, 0) });
+                })
+
+            }
+        });
+
+        // Guardar el PDF modificado
+        const pdfBytesModified = await pdfDoc.save();
+
+        const fileName = `carta-recobro-${idRadicado}_${Date.now()}.pdf`;
+
+        // Enviar el PDF como respuesta
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}.pdf`);
+        res.send(Buffer.from(pdfBytesModified));
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function drawGridOnPdf() {
+    // Cargar el formato del PDF
+    const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+
+    // Obtener la primera página del PDF
+    const page = pdfDoc.getPages()[0];
+
+    // Dibujar una cuadrícula en el PDF
+    const gridSize = 50;
+    for (let x = 0; x < page.getWidth(); x += gridSize) {
+        for (let y = 0; y < page.getHeight(); y += gridSize) {
+            page.drawText(`(${x}, ${y})`, { x, y, size: 8, color: rgb(0, 0, 0) });
+        }
+    }
+
+    // Guardar el PDF modificado
+    const pdfBytesModified = await pdfDoc.save();
+    fs.writeFileSync('grid-pdf-letter.pdf', pdfBytesModified);
 }
