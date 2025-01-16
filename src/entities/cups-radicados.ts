@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { UnidadFuncional } from "./unidad-funcional";
-import { IsInt, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Estados } from "./estados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
@@ -44,7 +44,8 @@ export class CupsRadicados extends BaseEntity {
     @IsString()
     statusRecoveryLatter: string | null;
     
-    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"}) 
+    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"})
+    @IsOptional()
     dateAuditRecoveryLatter: Date | null;
 
     @UpdateDateColumn({ name: "UltimaModificacion" })
