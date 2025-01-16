@@ -1,10 +1,10 @@
 import { NextFunction, query, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import ExcelJS from "exceljs";
-import { format } from "path";
 import { randomBytes } from "crypto";
 import { Cirugias } from "../entities/cirugias";
 import { PausasActivas } from "../entities/pausas-activas";
+import { format } from "date-fns";
 
 export async function downloadReportExcel(
   req: Request,
@@ -597,7 +597,8 @@ export async function reportExcelRadicacion(
       .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
-      .leftJoinAndSelect("cups.statusRelation", "estado_cups");
+      .leftJoinAndSelect("cups.statusRelation", "estado_cups")
+      .leftJoinAndSelect("cups.seguimientoAuxiliarRelation", "seguimiento_auxiliar");
 
     // Filtro por estado de CUPS
     if (statusCups) {
@@ -666,11 +667,11 @@ export async function reportExcelRadicacion(
         key: "Observacion_seguimiento_auxiliar",
         width: 30,
       },
-      {
-        header: "Fecha Seguimiento",
-        key: "Fecha_registro",
-        width: 20,
-      },
+      // {
+      //   header: "Fecha Seguimiento",
+      //   key: "Fecha_registro",
+      //   width: 20,
+      // },
     ];
 
     data.forEach((data) => {
@@ -703,6 +704,9 @@ export async function reportExcelRadicacion(
       // * agregar filas por cada CUPS
       if (data.cupsRadicadosRelation?.length > 0) {
         data.cupsRadicadosRelation.forEach((cups) => {
+
+          const observations = cups.seguimientoAuxiliarRelation.map(s => `${s.observation}, ${format(new Date(s.createdAt), 'yyyy-MM-dd HH:mm:ss')}`).join(' || ') || "N/A";
+
           worksheet.addRow({
             ...row,
             Codigo_cups: cups.code || "N/A",
@@ -710,6 +714,7 @@ export async function reportExcelRadicacion(
             Estado_cups: cups.statusRelation?.name || "N/A",
             Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
             Fecha_actualizacion: cups.updatedAt || "N/A",
+            Observacion_seguimiento_auxiliar: observations,
           });
         });
       } else {
