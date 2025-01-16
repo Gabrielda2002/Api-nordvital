@@ -339,6 +339,8 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
             .andWhere("cups_radicados.statusRecoveryLatter = 'AUTORIZADO'")
             .getOne();
 
+        console.log(radicado)
+
         if (!radicado) {
             return res.status(404).json({ message: "Radicado no encontrado" });
         }
@@ -380,7 +382,6 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         // Agregar la información del pacientee
 
-        // fecha hoy
         const dateNow = format(new Date(), 'dd/MM/yyyy');
 
         page.drawText(`${dateNow}`, { x: 182, y: 744, size: 10, color: rgb(0, 0, 0) });
@@ -397,23 +398,27 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         
         page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 100, size: 10, color: rgb(0, 0, 0) });
 
+        const xCode = 90;
+        const xDescription = 155;
+        let yPosition = 455;
+
         // Agregar la información de los CUPS autorizados al PDF
-        radicado.cupsRadicadosRelation.forEach((cup, index) => {
+        radicado.cupsRadicadosRelation.forEach(cup => {
             if (cup.statusRecoveryLatter === 'Autorizado') {
+                const yCode = yPosition;
+                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 50);
 
-                const xCode = 90;
-                const yCode = 450 - (index * 30);
-                const xDescription = 155;
-                const yDescription = 455 - (index * 30);
-
-                // page.drawText(`CUPS ${index + 1}:`, { x: 50, y: yPosition, size: 12, color: rgb(0, 0, 0) });
+                // Dibujar el código del CUPS
                 page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
 
-                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 50);
+                // Dibujar la descripción del CUPS
                 descriptionLines.forEach((line, lineIndex) => {
-                    page.drawText(line, { x: xDescription, y: yDescription - (lineIndex * 12), size: 8, color: rgb(0, 0, 0) });
-                })
+                    const yLine = yPosition - (lineIndex * 10);
+                    page.drawText(line, { x: xDescription, y: yLine, size: 8, color: rgb(0, 0, 0) });
+                });
 
+                // Actualizar yPosition dinámicamente
+                yPosition -= (descriptionLines.length * 10) + 6; // Espaciado entre descripciones
             }
         });
 
