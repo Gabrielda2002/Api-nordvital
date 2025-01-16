@@ -42,6 +42,7 @@ export class CupsRadicados extends BaseEntity {
 
     @Column({name: "estado_carta_recobro", nullable: true, type: "varchar", length: 50})
     @IsString()
+    @IsOptional()
     statusRecoveryLatter: string | null;
     
     @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"})
