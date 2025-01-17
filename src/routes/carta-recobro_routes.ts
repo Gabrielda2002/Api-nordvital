@@ -21,7 +21,7 @@ router.get("/table-response-letter", authenticate, authorizeRoles(["1"]), getRes
 
 router.post("/create-request-letter", authenticate, authorizeRoles(["1"]), createRequestLetter)
 
-router.put("/update-request-letter/:id", authenticate, authorizeRoles(["1"]), creatAuditRequestLetter)
+router.put("/create-audit-letter/:id", authenticate, authorizeRoles(["1"]), creatAuditRequestLetter)
 
 router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles(["1"]), generatePdf)
 

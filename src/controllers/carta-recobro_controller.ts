@@ -58,7 +58,7 @@ export async function createRecoveryLetter (req: Request, res: Response, next: N
         recoveryLatter.idRadicado = parseInt(idRadicado);
         recoveryLatter.idUserRequest = parseInt(idUserRequest);
         recoveryLatter.idUserAudit = parseInt(idUserAudit);
-        recoveryLatter.observacion = observacion;
+        recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
 
@@ -99,7 +99,7 @@ export async function updateRecoveryLetter (req: Request, res: Response, next: N
         recoveryLatter.idRadicado = parseInt(idRadicado);
         recoveryLatter.idUserRequest = parseInt(idUserRequest);
         recoveryLatter.idUserAudit = parseInt(idUserAudit);
-        recoveryLatter.observacion = observacion;
+        recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
 
@@ -208,6 +208,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
             dniNumber: r.radicacionRelation.patientRelation.documentNumber,
             dniType: r.radicacionRelation.patientRelation.documentRelation.name,
             agreement: r.radicacionRelation.patientRelation.convenioRelation.name,
+            idRadicado: r.radicacionRelation.id,
             cupsAuthorized: r.radicacionRelation.cupsRadicadosRelation.map(c => ({
                 id: c.id,
                 code: c.code,
@@ -269,7 +270,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
         
         const { id } = req.params;
 
-        const { idUserAudit, observacion, idRadicado, cupsDetails  } = req.body;
+        const { idUserAudit, observation, idRadicado, cups  } = req.body;
         
         // * se valida si existe la solicitud
         const requestExist = await CartaRecobro.createQueryBuilder("carta_recobro")
@@ -282,7 +283,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
 
         // * se actualiza el registro de solicitud
         requestExist.idUserAudit = parseInt(idUserAudit);
-        requestExist.observacion = observacion;
+        requestExist.observation = observation;
         
         const erros = await validate(requestExist);
 
@@ -296,17 +297,17 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
 
         // * actualiza el cups afectados
 
-        const cups = await CupsRadicados.createQueryBuilder("cups_radicados")
+        const cupsExist = await CupsRadicados.createQueryBuilder("cups_radicados")
         .where("cups_radicados.idRadicacion = :idRadicado", {idRadicado})
         .getMany();
 
-        for (const cup of cups) {
-            const updateCup = cupsDetails.find(
-              (detail: any) => detail.idCupsRadicado === cup.id
+        for (const cup of cupsExist) {
+            const updateCup = cups.find(
+              (detail: any) => detail.id === cup.id
             );
             console.log(updateCup);
             if (updateCup) {
-              cup.statusRecoveryLatter = updateCup.statusRecoveryLatter,
+              cup.statusRecoveryLatter = updateCup.statusLetter              ,
               cup.dateAuditRecoveryLatter = updateCup.dateAuditRecoveryLatter
 
               await cup.save();

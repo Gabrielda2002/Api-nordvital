@@ -25,7 +25,7 @@ export class CartaRecobro extends BaseEntity {
     @Column({name: "observacion", nullable: true, type: "text"})
     @IsString()
     @IsOptional()
-    observacion: string | null;
+    observation: string | null;
 
     @Column({name: "justificacion"})
     @IsString()
