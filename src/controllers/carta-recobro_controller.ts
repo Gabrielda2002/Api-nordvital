@@ -199,6 +199,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .where("cups_radicados.status = 1")
+        .andWhere('cups_radicados.statusRecoveryLatter = "Autorizado"')
         .getMany();
 
         const responseLetterFormated = responseLetter.map(r => ({
