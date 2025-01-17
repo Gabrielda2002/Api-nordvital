@@ -460,3 +460,39 @@ export async function drawGridOnPdf() {
     const pdfBytesModified = await pdfDoc.save();
     fs.writeFileSync('grid-pdf-letter.pdf', pdfBytesModified);
 }
+
+// guardar fecha de impresion
+export async function saveDateImpress(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const { dateImpression } = req.body;
+
+        const recoveryLatter = await CartaRecobro.createQueryBuilder("carta_recobro")
+        .where("carta_recobro.id = :id", {id})
+        .getOne();
+
+        if(!recoveryLatter){
+            return res.status(404).json({message: "Carta de recobro no encontrada"});
+        }
+
+        recoveryLatter.dateImpression = dateImpression;
+
+        const erros = await validate(recoveryLatter);
+
+        if (erros.length > 0) {
+            const errorsMessage = erros.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({"message" : "Ocurrio un error",errorsMessage});
+        }
+
+        await recoveryLatter.save();
+
+        return res.json(recoveryLatter);
+
+    } catch (error) {
+        next(error);
+    }
+}
