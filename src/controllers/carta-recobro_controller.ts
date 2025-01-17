@@ -175,6 +175,9 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
                 status: c.statusRelation.name,
                 statusLetter: c.statusRecoveryLatter || "N/A",
             })),
+            isRequested: r.cartaRelation.length > 0 ? true : false,
+            idRequest: r.cartaRelation.length > 0 ? r.cartaRelation[0].id : null,
+            datePrint: r.cartaRelation.length > 0 ? r.cartaRelation[0].dateImpression : null,
         }))
 
         return res.json(responseFormated);
@@ -198,8 +201,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
-        .where("cups_radicados.status = 1")
-        .andWhere('cups_radicados.statusRecoveryLatter = "Autorizado"')
+        .andWhere('cups_radicados.statusRecoveryLatter <> "Autorizado"')
         .getMany();
 
         const responseLetterFormated = responseLetter.map(r => ({
