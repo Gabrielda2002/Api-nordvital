@@ -4,8 +4,10 @@ export class AlterTableSoportes1723741044144 implements MigrationInterface {
     name = 'AlterTableSoportes1723741044144'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+
         // * Verificar si la columna "id_radicacion" existe en la tabla "soportes"
         const columnExists = await queryRunner.hasColumn("soportes", "id_radicacion");
+        
         if (columnExists) {
             // * Verificar si la llave foránea existe en la tabla "soportes"
             const table = await queryRunner.getTable("soportes");

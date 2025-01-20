@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { UnidadFuncional } from "./unidad-funcional";
-import { IsInt, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Estados } from "./estados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 
@@ -27,7 +27,7 @@ export class CupsRadicados extends BaseEntity {
     @Column({name: "observacionCups"})
     @IsNotEmpty({message: "La observación del cups es requerida"})
     @IsString()
-    @Length(1, 150, {message: "La observación debe tener entre 1 y 150 caracteres"})
+    @Length(1, 500, {message: "La observación debe tener entre 1 y 500 caracteres"})
     observation: string
 
     @Column({name: "UnidadFuncional"})
@@ -42,9 +42,11 @@ export class CupsRadicados extends BaseEntity {
 
     @Column({name: "estado_carta_recobro", nullable: true, type: "varchar", length: 50})
     @IsString()
+    @IsOptional()
     statusRecoveryLatter: string | null;
     
-    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"}) 
+    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"})
+    @IsOptional()
     dateAuditRecoveryLatter: Date | null;
 
     @UpdateDateColumn({ name: "UltimaModificacion" })
