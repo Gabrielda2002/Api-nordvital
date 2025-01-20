@@ -15,7 +15,7 @@ router.put("/recover-letter/:id", authenticate, authorizeRoles(["1"]), updateRec
 
 router.delete("/recover-letter/:id", authenticate, authorizeRoles(["1"]), deleteRecoveryLetter)
 
-router.get("/table-request-letter", authenticate, authorizeRoles(["1"]), getRequestLetter)
+router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1"]), getRequestLetter)
 
 router.get("/table-response-letter", authenticate, authorizeRoles(["1"]), getResponseLetter)
 
