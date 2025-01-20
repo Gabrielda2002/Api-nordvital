@@ -201,8 +201,8 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
-        .andWhere('cups_radicados.statusRecoveryLatter <> "Autorizado"')
-        .getMany();
+        .andWhere('carta_recobro.idUserAudit IS NULL')
+        .getMany(); 
 
         const responseLetterFormated = responseLetter.map(r => ({
             id: r.id,
@@ -340,10 +340,8 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
             .leftJoinAndSelect("radicacion.patientRelation", 'paciente_radicado')
             .leftJoinAndSelect("paciente_radicado.documentRelation", 'documento_paciente')
             .where("radicacion.id = :idRadicado", { idRadicado })
-            .andWhere("cups_radicados.statusRecoveryLatter = 'AUTORIZADO'")
+            .andWhere("cups_radicados.statusRecoveryLatter = 'Autorizado'")
             .getOne();
-
-        console.log(radicado)
 
         if (!radicado) {
             return res.status(404).json({ message: "Radicado no encontrado" });
@@ -398,9 +396,13 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         
         page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}`, { x: 80, y: 100, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 100, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 90, size: 10, color: rgb(0, 0, 0) });
         
         page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 100, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 90, size: 10, color: rgb(0, 0, 0) });
 
         const xCode = 90;
         const xDescription = 155;
