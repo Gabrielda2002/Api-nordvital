@@ -202,6 +202,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .andWhere('carta_recobro.idUserAudit IS NULL')
+        .andWhere('cups_radicados.status = 1')
         .getMany(); 
 
         const responseLetterFormated = responseLetter.map(r => ({
