@@ -4,6 +4,10 @@ import { validate } from "class-validator";
 import { Radicacion } from "../entities/radicacion";
 import { ADDRGETNETWORKPARAMS } from "dns";
 import { CupsRadicados } from "../entities/cups-radicados";
+import path from "path";
+import { PDFDocument, rgb } from "pdf-lib";
+import { format } from "date-fns";
+import fs from "fs";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -54,7 +58,7 @@ export async function createRecoveryLetter (req: Request, res: Response, next: N
         recoveryLatter.idRadicado = parseInt(idRadicado);
         recoveryLatter.idUserRequest = parseInt(idUserRequest);
         recoveryLatter.idUserAudit = parseInt(idUserAudit);
-        recoveryLatter.observacion = observacion;
+        recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
 
@@ -95,7 +99,7 @@ export async function updateRecoveryLetter (req: Request, res: Response, next: N
         recoveryLatter.idRadicado = parseInt(idRadicado);
         recoveryLatter.idUserRequest = parseInt(idUserRequest);
         recoveryLatter.idUserAudit = parseInt(idUserAudit);
-        recoveryLatter.observacion = observacion;
+        recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
 
@@ -168,8 +172,12 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
                 id: c.id,
                 code: c.code,
                 DescriptionCode: c.DescriptionCode,
-                status: c.statusRelation.name
+                status: c.statusRelation.name,
+                statusLetter: c.statusRecoveryLatter || "N/A",
             })),
+            isRequested: r.cartaRelation.length > 0 ? true : false,
+            idRequest: r.cartaRelation.length > 0 ? r.cartaRelation[0].id : null,
+            datePrint: r.cartaRelation.length > 0 ? r.cartaRelation[0].dateImpression : null,
         }))
 
         return res.json(responseFormated);
@@ -193,8 +201,9 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
-        .where("cups_radicados.status = 1")
-        .getMany();
+        .andWhere('carta_recobro.idUserAudit IS NULL')
+        .andWhere('cups_radicados.status = 1')
+        .getMany(); 
 
         const responseLetterFormated = responseLetter.map(r => ({
             id: r.id,
@@ -203,6 +212,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
             dniNumber: r.radicacionRelation.patientRelation.documentNumber,
             dniType: r.radicacionRelation.patientRelation.documentRelation.name,
             agreement: r.radicacionRelation.patientRelation.convenioRelation.name,
+            idRadicado: r.radicacionRelation.id,
             cupsAuthorized: r.radicacionRelation.cupsRadicadosRelation.map(c => ({
                 id: c.id,
                 code: c.code,
@@ -264,7 +274,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
         
         const { id } = req.params;
 
-        const { idUserAudit, observacion, idRadicado, cupsDetails  } = req.body;
+        const { idUserAudit, observation, idRadicado, cups  } = req.body;
         
         // * se valida si existe la solicitud
         const requestExist = await CartaRecobro.createQueryBuilder("carta_recobro")
@@ -277,7 +287,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
 
         // * se actualiza el registro de solicitud
         requestExist.idUserAudit = parseInt(idUserAudit);
-        requestExist.observacion = observacion;
+        requestExist.observation = observation;
         
         const erros = await validate(requestExist);
 
@@ -291,17 +301,17 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
 
         // * actualiza el cups afectados
 
-        const cups = await CupsRadicados.createQueryBuilder("cups_radicados")
+        const cupsExist = await CupsRadicados.createQueryBuilder("cups_radicados")
         .where("cups_radicados.idRadicacion = :idRadicado", {idRadicado})
         .getMany();
 
-        for (const cup of cups) {
-            const updateCup = cupsDetails.find(
-              (detail: any) => detail.idCupsRadicado === cup.id
+        for (const cup of cupsExist) {
+            const updateCup = cups.find(
+              (detail: any) => detail.id === cup.id
             );
             console.log(updateCup);
             if (updateCup) {
-              cup.statusRecoveryLatter = updateCup.statusRecoveryLatter,
+              cup.statusRecoveryLatter = updateCup.statusLetter              ,
               cup.dateAuditRecoveryLatter = updateCup.dateAuditRecoveryLatter
 
               await cup.save();
@@ -315,5 +325,179 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
     } catch (error) {
         next(error);
         
+    }
+}
+
+export async function generatePdf(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { idRadicado } = req.params;
+
+        // Obtener la información del radicado y sus CUPS autorizados
+        const radicado = await Radicacion.createQueryBuilder("radicacion")
+            .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+            .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
+            .leftJoinAndSelect("carta_recobro.userRequestRelation", "userRequest")
+            .leftJoinAndSelect("carta_recobro.userAuditRelation", "userAudit")
+            .leftJoinAndSelect("radicacion.patientRelation", 'paciente_radicado')
+            .leftJoinAndSelect("paciente_radicado.documentRelation", 'documento_paciente')
+            .where("radicacion.id = :idRadicado", { idRadicado })
+            .andWhere("cups_radicados.statusRecoveryLatter = 'Autorizado'")
+            .getOne();
+
+        if (!radicado) {
+            return res.status(404).json({ message: "Radicado no encontrado" });
+        }
+
+        // Cargar el formato del PDF
+        const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+        if (!fs.existsSync(pdfPath)) {
+            return res.status(404).json({ message: "Formato PDF no encontrado" });
+        }
+
+        const pdfBytes = fs.readFileSync(pdfPath);
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+
+        // Obtener la primera página del PDF
+        const page = pdfDoc.getPages()[0];
+
+        // funcion para dividir el texto en lineas
+        function splitTextIntoLines(text: string, maxLenght: number): string[] {
+            const words = text.split(' ');
+            const lines: string[] = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLenght) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                }else{
+                    currentLine += word + ' ';
+                }
+            })
+
+            if (currentLine.trim().length > 0) {
+                lines.push(currentLine.trim());
+            }
+
+            return lines;
+
+        } 
+
+        // Agregar la información del pacientee
+
+        const dateNow = format(new Date(), 'dd/MM/yyyy');
+
+        page.drawText(`${dateNow}`, { x: 182, y: 744, size: 10, color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].id}`, { x: 500, y: 743, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 540, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 100, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 90, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 100, size: 10, color: rgb(0, 0, 0) });
+        
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 90, size: 10, color: rgb(0, 0, 0) });
+
+        const xCode = 90;
+        const xDescription = 155;
+        let yPosition = 455;
+
+        // Agregar la información de los CUPS autorizados al PDF
+        radicado.cupsRadicadosRelation.forEach(cup => {
+            if (cup.statusRecoveryLatter === 'Autorizado') {
+                const yCode = yPosition;
+                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 50);
+
+                // Dibujar el código del CUPS
+                page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
+
+                // Dibujar la descripción del CUPS
+                descriptionLines.forEach((line, lineIndex) => {
+                    const yLine = yPosition - (lineIndex * 10);
+                    page.drawText(line, { x: xDescription, y: yLine, size: 8, color: rgb(0, 0, 0) });
+                });
+
+                // Actualizar yPosition dinámicamente
+                yPosition -= (descriptionLines.length * 10) + 6; // Espaciado entre descripciones
+            }
+        });
+
+        // Guardar el PDF modificado
+        const pdfBytesModified = await pdfDoc.save();
+
+        const fileName = `carta-recobro-${idRadicado}_${Date.now()}.pdf`;
+
+        // Enviar el PDF como respuesta
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}.pdf`);
+        res.send(Buffer.from(pdfBytesModified));
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function drawGridOnPdf() {
+    // Cargar el formato del PDF
+    const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+
+    // Obtener la primera página del PDF
+    const page = pdfDoc.getPages()[0];
+
+    // Dibujar una cuadrícula en el PDF
+    const gridSize = 50;
+    for (let x = 0; x < page.getWidth(); x += gridSize) {
+        for (let y = 0; y < page.getHeight(); y += gridSize) {
+            page.drawText(`(${x}, ${y})`, { x, y, size: 8, color: rgb(0, 0, 0) });
+        }
+    }
+
+    // Guardar el PDF modificado
+    const pdfBytesModified = await pdfDoc.save();
+    fs.writeFileSync('grid-pdf-letter.pdf', pdfBytesModified);
+}
+
+// guardar fecha de impresion
+export async function saveDateImpress(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const { dateImpression } = req.body;
+
+        const recoveryLatter = await CartaRecobro.createQueryBuilder("carta_recobro")
+        .where("carta_recobro.id = :id", {id})
+        .getOne();
+
+        if(!recoveryLatter){
+            return res.status(404).json({message: "Carta de recobro no encontrada"});
+        }
+
+        recoveryLatter.dateImpression = dateImpression;
+
+        const erros = await validate(recoveryLatter);
+
+        if (erros.length > 0) {
+            const errorsMessage = erros.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({"message" : "Ocurrio un error",errorsMessage});
+        }
+
+        await recoveryLatter.save();
+
+        return res.json(recoveryLatter);
+
+    } catch (error) {
+        next(error);
     }
 }
