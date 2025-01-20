@@ -27,7 +27,7 @@ export class CupsRadicados extends BaseEntity {
     @Column({name: "observacionCups"})
     @IsNotEmpty({message: "La observación del cups es requerida"})
     @IsString()
-    @Length(1, 150, {message: "La observación debe tener entre 1 y 150 caracteres"})
+    @Length(1, 500, {message: "La observación debe tener entre 1 y 500 caracteres"})
     observation: string
 
     @Column({name: "UnidadFuncional"})

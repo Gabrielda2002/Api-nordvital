@@ -25,7 +25,7 @@ export class SeguimietoAuxiliar extends BaseEntity {
     @IsNotEmpty({message: "El estado es requerido"})
     status: number;
 
-    @Column({name: "Radicacion"})
+    @Column({name: "id_cups_radicados"})
     @IsInt()
     idRadicacion: number;
 
@@ -40,7 +40,7 @@ export class SeguimietoAuxiliar extends BaseEntity {
     // * relacion
 
     @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.seguimientoAuxiliarRelation)
-    @JoinColumn({name: "Radicacion"})
+    @JoinColumn({name: "id_cups_radicados"})
     cupsRadicadosRelation: CupsRadicados;
 
     // * relacion con estados seguimiento
