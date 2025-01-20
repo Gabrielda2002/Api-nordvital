@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn src/index.ts",
-    "build": "tsc",
+    "build":  "tsc && xcopy /E /I src\\templates dist\\templates",
     "start": "node dist/index.js",
     "typeorm": "typeorm-ts-node-commonjs -d ./src/db/conexion.ts ",
     "m:gen": "npm run typeorm migration:generate",

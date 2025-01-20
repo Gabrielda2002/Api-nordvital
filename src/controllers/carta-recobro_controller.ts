@@ -149,6 +149,8 @@ export async function deleteRecoveryLetter (req: Request, res: Response, next: N
 // radicados autorizados por auditoria para solicitar carta de recobro
 export async function getRequestLetter(req: Request, res: Response, next: NextFunction){
     try {
+
+        const { documentPatient  } = req.params;
         
         const requestLatter = await Radicacion.createQueryBuilder("radicacion")
         .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
@@ -158,6 +160,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
         .leftJoinAndSelect("patient.convenioRelation", "convenio")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .where("cups_radicados.status = 1")
+        .andWhere("patient.documentNumber = :documentPatient", {documentPatient})
         .getMany();
 
         const responseFormated = requestLatter.map(r => ({
@@ -350,6 +353,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         // Cargar el formato del PDF
         const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+        console.log(pdfPath);
         if (!fs.existsSync(pdfPath)) {
             return res.status(404).json({ message: "Formato PDF no encontrado" });
         }
