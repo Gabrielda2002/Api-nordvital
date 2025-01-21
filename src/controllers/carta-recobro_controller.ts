@@ -5,7 +5,7 @@ import { Radicacion } from "../entities/radicacion";
 import { ADDRGETNETWORKPARAMS } from "dns";
 import { CupsRadicados } from "../entities/cups-radicados";
 import path from "path";
-import { PDFDocument, rgb } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { format } from "date-fns";
 import fs from "fs";
 
@@ -387,6 +387,8 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         } 
 
+        const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
         // Agregar la información del pacientee
 
         const dateNow = format(new Date(), 'dd/MM/yyyy');
@@ -395,29 +397,37 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         page.drawText(`${radicado.cartaRelation[0].id}`, { x: 500, y: 743, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 540, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 540, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 100, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 125, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 90, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 115, size: 10, color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 125, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 100, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 115, size: 10, color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}` , { x: 175, y:220, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}` , { x: 76, y: 220, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
+
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.position}` , { x: 76, y: 210, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
+
         
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 90, size: 10, color: rgb(0, 0, 0) });
 
         const xCode = 90;
-        const xDescription = 155;
+        const xDescription = 170;
         let yPosition = 455;
 
         // Agregar la información de los CUPS autorizados al PDF
         radicado.cupsRadicadosRelation.forEach(cup => {
             if (cup.statusRecoveryLatter === 'Autorizado') {
                 const yCode = yPosition;
-                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 50);
+                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 80);
 
                 // Dibujar el código del CUPS
                 page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
@@ -430,6 +440,16 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
                 // Actualizar yPosition dinámicamente
                 yPosition -= (descriptionLines.length * 10) + 6; // Espaciado entre descripciones
+
+                page.drawLine({
+                    start: {x: xCode, y: yCode - 10 },
+                    end: { x: xDescription + 370, y: yCode - 10 },
+                    thickness: 0.5,
+                    color: rgb(0, 0, 0)
+                })
+
+                page.drawText(`Observacion: ${cup.observation}`, {x: xCode, y: yPosition - 10, size: 8, color: rgb(0, 0, 0)});
+
             }
         });
 
