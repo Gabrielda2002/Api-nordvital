@@ -393,11 +393,11 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         const dateNow = format(new Date(), 'dd/MM/yyyy');
 
-        page.drawText(`${dateNow}`, { x: 182, y: 744, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${dateNow}`, { x: 184, y: 744, size: 10, color: rgb(0, 0, 0) });
 
         page.drawText(`${radicado.cartaRelation[0].id}`, { x: 500, y: 743, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 540, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 542, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
         page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
         
@@ -441,17 +441,17 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
                 // Actualizar yPosition dinámicamente
                 yPosition -= (descriptionLines.length * 10) + 6; // Espaciado entre descripciones
 
-                page.drawLine({
-                    start: {x: xCode, y: yCode - 10 },
-                    end: { x: xDescription + 370, y: yCode - 10 },
-                    thickness: 0.5,
-                    color: rgb(0, 0, 0)
-                })
-
-                page.drawText(`Observacion: ${cup.observation}`, {x: xCode, y: yPosition - 10, size: 8, color: rgb(0, 0, 0)});
-
+                
             }
         });
+        page.drawLine({
+            start: {x: xCode, y: yPosition - 1 },
+            end: { x: xDescription + 370, y: yPosition - 1 },
+            thickness: 0.5,
+            color: rgb(0, 0, 0)
+        })
+
+        page.drawText(`Observacion: ${radicado.cartaRelation[0].observation}`, {x: xCode, y: yPosition - 10, size: 8, color: rgb(0, 0, 0)});
 
         // Guardar el PDF modificado
         const pdfBytesModified = await pdfDoc.save();
