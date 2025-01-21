@@ -446,7 +446,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         });
         page.drawLine({
             start: {x: xCode, y: yPosition - 1 },
-            end: { x: xDescription + 370, y: yPosition - 10 },
+            end: { x: xDescription + 370, y: yPosition - 1 },
             thickness: 0.5,
             color: rgb(0, 0, 0)
         })
