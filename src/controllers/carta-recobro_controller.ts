@@ -352,7 +352,15 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         }
 
         // Cargar el formato del PDF
-        const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+
+        var pdfPath = "";
+
+        if (radicado.cartaRelation[0].dateImpression != null) {
+            pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA_MARCA_AGUA.pdf');
+        }else{
+            pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA (3).pdf');
+        }
+
         console.log(pdfPath);
         if (!fs.existsSync(pdfPath)) {
             return res.status(404).json({ message: "Formato PDF no encontrado" });
@@ -403,13 +411,13 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         
         page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 125, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 115, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 115, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 105, size: 10, color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 125, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 115, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 115, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 105, size: 10, color: rgb(0, 0, 0) });
 
         page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}` , { x: 175, y:220, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
 
@@ -427,10 +435,12 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         radicado.cupsRadicadosRelation.forEach(cup => {
             if (cup.statusRecoveryLatter === 'Autorizado') {
                 const yCode = yPosition;
-                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 80);
+                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 70);
 
                 // Dibujar el código del CUPS
                 page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
+
+                page.drawText(`${cup.quantity}`, { x: xCode + 400, y: yCode, size: 10, color: rgb(0, 0, 0) });
 
                 // Dibujar la descripción del CUPS
                 descriptionLines.forEach((line, lineIndex) => {
