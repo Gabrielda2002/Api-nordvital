@@ -43,6 +43,7 @@ export async function getCupsRadicados(
 interface CupsRadicado {
   code: string;
   description: string;
+  quantity: number;
 }
 
 export async function createCupsRadicados(
@@ -68,6 +69,7 @@ export async function createCupsRadicados(
       createCupsRadicado.observation = "Pendiente";
       createCupsRadicado.functionalUnit = 12;
       createCupsRadicado.idRadicacion = Number(idRadicado);
+      createCupsRadicado.quantity = Number(item.quantity);
 
 
       const errors = await validate(createCupsRadicado);
@@ -209,6 +211,7 @@ export async function autorizarCups(
         cup.status = parseInt(updateCup.estadoCups, 10);
         cup.observation = updateCup.observacionCups;
         cup.functionalUnit = parseInt(updateCup.unidadFuncional, 10);
+        cup.quantity = Number(updateCup.cantidad);
 
         await cup.save();
       }
@@ -228,7 +231,7 @@ export async function updateAuditados(
   try {
     const { id } = req.params;
 
-    const { observation, status } = req.body;
+    const { observation, status, quantity } = req.body;
 
     const cupExist = await CupsRadicados.createQueryBuilder("cupsRadicados")
       .where("cupsRadicados.id = :id", { id: id })
@@ -240,6 +243,7 @@ export async function updateAuditados(
 
     cupExist.status = parseInt(status, 10);
     cupExist.observation = observation;
+    cupExist.quantity = Number(quantity);
 
     const errors = await validate(cupExist);
     if (errors.length > 0) {

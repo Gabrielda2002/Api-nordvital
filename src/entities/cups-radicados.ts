@@ -49,6 +49,11 @@ export class CupsRadicados extends BaseEntity {
     @IsOptional()
     dateAuditRecoveryLatter: Date | null;
 
+    @Column({name: "cantidad"})
+    @IsInt()
+    @IsNotEmpty({message: "La cantidad es requerida"})
+    quantity: number;
+
     @UpdateDateColumn({ name: "UltimaModificacion" })
     updatedAt: Date
 
