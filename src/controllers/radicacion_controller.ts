@@ -618,6 +618,7 @@ export async function buscarRadicadoPorDocumento(
       )
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .where("patient.documentNumber = :documento", { documento })
+      .andWhere("convenio.id = 2")
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
