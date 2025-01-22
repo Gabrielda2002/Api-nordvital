@@ -616,6 +616,7 @@ export async function buscarRadicadoPorDocumento(
         "seguimientoAuxiliar.estadoSeguimientoRelation",
         "estadoSeguimiento"
       )
+      .leftJoinAndSelect("seguimientoAuxiliar.usuarioRelation", "usuario-seguimiento")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .where("patient.documentNumber = :documento", { documento })
       .orderBy("radicacion.id", "DESC")
