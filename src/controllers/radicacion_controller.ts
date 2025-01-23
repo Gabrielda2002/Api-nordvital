@@ -666,3 +666,40 @@ export async function getCupsEstadisticasPorMes(
     next(error);
   }
 }
+
+export async function updateGroupServices(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const { id } = req.params;
+
+    const { groupServices } = req.body;
+
+    console.log(req.body);
+
+    const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
+
+    if (!radicacion) {
+      return res.status(404).json({ message: "Radicacion not found" });
+    }
+
+    radicacion.groupServices = Number(groupServices);
+
+    const errors = await validate(radicacion, { skipMissingProperties: true });
+
+    if (errors.length > 0) {
+      const message = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints
+      }))
+      return res.status(400).json({message: "Error updating radicacion", errors: message})
+    }
+
+    await radicacion.save();
+
+    return res.json({ message: "Radicacion updated" });
+
+  } catch (error) {
+    next(error) 
+    
+  }
+}
