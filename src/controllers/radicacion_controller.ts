@@ -390,9 +390,10 @@ export async function auditorRadicados(
         id: c.id,
         code: c.code,
         description: c.DescriptionCode,
-        status: c.statusRelation.name,
+        status: c.statusRelation.id,
         observation: c.observation,
         modifyDate: c.updatedAt,
+        quantity: c.quantity,
       })),
     }));
 
