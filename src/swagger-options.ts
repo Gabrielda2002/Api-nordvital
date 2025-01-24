@@ -824,6 +824,65 @@ export const options = {
                             description: 'Servicio PGP'
                         }
                     }
+                },
+                CupsRadicados: {
+                    type: 'object',
+                    required: ['code', 'DescriptionCode', 'status', 'observation', 'functionalUnit', 'idRadicacion', 'quantity'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del CUPS radicado'
+                        },
+                        code: {
+                            type: 'integer',
+                            description: 'Código CUPS'
+                        },
+                        DescriptionCode: {
+                            type: 'string',
+                            description: 'Descripción del CUPS'
+                        },
+                        status: {
+                            type: 'integer',
+                            description: 'Estado del CUPS'
+                        },
+                        observation: {
+                            type: 'string',
+                            description: 'Observaciones'
+                        },
+                        functionalUnit: {
+                            type: 'integer',
+                            description: 'ID de la unidad funcional'
+                        },
+                        idRadicacion: {
+                            type: 'integer',
+                            description: 'ID de la radicación'
+                        },
+                        statusRecoveryLatter: {
+                            type: 'string',
+                            description: 'Estado de la carta de recobro',
+                            nullable: true
+                        },
+                        dateAuditRecoveryLatter: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha de auditoría de la carta de recobro',
+                            nullable: true
+                        },
+                        quantity: {
+                            type: 'integer',
+                            description: 'Cantidad'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de última modificación'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        }
+                    }
                 }
             }
         },
