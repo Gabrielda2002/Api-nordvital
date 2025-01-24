@@ -995,6 +995,10 @@ export const options = {
             {
                 name: "Servicios Ejecutados",
                 description: "Endpoints para la gestión de servicios ejecutados"
+            },
+            {
+                name: 'Cartas de Recobro',
+                description: 'Endpoints para la gestión de cartas de recobro'
             }
         ]
     },
