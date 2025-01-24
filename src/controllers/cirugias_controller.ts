@@ -53,8 +53,8 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         surgery.observation = observation;
         surgery.status = true;
         surgery.radicadoId = parseInt(radicadoId);
-        surgery.paraclinicalDate = paraclinicalDate;
-        surgery.anesthesiologyDate = anesthesiologyDate;
+        surgery.paraclinicalDate = paraclinicalDate || "0000-00-00";
+        surgery.anesthesiologyDate = anesthesiologyDate || "0000-00-00";
         surgery.specialist = specialist.toUpperCase();
 
         const errors = await validate(surgery);

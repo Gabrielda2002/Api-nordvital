@@ -390,9 +390,10 @@ export async function auditorRadicados(
         id: c.id,
         code: c.code,
         description: c.DescriptionCode,
-        status: c.statusRelation.name,
+        status: c.statusRelation.id,
         observation: c.observation,
         modifyDate: c.updatedAt,
+        quantity: c.quantity,
       })),
     }));
 
@@ -616,6 +617,7 @@ export async function buscarRadicadoPorDocumento(
         "seguimientoAuxiliar.estadoSeguimientoRelation",
         "estadoSeguimiento"
       )
+      .leftJoinAndSelect("seguimientoAuxiliar.usuarioRelation", "usuario-seguimiento")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .where("patient.documentNumber = :documento", { documento })
       .orderBy("radicacion.id", "DESC")
@@ -662,5 +664,42 @@ export async function getCupsEstadisticasPorMes(
     return res.json(resultado);
   } catch (error) {
     next(error);
+  }
+}
+
+export async function updateGroupServices(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const { id } = req.params;
+
+    const { groupServices } = req.body;
+
+    console.log(req.body);
+
+    const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
+
+    if (!radicacion) {
+      return res.status(404).json({ message: "Radicacion not found" });
+    }
+
+    radicacion.groupServices = Number(groupServices);
+
+    const errors = await validate(radicacion, { skipMissingProperties: true });
+
+    if (errors.length > 0) {
+      const message = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints
+      }))
+      return res.status(400).json({message: "Error updating radicacion", errors: message})
+    }
+
+    await radicacion.save();
+
+    return res.json({ message: "Radicacion updated" });
+
+  } catch (error) {
+    next(error) 
+    
   }
 }
