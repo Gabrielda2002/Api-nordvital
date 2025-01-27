@@ -4,6 +4,7 @@
 .env
 src/uploads/*
 *.log
+logs/*.json
 .idea/
 .vscode
 dist/
