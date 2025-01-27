@@ -24,20 +24,8 @@ const router = Router();
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   code:
- *                     type: integer
- *                   DescriptionCode:
- *                     type: string
- *                   status:
- *                     type: integer
- *                   observation:
- *                     type: string
- *                   functionalUnit:
- *                     type: integer
+ *                $ref: '#/components/schemas/CupsRadicados'
+ *                 
  *       401:
  *         description: No autorizado
  */
