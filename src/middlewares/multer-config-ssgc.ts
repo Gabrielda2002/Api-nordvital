@@ -54,6 +54,6 @@ export const uploadSggc = multer({
     cb(null, true);
   },
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 8 * 1024 * 1024,
   }, // ? limite de 5 megas por arquivo
 }).array("files", 10);
