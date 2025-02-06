@@ -97,8 +97,6 @@ export async function createFile(req: Request, res: Response, next: NextFunction
     }
 }
 
-
-
 export async function updateFile(req: Request, res: Response, next: NextFunction){
     try {
         
@@ -185,9 +183,12 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
         }
         console.log(file.path);
 
+        const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
+        console.log("ruta limpia: ", cleanPath);
+
         // * Obtener la ruta absoluta del archivo
-        const filePath = path.resolve('src', 'uploads', file.path);
-        console.log(filePath);
+        const filePath = path.resolve(__dirname, '..', cleanPath);
+        console.log('ruta absoluta' + filePath);
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({message: "Archivo no encontrado en el servidor"});
         }
