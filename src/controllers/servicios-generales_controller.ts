@@ -138,6 +138,7 @@ export async function getServicioContratado(req: Request, res: Response, next: N
         .leftJoinAndSelect("notas_tecnicas.placeRelation", "sede")
         .leftJoinAndSelect("sede.municipioRelation", "municipio")
         .andWhere("servicios_generales.code = :code", { code })
+        .andWhere("notas_tecnicas.idEps <> :idEps OR municipio.id <> :idMunicipio", { idEps: 1, idMunicipio: 1 })
         .getMany();
 
         console.log(servicios)
