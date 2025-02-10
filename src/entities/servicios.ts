@@ -1,6 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
+import { NotasTecnicas } from "./notas-tecnicas";
 
 @Entity({name: "servicio"})
 export class Servicios extends BaseEntity {
@@ -29,4 +30,8 @@ export class Servicios extends BaseEntity {
 
     @OneToMany(() => Radicacion, radicacion => radicacion.servicesRelation)
     radicacionRelation: Radicacion[]
+
+    // relacion con notas tecnicas
+    @OneToMany(() => NotasTecnicas, notasTecnicas => notasTecnicas.typeServiceRelation)
+    notasTecnicasRelation: NotasTecnicas[]
 }
