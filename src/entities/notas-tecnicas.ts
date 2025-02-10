@@ -1,8 +1,9 @@
-import { IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Convenio } from "./convenio";
 import { ServiciosGenerales } from "./servicios-generales";
 import { LugarRadicacion } from "./lugar-radicacion";
+import { Servicios } from "./servicios";
 
 @Entity("notas_tecnicas")
 export class NotasTecnicas extends BaseEntity {
@@ -49,6 +50,13 @@ export class NotasTecnicas extends BaseEntity {
     @IsNotEmpty()
     rate: number;
 
+    @Column({name: 'id_tipo_servicio', nullable: true})
+    @IsOptional()
+    idTypeService?: number;
+
+    @Column({name: 'nombre_contrato', nullable: true})
+    nameContract?: string;
+
     @CreateDateColumn({name: 'created_at'})
     createdAt: Date;
 
@@ -70,5 +78,9 @@ export class NotasTecnicas extends BaseEntity {
     @JoinColumn({name: 'id_sede'})
     placeRelation: LugarRadicacion;
 
+    // relacion con tipo servicios
+    @ManyToOne(() => Servicios, service => service.notasTecnicasRelation)
+    @JoinColumn({name: 'id_tipo_servicio'})
+    typeServiceRelation: Servicios;
 
 }

@@ -133,10 +133,12 @@ export async function getServicioContratado(req: Request, res: Response, next: N
 
         const servicios = await ServiciosGenerales.createQueryBuilder("servicios_generales")
         .leftJoinAndSelect("servicios_generales.notasTecnicasRelation", "notas_tecnicas")
+        .leftJoinAndSelect('notas_tecnicas.typeServiceRelation', 'tipo_servicio')
         .leftJoinAndSelect("notas_tecnicas.convenioRelation", "convenio")
         .leftJoinAndSelect("notas_tecnicas.placeRelation", "sede")
         .leftJoinAndSelect("sede.municipioRelation", "municipio")
         .andWhere("servicios_generales.code = :code", { code })
+        .andWhere("notas_tecnicas.idEps <> :idEps OR municipio.id <> :idMunicipio", { idEps: 1, idMunicipio: 1 })
         .getMany();
 
         console.log(servicios)
@@ -154,7 +156,9 @@ export async function getServicioContratado(req: Request, res: Response, next: N
                 Relations: servicio.notasTecnicasRelation.map((nota) => ({
                     nameConvenio: nota.convenioRelation?.name,
                     nameSede: nota.placeRelation?.name,
-                    isContrated
+                    isContrated,
+                    typeService: nota.typeServiceRelation?.name || "N/A",
+                    nameContract: nota.nameContract || "N/A",
                 })  ) || [],
             }
         });
