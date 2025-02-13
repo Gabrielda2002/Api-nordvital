@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
-import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
+import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "./usuarios";
@@ -108,7 +108,8 @@ export class Equipos extends BaseEntity {
     @Column({name: "clave_candado", nullable: true, type: "int"})
     @IsInt()
     @IsOptional({message: "La clave del candado es opcional"})
-    @Length(1, 4, {message: "La clave del candado debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Min(1000, {message: "La clave del candado debe tenere 4 digitos."})
+    @Max(9999, {message: "La clave del candado debe tenere 4 digitos."})
     lockKey: number | null
 
     @CreateDateColumn({name: "fecha_creacion"})
