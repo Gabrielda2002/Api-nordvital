@@ -240,7 +240,7 @@ router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '3',
  *       200:
  *         description: Contraseña actualizada exitosamente
  */
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1', '3', '4', '15', '10']), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16']), validarId, updatePassword);
 
 /**
  * @swagger
