@@ -44,6 +44,7 @@ import serviciosGeneralesRoutes from './servicios-generales_routes';
 import notaTencicaRoutes from './notas-tecnicas_routes';
 import cartaRecobroRoutes from './carta-recobro_routes';
 import pacientesCoosalud from './pacientes-coosalud_routes'
+import enviarEmail from './send-emails_routes';
 
 const router = Router();
 
@@ -92,5 +93,6 @@ router.use(serviciosGeneralesRoutes);
 router.use(notaTencicaRoutes);
 router.use(cartaRecobroRoutes); 
 router.use(pacientesCoosalud);
+router.use(enviarEmail);
 
 export default router;
