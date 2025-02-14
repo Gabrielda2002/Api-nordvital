@@ -34,6 +34,7 @@ const allowedOrigins = [
   "https://nordvitalips.com",
   "https://www.app.nordvitalips.com",
   "https://app.nordvitalips.com",
+  "http://localhost:4321"
 ];
 
 app.use(
