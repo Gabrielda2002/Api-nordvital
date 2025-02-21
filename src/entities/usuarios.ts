@@ -35,6 +35,7 @@ import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { PausasActivas } from "./pausas-activas";
 import { CartaRecobro } from "./Carta_recobro";
+import { Tickets } from "./tickets";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -194,5 +195,8 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => CartaRecobro, carta => carta.userRequestRelation)
   cartaUserRequestRelation: CartaRecobro[];
+
+  @OneToMany(() => Tickets, tickets => tickets.userRelation)
+  ticketsRelation: Tickets[];
 
 }

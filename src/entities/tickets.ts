@@ -1,0 +1,57 @@
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Usuarios } from "./usuarios";
+import { Categorias } from "./categorias";
+import { Prioridad } from "./prioridad";
+import { EstadoTickets } from "./estado-tickets";
+
+@Entity("tickets")
+export class Tickets extends BaseEntity {
+    @PrimaryGeneratedColumn({ name: "id" })
+    id: number;
+
+    @Column({ name: "titulo", length: 255 })
+    title: string;
+
+    @Column({ name: "descripcion", type: "text" })
+    description: string;
+
+    @Column({ name: "usuario_id" })
+    userId: number;
+
+    @Column({ name: "categoria_id" })
+    categoryId: number;
+
+    @Column({ name: "estado_id" })
+    statusId: number;
+
+    @Column({ name: "prioridad_id" })
+    preorityId: number;
+
+    @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })
+    createdAt: Date;
+
+    @UpdateDateColumn({ name: "fecha_actualizacion", type: "timestamp" })
+    updatedAt: Date;
+
+    @ManyToOne(() => Categorias, (categoria) => categoria.ticketsRelation)
+    @JoinColumn({ name: "categoria_id" })
+    categoryRelation: Categorias;
+
+    @ManyToOne(() => Usuarios, (usuario) => usuario.ticketsRelation)
+    @JoinColumn({ name: "usuario_id" })
+    userRelation: Usuarios;
+
+    @ManyToOne(() => EstadoTickets, (estado) => estado.ticketsRelation)
+    @JoinColumn({ name: "estado_id" })
+    statusRelation: EstadoTickets;
+
+    @ManyToOne(() => Prioridad, (prioridad) => prioridad.ticketsRelation)
+    @JoinColumn({ name: "prioridad_id" })
+    priorityRelation: Prioridad;
+
+    @ManyToOne(() => EstadoTickets, (estadoTickets) => estadoTickets.ticketsRelation)
+    @JoinColumn({ name: "estado_id" })
+    stateRelation: EstadoTickets;
+
+    
+}
