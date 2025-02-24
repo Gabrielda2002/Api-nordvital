@@ -1066,6 +1066,10 @@ export const options = {
             {
                 name: 'Cartas de Recobro',
                 description: 'Endpoints para la gestión de cartas de recobro'
+            },
+            {
+                name: 'Guardar-email',
+                description: 'Endpoints para guardar archivo adjunto del formulario "trabaja con nosotros" de la pagina web.'
             }
         ]
     },
