@@ -20,9 +20,6 @@ export class Comentarios extends BaseEntity {
     coment: string;
 
     @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })
-    @IsNotEmpty()
     fechaCreacion: Date;
-
-    
 
 }
