@@ -963,6 +963,33 @@ export const options = {
                             description: 'Nombre de la categoría'
                         }
                     }
+                },
+                Comentarios: {
+                    type: 'object',
+                    required: ['comment', 'userId', 'ticketId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del comentario'
+                        },
+                        comment: {
+                            type: 'string',
+                            description: 'Comentario'
+                        },
+                        userId: {
+                            type: 'integer',
+                            description: 'ID del usuario'
+                        },
+                        ticketId: {
+                            type: 'integer',
+                            description: 'ID del ticket'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        }
+                    }
                 }
             }
         },
@@ -1154,6 +1181,10 @@ export const options = {
             {
                 name: 'Categorias',
                 description: 'Endpoints para la gestión de categorías de tickets'
+            },
+            {
+                name: 'Comentarios',
+                description: 'Endpoints para la gestión de comentarios de tickets'
             }
         ]
     },
