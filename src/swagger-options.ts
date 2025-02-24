@@ -935,6 +935,20 @@ export const options = {
                             description: 'Fecha de actualización'
                         }
                     }
+                },
+                EstadosTickets: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del estado de ticket'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del estado de ticket'
+                        }
+                    }
                 }
             }
         },
@@ -1118,6 +1132,10 @@ export const options = {
             {
                 name: 'Tickets',
                 description:  'Endpoints para la gestión de tickets'
+            },
+            {
+                name: 'Estados Tickets',
+                description: 'Endpoints para la gestión de estados de tickets'
             }
         ]
     },
