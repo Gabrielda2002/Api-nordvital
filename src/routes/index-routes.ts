@@ -48,7 +48,7 @@ import enviarEmail from './send-emails_routes';
 import ticketsRoutes from './tickets_routes';
 import statusTicketsRoutes from './estados-tickets_routes';
 import prioridadRoutes from './prioridad_routes';
-import categoriasRoutes from './categorias_routes.ts'
+import categoriasRoutes from './categorias_routes';
 import comentariosRoutes from './comentarios_routes';
 
 const router = Router();

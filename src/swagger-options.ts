@@ -949,6 +949,20 @@ export const options = {
                             description: 'Nombre del estado de ticket'
                         }
                     }
+                },
+                Categorias: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la categoría'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre de la categoría'
+                        }
+                    }
                 }
             }
         },
@@ -1136,6 +1150,10 @@ export const options = {
             {
                 name: 'Estados Tickets',
                 description: 'Endpoints para la gestión de estados de tickets'
+            },
+            {
+                name: 'Categorias',
+                description: 'Endpoints para la gestión de categorías de tickets'
             }
         ]
     },
