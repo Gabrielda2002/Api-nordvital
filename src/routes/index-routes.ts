@@ -47,6 +47,7 @@ import pacientesCoosalud from './pacientes-coosalud_routes'
 import enviarEmail from './send-emails_routes';
 import ticketsRoutes from './tickets_routes';
 import statusTicketsRoutes from './estados-tickets_routes';
+import prioridadRoutes from './prioridad_routes';
 
 const router = Router();
 
@@ -98,5 +99,6 @@ router.use(pacientesCoosalud);
 router.use(enviarEmail);
 router.use(ticketsRoutes);
 router.use(statusTicketsRoutes);
+router.use(prioridadRoutes);
 
 export default router;
