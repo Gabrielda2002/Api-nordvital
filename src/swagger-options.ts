@@ -990,6 +990,20 @@ export const options = {
                             description: 'Fecha de creación'
                         }
                     }
+                },
+                Prioridad: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la prioridad'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre de la prioridad'
+                        }
+                    }
                 }
             }
         },
@@ -1185,6 +1199,10 @@ export const options = {
             {
                 name: 'Comentarios',
                 description: 'Endpoints para la gestión de comentarios de tickets'
+            },
+            {
+                name: 'Prioridades',
+                description: 'Endpoints para la gestión de prioridades de tickets'
             }
         ]
     },
