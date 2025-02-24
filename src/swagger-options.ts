@@ -637,6 +637,14 @@ export const options = {
                             type: 'integer',
                             description: 'Tarifa'
                         },
+                        idTypeService: {
+                            type: 'integer',
+                            description: 'ID del tipo de servicio'
+                        },
+                        nameContract: {
+                            type: 'string',
+                            desceription: 'Nombre del contrato'
+                        },
                         createdAt: {
                             type: 'string',
                             format: 'date-time',
