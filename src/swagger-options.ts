@@ -891,6 +891,50 @@ export const options = {
                             description: 'Fecha de creación'
                         }
                     }
+                },
+                Tickets:  {
+                    type: 'object',
+                    required: ['title', 'description', 'userId', 'categoryId', 'statusId', 'priorityId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del ticket'
+                        },
+                        title: {
+                            type: 'string',
+                            description: 'Título del ticket'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del ticket'
+                        },
+                        userId: {
+                            type: 'integer',
+                            description: 'ID del usuario'
+                        },
+                        categoryId: {
+                            type: 'integer',
+                            description: 'ID de la categoría'
+                        },
+                        statusId: {
+                            type: 'integer',
+                            description: 'ID del estado'
+                        },
+                        priorityId: {
+                            type: 'integer',
+                            description: 'ID de la prioridad'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
                 }
             }
         },
@@ -1070,6 +1114,10 @@ export const options = {
             {
                 name: 'Guardar-email',
                 description: 'Endpoints para guardar archivo adjunto del formulario "trabaja con nosotros" de la pagina web.'
+            },
+            {
+                name: 'Tickets',
+                description:  'Endpoints para la gestión de tickets'
             }
         ]
     },
