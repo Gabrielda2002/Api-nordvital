@@ -33,7 +33,7 @@ export async function getTicketById(req: Request, res: Response, next: NextFunct
 
 export async function createTicket(req: Request, res: Response, next: NextFunction){
     try {
-        const { title, description, userId, categoryId, statusId, preorityId } = req.body;
+        const { title, description, userId, categoryId, priorityId } = req.body;
 
         // buscar si el usuario tiene tickets
         const userTicketsExist = await Tickets.createQueryBuilder("tickets")
@@ -50,8 +50,8 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         ticket.description = description;
         ticket.userId = parseInt(userId);
         ticket.categoryId = parseInt(categoryId);
-        ticket.statusId = parseInt(statusId);
-        ticket.preorityId = parseInt(preorityId);
+        ticket.statusId = 1;
+        ticket.preorityId = parseInt(priorityId);
 
         await ticket.save();
 
@@ -103,6 +103,41 @@ export async function deleteTicket(req: Request, res: Response, next: NextFuncti
 
         return res.json({message: "Ticket eliminado"});
 
+    } catch (error) {
+        next(error);
+    }
+}
+
+// traer los tickets con la informacion del usuario
+export async function getTicketsTable(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const tickets = await Tickets.createQueryBuilder("tickets")
+        .leftJoinAndSelect("tickets.statusRelation", "estado-ticket")
+        .leftJoinAndSelect("tickets.priorityRelation", "prioridad")
+        .leftJoinAndSelect("tickets.categoryRelation", "categoria" )
+        .leftJoinAndSelect("tickets.userRelation", "usuario")
+        .getMany();
+
+        if (!tickets) {
+            return res.status(404).json({message: "tickets not found"});
+        }
+
+        const ticketsFormat = tickets.map(t => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            nameRequester: t.userRelation.name,
+            lastNameRequester: t.userRelation.lastName,
+            category: t.categoryRelation.name,
+            priority: t.priorityRelation.name,
+            status: t.statusRelation.name,
+            createdAt: t.createdAt,
+            updatedAt: t.updatedAt,
+        }))
+
+
+        return res.json(ticketsFormat);
     } catch (error) {
         next(error);
     }
