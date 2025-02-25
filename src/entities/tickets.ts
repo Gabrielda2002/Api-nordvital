@@ -1,8 +1,9 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { Usuarios } from "./usuarios";
 import { Categorias } from "./categorias";
 import { Prioridad } from "./prioridad";
 import { EstadoTickets } from "./estado-tickets";
+import { Comentarios } from "./comentarios";
 
 @Entity("tickets")
 export class Tickets extends BaseEntity {
@@ -49,9 +50,8 @@ export class Tickets extends BaseEntity {
     @JoinColumn({ name: "prioridad_id" })
     priorityRelation: Prioridad;
 
-    @ManyToOne(() => EstadoTickets, (estadoTickets) => estadoTickets.ticketsRelation)
-    @JoinColumn({ name: "estado_id" })
-    stateRelation: EstadoTickets;
+    @OneToMany(() => Comentarios, (comentarios) => comentarios.ticketsRelation)
+    commentRelation: Comentarios[];
 
     
 }
