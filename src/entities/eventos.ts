@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Eventos extends BaseEntity{
@@ -34,6 +34,6 @@ export class Eventos extends BaseEntity{
     @CreateDateColumn({name: "created_at", type: "timestamp"})
     createdAt: Date;
 
-    @CreateDateColumn({name: "updated_at", type: "timestamp"})
+    @UpdateDateColumn({name: "updated_at", type: "timestamp"})
     updatedAt: Date;
 }

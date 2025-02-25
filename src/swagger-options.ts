@@ -637,6 +637,14 @@ export const options = {
                             type: 'integer',
                             description: 'Tarifa'
                         },
+                        idTypeService: {
+                            type: 'integer',
+                            description: 'ID del tipo de servicio'
+                        },
+                        nameContract: {
+                            type: 'string',
+                            desceription: 'Nombre del contrato'
+                        },
                         createdAt: {
                             type: 'string',
                             format: 'date-time',
@@ -883,6 +891,119 @@ export const options = {
                             description: 'Fecha de creación'
                         }
                     }
+                },
+                Tickets:  {
+                    type: 'object',
+                    required: ['title', 'description', 'userId', 'categoryId', 'statusId', 'priorityId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del ticket'
+                        },
+                        title: {
+                            type: 'string',
+                            description: 'Título del ticket'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del ticket'
+                        },
+                        userId: {
+                            type: 'integer',
+                            description: 'ID del usuario'
+                        },
+                        categoryId: {
+                            type: 'integer',
+                            description: 'ID de la categoría'
+                        },
+                        statusId: {
+                            type: 'integer',
+                            description: 'ID del estado'
+                        },
+                        priorityId: {
+                            type: 'integer',
+                            description: 'ID de la prioridad'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
+                },
+                EstadosTickets: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del estado de ticket'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del estado de ticket'
+                        }
+                    }
+                },
+                Categorias: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la categoría'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre de la categoría'
+                        }
+                    }
+                },
+                Comentarios: {
+                    type: 'object',
+                    required: ['comment', 'userId', 'ticketId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del comentario'
+                        },
+                        comment: {
+                            type: 'string',
+                            description: 'Comentario'
+                        },
+                        userId: {
+                            type: 'integer',
+                            description: 'ID del usuario'
+                        },
+                        ticketId: {
+                            type: 'integer',
+                            description: 'ID del ticket'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        }
+                    }
+                },
+                Prioridad: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la prioridad'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre de la prioridad'
+                        }
+                    }
                 }
             }
         },
@@ -1058,6 +1179,30 @@ export const options = {
             {
                 name: 'Cartas de Recobro',
                 description: 'Endpoints para la gestión de cartas de recobro'
+            },
+            {
+                name: 'Guardar-email',
+                description: 'Endpoints para guardar archivo adjunto del formulario "trabaja con nosotros" de la pagina web.'
+            },
+            {
+                name: 'Tickets',
+                description:  'Endpoints para la gestión de tickets'
+            },
+            {
+                name: 'Estados Tickets',
+                description: 'Endpoints para la gestión de estados de tickets'
+            },
+            {
+                name: 'Categorias',
+                description: 'Endpoints para la gestión de categorías de tickets'
+            },
+            {
+                name: 'Comentarios',
+                description: 'Endpoints para la gestión de comentarios de tickets'
+            },
+            {
+                name: 'Prioridades',
+                description: 'Endpoints para la gestión de prioridades de tickets'
             }
         ]
     },
