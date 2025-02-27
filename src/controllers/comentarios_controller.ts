@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Comentarios } from "../entities/comentarios";
 import { validate } from "class-validator";
+import { Tickets } from "../entities/tickets";
 
 export async function getAllComments(req: Request, res: Response, next: NextFunction){
     try {
@@ -112,6 +113,47 @@ export async function deleteComment(req: Request, res: Response, next: NextFunct
         await comment.remove();
 
         return res.json({ message: "Comment deleted" });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// crear comentario a ticket y cambiar estado de ticket
+export async function createCommentAndChangeTicketStatus(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { ticketId, usuarioId, coment } = req.body;
+
+        const comment = new Comentarios();
+        comment.ticketId = ticketId;
+        comment.usuarioId = usuarioId;
+        comment.coment = coment;
+
+        const errors =  await validate(comment);
+
+        if (errors.length > 0) {
+            const messages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+
+            return res.status(400).json({ mesage: 'Error al crear comentario' ,messages });
+        }
+
+        
+        const ticket = await Tickets.findOneBy({ id: ticketId });
+        
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+        
+        ticket.statusId = 2;
+
+        await comment.save();
+        await ticket.save();
+
+        return res.json(comment);
 
     } catch (error) {
         next(error);
