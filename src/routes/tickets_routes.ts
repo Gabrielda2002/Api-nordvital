@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets_controller";
+import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket, validateUserTickets } from "../controllers/tickets_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -136,5 +136,7 @@ router.put('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, updat
 router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, deleteTicket)
 
 router.get('/tickets-table', authenticate, authorizeRoles(['1']), getTicketsTable)
+
+router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1']), validateUserTickets)
 
 export default router;

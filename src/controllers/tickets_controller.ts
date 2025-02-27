@@ -142,3 +142,24 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+
+// validar que el  usuario no tenga tickets abiertos
+export async function validateUserTickets(req: Request, res: Response, next: NextFunction){
+    try {
+        const { userId } = req.params;
+
+        // buscar si el usuario tiene tickets
+        const userTicketsExist = await Tickets.createQueryBuilder("tickets")
+        .leftJoinAndSelect("tickets.userRelation", "user")
+        .where("user.id = :userId", { userId })
+        .getOne();
+
+        if (userTicketsExist) {
+            return res.status(200).json({message: "El usuario ya tiene un ticket", have : true});
+        }
+
+        return res.json({message: "El usuario no tiene tickets", have : false});
+    } catch (error) {
+        next(error);
+    }
+}
