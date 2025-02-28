@@ -50,6 +50,7 @@ import statusTicketsRoutes from './estados-tickets_routes';
 import prioridadRoutes from './prioridad_routes';
 import categoriasRoutes from './categorias_routes';
 import comentariosRoutes from './comentarios_routes';
+import encuestasSatisfaccionRoutes from './encuestas-satisfaccion_routes';
 
 const router = Router();
 
@@ -104,5 +105,6 @@ router.use(statusTicketsRoutes);
 router.use(prioridadRoutes);
 router.use(categoriasRoutes);
 router.use(comentariosRoutes);
+router.use(encuestasSatisfaccionRoutes);
 
 export default router;
