@@ -40,6 +40,7 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         const userTicketsExist = await Tickets.createQueryBuilder("tickets")
         .leftJoinAndSelect("tickets.userRelation", "user")
         .where("user.id = :userId", { userId })
+        .andWhere("tickets.statusId = 1")
         .getOne();
 
         if (userTicketsExist) {
@@ -161,6 +162,7 @@ export async function validateUserTickets(req: Request, res: Response, next: Nex
         const userTicketsExist = await Tickets.createQueryBuilder("tickets")
         .leftJoinAndSelect("tickets.userRelation", "user")
         .where("user.id = :userId", { userId })
+        .andWhere("tickets.statusId = 1")
         .getOne();
 
         if (userTicketsExist) {
