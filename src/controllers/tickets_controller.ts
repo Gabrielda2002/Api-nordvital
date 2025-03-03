@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Tickets } from "../entities/tickets";
+import { NotificationService } from "../services/notificationService";
 
 export async function getAllTickets(req: Request, res: Response, next: NextFunction){
     try {
@@ -73,6 +74,9 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
             return res.status(404).json({message: "Ticket no encontrado"});
         }
 
+        // verificar si el estado cambio a cerrado
+        const oldStatusId = ticket.statusId;
+
         ticket.title = title;
         ticket.description = description;
         ticket.userId = parseInt(userId);
@@ -81,6 +85,11 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
         ticket.preorityId = parseInt(preorityId);
 
         await ticket.save();
+
+        // si el estado cambio a cerrado, crear notificacion
+        if (oldStatusId !== 2 && ticket.statusId === 2) {
+            await NotificationService.createTicketClosedNotification(ticket);
+        }
 
         return res.json(ticket);
 

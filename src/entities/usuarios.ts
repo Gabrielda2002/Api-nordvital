@@ -25,7 +25,6 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { Transform } from "stream";
 import { Carpeta } from "./carpeta";
 import { Radicacion } from "./radicacion";
 import { seguimientoEquipos } from "./seguimiento-equipos";
@@ -36,6 +35,7 @@ import { LugarRadicacion } from "./lugar-radicacion";
 import { PausasActivas } from "./pausas-activas";
 import { CartaRecobro } from "./Carta_recobro";
 import { Tickets } from "./tickets";
+import { Notification } from "./notificaciones";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -198,5 +198,9 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => Tickets, tickets => tickets.userRelation)
   ticketsRelation: Tickets[];
+
+  //relacion con notificaciones
+  @OneToMany(() => Notification, (notification) => notification.userRelation)
+  notificationsRelation: Notification[];
 
 }

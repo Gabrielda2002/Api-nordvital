@@ -51,6 +51,7 @@ import prioridadRoutes from './prioridad_routes';
 import categoriasRoutes from './categorias_routes';
 import comentariosRoutes from './comentarios_routes';
 import encuestasSatisfaccionRoutes from './encuestas-satisfaccion_routes';
+import notificacionesRoutes from './notificaciones_routes';
 
 const router = Router();
 
@@ -106,5 +107,6 @@ router.use(prioridadRoutes);
 router.use(categoriasRoutes);
 router.use(comentariosRoutes);
 router.use(encuestasSatisfaccionRoutes);
+router.use(notificacionesRoutes);
 
 export default router;
