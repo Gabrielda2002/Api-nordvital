@@ -59,6 +59,20 @@ io.on('connection', (socket) => {
   socket.on('join', (room) => {
     socket.join(room)
     console.log(`Se unicio el usuario ${socket.id} a la sala ${room}`)
+
+    // const testNotification = {
+    //   id: Date.now(),
+    //   userId: parseInt(room.replace('user_', '')),
+    //   title: 'Conexión exitosa',
+    //   message: 'Tu conexión de notificaciones está funcionando correctamente',
+    //   referenceId: null,
+    //   referenceType: 'connection_test',
+    //   isRead: false,
+    //   createdAt: new Date()
+    // };
+    // io.to(room).emit('newNotification', testNotification);
+    // console.log(`[Socket.io] Enviada notificación de prueba a ${room}`, testNotification);
+
   })
 
   socket.on('disconnect', () => {
@@ -82,7 +96,6 @@ app.use(
   })
 );
 
-// configurar socket
 app.use(limiter);
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));

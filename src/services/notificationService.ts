@@ -1,4 +1,5 @@
 // src/services/notification-service.ts
+import { io } from "../app";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../entities/tickets";
 
@@ -16,6 +17,11 @@ export class NotificationService {
         notification.isRead = false;
         
         await notification.save();
+
+        console.log('emitiendo notificacion ')
+        console.log(`[Socket.io] Emitiendo notificación a sala user_${ticket.userId}:`, notification);
+        io.to(`user_${ticket.userId}`).emit(`newNotification`, notification)
+
         return notification;
     }
 
