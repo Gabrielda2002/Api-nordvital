@@ -36,6 +36,7 @@ import { PausasActivas } from "./pausas-activas";
 import { CartaRecobro } from "./Carta_recobro";
 import { Tickets } from "./tickets";
 import { Notification } from "./notificaciones";
+import { PushSubscription } from "./push-subscription";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -202,5 +203,9 @@ export class Usuarios extends BaseEntity {
   //relacion con notificaciones
   @OneToMany(() => Notification, (notification) => notification.userRelation)
   notificationsRelation: Notification[];
+
+  // ? relacion con push subscription
+  @OneToMany(() => PushSubscription, (pushSubscription) => pushSubscription.userRelation)
+  pushSubscriptionRelation: PushSubscription[];
 
 }
