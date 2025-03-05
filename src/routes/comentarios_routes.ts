@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createComment, deleteComment, getAllComments, getCommentById, updateComment } from "../controllers/comentarios_controller";
+import { createComment, createCommentAndChangeTicketStatus, deleteComment, getAllComments, getCommentById, updateComment } from "../controllers/comentarios_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -126,5 +126,7 @@ router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, u
  *         description: Comentario no encontrado
  */
 router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteComment);
+
+router.post('/comment-status', authenticate, authorizeRoles(['1', '10']), createCommentAndChangeTicketStatus);
 
 export default router;

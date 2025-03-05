@@ -13,6 +13,8 @@ import { errorLoggerMiddleware } from "./middlewares/error-logger-middleware";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "./swagger-options";
+import { Server as SocketIOServer } from "socket.io";
+import http from "http";
 
 // * cargar variables de entorno
 dotenv.config();
@@ -37,6 +39,47 @@ const allowedOrigins = [
   "http://localhost:4321"
 ];
 
+export let  io: SocketIOServer;
+
+const server = http.createServer(app);
+io = new SocketIOServer(server, {
+  cors: {
+    origin: allowedOrigins, 
+    methods: ['GET', 'PUT', 'POST'],
+    credentials: true
+  },
+})
+
+
+
+io.on('connection', (socket) => {
+  console.log('Usuario conectado', socket.id)
+
+  // unirse a una sala especifica
+  socket.on('join', (room) => {
+    socket.join(room)
+    console.log(`Se unicio el usuario ${socket.id} a la sala ${room}`)
+
+    // const testNotification = {
+    //   id: Date.now(),
+    //   userId: parseInt(room.replace('user_', '')),
+    //   title: 'Conexión exitosa',
+    //   message: 'Tu conexión de notificaciones está funcionando correctamente',
+    //   referenceId: null,
+    //   referenceType: 'connection_test',
+    //   isRead: false,
+    //   createdAt: new Date()
+    // };
+    // io.to(room).emit('newNotification', testNotification);
+    // console.log(`[Socket.io] Enviada notificación de prueba a ${room}`, testNotification);
+
+  })
+
+  socket.on('disconnect', () => {
+    console.log('Usuario desconectado', socket.id)
+  })
+})
+
 app.use(
   cors({
     exposedHeaders: ["token-status"],
@@ -52,6 +95,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(limiter);
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));
@@ -84,4 +128,4 @@ app.use(errorHandler);
 // * middleware para manejar los errores en los logs
 app.use(errorLoggerMiddleware);
 
-export default app;
+export default server;

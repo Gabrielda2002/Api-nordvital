@@ -22,7 +22,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Prioridad'
  */
-router.get('/prioridades', authenticate, authorizeRoles(['1']), getAllPriority);
+router.get('/prioridades', authenticate, authorizeRoles(['1', '10']), getAllPriority);
 
 /**
  * @swagger

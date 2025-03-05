@@ -28,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido.
  */
-router.get('/categorias', authenticate, authorizeRoles(['1']), getAllCategories);
+router.get('/categorias', authenticate, authorizeRoles(['1', '10']), getAllCategories); 
 
 /**
  * @swagger

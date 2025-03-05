@@ -1,18 +1,21 @@
 import "reflect-metadata";
-import app from "./app";
+import server from "./app";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
+import { PushService } from "./services/pushService";
 
 
     const start = async () => {
 
         try {
         
+            await PushService.initialize();
+
             await AppDataSource.initialize();
             console.log('Conexión a la base de datos establecida');
         
             const PUERTO = process.env.PORT;
-            app.listen(PUERTO, () => {
+            server.listen(PUERTO, () => {
                 console.log(`Servidor corriendo en el puerto http://localhost:${PUERTO}`);
             });
         } catch (error) {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets_controller";
+import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket, validateUserTickets } from "../controllers/tickets_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -77,7 +77,7 @@ router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTi
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/tickets', authenticate, authorizeRoles(['1']), createTicket)
+router.post('/tickets', authenticate, authorizeRoles(['1', '10']), createTicket)
 
 /**
  * @swagger
@@ -135,6 +135,8 @@ router.put('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, updat
  */
 router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, deleteTicket)
 
-router.get('/tickets-table', authenticate, authorizeRoles(['1']), getTicketsTable)
+router.get('/tickets-table', authenticate, authorizeRoles(['1', '10']), getTicketsTable)
+
+router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1', '10']), validateUserTickets)
 
 export default router;
