@@ -2,12 +2,15 @@ import "reflect-metadata";
 import server from "./app";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
+import { PushService } from "./services/pushService";
 
 
     const start = async () => {
 
         try {
         
+            await PushService.initialize();
+
             await AppDataSource.initialize();
             console.log('Conexión a la base de datos establecida');
         

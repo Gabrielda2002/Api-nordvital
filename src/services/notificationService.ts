@@ -2,6 +2,7 @@
 import { io } from "../app";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../entities/tickets";
+import { PushService } from "./pushService";
 
 export class NotificationService {
     /**
@@ -21,6 +22,23 @@ export class NotificationService {
         console.log('emitiendo notificacion ')
         console.log(`[Socket.io] Emitiendo notificación a sala user_${ticket.userId}:`, notification);
         io.to(`user_${ticket.userId}`).emit(`newNotification`, notification)
+
+        // Enviar notificación push
+        try {
+            await PushService.sendPushNotification(
+                ticket.userId,
+                notification.title,
+                notification.message,
+                {
+                    ticketId: ticket.id,
+                    notificationId: notification.id,
+                    type: 'ticket_closed'
+                }
+            );
+            console.log('[push] Notificación push enviada');
+        } catch (error) {
+            console.log('[Error] enviando notificación push', error);
+        }
 
         return notification;
     }
