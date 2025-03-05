@@ -23,7 +23,7 @@ const router = Router();
  *       200:
  *         description: Lista de notificaciones del usuario
  */
-router.get('/notifications/user/:userId', authenticate, authorizeRoles(['1']), getUserNotifications);
+router.get('/notifications/user/:userId', authenticate, authorizeRoles(['1', '10']), getUserNotifications);
 
 /**
  * @swagger
@@ -44,6 +44,6 @@ router.get('/notifications/user/:userId', authenticate, authorizeRoles(['1']), g
  *       404:
  *         description: Notificación no encontrada
  */
-router.put('/notifications/:id/read', authenticate, authorizeRoles(['1']), markNotificationAsRead);
+router.put('/notifications/:id/read', authenticate, authorizeRoles(['1', '10']), markNotificationAsRead);
 
 export default router;

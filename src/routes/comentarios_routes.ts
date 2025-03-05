@@ -127,6 +127,6 @@ router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, u
  */
 router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteComment);
 
-router.post('/comment-status', authenticate, authorizeRoles(['1']), createCommentAndChangeTicketStatus);
+router.post('/comment-status', authenticate, authorizeRoles(['1', '10']), createCommentAndChangeTicketStatus);
 
 export default router;
