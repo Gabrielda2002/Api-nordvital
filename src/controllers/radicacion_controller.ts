@@ -304,7 +304,7 @@ export async function tablaPorAuditar(
   next: NextFunction
 ) {
   try {
-    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+    const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
@@ -315,6 +315,8 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
+      .leftJoinAndSelect("radicador.municipioRelation", "municipio")
+      .leftJoinAndSelect("municipio.departmentRelation", "departamento")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect(
@@ -325,8 +327,12 @@ export async function tablaPorAuditar(
       .where(
         "cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9"
       )
-      .orderBy("radicacion.createdAt", "ASC")
-      .getMany();
+
+      if (req.departmentUserId) {
+        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
+      }
+      query.orderBy('radicacion.createdAt', 'ASC')
+      const radicaciones = await query.getMany();
 
     const formatedRadicaciones = await radicaciones.map((r) => ({
       id: r.id,
@@ -368,7 +374,8 @@ export async function auditorRadicados(
   next: NextFunction
 ) {
   try {
-    const radicaciones = await Radicacion.createQueryBuilder("radicacion")
+    const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect('radicacion.placeRelation', 'place')
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
@@ -378,8 +385,12 @@ export async function auditorRadicados(
       .where(
         "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
       )
-      .orderBy("radicacion.id", "ASC")
-      .getMany();
+
+      if (req.departmentUserId) {
+        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
+      }
+      query.orderBy('radicacion.id', 'ASC')
+      const radicaciones = await query.getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
@@ -589,7 +600,7 @@ export async function buscarRadicadoPorDocumento(
       return res.status(400).json({ message: "Documento es requerido" });
     }
 
-    const radicacion = await Radicacion.createQueryBuilder("radicacion")
+    const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
@@ -620,8 +631,12 @@ export async function buscarRadicadoPorDocumento(
       .leftJoinAndSelect("seguimientoAuxiliar.usuarioRelation", "usuario-seguimiento")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .where("patient.documentNumber = :documento", { documento })
-      .orderBy("radicacion.id", "DESC")
-      .getMany();
+
+      if (req.departmentUserId) {
+        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
+      }
+      query.orderBy('radicacion.id', 'DESC')
+      const radicacion = await query.getMany();
 
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });

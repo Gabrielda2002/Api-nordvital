@@ -4,6 +4,7 @@ import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
+import { getDepartmentUser } from "../middlewares/get-department-user_middleware";
 
 
 const router = Router();
@@ -214,7 +215,7 @@ router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, 
  *       404:
  *         description: No hay radicaciones por auditar
  */
-router.get('/auditoria-table', authenticate, authorizeRoles(['1','3']), tablaPorAuditar);
+router.get('/auditoria-table', authenticate, authorizeRoles(['1','3']),getDepartmentUser, tablaPorAuditar);
 
 /**
  * @swagger
@@ -229,7 +230,7 @@ router.get('/auditoria-table', authenticate, authorizeRoles(['1','3']), tablaPor
  *       200:
  *         description: Lista de radicaciones auditadas
  */
-router.get('/auditoria-auditados', authenticate, authorizeRoles(['1','3']), auditorRadicados);
+router.get('/auditoria-auditados', authenticate, authorizeRoles(['1','3']),getDepartmentUser , auditorRadicados);
 
 /**
  * @swagger
@@ -333,7 +334,7 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  *       404:
  *         description: No se encontraron radicaciones para ese documento
  */
-router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), buscarRadicadoPorDocumento); 
+router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), getDepartmentUser ,buscarRadicadoPorDocumento); 
 
 /**
  * @swagger
