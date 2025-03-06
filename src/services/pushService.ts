@@ -31,15 +31,17 @@ export class PushService{
 
             const payload = JSON.stringify({
                 title,
-                body,
-                data
-            })
+                body, // Cambiar body a message para compatibilidad
+                url: data.ticketId ? `/tickets/${data.ticketId}` : undefined,
+                data // Mantener data para compatibilidad futura
+              });
+
+            console.log(`[push] enviando notificaciones a ${subscriptions.length}`)
 
             // enviar notificacion a cada suscripcion
             const results = await Promise.allSettled(
-                subscriptions.map(async (sub) => {
+                subscriptions.map(async (sub, index) => {
                     try {
-                        
                         const subscriptionObject = JSON.parse(sub.subscription);
 
                         await webpush.sendNotification(subscriptionObject, payload);
@@ -48,12 +50,21 @@ export class PushService{
                     } catch (error) {
                         console.log('Error sending push notification', error);
 
-                            await PushSubscription.remove(sub);
+                        if (error && typeof error === 'object' && 'statusCode' in error) {
+                            // Si es error 410 (suscripción expirada) o 404 (no encontrada)
+                            const statusCode = (error as any).statusCode;
+                            if (statusCode === 410 || statusCode === 404) {
+                                console.log(`[Push] Eliminando suscripción inválida #${index+1}`);
+                                await PushSubscription.remove(sub);
+                            }
+                        }
 
                         return false;
                     }
                 })
             )
+
+            const successCount = results.filter(r => r.status === 'fulfilled' && r.value === true).length;
 
             return results;
 
