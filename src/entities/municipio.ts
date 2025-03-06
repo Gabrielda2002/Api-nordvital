@@ -1,8 +1,9 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
 import { IsBoolean, IsInt, IsNotEmpty, IsString, Length, Max, Min } from "class-validator";
 import { Carpeta } from "./carpeta";
 import { LugarRadicacion } from "./lugar-radicacion";
+import { departamentos } from "./departamentos";
 
 @Entity("municipio")
 export class Municipio extends BaseEntity {
@@ -26,6 +27,11 @@ export class Municipio extends BaseEntity {
   @Min(1, {message: 'El codigo del municipio debe tener 1 caracteres'})
   municipioCode: number;
 
+  @Column({ name: 'id_departamento' })
+  @IsInt()
+  @IsNotEmpty({message: 'El id del departamento no puede estar vacio'})
+  idDepartment: number;
+
   @UpdateDateColumn({ name: "fecha-actualizacion" })
   updatedAt: Date
 
@@ -44,4 +50,9 @@ export class Municipio extends BaseEntity {
   // * relacion con lugar radicacion
   @OneToMany(() => LugarRadicacion, (lugar) => lugar.municipioRelation)
   placeRelation: LugarRadicacion[];
+
+  // ? relacion con departamentos
+  @ManyToOne(() => departamentos, (departamento) => departamento.municipioRelation)
+  @JoinColumn({ name: 'id_departamento' })
+  departmentRelation: departamentos;
 }
