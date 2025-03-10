@@ -8,11 +8,11 @@ export class NotificationService {
     /**
      * Crea una notificación para un usuario cuando un ticket se cierra
      */
-    static async createTicketClosedNotification(ticket: Tickets): Promise<Notification> {
+    static async createTicketClosedNotification(ticket: Tickets, title: string): Promise<Notification> {
         const notification = new Notification();
         notification.userId = ticket.userId;
-        notification.title = "Ticket Cerrado";
-        notification.message = `Tu ticket "${ticket.title}" ha sido cerrado.`;
+        notification.title = title;
+        notification.message = `Se actualizó el estado de tu ticket "${ticket.title}".`;
         notification.referenceId = ticket.id;
         notification.referenceType = "ticket";
         notification.isRead = false;

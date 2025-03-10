@@ -87,10 +87,10 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
 
         await ticket.save();
 
-        // si el estado cambio a cerrado, crear notificacion
-        if (oldStatusId !== 2 && ticket.statusId === 2) {
-            await NotificationService.createTicketClosedNotification(ticket);
-        }
+        // // si el estado cambio a cerrado, crear notificacion
+        // if (oldStatusId !== 2 && ticket.statusId === 2) {
+        //     await NotificationService.createTicketClosedNotification(ticket);
+        // }
 
         return res.json(ticket);
 
