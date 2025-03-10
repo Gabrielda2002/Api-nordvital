@@ -64,6 +64,12 @@ export async function createUsuario(
       phoneNumber
     } = req.body;
 
+    const userExist = await Usuarios.createQueryBuilder('usuarios')
+    .where('usuarios.dniNumber = :dniNumber', {dniNumber})
+    .getOne();
+
+    if(userExist) return res.status(409).json({message: 'El usuario ya existe'});
+
     const usuario = new Usuarios();
     usuario.dniNumber = parseInt(dniNumber);
     usuario.name = name;
