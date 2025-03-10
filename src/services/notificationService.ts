@@ -2,66 +2,115 @@
 import { io } from "../app";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../entities/tickets";
+import { Usuarios } from "../entities/usuarios";
 import { PushService } from "./pushService";
 
 export class NotificationService {
-    /**
-     * Crea una notificación para un usuario cuando un ticket se cierra
-     */
-    static async createTicketClosedNotification(ticket: Tickets, title: string): Promise<Notification> {
-        const notification = new Notification();
-        notification.userId = ticket.userId;
-        notification.title = title;
-        notification.message = `Se actualizó el estado de tu ticket "${ticket.title}".`;
-        notification.referenceId = ticket.id;
-        notification.referenceType = "ticket";
-        notification.isRead = false;
-        
-        await notification.save();
+  /**
+   * Crea una notificación para un usuario cuando un ticket se cierra
+   */
+  static async createTicketClosedNotification(
+    ticket: Tickets,
+    title: string
+  ): Promise<Notification> {
+    const notification = new Notification();
+    notification.userId = ticket.userId;
+    notification.title = title;
+    notification.message = `Se actualizó el estado de tu ticket "${ticket.title}".`;
+    notification.referenceId = ticket.id;
+    notification.referenceType = "ticket";
+    notification.isRead = false;
 
-        console.log('emitiendo notificacion ')
-        console.log(`[Socket.io] Emitiendo notificación a sala user_${ticket.userId}:`, notification);
-        io.to(`user_${ticket.userId}`).emit(`newNotification`, notification)
+    await notification.save();
 
-        // Enviar notificación push
-        try {
-            await PushService.sendPushNotification(
-                ticket.userId,
-                notification.title,
-                notification.message,
-                {
-                    ticketId: ticket.id,
-                    notificationId: notification.id,
-                    type: 'ticket_closed'
-                }
-            );
-            console.log('[push] Notificación push enviada');
-        } catch (error) {
-            console.log('[Error] enviando notificación push', error);
+    console.log("emitiendo notificacion ");
+    console.log(
+      `[Socket.io] Emitiendo notificación a sala user_${ticket.userId}:`,
+      notification
+    );
+    io.to(`user_${ticket.userId}`).emit(`newNotification`, notification);
+
+    // Enviar notificación push
+    try {
+      await PushService.sendPushNotification(
+        ticket.userId,
+        notification.title,
+        notification.message,
+        {
+          ticketId: ticket.id,
+          notificationId: notification.id,
+          type: "ticket_closed",
         }
-
-        return notification;
+      );
+      console.log("[push] Notificación push enviada");
+    } catch (error) {
+      console.log("[Error] enviando notificación push", error);
     }
 
-    /**
-     * Obtiene todas las notificaciones de un usuario
-     */
-    static async getUserNotifications(userId: number): Promise<Notification[]> {
-        return Notification.createQueryBuilder("notification")
-            .where("notification.user_id = :userId", { userId })
-            .orderBy("notification.created_at", "DESC")
-            .getMany();
-    }
+    return notification;
+  }
 
-    /**
-     * Marca una notificación como leída
-     */
-    static async markAsRead(notificationId: number): Promise<Notification | null> {
-        const notification = await Notification.findOneBy({ id: notificationId });
-        if (!notification) return null;
+  /**
+   * Obtiene todas las notificaciones de un usuario
+   */
+  static async getUserNotifications(userId: number): Promise<Notification[]> {
+    return Notification.createQueryBuilder("notification")
+      .where("notification.user_id = :userId", { userId })
+      .orderBy("notification.created_at", "DESC")
+      .getMany();
+  }
 
-        notification.isRead = true;
+  /**
+   * Marca una notificación como leída
+   */
+  static async markAsRead(
+    notificationId: number
+  ): Promise<Notification | null> {
+    const notification = await Notification.findOneBy({ id: notificationId });
+    if (!notification) return null;
+
+    notification.isRead = true;
+    await notification.save();
+    return notification;
+  }
+
+  static async createNotificationForRole(
+    roleId: number,
+    title: string,
+    message: string,
+    referenceId: number,
+    referenceType: string
+  ): Promise<void> {
+    try {
+      const users = await Usuarios.createQueryBuilder("usuario")
+        .where("usuario.rol = :roleId", { roleId })
+        .getMany();
+
+      if (!users.length) {
+        console.log("No users found for role", roleId);
+        return;
+      }
+
+      console.log(
+        `[ENVIANDO NOTIFICACIONES A ${users.length} usuarios con el rol ${roleId} const user of users]`
+      );
+      for (const user of users) {
+        const notification = new Notification();
+        notification.userId = user.id;
+        notification.title = title;
+        notification.message = message;
+        notification.referenceId = referenceId;
+        notification.referenceType = referenceType;
+        notification.isRead = false;
+
         await notification.save();
-        return notification;
-    }
+
+        await PushService.sendPushNotification(user.id, title, message, {
+          ticketId: referenceId,
+          notificationId: notification.id,
+          type: referenceType,
+        });
+      };
+    } catch (error) {}
+  }
 }

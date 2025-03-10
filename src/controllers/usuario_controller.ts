@@ -76,7 +76,7 @@ export async function createUsuario(
     usuario.lastName = lastName;
     usuario.dniType = parseInt(dniType);
     usuario.email = email;
-
+    // incriptacion password
     const saltRounds = 10;
     usuario.password = await bcrypt.hash(password, saltRounds); 
     usuario.status = true;

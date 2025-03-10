@@ -149,17 +149,16 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
             return res.status(404).json({ message: "Ticket not found" });
         }
         
+        const oldStatusId = ticket.statusId;
+
         ticket.statusId = parseInt(status);
 
         await comment.save();
         await ticket.save();
 
         // si el estado es cerrado crear notificacion
-        if (status === 2) {
-            await NotificationService.createTicketClosedNotification(ticket, "Ticket Cerrado");
-        }else{
-            // si el estado es diferente a cerrado crear notificacion
-            await NotificationService.createTicketClosedNotification(ticket, "Ticket Pendiente");
+        if (oldStatusId !== 2) {
+            await NotificationService.createTicketClosedNotification(ticket, "Ticket Actualizado");
         }
 
         return res.json(comment);
