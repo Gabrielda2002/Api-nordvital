@@ -135,9 +135,11 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
         .leftJoinAndSelect("tickets.priorityRelation", "prioridad")
         .leftJoinAndSelect("tickets.categoryRelation", "categoria" )
         .leftJoinAndSelect("tickets.userRelation", "usuario")
+        .leftJoinAndSelect("usuario.sedeRelation", "sede")
+        .leftJoinAndSelect("usuario.municipioRelation", "municipio")
         .getMany();
 
-        if (!tickets) {
+        if (!tickets || tickets.length === 0) {
             return res.status(404).json({message: "tickets not found"});
         }
 
@@ -145,14 +147,16 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
             id: t.id,
             title: t.title,
             description: t.description,
-            nameRequester: t.userRelation.name,
-            lastNameRequester: t.userRelation.lastName,
-            category: t.categoryRelation.name,
-            priority: t.priorityRelation.name,
-            status: t.statusRelation.name,
+            nameRequester: t.userRelation?.name || 'N/A',
+            lastNameRequester: t.userRelation?.lastName || 'N/A',
+            category: t.categoryRelation?.name || 'N/A',
+            priority: t.priorityRelation?.name || 'N/A',
+            status: t.statusRelation?.name || 'N/A',
+            headquarter: t.userRelation?.sedeRelation?.name || 'N/A',
+            municipio: t.userRelation?.municipioRelation?.name || 'N/A',
             createdAt: t.createdAt,
             updatedAt: t.updatedAt,
-        }))
+        }));
 
 
         return res.json(ticketsFormat);
