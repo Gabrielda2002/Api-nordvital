@@ -152,7 +152,8 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
 
         const { documentPatient  } = req.params;
         
-        const requestLatter = await Radicacion.createQueryBuilder("radicacion")
+        const query = await Radicacion.createQueryBuilder("radicacion")
+        .leftJoinAndSelect("radicacion.placeRelation", "place")
         .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("radicacion.patientRelation", "patient")
@@ -161,7 +162,12 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .where("cups_radicados.status = 1")
         .andWhere("patient.documentNumber = :documentPatient", {documentPatient})
-        .getMany();
+
+        if (req.departmentUserId) {
+            query.andWhere('place.departamento = :department', { department: req.departmentUserId });
+        }
+
+        const requestLatter = await query.getMany();    
 
         const responseFormated = requestLatter.map(r => ({
             id: r.id,
@@ -195,8 +201,9 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
 export async function getResponseLetter(req: Request, res: Response, next: NextFunction){
     try {
         
-        const responseLetter = await CartaRecobro.createQueryBuilder("carta_recobro")
+        const query = await CartaRecobro.createQueryBuilder("carta_recobro")
         .leftJoinAndSelect("carta_recobro.radicacionRelation", "radicacion")
+        .leftJoinAndSelect("radicacion.placeRelation", "place")
         .leftJoinAndSelect("radicacion.patientRelation", "patient")
         .leftJoinAndSelect("patient.documentRelation", "document")
         .leftJoinAndSelect("patient.convenioRelation", "convenio")
@@ -206,7 +213,12 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .andWhere('carta_recobro.idUserAudit IS NULL')
         .andWhere('cups_radicados.status = 1')
-        .getMany(); 
+
+        if (req.departmentUserId) {
+            query.andWhere('place.departamento = :department', { department: req.departmentUserId });
+        }
+
+        const responseLetter = await query.getMany();
 
         const responseLetterFormated = responseLetter.map(r => ({
             id: r.id,

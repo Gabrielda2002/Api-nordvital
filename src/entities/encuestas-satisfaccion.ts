@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm";
-
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+@Entity({ name: "encuestas_satisfaccion" })
 export class EncuestasSatisfaccion extends BaseEntity {
 
     @PrimaryGeneratedColumn({ name: "id" })

@@ -124,7 +124,7 @@ export async function deleteComment(req: Request, res: Response, next: NextFunct
 export async function createCommentAndChangeTicketStatus(req: Request, res: Response, next: NextFunction){
     try {
         
-        const { ticketId, usuarioId, coment } = req.body;
+        const { ticketId, usuarioId, coment, status } = req.body;
 
         const comment = new Comentarios();
         comment.ticketId = ticketId;
@@ -148,18 +148,17 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         if (!ticket) {
             return res.status(404).json({ message: "Ticket not found" });
         }
-
-        // guardar el estado anterior
-        const oldStatus = ticket.statusId;
         
-        ticket.statusId = 2;
+        const oldStatusId = ticket.statusId;
+
+        ticket.statusId = parseInt(status);
 
         await comment.save();
         await ticket.save();
 
         // si el estado es cerrado crear notificacion
-        if (oldStatus !== 2) {
-            await NotificationService.createTicketClosedNotification(ticket);
+        if (oldStatusId !== 2) {
+            await NotificationService.createTicketClosedNotification(ticket, "Ticket Actualizado");
         }
 
         return res.json(comment);

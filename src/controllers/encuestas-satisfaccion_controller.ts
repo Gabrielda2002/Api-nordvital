@@ -43,9 +43,9 @@ export async function createSurveySatisfaction(req: Request, res: Response, next
         encuestaSatisfaccion.tiempoRespuesta = parseInt(tiempoRespuesta);
         encuestaSatisfaccion.conocimientoTecnico = parseInt(conocimientoTecnico);
         encuestaSatisfaccion.amabilidadSoporte = parseInt(amabilidadSoporte);
-        encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "true" ? true : false;
+        encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "1" ? true : false;
         encuestaSatisfaccion.comentario = comentario;
-        encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "true" ? true : false;
+        encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "1" ? true : false;
 
         const errors = await validate(encuestaSatisfaccion);
 
@@ -123,4 +123,26 @@ export async function deleteSurveySatisfaction(req: Request, res: Response, next
     } catch (error) {
         next(error);
     }
+}
+
+export async function isTicketServey (req: Request, res: Response, next: NextFunction){
+
+try {
+    
+    const { ticketId } = req.body;
+
+    const encuestaSatisfaccion = await EncuestasSatisfaccion.createQueryBuilder("encuestaSatisfaccion")
+    .where("encuestaSatisfaccion.ticketId = :ticketId", { ticketId: ticketId })
+    .getOne();
+
+    if(encuestaSatisfaccion){
+        return res.json({message: "Ya se ha realizado una encuesta de satisfacción para este ticket", have: true});
+    }
+
+    return res.json({message: "No se ha realizado una encuesta de satisfacción para este ticket", have: false});
+
+} catch (error) {
+    next(error);
+}
+
 }

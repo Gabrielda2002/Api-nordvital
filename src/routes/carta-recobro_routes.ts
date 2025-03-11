@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { creatAuditRequestLetter, createRecoveryLetter, createRequestLetter, deleteRecoveryLetter, generatePdf, getAllRecoveryLetter, getRecoveryLetterById, getRequestLetter, getResponseLetter, saveDateImpress, updateRecoveryLetter } from "../controllers/carta-recobro_controller";
+import { getDepartmentUser } from "../middlewares/get-department-user_middleware";
 
 const router = Router();
 
@@ -287,9 +288,9 @@ router.put("/recover-letter/:id", authenticate, authorizeRoles(["1"]), updateRec
 
 router.delete("/recover-letter/:id", authenticate, authorizeRoles(["1"]), deleteRecoveryLetter)
 
-router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1"]), getRequestLetter)
+router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1"]), getDepartmentUser, getRequestLetter)
 
-router.get("/table-response-letter", authenticate, authorizeRoles(["1"]), getResponseLetter)
+router.get("/table-response-letter", authenticate, authorizeRoles(["1"]),getDepartmentUser , getResponseLetter)
 
 router.post("/create-request-letter", authenticate, authorizeRoles(["1"]), createRequestLetter)
 
