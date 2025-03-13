@@ -37,7 +37,8 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
             folderName,
             municipio,
             parentFolderId,
-            user_id
+            user_id,
+            section
         } = req.body;
 
         console.log(req.body);
@@ -76,6 +77,7 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
         folder.parentFolderId = parentFolderId;
         folder.path = folderPath;
         folder.userId = user_id;
+        folder.seccion = section;
 
         const errors = await validate(folder);
 
@@ -180,7 +182,6 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
 async function updateSubFiles(folderId: number, newPath: string) {
     const subFiles = await Archivos.find({ where: { folderId } });
 
-
     for (const subfile of subFiles) {
         const oldSubPathFile = subfile.path;
 
@@ -259,15 +260,17 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        const {Municipio} = req.query;
-
+        const {Municipio, section} = req.query;
 
         let folders: {} = {}, files: {} = {};
 
         if (id) {
 
             // * mostrar archivos y carpetas de la carpeta seleccionada
-            const folder = await Carpeta.findOneBy({ id: parseInt(id) });
+            const folder = await Carpeta.createQueryBuilder("carpeta")
+            .where("carpeta.id = :id", { id: parseInt(id) })
+            .andWhere('carpeta.seccion = :section', { section: section })
+            .getOne();
 
             if (!folder) {
                 return res.status(404).json({ message: "Folder not found" });
@@ -277,6 +280,7 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
             folders = await Carpeta.createQueryBuilder("carpeta")
             .where("carpeta.parentFolderId = :id", { id: folder.id })
             .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+            .andWhere('carpeta.seccion = :section', { section: section })
             .getMany();
             files = await Archivos.find({where: {folderId: folder.id}})
         }else{
@@ -284,6 +288,7 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
             folders = await Carpeta.createQueryBuilder("carpeta")
             .where("carpeta.parentFolderId IS NULL")
             .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+            .andWhere('carpeta.seccion = :section', { section: section })
             .getMany();
         }
 

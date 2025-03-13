@@ -36,6 +36,9 @@ export class Carpeta extends BaseEntity {
     @Column({name: "id_municipio", nullable: true})
     idMunicipio: number;
 
+    @Column({name: "seccion", default: "ssg"})
+    seccion: string;
+
     // * relacion con usuarios
     @ManyToOne(() => Usuarios, (usuario) => usuario.folderRelation )
     @JoinColumn({name:'user_id'})
