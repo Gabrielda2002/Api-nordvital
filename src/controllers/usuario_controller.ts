@@ -176,7 +176,8 @@ export async function updateUsuarioBasicData(
     const {
       name,
       lastName,
-      email
+      email,
+      phone
     } = req.body;
 
     const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
@@ -188,6 +189,7 @@ export async function updateUsuarioBasicData(
     usuario.name = name;
     usuario.lastName = lastName;
     usuario.email = email;
+  usuario.phoneNumber = parseInt(phone);
 
     const errors = await validate(usuario);
 
