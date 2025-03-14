@@ -42,7 +42,7 @@ export async function createComment(req: Request, res: Response, next: NextFunct
     const comment = new Comentarios();
     comment.ticketId = ticketId;
     comment.usuarioId = usuarioId;
-    comment.coment = coment;
+    comment.comment = coment;
 
     const errors =  await validate(comment);
 
@@ -78,7 +78,7 @@ export async function updateComment(req: Request, res: Response, next: NextFunct
 
         comment.ticketId = ticketId;
         comment.usuarioId = usuarioId;
-        comment.coment = coment;
+        comment.comment = coment;
 
         const erros = await validate(comment);
 
@@ -129,7 +129,7 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         const comment = new Comentarios();
         comment.ticketId = ticketId;
         comment.usuarioId = usuarioId;
-        comment.coment = coment;
+        comment.comment = coment;
 
         const errors =  await validate(comment);
 
@@ -163,6 +163,26 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
 
         return res.json(comment);
 
+    } catch (error) {
+        next(error);
+    }
+}
+
+// find comments by ticket
+export async function getCommentsByTicket(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+
+        const comments = await Comentarios.createQueryBuilder("comentarios")
+            .where("comentarios.ticketId = :ticketId", { ticketId: id })
+            .getMany();
+
+        if (comments.length === 0) {
+            return res.status(404).json({ message: "Comments not found" });
+        }
+
+        return res.json(comments);
     } catch (error) {
         next(error);
     }
