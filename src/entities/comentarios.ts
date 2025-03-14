@@ -18,10 +18,10 @@ export class Comentarios extends BaseEntity {
 
     @Column({ name: "comentario", type: "text" })
     @IsNotEmpty()
-    coment: string;
+    comment: string;
 
     @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })
-    fechaCreacion: Date;
+    createdAt: Date;
 
     @ManyToOne(() => Tickets, (ticket) => ticket.commentRelation)
     @JoinColumn({ name: "ticket_id" })
