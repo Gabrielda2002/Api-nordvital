@@ -5,6 +5,7 @@ import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, L
 import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "./usuarios";
+import { Soportes } from "./soportes";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -112,6 +113,11 @@ export class Equipos extends BaseEntity {
     @Max(9999, {message: "La clave del candado debe tenere 4 digitos."})
     lockKey: number | null
 
+    @Column({name: "acta_id", nullable: true})
+    @IsInt()
+    @IsOptional({message: "El acta es opcional"})
+    docId: number | null;
+
     @CreateDateColumn({name: "fecha_creacion"})
     createAt: Date
 
@@ -137,4 +143,9 @@ export class Equipos extends BaseEntity {
     @ManyToOne(() => Usuarios, usuarios => usuarios.equipmentRelation)
     @JoinColumn({ name: "id_usuario" })
     userRelation: Usuarios;
+
+    // relacion con soportes
+    @ManyToOne(() => Soportes, soportes => soportes.equiposRelation)
+    @JoinColumn({ name: "acta_id" })
+    soportRelacion: Soportes;
 }
