@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Equipos } from "../entities/equipos";
 import { validate } from "class-validator";
+import { Soportes } from "../entities/soportes";
+import path from "path";
 
 export async function getAllEquipments(
   req: Request,
@@ -41,6 +43,11 @@ export async function createEquipment(
   res: Response,
   next: NextFunction
 ) {
+  // Iniciar una transacción para asegurar la atomicidad
+  const queryRunner = Equipos.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
     const {
       sedeId,
@@ -63,12 +70,51 @@ export async function createEquipment(
       lock,
       codeLock
     } = req.body;
-    console.log(inventoryNumber)
 
+    const file = req.file;
+    console.log(req.file)
+    let documentId: number | null = null;
+
+    // Procesar el documento si existe
+    if (file) {
+      const docExist = await Soportes.findOneBy({ nameSaved: path.basename(file.filename) });
+
+      if (docExist) {
+        return res.status(409).json({
+          message: "El documento ya existe",
+        });
+      }
+
+      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+      const document = Soportes.create({
+        name: fileNameWithoutExt.normalize('NFC'),
+        url: file.path,
+        size: file.size,
+        type: file.mimetype,
+        nameSaved: path.basename(file.filename)
+      });
+
+      const errorsDoc = await validate(document);
+
+      if (errorsDoc.length > 0) {
+        const message = errorsDoc.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+        return res.status(400).json({ message });
+      }
+
+      // Guardar el documento dentro de la transacción
+      await queryRunner.manager.save(document);
+      documentId = document.id;
+    }
+
+    // Crear y configurar el equipo
     const equipment = new Equipos();
     equipment.sedeId = parseInt(sedeId);
     equipment.name = name;
-    equipment.ubicacion = "Sin ubicación" ;
+    equipment.ubicacion = "Sin ubicación";
     equipment.typeEquipment = typeEquipment;
     equipment.brand = brand;
     equipment.model = model;
@@ -78,13 +124,16 @@ export async function createEquipment(
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime || "Sin garantía";
-    equipment.warranty = warranty == "true";
+    equipment.warranty = warranty === "true";
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
-    equipment.dhcp = dhcp == "true";
+    equipment.dhcp = dhcp === "true";
     equipment.idUsuario = managerId || null;
-    equipment.lock = lock == "true";
-    equipment.lockKey = parseInt(codeLock) || null;
+    equipment.lock = lock === "true";
+    equipment.lockKey = codeLock ? parseInt(codeLock) : null;
+    
+    // Asignar el ID del documento guardado, no el filename
+    equipment.docId = documentId;
 
     const errors = await validate(equipment);
 
@@ -93,13 +142,25 @@ export async function createEquipment(
         property: err.property,
         constraints: err.constraints,
       }));
+      // Revertir la transacción si hay errores de validación
+      await queryRunner.rollbackTransaction();
       return res.status(400).json({ message });
     }
 
-    await equipment.save();
+    // Guardar el equipo dentro de la transacción
+    await queryRunner.manager.save(equipment);
+    
+    // Confirmar la transacción
+    await queryRunner.commitTransaction();
+    
     return res.json(equipment);
   } catch (error) {
+    // Revertir la transacción en caso de error
+    await queryRunner.rollbackTransaction();
     next(error);
+  } finally {
+    // Liberar el queryRunner
+    await queryRunner.release();
   }
 }
 
