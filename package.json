@@ -46,7 +46,8 @@
     "typeorm": "^0.3.20",
     "web-push": "^3.6.7",
     "winston": "^3.13.1",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
