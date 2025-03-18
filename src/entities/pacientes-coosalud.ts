@@ -103,4 +103,7 @@ export class PacientesCoosalud extends BaseEntity {
 
     @Column({ name: "MUNICIPIO", length: 100 })
     municipio: string;
+
+    @Column({ name: "Estado", length: 50, default: "Activo" })
+    estado: string;
 }
