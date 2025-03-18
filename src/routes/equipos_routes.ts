@@ -157,7 +157,7 @@ router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery.s
  *       404:
  *         description: Equipo no encontrado
  */
-router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, updateEquipment);
+router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery.single('file'), updateEquipment);
 
 /**
  * @swagger

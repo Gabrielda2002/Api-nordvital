@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, query, Request, Response } from "express";
 import { Equipos } from "../entities/equipos";
 import { validate } from "class-validator";
 import { Soportes } from "../entities/soportes";
 import path from "path";
+import fs from "fs";
 
 export async function getAllEquipments(
   req: Request,
@@ -169,6 +170,11 @@ export async function updateEquipment(
   res: Response,
   next: NextFunction
 ) {
+
+  const queryRunner= Equipos.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
     const { id } = req.params;
 
@@ -200,7 +206,49 @@ export async function updateEquipment(
       });
     }
 
-    console.log(equipment)
+    // procesar el archivo si existe
+    if (req.file) {
+      if (equipment.docId) {
+        const oldDocument = await Soportes.findOneBy({ id: equipment.docId });
+        if (oldDocument) {
+          // Eliminar el archivo antiguo
+          console.log("id doc antiguo" + oldDocument.id)
+          if (fs.existsSync(oldDocument.url)) {
+            fs.unlinkSync(oldDocument.url);
+          }
+          
+          await queryRunner.manager.remove(oldDocument);
+          console.log("se elimina el archivo viejo")
+        }
+      }
+      const file = req.file;
+      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+      const document = Soportes.create({
+        name: fileNameWithoutExt.normalize('NFC'),
+        url: file.path,
+        size: file.size,
+        type: file.mimetype,
+        nameSaved: path.basename(file.filename)
+      });
+
+      const errorsDoc = await validate(document);
+
+      if (errorsDoc.length > 0) {
+        const message = errorsDoc.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+        return res.status(400).json({ message });
+      }
+
+      await queryRunner.manager.save(document);
+
+      equipment.docId = document.id
+
+      console.log("se asigna un nuevo id" + document.id)
+
+    }
 
     equipment.name = name;
     equipment.ubicacion = "Sin ubicación" ;
@@ -228,13 +276,20 @@ export async function updateEquipment(
         property: err.property,
         constraints: err.constraints,
       }));
+      // Revertir la transacción si hay errores de validación
+      await queryRunner.rollbackTransaction();
       return res.status(400).json({ message });
     }
 
-    await equipment.save();
+    await queryRunner.manager.save(equipment);
+    await queryRunner.commitTransaction();
+
     return res.json(equipment);
   } catch (error) {
+    await queryRunner.rollbackTransaction();
     next(error);
+  }finally{
+    await queryRunner.release();
   }
 }
 
@@ -276,6 +331,7 @@ export async function getEquipmentBySede(
     .leftJoinAndSelect("equipos.componentRelation", "componentRelation")
     .leftJoinAndSelect("equipos.softwareRelation", "softwareRelation")
     .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
+    .leftJoinAndSelect('equipos.soportRelacion', 'document')
     .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
     .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
     .getMany();
@@ -286,7 +342,72 @@ export async function getEquipmentBySede(
       });
     }
 
-    return res.json(equipment);
+    const equipmentFormatted = equipment.map(e => ({
+      id: e.id || 'N/A',
+      sedeId: e.sedeId || 'N/A',
+      nameEquipment: e.name || 'N/A',
+      area: e.ubicacion || 'N/A',
+      typeEquipment: e.typeEquipment || 'N/A',
+      brandEquipment: e.brand || 'N/A',
+      modelEquipment: e.model || 'N/A',
+      serialEquipment: e.serial || 'N/A',
+      operationalSystem: e.operationalSystem || 'N/A',
+      addressIp: e.addressIp || 'N/A',
+      mac: e.mac || 'N/A',
+      purchaseDate: e.purchaseDate || 'N/A',
+      warrantyTime: e.warrantyTime || 'N/A',
+      warranty: e.warranty || 'N/A',
+      deliveryDate: e.deliveryDate || 'N/A',
+      inventoryNumberEquipment: e.inventoryNumber || 'N/A',
+      dhcp: e.dhcp || 'N/A',
+      lock: e.lock === false ? false : true,
+      lockKey: e.lockKey || 'N/A',
+      createAt: e.createAt || 'N/A',
+      updateAt: e.updateAt || 'N/A',
+      idUser: e.userRelation?.id || 'N/A',
+      nameUser: e.userRelation?.name || 'N/A',
+      lastNameUser: e.userRelation?.lastName || 'N/A',
+      processEquipment: e.seguimientoEquipos?.map(s => ({
+        id: s.id || 'N/A',
+        dateEvent: s.eventDate || 'N/A',
+        eventType: s.eventType || 'N/A',
+        description: s.description || 'N/A',
+        responsibleName: s.userRelation?.name || 'N/A',
+        responsibleLastName: s.userRelation?.lastName || 'N/A',
+      })),
+      accessories: e.accessoriesRelation?.map(a => ({
+        id: a.id || 'N/A',
+        name: a.name || 'N/A',
+        brand: a.brand || 'N/A',
+        model: a.model || 'N/A',
+        serial: a.serial || 'N/A',
+        description: a.otherData || 'N/A',
+        status: a.status || 'N/A',
+        inventoryNumber: a.inventoryNumber || 'N/A',
+      })),
+      components: e.componentRelation?.map(c => ({
+        id: c.id || 'N/A',
+        name: c.name || 'N/A',
+        brand: c.brand || 'N/A',
+        capacity: c.capacity || 'N/A',
+        speed: c.speed || 'N/A',
+        otherData: c.otherData || 'N/A',
+        model: c.model || 'N/A',
+        serial: c.serial || 'N/A',
+      })),
+      software: e.softwareRelation?.map(s => ({
+        id: s.id || 'N/A',
+        name: s.name || 'N/A',
+        versions: s.versions || 'N/A',
+        license: s.license || 'N/A',
+        otherData: s.otherData || 'N/A',
+        installDate: s.installDate || 'N/A',
+        status: s.status || 'N/A',
+      })),
+      nameDocument: e.soportRelacion?.nameSaved || 'N/A',
+    }))
+
+    return res.json(equipmentFormatted);
   } catch (error) {
     next(error);
   }
