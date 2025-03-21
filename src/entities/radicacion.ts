@@ -9,17 +9,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { TipoDocumento } from "./tipo-documento";
-import { Convenio } from "./convenio";
-import { IpsPrimaria } from "./ips-primaria";
 import { Especialidad } from "./especialidad";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
-import { Radicador } from "./radicador";
 import { CupsRadicados } from "./cups-radicados";
-import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
-import { IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
