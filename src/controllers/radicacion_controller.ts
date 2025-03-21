@@ -492,8 +492,8 @@ export async function cirugiasTable(
         "gestionAuxiliarCirugia.estadoSeguimientoRelation",
         "statusGestionAuxiliarCirugia"
       )
-      .where("servicesGroup.id = 6 || servicesGroup.id = 9")
-      .andWhere("patient.convenio <> 1 ")
+      .where("convenio.id <> 1")
+      .andWhere('(servicesGroup.id = 6 OR servicesGroup.id = 9)')
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
