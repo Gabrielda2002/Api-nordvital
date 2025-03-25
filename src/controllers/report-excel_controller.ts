@@ -5,6 +5,7 @@ import { randomBytes } from "crypto";
 import { Cirugias } from "../entities/cirugias";
 import { PausasActivas } from "../entities/pausas-activas";
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 export async function downloadReportExcel(
   req: Request,
@@ -858,7 +859,7 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     // Definir columnas
     worksheet.columns = [
-      { header: "Fecha Registro", key: "fecha_creacion", width: 20, style: { numFmt: "dd/mm/yyyy hh:mm:ss" } },
+      { header: "Fecha Registro", key: "fecha_creacion", width: 20 },
       { header: "Observación", key: "observacion", width: 30 },
       { header: "Nombre del Usuario", key: "nombre_usuario", width: 30 },
       { header: "Apellidos", key: "apellidos_usuario", width: 30 },
@@ -868,8 +869,11 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     // Agregar datos
     data.forEach((pausa) => {
+
+      const fechaCreacion = pausa.createdAt ? formatInTimeZone(new Date(pausa.createdAt), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+
       worksheet.addRow({
-        fecha_creacion: pausa.createdAt || "N/A",
+        fecha_creacion: fechaCreacion,
         observacion: pausa.observation || "N/A",
         nombre_usuario: pausa.userRelation?.name || "N/A",
         apellidos_usuario: pausa.userRelation?.lastName || "N/A",

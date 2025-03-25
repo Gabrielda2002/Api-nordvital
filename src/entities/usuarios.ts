@@ -38,6 +38,7 @@ import { Tickets } from "./tickets";
 import { Notification } from "./notificaciones";
 import { PushSubscription } from "./push-subscription";
 import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
+import { RegistroEntrada } from "./registro-entrada";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -213,4 +214,7 @@ export class Usuarios extends BaseEntity {
   @OneToMany(() => EncuestasSatisfaccion, (encuestas) => encuestas.userRelation)
   surveyRelation: EncuestasSatisfaccion[];
 
+  // * relacion con registros de entrada
+  @OneToMany(() => RegistroEntrada, (registroEntrada) => registroEntrada.userRelation)
+  registerEntriesRelation: RegistroEntrada[];
 }
