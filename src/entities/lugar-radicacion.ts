@@ -7,6 +7,7 @@ import { Usuarios } from "./usuarios";
 import { departamentos } from "./departamentos";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
+import { RegistroEntrada } from "./registro-entrada";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -74,4 +75,8 @@ export class LugarRadicacion extends BaseEntity{
     @OneToMany(() => ServiciosEjecutados, servicio => servicio.placeRelation)
     serviciosEjecutadosRelation: ServiciosEjecutados[]
 
+    // * relacion registro entrada
+    @OneToMany(() => RegistroEntrada, registro => registro.sedeRelation)
+    registerEntriesRelation: RegistroEntrada[]
+    
 }
