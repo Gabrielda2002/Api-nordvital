@@ -1,5 +1,6 @@
 // src/services/notification-service.ts
 import { io } from "../app";
+import { EncuestasSatisfaccion } from "../entities/encuestas-satisfaccion";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../entities/tickets";
 import { Usuarios } from "../entities/usuarios";
@@ -54,10 +55,27 @@ export class NotificationService {
    * Obtiene todas las notificaciones de un usuario
    */
   static async getUserNotifications(userId: number): Promise<Notification[]> {
-    return Notification.createQueryBuilder("notification")
+    const notifications =  await Notification.createQueryBuilder("notification")
       .where("notification.user_id = :userId", { userId })
+      .andWhere("notification.is_read = :isRead", { isRead: false })
       .orderBy("notification.created_at", "DESC")
       .getMany();
+
+    // validar si ticket tiene encuestra registrada y si la tiene no mostrar notificacion
+    for(const notification of notifications){
+      const encuestas = await EncuestasSatisfaccion.createQueryBuilder("encuestaSatisfaccion")
+        .where("encuestaSatisfaccion.ticketId = :referenceId", { referenceId: notification.referenceId })
+        .getOne();
+      // si hay una encuesta para el ticket no returnar la notificacion
+      if(encuestas){
+        notification.isRead = true;
+        await notification.save();
+      }
+
+    }
+
+    return notifications;
+    
   }
 
   /**

@@ -1,5 +1,7 @@
 import { IsInt, IsNotEmpty } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Usuarios } from "./usuarios";
+import { Tickets } from "./tickets";
 @Entity({ name: "encuestas_satisfaccion" })
 export class EncuestasSatisfaccion extends BaseEntity {
 
@@ -47,4 +49,13 @@ export class EncuestasSatisfaccion extends BaseEntity {
 
     @CreateDateColumn({ name: "fecha_creacion", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
+
+    @ManyToOne(() => Usuarios, usuario => usuario.surveyRelation)
+    @JoinColumn({ name: "usuario_id" })
+    userRelation: Usuarios;
+
+    @ManyToOne(() => Tickets, ticket => ticket.surveyRelation)
+    @JoinColumn({ name: "ticket_id" })
+    ticketRelation: Tickets;
+
 }
