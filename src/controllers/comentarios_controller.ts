@@ -176,6 +176,7 @@ export async function getCommentsByTicket(req: Request, res: Response, next: Nex
 
         const comments = await Comentarios.createQueryBuilder("comentarios")
             .where("comentarios.ticketId = :ticketId", { ticketId: id })
+            .orderBy("comentarios.createdAt", "DESC")
             .getMany();
 
         if (comments.length === 0) {
