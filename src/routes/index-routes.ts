@@ -53,6 +53,7 @@ import comentariosRoutes from './comentarios_routes';
 import encuestasSatisfaccionRoutes from './encuestas-satisfaccion_routes';
 import notificacionesRoutes from './notificaciones_routes';
 import pushSubscription from './push-subscription_routes';
+import registerEntries from './registro-entrada_routes';
 
 const router = Router();
 
@@ -110,5 +111,6 @@ router.use(comentariosRoutes);
 router.use(encuestasSatisfaccionRoutes);
 router.use(notificacionesRoutes);
 router.use(pushSubscription);
+router.use(registerEntries);
 
 export default router;
