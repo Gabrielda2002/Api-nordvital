@@ -77,7 +77,7 @@ router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTi
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/tickets', authenticate, authorizeRoles(['1', '10']), createTicket)
+router.post('/tickets', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '18']), createTicket)
 
 /**
  * @swagger
@@ -137,6 +137,6 @@ router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, de
 
 router.get('/tickets-table', authenticate, authorizeRoles(['1', '10']), getTicketsTable)
 
-router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1', '10']), validateUserTickets)
+router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '18']), validateUserTickets)
 
 export default router;

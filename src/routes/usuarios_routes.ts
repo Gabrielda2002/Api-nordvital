@@ -142,7 +142,7 @@ router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, d
  *       200:
  *         description: Foto actualizada exitosamente
  */
-router.put('/upload-photo/:id', authenticate, authorizeRoles(['1', '10', '15']), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
+router.put('/upload-photo/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '18']), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
 
 /**
  * @swagger
@@ -162,7 +162,7 @@ router.put('/upload-photo/:id', authenticate, authorizeRoles(['1', '10', '15']),
  *       200:
  *         description: Foto eliminada exitosamente
  */
-router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1', '3', '4', '10', '15']), validarId, deletePhoto);
+router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18']), validarId, deletePhoto);
 
 /**
  * @swagger
@@ -210,7 +210,7 @@ router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuar
  *       200:
  *         description: Datos actualizados exitosamente
  */
-router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '3', '4', '15', '10']), validarId, updateUsuarioBasicData);
+router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','18']), validarId, updateUsuarioBasicData);
 
 /**
  * @swagger
@@ -240,7 +240,7 @@ router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1', '3',
  *       200:
  *         description: Contraseña actualizada exitosamente
  */
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16']), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18']), validarId, updatePassword);
 
 /**
  * @swagger
