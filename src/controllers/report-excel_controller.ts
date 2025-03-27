@@ -481,12 +481,12 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
     
     if (dateStart && dateEnd) {
-      query.andWhere("cirugias.orderingDate BETWEEN :dateStart AND :dateEnd", {      dateStart: dateStart, dateEnd: dateEnd });
+      query.andWhere("cirugias.createdAt BETWEEN :dateStart AND :dateEnd", { dateStart: dateStart, dateEnd: dateEnd });
     }else{
       return res.status(400).json({ message: "Debe enviar la fecha de ordenamiento" });
     }
 
-    query.orderBy("cirugias.orderingDate", "DESC");
+    query.orderBy("cirugias.createdAt", "DESC");
 
     const dataCirugias = await query.getMany();
     
@@ -512,17 +512,26 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     ];
 
     dataCirugias.forEach((data) => {
+
+      const fechaCirugia = data.surgeryDate ? formatInTimeZone(new Date(data.surgeryDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+      const fechaOrdenamiento = data.radicacionRelation.orderDate ? formatInTimeZone(new Date(data.radicacionRelation.orderDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+      const fechaParaclinico = data.paraclinicalDate ? formatInTimeZone(new Date(data.paraclinicalDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+      const fechaAnesteciologia = data.anesthesiologyDate ? formatInTimeZone(new Date(data.anesthesiologyDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+      const fechaRegistro = data.createdAt ? formatInTimeZone(new Date(data.createdAt), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+
+
       const row = {
-        Fecha_ordenamiento: data.radicacionRelation.orderDate || "N/A",
-        Fecha_cirugia: data.surgeryDate || "N/A",
+        Fecha_ordenamiento: fechaOrdenamiento,
+        Fecha_cirugia: fechaCirugia,
         Hora_programada: data.scheduledTime || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
         Observaciones: data.observation || "N/A",
         diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
         diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
         especialista: data.specialist || "N/A",
-        fecha_paraclinico: data.paraclinicalDate || "N/A",
-        fecha_anesteciologia: data.anesthesiologyDate || "N/A",
+        fecha_paraclinico: fechaParaclinico,
+        fecha_anesteciologia: fechaAnesteciologia,
+        Fecha_registro: fechaRegistro,
       }
       
       // agregar gilas por cada cups
@@ -532,6 +541,8 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
             ...row,
             Codigo_cups: cups.code || "N/A",
             Descripcion_cups: cups.DescriptionCode || "N/A",
+            Observacionesgestion: cups.observation || "N/A",
+            Estado: cups.statusRelation?.name || "N/A",
           });
         });
       }else {
