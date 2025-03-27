@@ -6,6 +6,7 @@ import { Cirugias } from "../entities/cirugias";
 import { PausasActivas } from "../entities/pausas-activas";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { RegistroEntrada } from "../entities/registro-entrada";
 
 export async function downloadReportExcel(
   req: Request,
@@ -907,4 +908,65 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
   } catch (error) {
     next(error);
   }
+}
+
+// controlador reporte registios biometricos
+export async function getReportBiometric(req: Request, res: Response, next: NextFunction) {
+
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await RegistroEntrada.createQueryBuilder('registro_entrada')
+    .leftJoinAndSelect('registro_entrada.userRelation', 'usuario')
+    .leftJoinAndSelect('registro_entrada.sedeRelation', 'sede')
+    .orderBy('registro_entrada.createdAt', 'DESC');
+
+    if (dateStart && dateEnd) {
+      query.andWhere('registro_entrada.registerDate BETWEEN :dateStart AND :dateEnd', { dateStart, dateEnd });
+    }
+
+    query.orderBy('registro_entrada.registerDate', 'DESC');
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Repore Registros Biometricos');
+
+    worksheet.columns = [
+      {header: "Numero Documento", key: "numero_documento", width: 20},
+      {header: "Nombre Usuario", key: "nombre_usuario", width: 30},
+      {header: "Apellidos", key: "apellidos", width: 30},
+      {header: "Fecha Registro", key: "fecha_registro", width: 20},
+      {header: "Hora Registro", key: "hora_registro", width: 20},
+      {header: "Sede", key: "sede", width: 20},
+    ];
+
+    data.forEach(r => {
+      const fechaRegistro = r.registerDate ? formatInTimeZone(new Date(r.registerDate), "America/Bogota", "yyyy-MM-dd") : "N/A";
+
+      worksheet.addRow({
+        numero_documento: r.userRelation?.dniNumber || "N/A",
+        nombre_usuario: r.userRelation?.name || "N/A",
+        apellidos: r.userRelation?.lastName || "N/A",
+        fecha_registro: fechaRegistro,
+        hora_registro: r.hourRegister || "N/A", 
+        sede: r.sedeRelation?.name || "N/A",
+      });
+    })
+
+    const fileName = `Reporte_Registros_Biometricos_${randomBytes(4).toString("hex")}.xlsx`;
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+
+  } catch (error) {
+    next(error);
+  }
+
 }

@@ -1,7 +1,16 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { downloadReportExcel, downloadReportExcelFilter, getReportBreakesActive, reporteGestionAuxiliar, reportExcelCirugias, reportExcelCirugiasFiltros, reportExcelRadicacion } from "../controllers/report-excel_controller";
+import {
+  downloadReportExcel,
+  downloadReportExcelFilter,
+  getReportBiometric,
+  getReportBreakesActive,
+  reporteGestionAuxiliar,
+  reportExcelCirugias,
+  reportExcelCirugiasFiltros,
+  reportExcelRadicacion,
+} from "../controllers/report-excel_controller";
 
 const router = Router();
 
@@ -26,7 +35,12 @@ const router = Router();
  *       500:
  *         description: Error del servidor
  */
-router.get('/report-excel', authenticate, authorizeRoles(['1', '3', '6', '2', '14', '3', '15']), downloadReportExcel)
+router.get(
+  "/report-excel",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "2", "14", "3", "15"]),
+  downloadReportExcel
+);
 
 /**
  * @swagger
@@ -57,7 +71,12 @@ router.get('/report-excel', authenticate, authorizeRoles(['1', '3', '6', '2', '1
  *       500:
  *         description: Error del servidor
  */
-router.post('/report-excel-filtro', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reportExcelRadicacion)
+router.post(
+  "/report-excel-filtro",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
+  reportExcelRadicacion
+);
 
 /**
  * @swagger
@@ -80,7 +99,12 @@ router.post('/report-excel-filtro', authenticate, authorizeRoles(['1', '3', '6',
  *       500:
  *         description: Error del servidor
  */
-router.get('/report-excel-cirugias', authenticate, authorizeRoles(['1', '3', '6', '2', '14', '3', '15']), reportExcelCirugias)
+router.get(
+  "/report-excel-cirugias",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "2", "14", "3", "15"]),
+  reportExcelCirugias
+);
 
 /**
  * @swagger
@@ -111,7 +135,12 @@ router.get('/report-excel-cirugias', authenticate, authorizeRoles(['1', '3', '6'
  *       500:
  *         description: Error del servidor
  */
-router.post('/report-excel-cirugias-filtro', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reportExcelCirugiasFiltros)
+router.post(
+  "/report-excel-cirugias-filtro",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
+  reportExcelCirugiasFiltros
+);
 
 /**
  * @swagger
@@ -151,7 +180,12 @@ router.post('/report-excel-cirugias-filtro', authenticate, authorizeRoles(['1', 
  *       500:
  *         description: Error del servidor
  */
-router.post('/report-excel-gestion-auxiliar', authenticate, authorizeRoles(['1', '3', '6', '14', '3', '15']), reporteGestionAuxiliar)
+router.post(
+  "/report-excel-gestion-auxiliar",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
+  reporteGestionAuxiliar
+);
 
 /**
  * @swagger
@@ -191,6 +225,18 @@ router.post('/report-excel-gestion-auxiliar', authenticate, authorizeRoles(['1',
  *       500:
  *         description: Error del servidor
  */
-router.post('/report-breakes-active', authenticate, authorizeRoles(['1', '2', '6']), getReportBreakesActive)
+router.post(
+  "/report-breakes-active",
+  authenticate,
+  authorizeRoles(["1", "2", "6"]),
+  getReportBreakesActive
+);
+
+router.post(
+  "/report/excel/biometric",
+  authenticate,
+  authorizeRoles(["1", "2", "6", "18"]),
+  getReportBiometric
+);
 
 export default router;
