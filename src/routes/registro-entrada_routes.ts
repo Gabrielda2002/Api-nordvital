@@ -5,6 +5,6 @@ import { getRegisterEntriesByDocument } from "../controllers/registro-entrada_co
 
 const router = Router();
 
-router.post('/registro-entrada', authenticate, authorizeRoles(['1']), getRegisterEntriesByDocument);
+router.post('/registro-entrada', authenticate, authorizeRoles(['1', '18']), getRegisterEntriesByDocument);
 
 export default router;

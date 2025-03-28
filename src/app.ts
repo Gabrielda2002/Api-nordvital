@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
 
 app.use(
   cors({
-    exposedHeaders: ["token-status"],
+    exposedHeaders: ["token-status", "Content-Disposition"],
     origin: function (origin, callback) {
       // * permitir la solicitud si esta ene el array
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -92,7 +92,7 @@ app.use(
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
     credentials: true,
   })
 );

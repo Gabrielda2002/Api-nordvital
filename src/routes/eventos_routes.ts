@@ -28,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos
  */
-router.get("/eventos", authenticate, authorizeRoles(['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']), getAllEvents)
+router.get("/eventos", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '18']), getAllEvents)
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ router.get("/evento/:id", authenticate, authorizeRoles(['1']),validarId, getEven
  *       400:
  *         description: Datos inválidos
  */
-router.post("/eventos", authenticate, authorizeRoles(['1']), createEvent )
+router.post("/eventos", authenticate, authorizeRoles(['1', '18']), createEvent )
 
 /**
  * @swagger
@@ -110,7 +110,7 @@ router.post("/eventos", authenticate, authorizeRoles(['1']), createEvent )
  *       404:
  *         description: Evento no encontrado
  */
-router.put("/eventos/:id", authenticate, authorizeRoles(['1']),validarId, updateEvent )
+router.put("/eventos/:id", authenticate, authorizeRoles(['1', '18']),validarId, updateEvent )
 
 /**
  * @swagger

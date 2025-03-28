@@ -87,7 +87,7 @@ router.get("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4
  *       400:
  *         description: Error en la validación
  */
-router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), createActiveBrake)
+router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), createActiveBrake)
 
 /**
  * @swagger

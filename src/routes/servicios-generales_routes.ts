@@ -212,6 +212,6 @@ router.delete('/servicios-generales/:id', authenticate, authorizeRoles(['1']), v
  *       500:
  *         description: Error del servidor
  */
-router.post("/servicio-contratado", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16']), getServicioContratado);
+router.post("/servicio-contratado", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18']), getServicioContratado);
 
 export default router;
