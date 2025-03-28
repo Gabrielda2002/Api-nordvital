@@ -853,6 +853,7 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     const query = await PausasActivas.createQueryBuilder("pausas_activas")
       .leftJoinAndSelect("pausas_activas.userRelation", "usuario")
+      .leftJoinAndSelect("usuario.sedeRelation", "sede")
       .orderBy("pausas_activas.createdAt", "DESC");
 
     // Aplicar filtro de fechas si se proporcionan
@@ -872,11 +873,13 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
     // Definir columnas
     worksheet.columns = [
       { header: "Fecha Registro", key: "fecha_creacion", width: 20 },
-      { header: "Observación", key: "observacion", width: 30 },
+      { header: "Número Documento", key: "numero_documento", width: 20 },
       { header: "Nombre del Usuario", key: "nombre_usuario", width: 30 },
       { header: "Apellidos", key: "apellidos_usuario", width: 30 },
       { header: "Área", key: "area", width: 20 },
-      { header: "Cargo", key: "cargo", width: 20 }
+      { header: "Cargo", key: "cargo", width: 20 },
+      { header: "Sede", key: "sede", width: 20 },
+      { header: "Observación", key: "observacion", width: 30 },
     ];
 
     // Agregar datos
@@ -890,7 +893,9 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
         nombre_usuario: pausa.userRelation?.name || "N/A",
         apellidos_usuario: pausa.userRelation?.lastName || "N/A",
         area: pausa.userRelation?.area || "N/A",
-        cargo: pausa.userRelation?.position || "N/A"
+        cargo: pausa.userRelation?.position || "N/A",
+        sede: pausa.userRelation?.sedeRelation?.name || "N/A",
+        numero_documento: pausa.userRelation?.dniNumber || "N/A",
       });
     });
 
