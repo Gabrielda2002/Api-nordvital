@@ -58,6 +58,6 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity{
     // * relacion con usuario
     @ManyToOne(() => Usuarios, (usuario) => usuario.gestionCirugiasRelation)
     @JoinColumn({name: 'usuario_id'})
-    usuarioRelation: Usuarios;
+    userRelation: Usuarios;
 
 }

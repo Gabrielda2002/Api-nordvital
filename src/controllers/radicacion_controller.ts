@@ -488,6 +488,7 @@ export async function cirugiasTable(
         "cirugias.gestionCirugiasRelation",
         "gestionAuxiliarCirugia"
       )
+      .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento')
       .leftJoinAndSelect(
         "gestionAuxiliarCirugia.estadoSeguimientoRelation",
         "statusGestionAuxiliarCirugia"
@@ -532,6 +533,8 @@ export async function cirugiasTable(
           estado: g.estadoSeguimientoRelation?.name,
           observacion: g.observation,
           fechaCreacion: g.createdAt,
+          Nombre: g.userRelation.name || "N/A",
+          Apellido: g.userRelation.lastName || "N/A",
         })),
       })),
     }));

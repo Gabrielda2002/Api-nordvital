@@ -220,6 +220,6 @@ export class Usuarios extends BaseEntity {
   registerEntriesRelation: RegistroEntrada[];
 
   // * relacion con seguimiento cirugias
-  @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoCirugias) => seguimientoCirugias.usuarioRelation)
+  @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoCirugias) => seguimientoCirugias.userRelation)
   gestionCirugiasRelation: SeguimientoAuxiliarCirugias[];
 }
