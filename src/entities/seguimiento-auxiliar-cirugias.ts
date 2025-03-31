@@ -1,8 +1,9 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { EstadosSeguimiento } from "./estados-seguimiento";
 import { Cirugias } from "./cirugias";
 import { ServiciosSolicitados } from "./servicios-solicitados";
+import { Usuarios } from "./usuarios";
 
 @Entity('gestion_auxiliar_cirugias')
 export class SeguimientoAuxiliarCirugias extends BaseEntity{
@@ -26,6 +27,11 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity{
     @IsNotEmpty({message: 'La cirugia es requerida'})
     surgeryId: number;
 
+    @Column({name: 'usuario_id'})
+    @IsInt()
+    @IsOptional()
+    userId?: number | null;
+
     @CreateDateColumn({name: 'createdAt'})
     createdAt: Date;
 
@@ -48,5 +54,10 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity{
     @ManyToOne(() => ServiciosSolicitados, (cirugias) => cirugias.statusRelation)
     @JoinColumn({name: 'cup_id'})
     cupsRelation: Cirugias;
+
+    // * relacion con usuario
+    @ManyToOne(() => Usuarios, (usuario) => usuario.gestionCirugiasRelation)
+    @JoinColumn({name: 'usuario_id'})
+    usuarioRelation: Usuarios;
 
 }
