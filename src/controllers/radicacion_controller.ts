@@ -488,6 +488,7 @@ export async function cirugiasTable(
         "cirugias.gestionCirugiasRelation",
         "gestionAuxiliarCirugia"
       )
+      .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento')
       .leftJoinAndSelect(
         "gestionAuxiliarCirugia.estadoSeguimientoRelation",
         "statusGestionAuxiliarCirugia"
@@ -532,6 +533,8 @@ export async function cirugiasTable(
           estado: g.estadoSeguimientoRelation?.name,
           observacion: g.observation,
           fechaCreacion: g.createdAt,
+          Nombre: g.userRelation.name || "N/A",
+          Apellido: g.userRelation.lastName || "N/A",
         })),
       })),
     }));
@@ -631,6 +634,13 @@ export async function buscarRadicadoPorDocumento(
       )
       .leftJoinAndSelect("seguimientoAuxiliar.usuarioRelation", "usuario-seguimiento")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
+      .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionAuxiliarCirugia")
+      .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
+      .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento-cirugia')
+      .leftJoinAndSelect(
+        "gestionAuxiliarCirugia.estadoSeguimientoRelation",
+        "estadoSeguimientoCirugia"
+      )
       .where("patient.documentNumber = :documento", { documento })
 
       if (req.departmentUserId) {
@@ -642,8 +652,68 @@ export async function buscarRadicadoPorDocumento(
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });
     }
+    console.log(radicacion);
 
-    return res.json(radicacion);
+    const radicacionFormated = radicacion.map((r) => ({
+      id: r.id || "N/A",
+      createdAt: r.createdAt || "N/A",
+      auditora: r.auditora || "N/A",
+      documentNumber: r.patientRelation?.documentNumber || "N/A",
+      convenioName: r.patientRelation?.convenioRelation?.name || "N/A",
+      documentType: r.patientRelation?.documentRelation?.name || "N/A",
+      namePatient: r.patientRelation?.name || "N/A",
+      phoneNumber: r.patientRelation?.phoneNumber || "N/A",
+      landline: r.patientRelation?.landline || "N/A",
+      email: r.patientRelation?.email || "N/A",
+      address: r.patientRelation?.address || "N/A",
+      ipsPrimaria: r.patientRelation?.ipsPrimariaRelation?.name || "N/A",
+      auditDate: r.auditDate || "N/A",
+      suportName: r.soportesRelation?.nameSaved || "N/A",
+      radicacionPlace: r.placeRelation?.name || "N/A",
+      profetional: r.profetional || "N/A",
+      specialty: r.specialtyRelation?.name || "N/A",
+      orderDate: r.orderDate || "N/A",
+      typeServices: r.servicesRelation?.name || "N/A",
+      groupServices: r.servicesGroupRelation?.name || "N/A",
+      radicador: r.usuarioRelation?.name || "N/A",
+      justify: r.justify || "N/A",
+      surgery: r.cirugiasRelation?.map((c) => ({
+        id: c.id || "N/A",
+        surgeryDate: c.surgeryDate || "N/A",
+        surgeryTime: c.scheduledTime || "N/A",
+        ipsSurgery: c.ipsRemiteRelation?.name || "N/A",
+        dateParaclinico: c.paraclinicalDate || "N/A",
+        dateAnestesiology: c.anesthesiologyDate || "N/A",
+        specialist: c.specialist || "N/A",
+        observation: c.observation || "N/A",
+        seguimiento: c.gestionCirugiasRelation?.map((s) => ({
+          id: s.id || "N/A",
+          estado: s.estadoSeguimientoRelation?.name || "N/A",
+          observation: s.observation || "N/A",
+          fechaCreacion: s.createdAt || "N/A",
+          Nombre: s.userRelation?.name || "N/A",
+          Apellido: s.userRelation?.lastName || "N/A",
+        }))
+      })),
+      cups: r.cupsRadicadosRelation?.map((c) => ({
+        id: c.id || "N/A",
+        code: c.code || "N/A",
+        description: c.DescriptionCode || "N/A",
+        status: c.statusRelation?.name || "N/A",
+        observation: c.observation || "N/A",
+        functionalUnit: c.functionalUnitRelation?.name || "N/A",
+        seguimiento: c.seguimientoAuxiliarRelation.map((s) => ({
+          id: s.id || "N/A",
+          estado: s.estadoSeguimientoRelation?.name || "N/A",
+          observation: s.observation || "N/A",
+          fechaCreacion: s.createdAt || "N/A",
+          Nombre: s.usuarioRelation?.name || "N/A",
+          Apellido: s.usuarioRelation?.lastName || "N/A",
+        }))
+      }))
+    }))
+
+    return res.json(radicacionFormated);
   } catch (error) {
     next(error);
   }

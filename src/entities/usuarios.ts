@@ -39,6 +39,7 @@ import { Notification } from "./notificaciones";
 import { PushSubscription } from "./push-subscription";
 import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
 import { RegistroEntrada } from "./registro-entrada";
+import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -217,4 +218,8 @@ export class Usuarios extends BaseEntity {
   // * relacion con registros de entrada
   @OneToMany(() => RegistroEntrada, (registroEntrada) => registroEntrada.userRelation)
   registerEntriesRelation: RegistroEntrada[];
+
+  // * relacion con seguimiento cirugias
+  @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoCirugias) => seguimientoCirugias.userRelation)
+  gestionCirugiasRelation: SeguimientoAuxiliarCirugias[];
 }

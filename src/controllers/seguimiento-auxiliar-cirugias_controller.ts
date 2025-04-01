@@ -37,7 +37,8 @@ export async function createAuxiliarySurgery(req:Request, res: Response, next: N
         const {
             observation,
             status,
-            surgeryId
+            surgeryId,
+            userId
         } = req.body;
 
         console.log(req.body);
@@ -47,6 +48,7 @@ export async function createAuxiliarySurgery(req:Request, res: Response, next: N
         auxiliarySurgery.status = status;
         auxiliarySurgery.cupsId = 1;
         auxiliarySurgery.surgeryId = parseInt(surgeryId);
+        auxiliarySurgery.userId = userId ? parseInt(userId) : null;
 
 
 
