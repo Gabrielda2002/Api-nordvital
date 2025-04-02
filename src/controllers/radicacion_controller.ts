@@ -533,8 +533,8 @@ export async function cirugiasTable(
           estado: g.estadoSeguimientoRelation?.name,
           observacion: g.observation,
           fechaCreacion: g.createdAt,
-          Nombre: g.userRelation.name || "N/A",
-          Apellido: g.userRelation.lastName || "N/A",
+          Nombre: g.userRelation?.name || "N/A",
+          Apellido: g.userRelation?.lastName || "N/A",
         })),
       })),
     }));
