@@ -23,6 +23,6 @@ export class TipoActivo extends BaseEntity {
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
 
-    @OneToMany(() => InventarioGeneral, (inventario) => inventario.tipoActivo)
+    @OneToMany(() => InventarioGeneral, (inventario) => inventario.assetTypeRelation)
     inventarios: InventarioGeneral[];
 }

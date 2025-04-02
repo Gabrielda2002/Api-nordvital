@@ -24,7 +24,7 @@ export class Clasificacion extends BaseEntity {
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
 
-    @OneToMany(() => InventarioGeneral, (inventario) => inventario.clasificacion)
+    @OneToMany(() => InventarioGeneral, (inventario) => inventario.classificationRelation)
     inventarios: InventarioGeneral[];
 
     @OneToMany(() => Activo, (activo) => activo.clasificacion)

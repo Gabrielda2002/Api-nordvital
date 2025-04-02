@@ -8,6 +8,7 @@ import {
     OneToMany 
 } from "typeorm";
 import { InventarioGeneral } from "./inventario-general";
+import { Length } from "class-validator";
 
 @Entity("tipo_area")
 export class TipoArea extends BaseEntity {
@@ -15,6 +16,7 @@ export class TipoArea extends BaseEntity {
     id: number;
 
     @Column({ type: "varchar", length: 150 })
+    @Length(1, 150, {  message: "El nombre debe tener entre 1 y 150 caracteres." })
     nombre: string;
 
     @CreateDateColumn({ name: "created_at" })
@@ -23,6 +25,6 @@ export class TipoArea extends BaseEntity {
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
 
-    @OneToMany(() => InventarioGeneral, (inventario) => inventario.tipoArea)
+    @OneToMany(() => InventarioGeneral, (inventario) => inventario.areaTypeRelation)
     inventarios: InventarioGeneral[];
 }
