@@ -102,6 +102,11 @@ export class InventarioGeneral extends BaseEntity {
     @Column({ name: "sede_id", type: "int" })
     headquartersId: number;
 
+    @Column({ name: "nombre", type: "varchar", length: 150 })
+    @IsString()
+    @Length(1, 150, { message: "The asset name must be between 1 and 150 characters." })
+    name: string;
+
     // relaciones
 
     @ManyToOne(() => Clasificacion, { onDelete: "CASCADE" })
