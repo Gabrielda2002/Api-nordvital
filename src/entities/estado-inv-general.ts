@@ -1,0 +1,28 @@
+import { 
+    BaseEntity, 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    Column, 
+    CreateDateColumn, 
+    UpdateDateColumn, 
+    OneToMany 
+} from "typeorm";
+import { InventarioGeneral } from "./inventario-general";
+
+@Entity("estado_inv_general")
+export class EstadoInvGeneral extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ type: "varchar", length: 150 })
+    nombre: string;
+
+    @CreateDateColumn({ name: "created_at" })
+    createdAt: Date;
+
+    @UpdateDateColumn({ name: "updated_at" })
+    updatedAt: Date;
+
+    @OneToMany(() => InventarioGeneral, (inventario) => inventario.estado)
+    inventarios: InventarioGeneral[];
+}
