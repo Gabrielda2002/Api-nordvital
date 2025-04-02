@@ -17,6 +17,7 @@ import { AreaDependencia } from "./area-dependencia";
 import { TipoActivo } from "./tipo-activo";
 import { Usuarios } from "./usuarios";
 import { IsOptional, IsString, Length } from "class-validator";
+import { LugarRadicacion } from "./lugar-radicacion";
 
 @Entity("inventario_general")
 export class InventarioGeneral extends BaseEntity {
@@ -98,6 +99,9 @@ export class InventarioGeneral extends BaseEntity {
     @Column({ name: "id_responsable", type: "int" })
     responsibleId: number;
 
+    @Column({ name: "sede_id", type: "int" })
+    headquartersId: number;
+
     // relaciones
 
     @ManyToOne(() => Clasificacion, { onDelete: "CASCADE" })
@@ -131,4 +135,8 @@ export class InventarioGeneral extends BaseEntity {
     @ManyToOne(() => TipoActivo, { onDelete: "CASCADE" })
     @JoinColumn({ name: "id_tipo_activo" })
     assetTypeRelation: TipoActivo;
+
+    @ManyToOne(() => LugarRadicacion, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "sede_id" })
+    headquartersRelation: LugarRadicacion;
 }
