@@ -54,6 +54,7 @@ import encuestasSatisfaccionRoutes from './encuestas-satisfaccion_routes';
 import notificacionesRoutes from './notificaciones_routes';
 import pushSubscription from './push-subscription_routes';
 import registerEntries from './registro-entrada_routes';
+import inventarioGeneralRoutes from './inventario-general_routes';
 
 const router = Router();
 
@@ -112,5 +113,6 @@ router.use(encuestasSatisfaccionRoutes);
 router.use(notificacionesRoutes);
 router.use(pushSubscription);
 router.use(registerEntries);
+router.use(inventarioGeneralRoutes);
 
 export default router;
