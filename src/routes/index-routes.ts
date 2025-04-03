@@ -58,6 +58,7 @@ import inventarioGeneralRoutes from './inventario-general_routes';
 import clasificacionRoutes from './clasificacion_routes';
 import activosRoutes from './activos_routes';
 import materiaLRoutes from './material_routes';
+import estadoIvGeneral from './estado-iv-general_routes';
 
 const router = Router();
 
@@ -120,5 +121,6 @@ router.use(inventarioGeneralRoutes);
 router.use(clasificacionRoutes);
 router.use(activosRoutes);
 router.use(materiaLRoutes);
+router.use(estadoIvGeneral);
 
 export default router;
