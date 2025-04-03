@@ -55,6 +55,7 @@ import notificacionesRoutes from './notificaciones_routes';
 import pushSubscription from './push-subscription_routes';
 import registerEntries from './registro-entrada_routes';
 import inventarioGeneralRoutes from './inventario-general_routes';
+import clasificacionRoutes from './clasificacion_routes';
 
 const router = Router();
 
@@ -114,5 +115,6 @@ router.use(notificacionesRoutes);
 router.use(pushSubscription);
 router.use(registerEntries);
 router.use(inventarioGeneralRoutes);
+router.use(clasificacionRoutes);
 
 export default router;
