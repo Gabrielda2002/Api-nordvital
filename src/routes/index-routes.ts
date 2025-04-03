@@ -61,6 +61,7 @@ import materiaLRoutes from './material_routes';
 import estadoIvGeneral from './estado-iv-general_routes';
 import tipoAreaRoutes from './tipo-area_routes';
 import tipoActivoRoutes from './tipo-activo_routes';
+import areaDependenciaRoutes from './area-dependencia_routes';
 
 const router = Router();
 
@@ -126,5 +127,6 @@ router.use(materiaLRoutes);
 router.use(estadoIvGeneral);
 router.use(tipoAreaRoutes);
 router.use(tipoActivoRoutes);
+router.use(areaDependenciaRoutes);
 
 export default router;
