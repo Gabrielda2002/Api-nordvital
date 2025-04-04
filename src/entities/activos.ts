@@ -18,7 +18,7 @@ export class Activo extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "varchar", length: 150 })
+    @Column({ name: "nombre", type: "varchar", length: 150 })
     @Length(1, 150, { message: "El nombre del activo debe tener entre 1 y 150 caracteres." })
     name : string;
     @CreateDateColumn({ name: "created_at" })

@@ -15,7 +15,7 @@ export class TipoArea extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "varchar", length: 150 })
+    @Column({ name: "nombre", type: "varchar", length: 150 })
     @Length(1, 150, {  message: "El nombre debe tener entre 1 y 150 caracteres." })
     name: string;
 

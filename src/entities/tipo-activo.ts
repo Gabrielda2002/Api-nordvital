@@ -14,7 +14,7 @@ export class TipoActivo extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "varchar", length: 150 })
+    @Column({ name: "nombre", type: "varchar", length: 150 })
     name: string;
 
     @CreateDateColumn({ name: "created_at" })
