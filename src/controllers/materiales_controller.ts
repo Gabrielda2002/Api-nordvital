@@ -12,7 +12,7 @@ export async function getAllMaterials(req: Request, res: Response, next: NextFun
 
         const formattedMaterials = materiales.map((m) => ({
             id: m.id,
-            name: m.nombre,
+            name: m.name,
         }));
 
         res.status(200).json(formattedMaterials);

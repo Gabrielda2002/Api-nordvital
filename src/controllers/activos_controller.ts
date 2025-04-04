@@ -17,7 +17,7 @@ export async function getAllByAssetId(req: Request, res: Response, next: NextFun
 
     const formattedActivos = activos.map((a) => ({
       id: a.id,
-      name: a.nombre,
+      name: a.name,
     }));
 
     res.status(200).json(formattedActivos);

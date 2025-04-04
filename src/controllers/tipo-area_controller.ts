@@ -8,7 +8,7 @@ export async function getAllAreaTypes(req: Request, res: Response, next: NextFun
 
         const formattedAreaTypes: { id: number; name: string }[] = areaTypes.map((a) => ({
             id: a.id,
-            name: a.nombre,
+            name: a.name,
         }));
 
         res.status(200).json(formattedAreaTypes);

@@ -12,7 +12,7 @@ export async function getAllStatusIVGeneral(req: Request, res: Response, next: N
 
         const formattedStatusIVGeneral = statusIVGeneral.map((s) => ({
             id: s.id,
-            name: s.nombre,
+            name: s.name,
         }));
 
         res.status(200).json(formattedStatusIVGeneral);

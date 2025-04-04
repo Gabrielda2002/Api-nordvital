@@ -8,7 +8,7 @@ export async function getAllAssetTypes(req: Request, res: Response, next: NextFu
 
         const formattedAssetTypes: { id: number; name: string }[] = assetTypes.map((ta) => ({
             id: ta.id,
-            name: ta.nombre,
+            name: ta.name,
         }));
 
         res.status(200).json(formattedAssetTypes);

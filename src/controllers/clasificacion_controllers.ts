@@ -9,7 +9,7 @@ export async function getAllClassifications(req: Request, res: Response, next: N
 
         const formattedClassifications: { id: number; name: string }[] = classifications.map((c) => ({
             id: c.id,
-            name: c.nombre,
+            name: c.name,
         }));
 
         res.status(200).json(formattedClassifications);

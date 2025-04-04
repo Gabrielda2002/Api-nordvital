@@ -17,7 +17,7 @@ export class Material extends BaseEntity {
 
     @Column({ type: "varchar", length: 150 })
     @Length(1, 150, { message: "El nombre debe tener entre 1 y 150 caracteres." })
-    nombre: string;
+    name: string;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;

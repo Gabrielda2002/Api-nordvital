@@ -15,7 +15,7 @@ export class TipoActivo extends BaseEntity {
     id: number;
 
     @Column({ type: "varchar", length: 150 })
-    nombre: string;
+    name: string;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;

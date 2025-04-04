@@ -20,18 +20,18 @@ export class Activo extends BaseEntity {
 
     @Column({ type: "varchar", length: 150 })
     @Length(1, 150, { message: "El nombre del activo debe tener entre 1 y 150 caracteres." })
-    nombre: string;
-
-    @ManyToOne(() => Clasificacion, (clasificacion) => clasificacion.activos, { onDelete: "CASCADE" })
-    @JoinColumn({ name: "id_clasificacion" })
-    clasificacion: Clasificacion;
-
+    name : string;
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
-
+    
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
-
+    
     @OneToMany(() => InventarioGeneral, (inventario) => inventario.assetRelation)
     inventarios: InventarioGeneral[];
+    
+        @ManyToOne(() => Clasificacion, (clasificacion) => clasificacion.activos, { onDelete: "CASCADE" })
+        @JoinColumn({ name: "id_clasificacion" })
+        clasificacion: Clasificacion;
+    
 }

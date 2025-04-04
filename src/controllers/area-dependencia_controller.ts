@@ -12,7 +12,7 @@ export async function getAllAreaDependency(req: Request, res: Response, next: Ne
 
         const areaDependenciaFormated =  areaDependencia.map((i) => ({
             id: i.id,
-            name: i.nombre,
+            name: i.name,
         }));
 
         res.status(200).json(areaDependenciaFormated);
