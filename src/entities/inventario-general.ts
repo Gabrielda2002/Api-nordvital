@@ -97,7 +97,7 @@ export class InventarioGeneral extends BaseEntity {
     assetTypeId: number;
 
     @Column({ name: "id_responsable", type: "int" })
-    responsibleId: number;
+    responsableId: number;
 
     @Column({ name: "sede_id", type: "int" })
     headquartersId: number;
