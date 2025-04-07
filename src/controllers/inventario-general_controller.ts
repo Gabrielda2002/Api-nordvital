@@ -55,6 +55,8 @@ export async function getAllInventoryGeneralByHeadquarters(
       .leftJoinAndSelect('inventario.areaTypeRelation', 'tipoArea')
       .leftJoinAndSelect('inventario.dependencyAreaRelation', 'areaDependencia')
       .leftJoinAndSelect('inventario.assetTypeRelation', 'tipoActivo')
+      .leftJoinAndSelect('inventario.seguimiento', 'seguimiento')
+      .leftJoinAndSelect('seguimiento.usuario', 'usuario')
       .where("sede.id = :id", { id: Number(id) })
       .getMany();
 
@@ -94,6 +96,14 @@ export async function getAllInventoryGeneralByHeadquarters(
       assetTypeId: i.assetTypeId,
       dependencyAreaId: i.dependencyAreaId,
       dependencyArea: i.dependencyAreaRelation?.name,
+      seguimiento: i.seguimiento.map((s) => ({
+        id: s.id,
+        dateEvent: s.fecha_evento,
+        eventType: s.typeEvent,
+        description: s.description,
+        responsableName: s.usuario?.name,
+        responsableLastName: s.usuario?.lastName,
+      })),
     }));
 
     res.status(200).json(inventarioGeneralFormated);

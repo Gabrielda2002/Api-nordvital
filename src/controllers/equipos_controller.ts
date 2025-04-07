@@ -372,8 +372,8 @@ export async function getEquipmentBySede(
         dateEvent: s.eventDate || 'N/A',
         eventType: s.eventType || 'N/A',
         description: s.description || 'N/A',
-        responsibleName: s.userRelation?.name || 'N/A',
-        responsibleLastName: s.userRelation?.lastName || 'N/A',
+        responsableLastName: s.userRelation?.name || 'N/A',
+        responsableName: s.userRelation?.lastName || 'N/A',
       })),
       accessories: e.accessoriesRelation?.map(a => ({
         id: a.id || 'N/A',
