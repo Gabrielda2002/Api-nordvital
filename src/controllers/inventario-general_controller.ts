@@ -174,3 +174,85 @@ export async function createInventoryGeneral(
     next(error);
   }
 }
+
+// controller para actualizar un inventario general
+export async function updateInventoryGeneral(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      brand,
+      model,
+      serialNumber,
+      location,
+      quantity,
+      otherDetails,
+      acquisitionDate,
+      purchaseValue,
+      warranty,
+      warrantyPeriod,
+      inventoryNumber,
+      classificationId,
+      headquartersId,
+      statusId,
+      assetId,
+      materialId,
+      areaTypeId,
+      assetTypeId,
+      responsableId,
+      dependencyAreaId,
+    } = req.body;
+
+    const inventarioGeneral = await InventarioGeneral.findOneBy({
+      id: Number(id),
+    });
+
+    if (!inventarioGeneral) {
+      return res.status(404).json({ message: "Registro no encontrado." });
+    }
+
+    inventarioGeneral.name = name;
+    inventarioGeneral.brand = brand;
+    inventarioGeneral.model = model;
+    inventarioGeneral.serialNumber = serialNumber;
+    inventarioGeneral.location = location;
+    inventarioGeneral.quantity = quantity;
+    inventarioGeneral.otherDetails = otherDetails;
+    inventarioGeneral.acquisitionDate = acquisitionDate;
+    inventarioGeneral.purchaseValue = purchaseValue;
+    inventarioGeneral.warranty = warranty === "1" ? true : false;
+    inventarioGeneral.warrantyPeriod = warrantyPeriod;
+    inventarioGeneral.inventoryNumber = inventoryNumber;
+    inventarioGeneral.classificationId = parseInt(classificationId);
+    inventarioGeneral.headquartersId = parseInt(headquartersId);
+    inventarioGeneral.statusId = parseInt(statusId); 
+    inventarioGeneral.assetId = parseInt(assetId);
+    inventarioGeneral.materialId = parseInt(materialId);
+    inventarioGeneral.areaTypeId = parseInt(areaTypeId);
+    inventarioGeneral.assetTypeId = parseInt(assetTypeId);
+    inventarioGeneral.responsableId = parseInt(responsableId);
+    inventarioGeneral.dependencyAreaId = parseInt(dependencyAreaId);
+
+    const errors = await validate(inventarioGeneral);
+    if (errors.length > 0) {
+      const messages = errors.map((e) => ({
+        property: e.property,
+        constraints: e.constraints,
+      }));
+      return res
+        .status(400)
+        .json({ message: "Validation failed", errors: messages });
+    }
+
+    await InventarioGeneral.save(inventarioGeneral);
+    
+    res.status(200).json(inventarioGeneral);
+  }
+  catch (error) {
+    next(error);
+  }
+}

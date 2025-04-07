@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters } from "../controllers/inventario-general_controller";
+import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, updateInventoryGeneral } from "../controllers/inventario-general_controller";
 
 const router = Router();
 
@@ -10,5 +10,7 @@ router.get('/inventario/general', authenticate, authorizeRoles(['1']), getAllInv
 router.get('/inventario/general-sede/:id', authenticate, authorizeRoles(['1']), getAllInventoryGeneralByHeadquarters);
 
 router.post('/inventario/general', authenticate, authorizeRoles(['1']), createInventoryGeneral);
+
+router.put('/inventario/general/:id', authenticate, authorizeRoles(['1']), updateInventoryGeneral);
 
 export default router;
