@@ -62,6 +62,7 @@ import estadoIvGeneral from './estado-iv-general_routes';
 import tipoAreaRoutes from './tipo-area_routes';
 import tipoActivoRoutes from './tipo-activo_routes';
 import areaDependenciaRoutes from './area-dependencia_routes';
+import seguimientoGeneralRoutes from './seguimiento-inventario-general_routes';
 
 const router = Router();
 
@@ -128,5 +129,6 @@ router.use(estadoIvGeneral);
 router.use(tipoAreaRoutes);
 router.use(tipoActivoRoutes);
 router.use(areaDependenciaRoutes);
+router.use(seguimientoGeneralRoutes);
 
 export default router;
