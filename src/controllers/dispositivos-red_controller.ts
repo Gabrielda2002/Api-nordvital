@@ -192,7 +192,29 @@ export async function getDevicesBySede(
       });
     }
 
-    return res.json(devices);
+    const deviceDataFormatted = devices.map((d) => ({
+      id: d.id,
+      sedeId: d.sedeId,
+      name: d.name,
+      brand: d.brand,
+      model: d.model,
+      serial: d.serial,
+      addressIp: d.addressIp,
+      mac: d.mac,
+      otherData: d.otherData,
+      status: d.status,
+      inventoryNumber: d.inventoryNumber,
+      seguimiento: d.seguimientoDispositivosRedRelation.map((s) => ({
+        id: s.id,
+        dateEvent: s.dateEvent,
+        eventType: s.eventType,
+        description: s.description,
+        responsableName: s.userRelation?.name,
+        responsableLastName: s.userRelation?.lastName,
+      }))
+    }))
+
+    return res.json(deviceDataFormatted);
   } catch (error) {
     next(error);
   }
