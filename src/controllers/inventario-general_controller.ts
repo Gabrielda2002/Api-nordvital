@@ -47,6 +47,14 @@ export async function getAllInventoryGeneralByHeadquarters(
 
     const query = await InventarioGeneral.createQueryBuilder("inventario")
       .leftJoinAndSelect("inventario.headquartersRelation", "sede")
+      .leftJoinAndSelect('inventario.responsibleRelation', 'responsable')
+      .leftJoinAndSelect('inventario.classificationRelation', 'clasificacion')
+      .leftJoinAndSelect('inventario.assetRelation', 'activo')
+      .leftJoinAndSelect('inventario.materialRelation', 'material')
+      .leftJoinAndSelect('inventario.statusRelation', 'estado')
+      .leftJoinAndSelect('inventario.areaTypeRelation', 'tipoArea')
+      .leftJoinAndSelect('inventario.dependencyAreaRelation', 'areaDependencia')
+      .leftJoinAndSelect('inventario.assetTypeRelation', 'tipoActivo')
       .where("sede.id = :id", { id: Number(id) })
       .getMany();
 
@@ -71,7 +79,21 @@ export async function getAllInventoryGeneralByHeadquarters(
       createdAt: i.createdAt,
       updatedAt: i.updatedAt,
       classificationId: i.classificationId,
-      headquarters: i.headquartersRelation.name,
+      headquarters: i.headquartersRelation?.name,
+      responsable: i.responsibleRelation?.name,
+      classification: i.classificationRelation?.name,
+      asset: i.assetRelation?.name, 
+      assetId: i.assetId,
+      material: i.materialRelation?.name,
+      materialId: i.materialId,
+      statusId: i.statusId,
+      status: i.statusRelation?.name,
+      areaType: i.areaTypeRelation?.name,
+      areaTypeId: i.areaTypeId,
+      assetType: i.assetTypeRelation?.name,
+      assetTypeId: i.assetTypeId,
+      dependencyAreaId: i.dependencyAreaId,
+      dependencyArea: i.dependencyAreaRelation?.name,
     }));
 
     res.status(200).json(inventarioGeneralFormated);
