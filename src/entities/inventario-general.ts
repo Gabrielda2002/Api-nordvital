@@ -6,7 +6,8 @@ import {
     ManyToOne, 
     JoinColumn, 
     CreateDateColumn, 
-    UpdateDateColumn 
+    UpdateDateColumn, 
+    OneToMany
 } from "typeorm";
 import { Clasificacion } from "./clasificacion";
 import { Activo } from "./activos";
@@ -18,6 +19,7 @@ import { TipoActivo } from "./tipo-activo";
 import { Usuarios } from "./usuarios";
 import { IsOptional, IsString, Length } from "class-validator";
 import { LugarRadicacion } from "./lugar-radicacion";
+import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
 
 @Entity("inventario_general")
 export class InventarioGeneral extends BaseEntity {
@@ -144,4 +146,7 @@ export class InventarioGeneral extends BaseEntity {
     @ManyToOne(() => LugarRadicacion, { onDelete: "CASCADE" })
     @JoinColumn({ name: "sede_id" })
     headquartersRelation: LugarRadicacion;
+
+    @OneToMany(() => SeguimientoInventarioGeneral, (seguimiento) => seguimiento.item)
+    seguimiento: SeguimientoInventarioGeneral[];
 }
