@@ -5,7 +5,7 @@ import { Soportes } from "../entities/soportes";
 import path from "path";
 import fs from "fs";
 import { addMonths, differenceInDays, subYears } from "date-fns";
-import { Between, MoreThan } from "typeorm";
+import { Between, LessThan, MoreThan } from "typeorm";
 
 export async function getAllEquipments(
   req: Request,
@@ -482,7 +482,7 @@ export async function getEquipmentAgeBySede(req: Request, res: Response, next: N
     });
     const moreThanThreeYears = await Equipos.count({
       where: {
-        purchaseDate: MoreThan(threeYearsAgo)
+        purchaseDate: LessThan(threeYearsAgo)
       }
     });
 
