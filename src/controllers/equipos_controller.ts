@@ -4,6 +4,8 @@ import { validate } from "class-validator";
 import { Soportes } from "../entities/soportes";
 import path from "path";
 import fs from "fs";
+import { addMonths, differenceInDays, subYears } from "date-fns";
+import { Between, MoreThan } from "typeorm";
 
 export async function getAllEquipments(
   req: Request,
@@ -408,6 +410,168 @@ export async function getEquipmentBySede(
     }))
 
     return res.json(equipmentFormatted);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// distribucion equipos por tipo
+export async function getEquipmentTypeDistribution(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const equipment = await Equipos.createQueryBuilder("equipos")
+    .select("equipos.typeEquipment", "typeEquipment")
+    .addSelect("COUNT(equipos.id)", "count")
+    .groupBy("equipos.typeEquipment")
+    .orderBy("count", "DESC")
+    .getRawMany()
+
+    if (!equipment) {
+      return res.status(404).json({
+        message: "No se encontraron equipos",
+      });
+    }
+
+  return res.json(equipment);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// distribucion por sede 
+export async function getEquipmentHeadquartersDistribution(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const equipment = await Equipos.createQueryBuilder("equipos")
+    .select("equipos.sedeId", "sedeId")
+    .addSelect("COUNT(equipos.id)", "count")
+    .groupBy("equipos.sedeId")
+    .orderBy("count", "DESC")
+    .getRawMany()
+
+    if (!equipment) {
+      return res.status(404).json({
+        message: "No se encontraron equipos",
+      });
+    }
+
+  return res.json(equipment);
+  } catch (error) {
+    next(error);
+  }
+}
+// obtener edada de equipos por sede
+export async function getEquipmentAgeBySede(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const now = new Date();
+    const oneYearAgo = subYears(now, 1);
+    const twoYearsAgo = subYears(now, 2);
+    const threeYearsAgo = subYears(now, 3);
+
+    const lessThanOneYear = await Equipos.count({ where: { purchaseDate: MoreThan(oneYearAgo)}})
+    const betweenOneAndTwoYears = await Equipos.count({
+      where: {
+        purchaseDate: Between(twoYearsAgo, oneYearAgo)
+      }
+    });
+    const betweenTwoAndThreeYears = await Equipos.count({
+      where: {
+        purchaseDate: Between(threeYearsAgo, twoYearsAgo)
+      }
+    });
+    const moreThanThreeYears = await Equipos.count({
+      where: {
+        purchaseDate: MoreThan(threeYearsAgo)
+      }
+    });
+
+    // calculo de la edad promedio en dias
+    const equipment = await Equipos.find({
+      select: ['purchaseDate']
+    })
+    let totalAge = 0;
+    equipment.forEach(e => {
+      if (e.purchaseDate) {
+        const age = differenceInDays(now, new Date(e.purchaseDate));
+        totalAge += age;
+      }
+    });
+
+    const averageAgeInDays = totalAge / equipment.length || 0;
+    const averageAgeInMonths = averageAgeInDays / 30;
+    const averageAgeInYears = averageAgeInMonths / 12;
+
+    return res.json({
+      distribution: [
+        {label: "Menos de un año", value: lessThanOneYear},
+        {label: "Entre uno y dos años", value: betweenOneAndTwoYears},
+        {label: "Entre dos y tres años", value: betweenTwoAndThreeYears},
+        {label: "Más de tres años", value: moreThanThreeYears}
+      ],
+      averageAge: {
+        days: Math.round(averageAgeInDays),
+        months: Math.round(averageAgeInMonths),
+        years: averageAgeInYears
+      }
+    })
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+// estadisticas sobre garantia
+export async function getEquipmentWarrantyStatistics(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const totalEquipments =  await Equipos.count();
+    const equipmentsInWarranty = await Equipos.count({ where: { warranty: true }});
+
+    // obtener equipos con garantia para calcular fecha de vencimiento
+    const equipmentWithWarranty =  await Equipos.find({
+      where: { warranty: true },
+      select: ["id" ,'purchaseDate', 'warrantyTime']
+    });
+
+    const expiringWarranties = equipmentWithWarranty.filter(e => {
+      const warrantyMonths = parseInt(e.warrantyTime.match(/\d+/)?.[0] || '0');
+      if (warrantyMonths > 0) {
+        const expirationDate = addMonths(new Date(e.purchaseDate), warrantyMonths);
+        const expiresSoon =  expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
+        return expiresSoon;
+      }
+      return false;
+    });
+
+    return res.json({
+      total: totalEquipments,
+      inWarranty: equipmentsInWarranty,
+      percentage: ((equipmentsInWarranty / totalEquipments) * 100).toFixed(2),
+      expiringSoon: {
+        count: expiringWarranties.length,
+        equiment: expiringWarranties
+      }
+    })
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+// estadisticas sobre equipos con candado
+export async function getEquipmentLockStatistics(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const totalEquipments =  await Equipos.count();
+    const equipmentsWithLock = await Equipos.count({ where: { lock: true }});
+
+    return res.json({
+      total: totalEquipments,
+      withLock: equipmentsWithLock,
+      percentage: ((equipmentsWithLock / totalEquipments) * 100).toFixed(2),
+    })
+
   } catch (error) {
     next(error);
   }
