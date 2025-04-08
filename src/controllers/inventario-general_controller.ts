@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { InventarioGeneral } from "../entities/inventario-general";
 import { validate } from "class-validator";
+import { addMonths } from "date-fns";
 
 export async function getAllInventarioGeneral(
   req: Request,
@@ -152,7 +153,7 @@ export async function createInventoryGeneral(
     newInventarioGeneral.otherDetails = otherDetails;
     newInventarioGeneral.acquisitionDate = acquisitionDate;
     newInventarioGeneral.purchaseValue = purchaseValue;
-    newInventarioGeneral.warranty = warranty === "1" ? true : false;
+    newInventarioGeneral.warranty = warranty === "true" ? true : false;
     newInventarioGeneral.warrantyPeriod = warrantyPeriod;
     newInventarioGeneral.inventoryNumber = inventoryNumber;
     newInventarioGeneral.classificationId = parseInt(classificationId);
@@ -263,6 +264,48 @@ export async function updateInventoryGeneral(
     res.status(200).json(inventarioGeneral);
   }
   catch (error) {
+    next(error);
+  }
+}
+
+// estadisticas sobre garantia
+export async function getInvetoryGeneralWarrantyStatitics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+     const totalIvGeneral =  await InventarioGeneral.count();
+        const generalInWarranty = await InventarioGeneral.count({ where: { warranty: true }});
+    
+        // obtener InventarioGeneral con garantia para calcular fecha de vencimiento
+        const generalWithWarranty =  await InventarioGeneral.find({
+          where: { warranty: true },
+          select: ["id" ,'acquisitionDate', 'warrantyPeriod']
+        });
+    
+        const expiringWarranties = generalWithWarranty.filter(e => {
+          const warrantyMonths = parseInt(e.warrantyPeriod.match(/\d+/)?.[0] || '0');
+          if (warrantyMonths > 0) {
+            const expirationDate = addMonths(new Date(e.acquisitionDate), warrantyMonths);
+            const expiresSoon =  expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
+            return expiresSoon;
+          }
+          return false;
+        });
+    
+        return res.json({
+          total: totalIvGeneral,
+          inWarranty: generalInWarranty,
+          percentage: ((generalInWarranty / totalIvGeneral) * 100).toFixed(2),
+          expiringSoon: {
+            count: expiringWarranties.length,
+            equiment: expiringWarranties
+          }
+        })
+
+  } catch (error) {
     next(error);
   }
 }
