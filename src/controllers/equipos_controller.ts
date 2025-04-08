@@ -463,59 +463,54 @@ export async function getEquipmentHeadquartersDistribution(req: Request, res: Re
 // obtener edada de equipos por sede
 export async function getEquipmentAgeBySede(req: Request, res: Response, next: NextFunction){
   try {
-    
     const now = new Date();
     const oneYearAgo = subYears(now, 1);
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
-
-    const lessThanOneYear = await Equipos.count({ where: { purchaseDate: MoreThan(oneYearAgo)}})
-    const betweenOneAndTwoYears = await Equipos.count({
-      where: {
-        purchaseDate: Between(twoYearsAgo, oneYearAgo)
-      }
+    
+    const lessThanOneYear = await Equipos.count({ where: { purchaseDate: MoreThan(oneYearAgo) } });
+    const betweenOneAndTwoYears = await Equipos.count({ 
+      where: { 
+        purchaseDate: Between(twoYearsAgo, oneYearAgo) 
+      } 
     });
-    const betweenTwoAndThreeYears = await Equipos.count({
-      where: {
-        purchaseDate: Between(threeYearsAgo, twoYearsAgo)
-      }
+    const betweenTwoAndThreeYears = await Equipos.count({ 
+      where: { 
+        purchaseDate: Between(threeYearsAgo, twoYearsAgo) 
+      } 
     });
-    const moreThanThreeYears = await Equipos.count({
-      where: {
-        purchaseDate: LessThan(threeYearsAgo)
-      }
+    const moreThanThreeYears = await Equipos.count({ 
+      where: { 
+        purchaseDate: LessThan(threeYearsAgo) 
+      } 
     });
-
-    // calculo de la edad promedio en dias
-    const equipment = await Equipos.find({
-      select: ['purchaseDate']
-    })
+    
+    // Cálculo de la edad promedio en días
+    const equipments = await Equipos.find({ select: ["purchaseDate"] });
     let totalAge = 0;
-    equipment.forEach(e => {
-      if (e.purchaseDate) {
-        const age = differenceInDays(now, new Date(e.purchaseDate));
+    equipments.forEach(equipment => {
+      if (equipment.purchaseDate) {
+        const age = differenceInDays(now, new Date(equipment.purchaseDate));
         totalAge += age;
       }
     });
-
-    const averageAgeInDays = totalAge / equipment.length || 0;
+    const averageAgeInDays = totalAge / equipments.length || 0;
     const averageAgeInMonths = averageAgeInDays / 30;
     const averageAgeInYears = averageAgeInMonths / 12;
-
+    
     return res.json({
       distribution: [
-        {label: "Menos de un año", value: lessThanOneYear},
-        {label: "Entre uno y dos años", value: betweenOneAndTwoYears},
-        {label: "Entre dos y tres años", value: betweenTwoAndThreeYears},
-        {label: "Más de tres años", value: moreThanThreeYears}
+        { label: "Menos de 1 año", value: lessThanOneYear },
+        { label: "Entre 1 y 2 años", value: betweenOneAndTwoYears },
+        { label: "Entre 2 y 3 años", value: betweenTwoAndThreeYears },
+        { label: "Más de 3 años", value: moreThanThreeYears },
       ],
       averageAge: {
         days: Math.round(averageAgeInDays),
         months: Math.round(averageAgeInMonths),
-        years: averageAgeInYears
+        years: averageAgeInYears.toFixed(1)
       }
-    })
-
+    });
   } catch (error) {
     next(error);
   }

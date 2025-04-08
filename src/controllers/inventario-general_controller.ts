@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { InventarioGeneral } from "../entities/inventario-general";
 import { validate } from "class-validator";
-import { addMonths } from "date-fns";
+import { addMonths, differenceInDays, subYears } from "date-fns";
+import { Between, LessThan, MoreThan } from "typeorm";
 
 export async function getAllInventarioGeneral(
   req: Request,
@@ -308,4 +309,64 @@ export async function getInvetoryGeneralWarrantyStatitics(
   } catch (error) {
     next(error);
   }
+}
+
+// estadisticas sobre edad
+export async function getInventoryGeneralAgeStatistics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+      const now = new Date();
+      const oneYearAgo = subYears(now, 1);
+      const twoYearsAgo = subYears(now, 2);
+      const threeYearsAgo = subYears(now, 3);
+      
+      const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo) } });
+      const betweenOneAndTwoYears = await InventarioGeneral.count({ 
+        where: { 
+          acquisitionDate: Between(twoYearsAgo, oneYearAgo) 
+        } 
+      });
+      const betweenTwoAndThreeYears = await InventarioGeneral.count({ 
+        where: { 
+          acquisitionDate: Between(threeYearsAgo, twoYearsAgo) 
+        } 
+      });
+      const moreThanThreeYears = await InventarioGeneral.count({ 
+        where: { 
+          acquisitionDate: LessThan(threeYearsAgo) 
+        } 
+      });
+      
+      // Cálculo de la edad promedio en días
+      const inventoryGeneral = await InventarioGeneral.find({ select: ["acquisitionDate"] });
+      let totalAge = 0;
+      inventoryGeneral.forEach(equipment => {
+        if (equipment.acquisitionDate) {
+          const age = differenceInDays(now, new Date(equipment.acquisitionDate));
+          totalAge += age;
+        }
+      });
+      const averageAgeInDays = totalAge / inventoryGeneral.length || 0;
+      const averageAgeInMonths = averageAgeInDays / 30;
+      const averageAgeInYears = averageAgeInMonths / 12;
+      
+      return res.json({
+        distribution: [
+          { label: "Menos de 1 año", value: lessThanOneYear },
+          { label: "Entre 1 y 2 años", value: betweenOneAndTwoYears },
+          { label: "Entre 2 y 3 años", value: betweenTwoAndThreeYears },
+          { label: "Más de 3 años", value: moreThanThreeYears },
+        ],
+        averageAge: {
+          days: Math.round(averageAgeInDays),
+          months: Math.round(averageAgeInMonths),
+          years: averageAgeInYears.toFixed(1)
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
 }
