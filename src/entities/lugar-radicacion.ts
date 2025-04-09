@@ -8,6 +8,8 @@ import { departamentos } from "./departamentos";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 import { RegistroEntrada } from "./registro-entrada";
+import { InventarioGeneral } from "./inventario-general";
+import { Equipos } from "./equipos";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -78,5 +80,12 @@ export class LugarRadicacion extends BaseEntity{
     // * relacion registro entrada
     @OneToMany(() => RegistroEntrada, registro => registro.sedeRelation)
     registerEntriesRelation: RegistroEntrada[]
+
+    // relacion con ivg
+    @OneToMany(() => InventarioGeneral, (inventarioGeneral) => inventarioGeneral.headquartersRelation)
+    inventoryGeneralRelation: InventarioGeneral[]
+
+    @OneToMany(() => Equipos, (equipos) => equipos.placeRelation)
+    EquipmentRelation: Equipos[]
     
 }

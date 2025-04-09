@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentBySede, updateEquipment } from "../controllers/equipos_controller";
+import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, updateEquipment } from "../controllers/equipos_controller";
 import { validarId } from "../middlewares/validar-id";
 import { generateInventoryNumber } from "../middlewares/generate-inventory-number";
 import { uploadDocDelivery } from "../middlewares/upload-doc-delivery_middleware";
@@ -208,5 +208,15 @@ router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, de
  *         description: No se encontraron equipos
  */
 router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1']), validarId, getEquipmentBySede);
+
+router.get('/equipments/statics/typeEquipment', authenticate, authorizeRoles(['1']), getEquipmentTypeDistribution);
+
+router.get('/equipments/statics/headquarters', authenticate, authorizeRoles(['1']), getEquipmentHeadquartersDistribution);
+
+router.get('/equipments/statics/age', authenticate, authorizeRoles(['1']), getEquipmentAgeBySede);
+
+router.get('/equipments/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getEquipmentWarrantyStatistics);
+
+router.get('/equipments/statics/withLock', authenticate, authorizeRoles(['1']), getEquipmentLockStatistics);
 
 export default router;

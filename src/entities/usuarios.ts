@@ -40,6 +40,7 @@ import { PushSubscription } from "./push-subscription";
 import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
 import { RegistroEntrada } from "./registro-entrada";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
+import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -222,4 +223,7 @@ export class Usuarios extends BaseEntity {
   // * relacion con seguimiento cirugias
   @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoCirugias) => seguimientoCirugias.userRelation)
   gestionCirugiasRelation: SeguimientoAuxiliarCirugias[];
+
+  @OneToMany(() => SeguimientoInventarioGeneral, (seguimientoIvGeneral) => seguimientoIvGeneral.usuario)
+  seguimientoInventarioGeneralRelation: SeguimientoInventarioGeneral[];
 }

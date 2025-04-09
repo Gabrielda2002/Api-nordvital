@@ -41,14 +41,14 @@ export async function getFollowEquipment(req: Request, res: Response, next: Next
 export async function createFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
 
-        const { equipmentId, eventDate, eventType, description, responsible } = req.body
+        const { itemId, eventDate, typeEvent, description, responsable } = req.body
 
         const data = new seguimientoEquipos()
-        data.equipmentId = parseInt(equipmentId)
+        data.equipmentId = parseInt(itemId)
         data.eventDate = eventDate
-        data.eventType = eventType
+        data.eventType = typeEvent
         data.description = description
-        data.responsible = parseInt(responsible)
+        data.responsible = parseInt(responsable)
 
         const errors = await validate(data)
 

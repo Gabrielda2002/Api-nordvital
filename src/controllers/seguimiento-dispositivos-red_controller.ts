@@ -42,14 +42,14 @@ export async function getMonitoringDevicesNetwork(req: Request, res: Response, n
 export async function createMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
 
-        const { equipmentId, eventType, eventDate, description, responsible } = req.body
+        const { itemId, typeEvent, eventDate, description,responsable  } = req.body
 
         const data = new SeguimientoDispositivosRed()
-        data.deviceId = parseInt(equipmentId)
-        data.eventType = eventType
+        data.deviceId = parseInt(itemId)
+        data.eventType = typeEvent
         data.dateEvent = eventDate
         data.description = description
-        data.responsible = parseInt(responsible)
+        data.responsible = parseInt(responsable)
 
         const errors = await validate(data)
 
