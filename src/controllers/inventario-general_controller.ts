@@ -370,3 +370,25 @@ export async function getInventoryGeneralAgeStatistics(
       next(error);
     }
 }
+
+// estadisticas de cantidad por sede
+export async function getInventoryGeneralByHeadquartersStatistics(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const headquarters = await InventarioGeneral.createQueryBuilder("inventario")
+      .select("sede.name", "sedeName")
+      .addSelect("COUNT(inventario.id)", "count")
+      .leftJoin("inventario.headquartersRelation", "sede")
+      .groupBy("sede.name")
+      .getRawMany();
+
+    if (headquarters.length === 0) {
+      return res.status(404).json({ message: "No se encontraron registros." });
+    }
+
+    res.status(200).json(headquarters);
+
+  } catch (error) {
+    next(error);
+  }
+}

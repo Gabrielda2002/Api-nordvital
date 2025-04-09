@@ -443,9 +443,10 @@ export async function getEquipmentHeadquartersDistribution(req: Request, res: Re
   try {
     
     const equipment = await Equipos.createQueryBuilder("equipos")
-    .select("equipos.sedeId", "sedeId")
+    .leftJoinAndSelect('equipos.placeRelation', 'sede')
+    .select("sede.name", "sedeName")
     .addSelect("COUNT(equipos.id)", "count")
-    .groupBy("equipos.sedeId")
+    .groupBy("sede.name")
     .orderBy("count", "DESC")
     .getRawMany()
 
