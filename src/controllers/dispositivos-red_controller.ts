@@ -219,3 +219,36 @@ export async function getDevicesBySede(
     next(error);
   }
 }
+
+// cantidad items por sede
+export async function getDevicesCountByHeadquarters(
+  req: Request,
+  res: Response,
+  next: NextFunction
+ ) {
+  try {
+    
+    const devices = await dispositivosRed.createQueryBuilder("dispositivosRed")
+    .leftJoin('dispositivosRed.placeRelation', 'place')
+    .select("place.name", "name")
+    .addSelect("COUNT(dispositivosRed.id)", "count")
+    .groupBy("place.name")
+    .getRawMany();
+
+    if (devices.length < 0) {
+      return res.status(404).json({
+        message: "No se encontraron dispositivos",
+      });
+    }
+
+    const deviceDataFormatted = devices.map((d) => ({
+      sedeName: d.name,
+      count: parseInt(d.count),
+    }))
+
+    return res.json(deviceDataFormatted);
+
+  } catch (error) {
+    next(error);
+  }
+ }
