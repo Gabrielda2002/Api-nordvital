@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { RegistroEntrada } from "../entities/registro-entrada";
-import { formatInTimeZone } from "date-fns-tz";
+import { toZonedTime, format } from "date-fns-tz";
+
+
 import { constants } from "fs";
 
 export async function getRegisterEntriesByDocument(
@@ -33,25 +35,24 @@ export async function getRegisterEntriesByDocument(
       return res.status(404).json({ message: "Register not found" });
     }
 
-    const registerFormat = registerEntries.map((r) => {
-      const formattedDate = r.registerDate
-        ? formatInTimeZone(
-            new Date(r.registerDate),
-            "America/Bogota",
-            "yyyy-MM-dd"
-          )
-        : "N/A";
 
+    const timeZone = "America/Bogota";
+    
+    const registerFormat = registerEntries.map((r) => {
+      const zonedDate = r.registerDate
+        ? toZonedTime(r.registerDate, timeZone)
+        : null;
       return {
         id: r.id,
         userName: r.userRelation?.name || "N/A",
         userLastName: r.userRelation?.lastName || "N/A",
         documentNumber: r.userRelation?.dniNumber || "N/A",
         headquarters: r.sedeRelation?.name || "N/A",
-        registerDate: formattedDate,
+        registerDate: zonedDate ? format(zonedDate, "yyyy-MM-dd", { timeZone }) : "N/A",
         hourRegister: r.hourRegister,
       };
     });
+    
 
     return res.json(registerFormat);
   } catch (error) {
