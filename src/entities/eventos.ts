@@ -36,4 +36,15 @@ export class Eventos extends BaseEntity{
 
     @UpdateDateColumn({name: "updated_at", type: "timestamp"})
     updatedAt: Date;
+
+    @Column({name: "hora_inicio", type: "time", nullable: false})
+    @IsNotEmpty()
+    @IsString()
+    timeStart: string;
+
+    @Column({name: "hora_fin", type: "time", nullable: false})
+    @IsNotEmpty()
+    @IsString()
+    timeEnd: string;
+
 }

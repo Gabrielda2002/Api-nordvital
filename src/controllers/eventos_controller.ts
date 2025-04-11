@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Eventos } from "../entities/eventos";
 import { validate } from "class-validator";
-import { error } from "console";
+import { parseISO } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 export async function getAllEvents(req: Request, res: Response, next: NextFunction){
     try {
@@ -35,15 +36,17 @@ export async function getEventById(req: Request, res: Response, next: NextFuncti
 
 export async function createEvent(req: Request, res: Response, next: NextFunction){
     try {
-        const { title, dateStart, dateEnd, color, description } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
 
 
         const evento = new Eventos();
         evento.title = title.toUpperCase();
-        evento.dateStart = new Date(dateStart);
-        evento.dateEnd = new Date(dateEnd);
+        evento.dateStart = parseISO(dateStart);
+        evento.dateEnd = parseISO(dateEnd);
         evento.color = color;
         evento.description = description;
+        evento.timeStart = timeStart;
+        evento.timeEnd = timeEnd;
 
         const errors = await validate(evento);
 
@@ -59,6 +62,9 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 
         await evento.save();
 
+        console.log("Fecha original:", dateStart);
+        console.log("Fecha guardada:", evento.dateStart);
+
         return res.json(evento);
 
     } catch (error) {
@@ -69,7 +75,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 export async function updateEvent(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
-        const { title, dateStart, dateEnd, color, description } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
 
         const evento = await Eventos.createQueryBuilder("eventos")
         .where("eventos.id = :id", { id })
@@ -79,11 +85,15 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
             return res.status(404).json({ message: "Evento no encontrado" });
         }
 
+        const timeZone = "America/Bogota";
+
         evento.title = title.toUpperCase();
-        evento.dateStart = new Date(dateStart);
-        evento.dateEnd = new Date(dateEnd);
+        evento.dateStart = toZonedTime(parseISO(dateStart), timeZone);
+        evento.dateEnd = toZonedTime(parseISO(dateEnd), timeZone);
         evento.color = color;
         evento.description = description;
+        evento.timeStart = timeStart;
+        evento.timeEnd = timeEnd;
 
         const errors = await validate(evento);
 
@@ -98,6 +108,9 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         }
 
         await evento.save();
+
+        console.log("Fecha original:", dateStart);
+        console.log("Fecha guardada:", evento.dateStart);
 
         return res.json(evento);
 
