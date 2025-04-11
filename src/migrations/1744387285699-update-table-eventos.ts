@@ -2,18 +2,23 @@ import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
 
 export class UpdateTableEventos1744387285699 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // 1. Primero actualiza los valores inválidos en las fechas
-        await queryRunner.query(`
-            UPDATE eventos 
-            SET fecha_inicio = '2000-01-01 00:00:00' 
-            WHERE fecha_inicio = '0000-00-00 00:00:00' OR fecha_inicio IS NULL
-        `);
-        
-        await queryRunner.query(`
-            UPDATE eventos 
-            SET fecha_fin = '2000-01-01 00:00:00' 
-            WHERE fecha_fin = '0000-00-00 00:00:00' OR fecha_fin IS NULL
-        `);
+        // 1. Primero actualizamos valores inválidos usando una aproximación diferente
+        try {
+            // Intenta actualizar registros con fechas incorrectas
+            await queryRunner.query(`
+                UPDATE eventos 
+                SET fecha_inicio = '2000-01-01 00:00:00' 
+                WHERE fecha_inicio IS NULL OR fecha_inicio < '1000-01-01 00:00:00'
+            `);
+            
+            await queryRunner.query(`
+                UPDATE eventos 
+                SET fecha_fin = '2000-01-01 00:00:00' 
+                WHERE fecha_fin IS NULL OR fecha_fin < '1000-01-01 00:00:00'
+            `);
+        } catch (error) {
+            console.log("Advertencia: No se pudieron actualizar las fechas inválidas, continuando con la migración");
+        }
 
         // 2. Luego crea columnas temporales de tipo DATE
         await queryRunner.addColumn(
@@ -36,15 +41,21 @@ export class UpdateTableEventos1744387285699 implements MigrationInterface {
             })
         );
 
-        // 3. Copia los datos de las columnas timestamp a las nuevas columnas date
+        // 3. Copia los datos válidos y establece valores por defecto para inválidos
         await queryRunner.query(`
             UPDATE eventos 
-            SET fecha_inicio_new = DATE(fecha_inicio)
+            SET fecha_inicio_new = CASE 
+                WHEN fecha_inicio IS NULL OR fecha_inicio < '1000-01-01 00:00:00' THEN '2000-01-01'
+                ELSE DATE(fecha_inicio) 
+            END
         `);
         
         await queryRunner.query(`
             UPDATE eventos 
-            SET fecha_fin_new = DATE(fecha_fin)
+            SET fecha_fin_new = CASE 
+                WHEN fecha_fin IS NULL OR fecha_fin < '1000-01-01 00:00:00' THEN '2000-01-01'
+                ELSE DATE(fecha_fin) 
+            END
         `);
 
         // 4. Elimina las columnas originales
