@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Eventos } from "../entities/eventos";
 import { validate } from "class-validator";
-import { error } from "console";
-import { parseISO, addHours } from "date-fns";
+import { parseISO } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 
 export async function getAllEvents(req: Request, res: Response, next: NextFunction){
@@ -39,12 +38,11 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
     try {
         const { title, dateStart, dateEnd, color, description } = req.body;
 
-        const timeZone = "America/Bogota";
 
         const evento = new Eventos();
         evento.title = title.toUpperCase();
-        evento.dateStart = toZonedTime(parseISO(dateStart), timeZone); 
-        evento.dateEnd = toZonedTime(parseISO(dateEnd), timeZone);
+        evento.dateStart = parseISO(dateStart); ;
+        evento.dateEnd = parseISO(dateEnd); ;
         evento.color = color;
         evento.description = description;
 

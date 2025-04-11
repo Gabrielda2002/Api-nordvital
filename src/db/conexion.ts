@@ -14,5 +14,5 @@ export const AppDataSource = new DataSource({
   // migrationsRun: true,
   migrations:  [__dirname + "/../migrations/*{.ts,.js}"],
   connectTimeout: 20000, // 20 segundos de tiempo de espera
-  timezone: "+00:00", // Ajusta la zona horaria según sea necesario
+  timezone: "-05:00", // Ajusta la zona horaria según sea necesario
 });
