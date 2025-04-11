@@ -36,15 +36,17 @@ export async function getEventById(req: Request, res: Response, next: NextFuncti
 
 export async function createEvent(req: Request, res: Response, next: NextFunction){
     try {
-        const { title, dateStart, dateEnd, color, description } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
 
 
         const evento = new Eventos();
         evento.title = title.toUpperCase();
-        evento.dateStart = parseISO(dateStart); ;
-        evento.dateEnd = parseISO(dateEnd); ;
+        evento.dateStart = parseISO(dateStart);
+        evento.dateEnd = parseISO(dateEnd);
         evento.color = color;
         evento.description = description;
+        evento.timeStart = timeStart;
+        evento.timeEnd = timeEnd;
 
         const errors = await validate(evento);
 
@@ -73,7 +75,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 export async function updateEvent(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
-        const { title, dateStart, dateEnd, color, description } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
 
         const evento = await Eventos.createQueryBuilder("eventos")
         .where("eventos.id = :id", { id })
@@ -90,6 +92,8 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         evento.dateEnd = toZonedTime(parseISO(dateEnd), timeZone);
         evento.color = color;
         evento.description = description;
+        evento.timeStart = timeStart;
+        evento.timeEnd = timeEnd;
 
         const errors = await validate(evento);
 
