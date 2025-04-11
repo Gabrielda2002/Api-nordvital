@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Eventos } from "../entities/eventos";
 import { validate } from "class-validator";
 import { error } from "console";
+import { parseISO, addHours } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 export async function getAllEvents(req: Request, res: Response, next: NextFunction){
     try {
@@ -37,11 +39,12 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
     try {
         const { title, dateStart, dateEnd, color, description } = req.body;
 
+        const timeZone = "America/Bogota";
 
         const evento = new Eventos();
         evento.title = title.toUpperCase();
-        evento.dateStart = new Date(dateStart);
-        evento.dateEnd = new Date(dateEnd);
+        evento.dateStart = toZonedTime(parseISO(dateStart), timeZone); 
+        evento.dateEnd = toZonedTime(parseISO(dateEnd), timeZone);
         evento.color = color;
         evento.description = description;
 
@@ -58,6 +61,9 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
         }
 
         await evento.save();
+
+        console.log("Fecha original:", dateStart);
+        console.log("Fecha guardada:", evento.dateStart);
 
         return res.json(evento);
 
@@ -79,9 +85,11 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
             return res.status(404).json({ message: "Evento no encontrado" });
         }
 
+        const timeZone = "America/Bogota";
+
         evento.title = title.toUpperCase();
-        evento.dateStart = new Date(dateStart);
-        evento.dateEnd = new Date(dateEnd);
+        evento.dateStart = toZonedTime(parseISO(dateStart), timeZone);
+        evento.dateEnd = toZonedTime(parseISO(dateEnd), timeZone);
         evento.color = color;
         evento.description = description;
 
@@ -98,6 +106,9 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         }
 
         await evento.save();
+
+        console.log("Fecha original:", dateStart);
+        console.log("Fecha guardada:", evento.dateStart);
 
         return res.json(evento);
 
