@@ -1,7 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, query, Request, Response } from "express";
 import { Cirugias } from "../entities/cirugias";
 import { validate } from "class-validator";
 import { stat } from "fs";
+import { Radicacion } from "../entities/radicacion";
+import { CupsRadicados } from "../entities/cups-radicados";
 
 export async function getAllSurgery(req: Request, res: Response, next: NextFunction){
     try {
@@ -33,8 +35,12 @@ export async function getSurgery(req: Request, res: Response, next: NextFunction
 }
 
 export async function createSurgery(req: Request, res: Response, next: NextFunction){
+    const  queryRunner = Cirugias.getRepository().manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
         
+
         const {
             surgeryDate,
             scheduledTime,
@@ -67,12 +73,42 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
             return res.status(400).json({message: "Error creating surgery", errors: message})
         }
 
-        await surgery.save();
+        await queryRunner.manager.save(surgery);
+
+        if (radicadoId) {
+            const cupsRadicado = await CupsRadicados.createQueryBuilder("cupsRadicados")
+            .leftJoinAndSelect("cupsRadicados.radicacionRelation", "radicado")
+            .where("radicado.id = :id", { id: radicadoId })
+            .getMany();
+
+            console.log("cupsRadicado", cupsRadicado)
+
+            if (!cupsRadicado) {
+                await queryRunner.rollbackTransaction();
+                return res.status(404).json({ message: "Radicado not found" });
+            }
+
+            
+            await Promise.all(
+                cupsRadicado.map(  async (radicado) => {
+                    radicado.status = 9;
+                    await queryRunner.manager.save(cupsRadicado);
+                }));
+            
+
+
+            console.log('se actualiza el estado del radicado', cupsRadicado);
+        }
+
+        await queryRunner.commitTransaction();
 
         return res.status(201).json(surgery);
 
     } catch (error) {
+        await queryRunner.rollbackTransaction();
         next(error)
+    }finally{
+        await queryRunner.release();
     }
 }
 

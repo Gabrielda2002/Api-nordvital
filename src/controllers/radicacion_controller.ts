@@ -652,7 +652,6 @@ export async function buscarRadicadoPorDocumento(
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });
     }
-    console.log(radicacion);
 
     const radicacionFormated = radicacion.map((r) => ({
       id: r.id || "N/A",
