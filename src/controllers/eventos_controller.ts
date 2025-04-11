@@ -40,12 +40,12 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 
         const evento = new Eventos();
         evento.title = title.toUpperCase();
-        evento.dateStart = dateStart;
-        evento.dateEnd = dateEnd;
+        evento.dateStart = new Date(dateStart);
+        evento.dateEnd = new Date(dateEnd);
         evento.color = color;
         evento.description = description;
 
-        const errors = await validate(error);
+        const errors = await validate(evento);
 
         if (errors.length > 0) {
 
@@ -80,8 +80,8 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         }
 
         evento.title = title.toUpperCase();
-        evento.dateStart = dateStart;
-        evento.dateEnd = dateEnd;
+        evento.dateStart = new Date(dateStart);
+        evento.dateEnd = new Date(dateEnd);
         evento.color = color;
         evento.description = description;
 
