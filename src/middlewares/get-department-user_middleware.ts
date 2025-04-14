@@ -11,7 +11,8 @@ export const getDepartmentUser = async (req: Request, res: Response, next: NextF
         }
 
         const user = await Usuarios.createQueryBuilder("usuarios")
-        .leftJoinAndSelect('usuarios.municipioRelation', 'municipio')
+        .leftJoinAndSelect('usuarios.sedeRelation', 'sede')
+        .leftJoinAndSelect('sede.municipioRelation', 'municipio')
         .leftJoinAndSelect('municipio.departmentRelation', 'departamento')
         .where('usuarios.id = :id', { id: userId })
         .getOne();
@@ -20,7 +21,7 @@ export const getDepartmentUser = async (req: Request, res: Response, next: NextF
             return next()
         }
 
-        req.departmentUserId = user.sedeRelation.departmentRelation.id;
+        req.departmentUserId = user.sedeRelation?.departmentRelation?.id;
 
         console.log("Departamento del usuario: ", req.departmentUserId);
 
