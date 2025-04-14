@@ -303,7 +303,8 @@ export async function getUsuariosTable(
     const usuariosData = await Usuarios.createQueryBuilder("usuarios")
     .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
     .leftJoinAndSelect("usuarios.rolesRelation", "roles")
-    .leftJoinAndSelect("usuarios.municipioRelation", "municipio")
+    .leftJoinAndSelect("usuarios.sedeRelation", "sede")
+    .leftJoinAndSelect("sede.municipioRelation", "municipio")
     .getMany();
 
     const usuarios = usuariosData.map((usuario) => ({
@@ -319,7 +320,7 @@ export async function getUsuariosTable(
       idDocumento: usuario.typeDocumentRelation?.id || "N/A",
       roles: usuario.rolesRelation?.name || "N/A",
       idRol: usuario.rolesRelation?.id || "N/A",
-      municipio: usuario.sedeRelation.municipioRelation?.name || "N/A",
+      municipio: usuario.sedeRelation?.municipioRelation?.name || "N/A",
       idMunicipio: usuario.sedeRelation?.municipioRelation?.id || "N/A",
       area: usuario.area|| "N/A",
       cargo: usuario.position || "N/A",
