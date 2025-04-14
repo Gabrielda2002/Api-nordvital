@@ -11,9 +11,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
         // Buscar el usuario por dniNumber
         const user = await Usuarios.createQueryBuilder("usuario")
-        .leftJoinAndSelect("usuario.municipioRelation", "municipio")
         .leftJoinAndSelect("usuario.sedeRelation", "sede")
-        .where("usuario.CedulaUsuario = :dniNumber", { dniNumber })
+        .leftJoinAndSelect("sede.municipioRelation", "municipio")
+        .where("usuario.dniNumber = :dniNumber", { dniNumber })
         .getOne();
 
         const passwordMatch = await bcrypt.compare(password, user?.password || '');
@@ -32,7 +32,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const token = jwt.sign({ id: user.id, dniNumber: user.dniNumber, rol: user.rol }, JWT_SECRET, { expiresIn: '5h' });
 
         // Enviar el token al cliente
-        res.json({  token,Municipio: user.sedeRelation.municipioRelation.id,rol: user.rol , user: {
+        res.json({  token,Municipio: user.sedeRelation?.municipioRelation?.id,rol: user.rol , user: {
             id: user.id,
             dniNumber: user.dniNumber,
             email: user.email,
@@ -42,10 +42,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             status: user.status,
             photo: user.photo,
             phone: user.phoneNumber,
-            municipality: user.sedeRelation.municipioRelation.name,
+            municipality: user.sedeRelation?.municipioRelation?.name,
             area: user.area,
             position: user.position,
-            headquarters: user.sedeRelation.name,
+            headquarters: user.sedeRelation?.name,
         } ,message: "Inicio de sesión exitoso" });
     } catch (error) {
         next(error);
