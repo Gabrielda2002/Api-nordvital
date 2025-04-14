@@ -47,12 +47,12 @@ export class Usuarios extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "IdUsuario" })
   id: number;
 
-  @Column({ name: "CedulaUsuario" })
+  @Column({ name: "cedula" })
   @IsInt()
   @IsNotEmpty({ message: "El número de cédula es requerido" })
   dniNumber: number;
 
-  @Column({ name: "NombreUsuario" })
+  @Column({ name: "nombre" })
   @IsString()
   @IsNotEmpty({ message: "El nombre del usuario es requerido" })
   @Length(2, 150, {
@@ -60,7 +60,7 @@ export class Usuarios extends BaseEntity {
   })
   name: string;
 
-  @Column({ name: "ApellidoUsuario" })
+  @Column({ name: "apellido" })
   @IsString()
   @IsNotEmpty({ message: "El apellido del usuario es requerido" })
   @Length(2, 150, {
@@ -68,12 +68,12 @@ export class Usuarios extends BaseEntity {
   })
   lastName: string;
 
-  @Column({ name: "TipoCedula" })
+  @Column({ name: "tipo_cedula_id" })
   @IsInt()
   @IsNotEmpty({ message: "El tipo de cédula es requerido" })
   dniType: number;
 
-  @Column({ name: "EmailUsuario" })
+  @Column({ name: "email" })
   @IsEmail()
   @IsOptional()
   @Length(10, 150, {
@@ -81,7 +81,7 @@ export class Usuarios extends BaseEntity {
   })
   email: string;
 
-  @Column({ name: "ClaveUsuario" })
+  @Column({ name: "contrasena" })
   @IsString()
   @IsNotEmpty({ message: "La contraseña del usuario es requerida" })
   @Length(8, 150, {
@@ -93,18 +93,12 @@ export class Usuarios extends BaseEntity {
   })
   password: string;
 
-  @Column({ name: "Estado" })
+  @Column({ name: "estado" })
   @IsBoolean()
   @IsNotEmpty({ message: "El estado del usuario es requerido" })
   status: boolean;
 
-  @Column({ name: "Nit_Municipio" })
-  @IsInt()
-  @IsNotEmpty({ message: "El municipio es requerido" })
-  // @Length(1, 10, {message: "El municipio debe tener entre 1 y 10 dígitos"})
-  municipio: number;
-
-  @Column({ name: "Tipo_rol" })
+  @Column({ name: "rol_id" })
   @IsInt()
   @IsNotEmpty({ message: "El rol es requerido" })
   rol: number;
@@ -144,21 +138,16 @@ export class Usuarios extends BaseEntity {
 
   // * relaciones con llaves foraneas
 
-  // * relacion con municipio
-  @ManyToOne(() => Municipio, (municipio) => municipio.usuarioRelation)
-  @JoinColumn({ name: "Nit_Municipio" })
-  municipioRelation: Municipio;
-
   // * relacion con roles
   @ManyToOne(() => Roles, (roles) => roles.usuarioRelation)
-  @JoinColumn({ name: "Tipo_rol" })
+  @JoinColumn({ name: "rol_id" })
   rolesRelation: Roles;
 
   @ManyToOne(
     () => TipoDocumento,
     (tipoDocumento) => tipoDocumento.usuarioRelation
   )
-  @JoinColumn({ name: "TipoCedula" })
+  @JoinColumn({ name: "tipo_cedula_id" })
   typeDocumentRelation: TipoDocumento;
 
   // * relacion con sede

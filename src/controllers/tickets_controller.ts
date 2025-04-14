@@ -154,7 +154,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
             priority: t.priorityRelation?.name || 'N/A',
             status: t.statusRelation?.name || 'N/A',
             headquarter: t.userRelation?.sedeRelation?.name || 'N/A',
-            municipio: t.userRelation?.municipioRelation?.name || 'N/A',
+            municipio: t.userRelation?.sedeRelation?.municipioRelation?.name || 'N/A',
             phone: t.userRelation?.phoneNumber || 'N/A',
             createdAt: t.createdAt,
             updatedAt: t.updatedAt,

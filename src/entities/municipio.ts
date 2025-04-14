@@ -43,10 +43,6 @@ export class Municipio extends BaseEntity {
 
   // * relaciones
 
-  // * relacion con usuarios
-  @OneToMany(() => Usuarios, (usuarios) => usuarios.municipioRelation)
-  usuarioRelation: Usuarios[];
-
   // * relacion con lugar radicacion
   @OneToMany(() => LugarRadicacion, (lugar) => lugar.municipioRelation)
   placeRelation: LugarRadicacion[];
