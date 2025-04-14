@@ -56,7 +56,6 @@ export async function createUsuario(
       dniType,
       email,
       password,
-      municipio,
       rol,
       area,
       cargo,
@@ -80,7 +79,6 @@ export async function createUsuario(
     const saltRounds = 10;
     usuario.password = await bcrypt.hash(password, saltRounds); 
     usuario.status = true;
-    usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
     usuario.area = area.toUpperCase();
     usuario.position = cargo.toUpperCase();
@@ -122,7 +120,6 @@ export async function updateUsuario(
       email,
       password,
       status,
-      municipio,
       rol,
     } = req.body;
 
@@ -143,7 +140,6 @@ export async function updateUsuario(
         usuario.password = await bcrypt.hash(password, saltRounds);
     }
     usuario.status = status;
-    usuario.municipio = municipio;
     usuario.rol = rol;
 
     const errors = await validate(usuario);
@@ -323,8 +319,8 @@ export async function getUsuariosTable(
       idDocumento: usuario.typeDocumentRelation?.id || "N/A",
       roles: usuario.rolesRelation?.name || "N/A",
       idRol: usuario.rolesRelation?.id || "N/A",
-      municipio: usuario.municipioRelation?.name || "N/A",
-      idMunicipio: usuario.municipioRelation?.id || "N/A",
+      municipio: usuario.sedeRelation.municipioRelation?.name || "N/A",
+      idMunicipio: usuario.sedeRelation?.municipioRelation?.id || "N/A",
       area: usuario.area|| "N/A",
       cargo: usuario.position || "N/A",
       sedeId: usuario.headquarters || "N/A",
@@ -378,7 +374,7 @@ export async function updateUsuarioTable(request: Request, response: Response, n
   try {
     
     const {id} = request.params;
-    const { dniNumber, name, lastName, dniType, email, password, municipio,status, rol, area, position, headquarters, phoneNumber } = request.body;
+    const { dniNumber, name, lastName, dniType, email, password,status, rol, area, position, headquarters, phoneNumber } = request.body;
     console.log(request.body);
 
     const usuario = await Usuarios.findOneBy({id: parseInt(id)});
@@ -396,7 +392,6 @@ export async function updateUsuarioTable(request: Request, response: Response, n
       const saltRounds = 10;
       usuario.password = await bcrypt.hash(password, saltRounds);
     }
-    usuario.municipio = parseInt(municipio);
     usuario.rol = parseInt(rol);
     usuario.area = area.toUpperCase();
     usuario.position = position.toUpperCase();
