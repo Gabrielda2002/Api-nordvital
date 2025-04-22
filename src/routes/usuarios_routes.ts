@@ -296,6 +296,27 @@ router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1']), val
  */
 router.post("/search-user-by-name", authenticate, authorizeRoles(['1', '2']), searchUsuarios);
 
+/**
+ * @swagger
+ * /update-password:
+ *   put:
+ *     summary: Actualizar contraseñas de usuarios a una clave genérica
+ *     description: Esta ruta permite actualizar las contraseñas de todos los usuarios con un ID mayor a 72 a una contraseña genérica predefinida.
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Contraseñas actualizadas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Contraseñas actualizadas correctamente
+ */
 router.put('/update-password', authenticate, authorizeRoles(['1']), updatePasswordGeneric);
 
 export default router;
