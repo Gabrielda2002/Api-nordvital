@@ -1004,6 +1004,52 @@ export const options = {
                             description: 'Nombre de la prioridad'
                         }
                     }
+                },
+                EncuestaSatisfaccion: {
+                    type: 'object',
+                    required: ['ticketId', 'usuarioId', 'calificacionGeneral', 'tiempoRespuesta', 'conocimientoTecnico', 'amabilidadSoporte', 'solucionEfectiva', 'comentario', 'recomendariaServicio'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID de la encuesta de satisfacción'
+                        },
+                        ticketId: {
+                            type: 'integer',
+                            description: 'ID del ticket asociado'
+                        },
+                        usuarioId: {
+                            type: 'integer',
+                            description: 'ID del usuario que responde la encuesta'
+                        },
+                        calificacionGeneral: {
+                            type: 'integer',
+                            description: 'Calificación general de la encuesta'
+                        },
+                        tiempoRespuesta: {
+                            type: 'integer',
+                            description: 'Calificación del tiempo de respuesta'
+                        },
+                        conocimientoTecnico: {
+                            type: 'integer',
+                            description: 'Calificación del conocimiento técnico'
+                        },
+                        amabilidadSoporte: {
+                            type: 'integer',
+                            description: 'Calificación de la amabilidad del soporte'
+                        },
+                        solucionEfectiva: {
+                            type: 'boolean',
+                            description: 'Si la solución fue efectiva o no'
+                        },
+                        comentario: {
+                            type: 'string',
+                            description: 'Comentario adicional'
+                        },
+                        recomendariaServicio:{
+                            type:'boolean',
+                            description:'Si recomendaría el servicio o no'
+                        }
+                    }
                 }
             }
         },
@@ -1203,6 +1249,10 @@ export const options = {
             {
                 name: 'Prioridades',
                 description: 'Endpoints para la gestión de prioridades de tickets'
+            },
+            {
+                name: "EncuestasSatisfaccion",
+                description: "Endpoints para la gestión de encuestas de satisfacción"
             }
         ]
     },
