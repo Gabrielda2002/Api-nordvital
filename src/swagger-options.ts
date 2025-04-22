@@ -1151,6 +1151,47 @@ export const options = {
                             description: 'Fecha de última actualización del registro'
                         }
                     }
+                },
+                SeguimientoInventarioGeneral: {
+                    type: 'object',
+                    required: ['itemId', 'eventDate', 'typeEvent', 'description', 'responsable'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del seguimiento'
+                        },
+                        itemId: {
+                            type: 'integer',
+                            description: 'ID del ítem del inventario general'
+                        },
+                        eventDate: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha del evento'
+                        },
+                        typeEvent: {
+                            type: 'string',
+                            description: 'Tipo de evento registrado'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Descripción del evento'
+                        },
+                        responsable: {
+                            type: 'integer',
+                            description: 'ID del responsable del evento'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación del registro'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de última actualización del registro'
+                        }
+                    }
                 }
             }
         },
@@ -1358,6 +1399,10 @@ export const options = {
             {
                 name: 'Inventario General',
                 description: 'Endpoints para la gestión del inventario general'
+            },
+            {
+                name: 'Seguimiento Inventario General',
+                description: 'Endpoints para la gestión del seguimiento del inventario general'
             }
         ]
     },
