@@ -1050,6 +1050,107 @@ export const options = {
                             description:'Si recomendaría el servicio o no'
                         }
                     }
+                },
+                InventarioGeneral: {
+                    type: 'object',
+                    required: ['name', 'brand', 'model', 'serialNumber', 'location', 'quantity', 'acquisitionDate', 'purchaseValue', 'warranty', 'inventoryNumber'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del inventario general'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del activo'
+                        },
+                        brand: {
+                            type: 'string',
+                            description: 'Marca del activo'
+                        },
+                        model: {
+                            type: 'string',
+                            description: 'Modelo del activo'
+                        },
+                        serialNumber: {
+                            type: 'string',
+                            description: 'Número de serie del activo'
+                        },
+                        location: {
+                            type: 'string',
+                            description: 'Ubicación del activo'
+                        },
+                        quantity: {
+                            type: 'integer',
+                            description: 'Cantidad del activo'
+                        },
+                        acquisitionDate: {
+                            type: 'string',
+                            format: 'date',
+                            description: 'Fecha de adquisición del activo'
+                        },
+                        purchaseValue: {
+                            type: 'number',
+                            description: 'Valor de compra del activo'
+                        },
+                        warranty: {
+                            type: 'boolean',
+                            description: 'Indica si el activo tiene garantía'
+                        },
+                        warrantyPeriod: {
+                            type: 'string',
+                            description: 'Periodo de garantía del activo'
+                        },
+                        inventoryNumber: {
+                            type: 'string',
+                            description: 'Número de inventario del activo'
+                        },
+                        classificationId: {
+                            type: 'integer',
+                            description: 'ID de la clasificación del activo'
+                        },
+                        headquartersId: {
+                            type: 'integer',
+                            description: 'ID de la sede del activo'
+                        },
+                        statusId: {
+                            type: 'integer',
+                            description: 'ID del estado del activo'
+                        },
+                        assetId: {
+                            type: 'integer',
+                            description: 'ID del tipo de activo'
+                        },
+                        materialId: {
+                            type: 'integer',
+                            description: 'ID del material del activo'
+                        },
+                        areaTypeId: {
+                            type: 'integer',
+                            description: 'ID del tipo de área del activo'
+                        },
+                        assetTypeId: {
+                            type: 'integer',
+                            description: 'ID del tipo de activo'
+                        },
+                        responsableId: {
+                            type: 'integer',
+                            description: 'ID del responsable del activo'
+                        },
+                        dependencyAreaId: {
+                            type: 'integer',
+                            description: 'ID del área de dependencia del activo'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación del registro'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de última actualización del registro'
+                        }
+                    }
                 }
             }
         },
@@ -1253,6 +1354,10 @@ export const options = {
             {
                 name: "EncuestasSatisfaccion",
                 description: "Endpoints para la gestión de encuestas de satisfacción"
+            },
+            {
+                name: 'Inventario General',
+                description: 'Endpoints para la gestión del inventario general'
             }
         ]
     },
