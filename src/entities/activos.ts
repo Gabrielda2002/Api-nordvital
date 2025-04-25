@@ -30,8 +30,8 @@ export class Activo extends BaseEntity {
     @OneToMany(() => InventarioGeneral, (inventario) => inventario.assetRelation)
     inventarios: InventarioGeneral[];
     
-        @ManyToOne(() => Clasificacion, (clasificacion) => clasificacion.activos, { onDelete: "CASCADE" })
-        @JoinColumn({ name: "id_clasificacion" })
-        clasificacion: Clasificacion;
+    @ManyToOne(() => Clasificacion, (clasificacion) => clasificacion.activos, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "id_clasificacion" })
+    clasificacion: Clasificacion;
     
 }

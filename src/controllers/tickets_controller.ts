@@ -136,7 +136,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
         .leftJoinAndSelect("tickets.categoryRelation", "categoria" )
         .leftJoinAndSelect("tickets.userRelation", "usuario")
         .leftJoinAndSelect("usuario.sedeRelation", "sede")
-        .leftJoinAndSelect("usuario.municipioRelation", "municipio")
+        .leftJoinAndSelect("sede.municipioRelation", "municipio")
         .orderBy("tickets.createdAt", "DESC")
         .getMany();
 

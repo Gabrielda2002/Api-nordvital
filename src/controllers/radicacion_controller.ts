@@ -315,7 +315,7 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicador.municipioRelation", "municipio")
+      .leftJoinAndSelect("place.municipioRelation", "municipio")
       .leftJoinAndSelect("municipio.departmentRelation", "departamento")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")

@@ -55,27 +55,29 @@ export class NotificationService {
    * Obtiene todas las notificaciones de un usuario
    */
   static async getUserNotifications(userId: number): Promise<Notification[]> {
-    const notifications =  await Notification.createQueryBuilder("notification")
+    const notifications = await Notification.createQueryBuilder("notification")
       .where("notification.user_id = :userId", { userId })
       .andWhere("notification.is_read = :isRead", { isRead: false })
       .orderBy("notification.created_at", "DESC")
       .getMany();
 
     // validar si ticket tiene encuestra registrada y si la tiene no mostrar notificacion
-    for(const notification of notifications){
-      const encuestas = await EncuestasSatisfaccion.createQueryBuilder("encuestaSatisfaccion")
-        .where("encuestaSatisfaccion.ticketId = :referenceId", { referenceId: notification.referenceId })
+    for (const notification of notifications) {
+      const encuestas = await EncuestasSatisfaccion.createQueryBuilder(
+        "encuestaSatisfaccion"
+      )
+        .where("encuestaSatisfaccion.ticketId = :referenceId", {
+          referenceId: notification.referenceId,
+        })
         .getOne();
       // si hay una encuesta para el ticket no returnar la notificacion
-      if(encuestas){
+      if (encuestas) {
         notification.isRead = true;
         await notification.save();
       }
-
     }
 
     return notifications;
-    
   }
 
   /**
@@ -112,6 +114,14 @@ export class NotificationService {
       console.log(
         `[ENVIANDO NOTIFICACIONES A ${users.length} usuarios con el rol ${roleId} const user of users]`
       );
+
+      io.to(`role_${roleId}`).emit("newNotification", {
+        title,
+        message,
+        referenceId,
+        referenceType,
+      });
+
       for (const user of users) {
         const notification = new Notification();
         notification.userId = user.id;
@@ -128,7 +138,7 @@ export class NotificationService {
           notificationId: notification.id,
           type: referenceType,
         });
-      };
+      }
     } catch (error) {}
   }
 }

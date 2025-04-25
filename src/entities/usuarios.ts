@@ -44,7 +44,7 @@ import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "IdUsuario" })
+  @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
   @Column({ name: "cedula" })
