@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Tickets } from "../entities/tickets";
 import { NotificationService } from "../services/notificationService";
+import { format, toZonedTime } from "date-fns-tz";
 
 export async function getAllTickets(req: Request, res: Response, next: NextFunction){
     try {
@@ -144,7 +145,19 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
             return res.status(404).json({message: "tickets not found"});
         }
 
-        const ticketsFormat = tickets.map(t => ({
+        const timeZone = "America/Bogota";
+
+        const ticketsFormat = tickets.map(t => {
+     
+            const zonedDate = t.createdAt 
+                ? toZonedTime(t.createdAt, timeZone)
+                : null;
+
+            const zonedDateUpdated = t.updatedAt
+                ? toZonedTime(t.updatedAt, timeZone)
+                : null;
+
+            return {
             id: t.id,
             title: t.title,
             description: t.description,
@@ -156,9 +169,10 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
             headquarter: t.userRelation?.sedeRelation?.name || 'N/A',
             municipio: t.userRelation?.sedeRelation?.municipioRelation?.name || 'N/A',
             phone: t.userRelation?.phoneNumber || 'N/A',
-            createdAt: t.createdAt,
-            updatedAt: t.updatedAt,
-        }));
+            createdAt: zonedDate ? format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
+            updatedAt: zonedDateUpdated ? format(zonedDateUpdated, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
+        }
+    });
 
 
         return res.json(ticketsFormat);
