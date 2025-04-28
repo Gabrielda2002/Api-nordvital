@@ -666,6 +666,7 @@ export async function buscarRadicadoPorDocumento(
       email: r.patientRelation?.email || "N/A",
       address: r.patientRelation?.address || "N/A",
       ipsPrimaria: r.patientRelation?.ipsPrimariaRelation?.name || "N/A",
+      ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
       auditDate: r.auditDate || "N/A",
       suportName: r.soportesRelation?.nameSaved || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
