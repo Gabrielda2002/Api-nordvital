@@ -1192,6 +1192,112 @@ export const options = {
                             description: 'Fecha de última actualización del registro'
                         }
                     }
+                },
+                Participante: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del participante'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del participante'
+                        },
+                        lastName: {
+                            type: 'string',
+                            description: 'Apellido del participante'
+                        },
+                        country: {
+                            type: 'string',
+                            description: 'País de residencia'
+                        },
+                        city: {
+                            type: 'string',
+                            description: 'Ciudad de residencia'
+                        },
+                        profession: {
+                            type: 'string',
+                            description: 'Profesión del participante'
+                        },
+                        typeDocument: {
+                            type: 'string',
+                            description: 'Tipo de documento'
+                        },
+                        documentNumber: {
+                            type: 'integer',
+                            description: 'Número de documento'
+                        },
+                        email: {
+                            type: 'string',
+                            description: 'Correo electrónico'
+                        },
+                        phone: {
+                            type: 'integer',
+                            description: 'Número de teléfono'
+                        },
+                        typeParticipant: {
+                            type: 'string',
+                            description: 'Tipo de participante'
+                        }
+                    }
+                },
+                ParticipanteInput: {
+                    type: 'object',
+                    required: [
+                        'name',
+                        'lastName',
+                        'country',
+                        'city',
+                        'profession',
+                        'typeDocument',
+                        'numberDocument',
+                        'email',
+                        'phone',
+                        'typeParticipant'
+                    ],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del participante'
+                        },
+                        lastName: {
+                            type: 'string',
+                            description: 'Apellido del participante'
+                        },
+                        country: {
+                            type: 'string',
+                            description: 'País de residencia'
+                        },
+                        city: {
+                            type: 'string',
+                            description: 'Ciudad de residencia'
+                        },
+                        profession: {
+                            type: 'string',
+                            description: 'Profesión del participante'
+                        },
+                        typeDocument: {
+                            type: 'string',
+                            description: 'Tipo de documento'
+                        },
+                        numberDocument: {
+                            type: 'string',
+                            description: 'Número de documento'
+                        },
+                        email: {
+                            type: 'string',
+                            description: 'Correo electrónico'
+                        },
+                        phone: {
+                            type: 'string',
+                            description: 'Número de teléfono'
+                        },
+                        typeParticipant: {
+                            type: 'string',
+                            description: 'Tipo de participante'
+                        }
+                    }
                 }
             }
         },
@@ -1403,6 +1509,10 @@ export const options = {
             {
                 name: 'Seguimiento Inventario General',
                 description: 'Endpoints para la gestión del seguimiento del inventario general'
+            },
+            {
+                name: 'Participantes',
+                description: 'Endpoints para la gestión de participantes'
             }
         ]
     },
