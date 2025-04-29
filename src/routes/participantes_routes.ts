@@ -58,6 +58,6 @@ router.get('/participants', authenticate, authorizeRoles(['1']), getAllParticipa
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/participants', authenticate, authorizeRoles(['1']), createParticipant);
+router.post('/participants', createParticipant);
 
 export default router;

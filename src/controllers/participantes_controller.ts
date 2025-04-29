@@ -32,6 +32,9 @@ export async function createParticipant(
       email,
       phone,
       typeParticipant,
+      department,
+        company,
+        address
     } = req.body;
 
     const partcipantExist = await Participantes.createQueryBuilder('participant')
@@ -52,10 +55,13 @@ export async function createParticipant(
     participant.city = city.toUpperCase();
     participant.profession = profession.toUpperCase();
     participant.typeDocument = typeDocument.toUpperCase();
-    participant.documentNumber = parseInt(numberDocument);
+    participant.documentNumber = numberDocument;
     participant.email = email.toLowerCase();
-    participant.phone = parseInt(phone);
+    participant.phone = phone;
     participant.typeParticipant = typeParticipant.toUpperCase();
+    participant.department = department.toUpperCase();
+    participant.company = company.toUpperCase();
+    participant.address = address.toUpperCase();
 
     const errors = await validate(participant);
 
