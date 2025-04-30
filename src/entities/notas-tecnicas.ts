@@ -50,6 +50,10 @@ export class NotasTecnicas extends BaseEntity {
     @IsNotEmpty()
     rate: number;
 
+    @Column({name: 'estado', default: 1})
+    @IsNotEmpty()
+    status: boolean;
+
     @Column({name: 'id_tipo_servicio', nullable: true})
     @IsOptional()
     idTypeService?: number;
