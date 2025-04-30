@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica } from "../controllers/notas-tecnicas_controller";
+import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica, updateNotaTecnicaStatusFromExcel } from "../controllers/notas-tecnicas_controller";
 import { validarId } from "../middlewares/validar-id";
+import { uploadXlsx } from "../middlewares/upload-xlsx-PS";
 
 const router = Router();
 
@@ -133,5 +134,7 @@ router.put('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId
  *         description: Nota técnica eliminada
  */
 router.delete('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId, deleteNotaTecnica);
+
+router.put('/notas/tecnicas/status', authenticate, authorizeRoles(['1']), uploadXlsx ,updateNotaTecnicaStatusFromExcel);
 
 export default router;
