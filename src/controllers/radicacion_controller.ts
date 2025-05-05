@@ -475,6 +475,9 @@ export async function cirugiasTable(
       .leftJoinAndSelect("patient.documentRelation", "document")
       .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect('cupsRadicados.seguimientoAuxiliarRelation', 'seguimientoCups')
+      .leftJoinAndSelect('seguimientoCups.usuarioRelation', 'usuarioSeguimientoCups')
+      .leftJoinAndSelect('seguimientoCups.estadoSeguimientoRelation', 'statusSeguimientoCups')
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect(
         "cupsRadicados.functionalUnitRelation",
@@ -515,6 +518,14 @@ export async function cirugiasTable(
         id: c.id,
         code: c.code,
         description: c.DescriptionCode,
+        seguimiento: c.seguimientoAuxiliarRelation?.map(s => ({
+          id: s.id,
+          estado: s.estadoSeguimientoRelation?.name || "N/A",
+          observacion: s.observation,
+          fechaCreacion: s.createdAt,
+          Nombre: s.usuarioRelation?.name || "N/A",
+          Apellido: s.usuarioRelation?.lastName || "N/A",
+        }))
       })),
       grupoServicios: r.servicesGroupRelation?.name || "N/A",
       idGrupoServicios: r.servicesGroupRelation?.id || "N/A",
@@ -535,8 +546,8 @@ export async function cirugiasTable(
           fechaCreacion: g.createdAt,
           Nombre: g.userRelation?.name || "N/A",
           Apellido: g.userRelation?.lastName || "N/A",
-        })),
-      })),
+        }))
+      }))
     }));
 
     return res.json(cirugiasFormat);
