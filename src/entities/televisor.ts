@@ -26,7 +26,7 @@ export class Televisor extends BaseEntity {
     @IsString()
     @IsNotEmpty({message: "La ubicación es requerida"})
     @Length(3, 255, {message: "La ubicación debe tener entre $constraint1 y $constraint2 caracteres"})
-    ubicacion: string;
+    location: string;
 
     @Column({name: "marca"})
     @IsString()
@@ -55,7 +55,7 @@ export class Televisor extends BaseEntity {
     @IsString()
     @IsNotEmpty({message: "El tipo de pantalla es requerido"})
     @Length(2, 100, {message: "El tipo de pantalla debe tener entre $constraint1 y $constraint2 caracteres"})
-    tipoPantalla: string;
+    screenType: string;
 
     @Column({name: "smart_tv"})
     @IsBoolean()
@@ -66,13 +66,13 @@ export class Televisor extends BaseEntity {
     @IsString()
     @IsOptional()
     @Length(2, 255, {message: "El sistema operativo debe tener entre $constraint1 y $constraint2 caracteres"})
-    sistemaOperativo: string;
+    operativeSystem: string;
 
     @Column({name: "direccion_ip", nullable: true})
     @IsString()
     @IsOptional()
     @Length(7, 20, {message: "La dirección IP debe tener entre $constraint1 y $constraint2 caracteres"})
-    direccionIp: string;
+    addressIp: string;
 
     @Column({name: "mac", nullable: true})
     @IsString()
@@ -84,7 +84,7 @@ export class Televisor extends BaseEntity {
     @IsString()
     @IsNotEmpty({message: "La resolución es requerida"})
     @Length(2, 100, {message: "La resolución debe tener entre $constraint1 y $constraint2 caracteres"})
-    resolucion: string;
+    resolution: string;
 
     @Column({name: "num_puertos_hdmi", nullable: true})
     @IsInt()
@@ -100,34 +100,34 @@ export class Televisor extends BaseEntity {
     @IsString()
     @IsOptional()
     @Length(2, 255, {message: "La conectividad debe tener entre $constraint1 y $constraint2 caracteres"})
-    conectividad: string;
+    connectivity: string;
 
     @Column({name: "fecha_compra"})
     @IsDate()
     @IsNotEmpty({message: "La fecha de compra es requerida"})
-    fechaCompra: Date;
+    purchaseDate: Date;
 
     @Column({name: "tiempo_garantia"})
     @IsString()
     @IsNotEmpty({message: "El tiempo de garantía es requerido"})
     @Length(2, 100, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
-    tiempoGarantia: string;
+    warrantyTime: string;
 
     @Column({name: "garantia"})
     @IsBoolean()
     @IsNotEmpty({message: "La garantía es requerida"})
-    garantia: boolean;
+    warranty: boolean;
 
     @Column({name: "fecha_entrega"})
     @IsDate()
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
-    fechaEntrega: Date;
+    deliveryDate: Date;
 
     @Column({name: "numero_inventario"})
     @IsString()
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 255, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
-    numeroInventario: string;
+    inventoryNumber: string;
 
     // @Column({name: "area_responsable"})
     // @IsString()
@@ -148,18 +148,18 @@ export class Televisor extends BaseEntity {
     @Column({name: "observaciones", nullable: true})
     @IsString()
     @IsOptional()
-    observaciones: string;
+    observation: string;
 
     @Column({name: "estado"})
     @IsString()
     @IsNotEmpty({message: "El estado es requerido"})
     @Length(2, 100, {message: "El estado debe tener entre $constraint1 y $constraint2 caracteres"})
-    estado: string;
+    status: string;
 
     @Column({name: "valor_adquisicion", type: "decimal", precision: 12, scale: 2, nullable: true})
     @IsNumber()
     @IsOptional()
-    valorAdquisicion: number;
+    acquisitionValue: number;
 
     @CreateDateColumn({name: "created_at"})
     createdAt: Date;

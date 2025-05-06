@@ -17,18 +17,18 @@ export class SeguimientoTelevisor extends BaseEntity {
     @Column({name: "fecha_evento"})
     @IsDate()
     @IsNotEmpty({message: "La fecha del evento es requerida"})
-    fechaEvento: Date;
+    eventDate: Date;
 
     @Column({name: "tipo_evento"})
     @IsString()
     @IsNotEmpty({message: "El tipo de evento es requerido"})
     @Length(3, 255, {message: "El tipo de evento debe tener entre $constraint1 y $constraint2 caracteres"})
-    tipoEvento: string;
+    eventType: string;
 
     @Column({name: "descripcion"})
     @IsString()
     @IsNotEmpty({message: "La descripción es requerida"})
-    descripcion: string;
+    description: string;
 
     @Column({name: "responsable"})
     @IsInt()

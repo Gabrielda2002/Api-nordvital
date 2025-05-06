@@ -50,7 +50,7 @@ export class Celular extends BaseEntity {
     @IsString()
     @IsNotEmpty({message: "El sistema operativo es requerido"})
     @Length(2, 100, {message: "El sistema operativo debe tener entre $constraint1 y $constraint2 caracteres"})
-    sistemaOperativo: string;
+    operativeSystem: string;
 
     @Column({name: "version_so", nullable: true})
     @IsString()
@@ -62,19 +62,19 @@ export class Celular extends BaseEntity {
     @IsString()
     @IsNotEmpty({message: "La capacidad de almacenamiento es requerida"})
     @Length(2, 50, {message: "La capacidad de almacenamiento debe tener entre $constraint1 y $constraint2 caracteres"})
-    capacidadAlmacenamiento: string;
+    storage: string;
 
     @Column({name: "capacidad_ram"})
     @IsString()
     @IsNotEmpty({message: "La capacidad RAM es requerida"})
     @Length(2, 50, {message: "La capacidad RAM debe tener entre $constraint1 y $constraint2 caracteres"})
-    capacidadRAM: string;
+    storageRam: string;
 
     @Column({name: "numero_telefonico", nullable: true})
     @IsString()
     @IsOptional()
     @Length(7, 20, {message: "El número telefónico debe tener entre $constraint1 y $constraint2 caracteres"})
-    numeroTelefonico: string;
+    phoneNumber: string;
 
     @Column({name: "operador", nullable: true})
     @IsString()
@@ -86,12 +86,12 @@ export class Celular extends BaseEntity {
     @IsString()
     @IsOptional()
     @Length(2, 100, {message: "El tipo de plan debe tener entre $constraint1 y $constraint2 caracteres"})
-    tipoPlan: string;
+    typePlan: string;
 
     @Column({name: "fecha_vencimiento_plan", nullable: true})
     @IsDate()
     @IsOptional()
-    fechaVencimientoPlan: Date;
+    dueDatePlan: Date;
 
     @Column({name: "mac_wifi", nullable: true})
     @IsString()
@@ -103,40 +103,40 @@ export class Celular extends BaseEntity {
     @IsString()
     @IsOptional()
     @Length(12, 17, {message: "La dirección Bluetooth debe tener entre $constraint1 y $constraint2 caracteres"})
-    direccionBluetooth: string;
+    addressBluetooth: string;
 
-    @Column({name: "id_corporativo", nullable: true})
-    @IsString()
-    @IsOptional()
-    @Length(3, 255, {message: "El ID corporativo debe tener entre $constraint1 y $constraint2 caracteres"})
-    idCorporativo: string;
+    // @Column({name: "id_corporativo", nullable: true})
+    // @IsString()
+    // @IsOptional()
+    // @Length(3, 255, {message: "El ID corporativo debe tener entre $constraint1 y $constraint2 caracteres"})
+    // idCorporativo: string;
 
     @Column({name: "fecha_compra"})
     @IsDate()
     @IsNotEmpty({message: "La fecha de compra es requerida"})
-    fechaCompra: Date;
+    purchaseDate: Date;
 
     @Column({name: "tiempo_garantia"})
     @IsString()
     @IsNotEmpty({message: "El tiempo de garantía es requerido"})
     @Length(2, 100, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
-    tiempoGarantia: string;
+    warrantyTime: string;
 
     @Column({name: "garantia"})
     @IsBoolean()
     @IsNotEmpty({message: "La garantía es requerida"})
-    garantia: boolean;
+    warranty: boolean;
 
     @Column({name: "fecha_entrega"})
     @IsDate()
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
-    fechaEntrega: Date;
+    deliveryDate: Date;
 
     @Column({name: "numero_inventario"})
     @IsString()
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 255, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
-    numeroInventario: string;
+    inventoryNumber: string;
 
     @Column({name: "id_usuario", nullable: true})
     @IsInt()
@@ -156,18 +156,18 @@ export class Celular extends BaseEntity {
     @Column({name: "observaciones", nullable: true})
     @IsString()
     @IsOptional()
-    observaciones: string;
+    observation: string;
 
     @Column({name: "estado"})
     @IsString()
     @IsNotEmpty({message: "El estado es requerido"})
     @Length(2, 100, {message: "El estado debe tener entre $constraint1 y $constraint2 caracteres"})
-    estado: string;
+    status: string;
 
     @Column({name: "valor_adquisicion", type: "decimal", precision: 12, scale: 2, nullable: true})
     @IsNumber()
     @IsOptional()
-    valorAdquisicion: number;
+    acquisitionValue: number;
 
     @CreateDateColumn({name: "created_at"})
     createdAt: Date;
