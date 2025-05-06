@@ -140,10 +140,10 @@ export class Televisor extends BaseEntity {
     @IsOptional()
     idResponsable: number;
 
-    @Column({name: "acta_id", nullable: true})
-    @IsInt()
-    @IsOptional()
-    actaId: number;
+    // @Column({name: "acta_id", nullable: true})
+    // @IsInt()
+    // @IsOptional()
+    // actaId: number;
 
     @Column({name: "observaciones", nullable: true})
     @IsString()
@@ -161,6 +161,16 @@ export class Televisor extends BaseEntity {
     @IsOptional()
     acquisitionValue: number;
 
+    @Column({name:  'control_remoto'})
+    @IsBoolean()
+    @IsNotEmpty({message: "El control remoto es requerido"})
+    controlRemote: boolean;
+
+    @Column({name: 'utilidad'})
+    @IsString()
+    @IsNotEmpty({message: "La utilidad es requerida"})
+    utility: string;
+
     @CreateDateColumn({name: "created_at"})
     createdAt: Date;
 
@@ -175,10 +185,6 @@ export class Televisor extends BaseEntity {
     @ManyToOne(() => Usuarios, usuario => usuario.televisoresRelation)
     @JoinColumn({ name: "id_responsable" })
     responsableRelation: Usuarios;
-
-    @ManyToOne(() => Soportes, soportes => soportes.televisoresRelation)
-    @JoinColumn({ name: "acta_id" })
-    actaRelation: Soportes;
 
     @OneToMany(() => SeguimientoTelevisor, seguimiento => seguimiento.televisorRelation)
     seguimientoRelation: SeguimientoTelevisor[];
