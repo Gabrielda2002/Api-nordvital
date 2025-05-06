@@ -66,6 +66,7 @@ import seguimientoGeneralRoutes from './seguimiento-inventario-general_routes';
 import participantesRoutes from './participantes_routes';
 import celularesRoutes from './celular_routes';
 import televisoresRoutes from './televisor_routes';
+import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
 
 const router = Router();
 
@@ -136,5 +137,6 @@ router.use(seguimientoGeneralRoutes);
 router.use(participantesRoutes);
 router.use(celularesRoutes);
 router.use(televisoresRoutes);
+router.use(seguimientoTelevisorRoutes);
 
 export default router;
