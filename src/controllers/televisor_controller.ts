@@ -89,31 +89,31 @@ export async function createTelevisor(req: Request, res: Response, next: NextFun
         }  = req.body;
 
         const televisor = new Televisor();
-        televisor.sedeId = sedeId;
-        televisor.name = name;
+        televisor.sedeId = parseInt(sedeId);
+        televisor.name = name.toLowerCase();
         televisor.location = location;
         televisor.brand = brand;
         televisor.model = model;
         televisor.serial = serial;
-        televisor.pulgadas = pulgadas;
+        televisor.pulgadas = Number(pulgadas);
         televisor.screenType = screenType;
-        televisor.smartTv = smartTv;
+        televisor.smartTv = smartTv === 1 ? true : false;
         televisor.operativeSystem = operativeSystem;
         televisor.addressIp = addressIp;
         televisor.mac = mac;
         televisor.resolution = resolution;
-        televisor.numPuertosHdmi = numPuertosHdmi;
-        televisor.numPuertosUsb = numPuertosUsb;
+        televisor.numPuertosHdmi = Number(numPuertosHdmi);
+        televisor.numPuertosUsb = Number(numPuertosUsb);
         televisor.connectivity = connectivity;
         televisor.purchaseDate = purchaseDate;
         televisor.warrantyTime = warrantyTime;
-        televisor.warranty = warranty;
+        televisor.warranty = warranty === 1 ? true : false;
         televisor.deliveryDate = deliveryDate;
         televisor.inventoryNumber = inventoryNumber;
         televisor.observation = observation;
         televisor.status = status;
-        televisor.acquisitionValue = acquisitionValue;
-        televisor.controlRemote = controlRemote;
+        televisor.acquisitionValue = Number(acquisitionValue);
+        televisor.controlRemote = controlRemote === 1 ? true : false;
         televisor.utility = utility;
 
 
