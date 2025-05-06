@@ -141,7 +141,7 @@ export class Celular extends BaseEntity {
     @Column({name: "id_usuario", nullable: true})
     @IsInt()
     @IsOptional()
-    idUsuario: number;
+    responsable: number;
 
     @Column({name: "acta_id", nullable: true})
     @IsInt()
@@ -152,6 +152,11 @@ export class Celular extends BaseEntity {
     @IsBoolean()
     @IsOptional()
     caseProtector: boolean;
+
+    @Column({name: 'vidrio_temperado', nullable: true})
+    @IsBoolean()
+    @IsOptional()
+    temperedGlass: boolean;
 
     @Column({name: "observaciones", nullable: true})
     @IsString()
