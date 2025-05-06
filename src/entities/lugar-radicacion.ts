@@ -10,6 +10,8 @@ import { ServiciosEjecutados } from "./servicios-ejecutados";
 import { RegistroEntrada } from "./registro-entrada";
 import { InventarioGeneral } from "./inventario-general";
 import { Equipos } from "./equipos";
+import { Televisor } from "./televisor";
+import { Celular } from "./celular";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -88,4 +90,10 @@ export class LugarRadicacion extends BaseEntity{
     @OneToMany(() => Equipos, (equipos) => equipos.placeRelation)
     EquipmentRelation: Equipos[]
     
+    // Relaciones con las nuevas entidades
+    @OneToMany(() => Televisor, (televisor) => televisor.sedeRelation)
+    televisoresRelation: Televisor[]
+
+    @OneToMany(() => Celular, (celular) => celular.sedeRelation)
+    celularesRelation: Celular[]
 }
