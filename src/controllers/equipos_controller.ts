@@ -371,8 +371,8 @@ export async function getEquipmentBySede(
       lastNameUser: e.userRelation?.lastName || 'N/A',
       processEquipment: e.seguimientoEquipos?.map(s => ({
         id: s.id || 'N/A',
-        dateEvent: s.eventDate || 'N/A',
-        eventType: s.eventType || 'N/A',
+        eventDate: s.eventDate || 'N/A',
+        typeEvent: s.eventType || 'N/A',
         description: s.description || 'N/A',
         responsableLastName: s.userRelation?.name || 'N/A',
         responsableName: s.userRelation?.lastName || 'N/A',

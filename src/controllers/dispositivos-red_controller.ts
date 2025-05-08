@@ -206,8 +206,8 @@ export async function getDevicesBySede(
       inventoryNumber: d.inventoryNumber,
       seguimiento: d.seguimientoDispositivosRedRelation.map((s) => ({
         id: s.id,
-        dateEvent: s.dateEvent,
-        eventType: s.eventType,
+        eventDate: s.dateEvent,
+        typeEvent: s.eventType,
         description: s.description,
         responsableName: s.userRelation?.name,
         responsableLastName: s.userRelation?.lastName,
