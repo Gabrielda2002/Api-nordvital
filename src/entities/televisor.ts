@@ -103,7 +103,6 @@ export class Televisor extends BaseEntity {
     connectivity: string;
 
     @Column({name: "fecha_compra"})
-    @IsDate()
     @IsNotEmpty({message: "La fecha de compra es requerida"})
     purchaseDate: Date;
 
@@ -119,7 +118,6 @@ export class Televisor extends BaseEntity {
     warranty: boolean;
 
     @Column({name: "fecha_entrega"})
-    @IsDate()
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
     deliveryDate: Date;
 

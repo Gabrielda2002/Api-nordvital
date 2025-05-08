@@ -19,33 +19,34 @@ export async function getTelevisorBySedeId(req: Request, res: Response, next: Ne
         }
 
         const televisorFormatted = televisor.map( t => ({
-            id: t.id,
-            name: t.name,
-            location: t.location,
-            brand: t.brand,
-            model: t.model,
-            serial: t.serial,
-            pulgadas: t.pulgadas,
-            screenType: t.screenType,
-            smartTv: t.smartTv,
-            operativeSystem: t.operativeSystem,
-            addressIp: t.addressIp,
-            mac: t.mac,
-            resolution: t.resolution,
-            numPuertosHdmi: t.numPuertosHdmi,
-            numPuertosUsb: t.numPuertosUsb,
-            connectivity: t.connectivity,
-            purchaseDate: t.purchaseDate,
-            warrantyTime: t.warrantyTime,
-            warranty: t.warranty,
-            deliveryDate: t.deliveryDate,
-            inventoryNumber: t.inventoryNumber,
-            responsableName: t.responsableRelation?.name,
-            responsableLastName: t.responsableRelation?.lastName,
-            observations: t.observation,
-            status: t.status,
-            acquisitionValue: t.acquisitionValue,
-            controlRemote: t.controlRemote,
+            id: t.id || 'N/A',
+            name: t.name || 'N/A',
+            location: t.location || 'N/A',
+            brand: t.brand || 'N/A',
+            model: t.model || 'N/A',
+            serial: t.serial || 'N/A',
+            pulgadas: t.pulgadas || 'N/A',
+            screenType: t.screenType || 'N/A',
+            smartTv: t.smartTv || 'N/A',
+            operativeSystem: t.operativeSystem || 'N/A',
+            addressIp: t.addressIp || 'N/A',
+            mac: t.mac || 'N/A',
+            resolution: t.resolution || 'N/A',
+            numPuertosHdmi: t.numPuertosHdmi || 'N/A',
+            numPuertosUsb: t.numPuertosUsb || 'N/A',
+            connectivity: t.connectivity || 'N/A',
+            purchaseDate: t.purchaseDate || 'N/A',
+            warrantyTime: t.warrantyTime || 'N/A',
+            warranty: t.warranty || 'N/A',
+            deliveryDate: t.deliveryDate || 'N/A',
+            inventoryNumber: t.inventoryNumber || 'N/A',
+            responsableId: t.responsableRelation?.id || 'N/A',
+            responsableName: t.responsableRelation?.name || 'N/A',
+            responsableLastName: t.responsableRelation?.lastName || 'N/A',
+            observations: t.observation || 'N/A',
+            status: t.status || 'N/A',
+            acquisitionValue: t.acquisitionValue || 'N/A',
+            controlRemote: t.controlRemote || 'N/A',
             utility: t.utility,
         }))
 
@@ -85,8 +86,11 @@ export async function createTelevisor(req: Request, res: Response, next: NextFun
             status,
             acquisitionValue,
             controlRemote,
-            utility
+            utility,
+            responsable
         }  = req.body;
+
+        console.log("tiempo garantia",req.body.warrantyTime);
 
         const televisor = new Televisor();
         televisor.sedeId = parseInt(sedeId);
@@ -97,7 +101,7 @@ export async function createTelevisor(req: Request, res: Response, next: NextFun
         televisor.serial = serial;
         televisor.pulgadas = Number(pulgadas);
         televisor.screenType = screenType;
-        televisor.smartTv = smartTv === 1 ? true : false;
+        televisor.smartTv = smartTv;
         televisor.operativeSystem = operativeSystem;
         televisor.addressIp = addressIp;
         televisor.mac = mac;
@@ -106,15 +110,16 @@ export async function createTelevisor(req: Request, res: Response, next: NextFun
         televisor.numPuertosUsb = Number(numPuertosUsb);
         televisor.connectivity = connectivity;
         televisor.purchaseDate = purchaseDate;
-        televisor.warrantyTime = warrantyTime;
-        televisor.warranty = warranty === 1 ? true : false;
-        televisor.deliveryDate = deliveryDate;
-        televisor.inventoryNumber = inventoryNumber;
+        televisor.warrantyTime = warrantyTime || "Sin garantía";
+        televisor.warranty = warranty;
+        televisor.deliveryDate = deliveryDate ;
+        televisor.inventoryNumber = inventoryNumber || "Sin número de inventario";
         televisor.observation = observation;
         televisor.status = status;
         televisor.acquisitionValue = Number(acquisitionValue);
-        televisor.controlRemote = controlRemote === 1 ? true : false;
+        televisor.controlRemote = controlRemote;
         televisor.utility = utility;
+        televisor.idResponsable = responsable;
 
 
         const errors = await validate(televisor);

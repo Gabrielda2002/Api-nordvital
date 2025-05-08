@@ -6,7 +6,7 @@ import { createTelevisor, getTelevisorBySedeId } from "../controllers/televisor_
 
 const router = Router();
 
-router.get('/televisores/sede/:id', authenticate, authorizeRoles(['1']), validarId, getTelevisorBySedeId);
+router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1']), validarId, getTelevisorBySedeId);
 
 router.post('/televisores', authenticate, authorizeRoles(['1']), createTelevisor);
 
