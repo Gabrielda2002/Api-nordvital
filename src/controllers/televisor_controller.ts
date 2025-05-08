@@ -28,7 +28,7 @@ export async function getTelevisorBySedeId(req: Request, res: Response, next: Ne
             pulgadas: t.pulgadas || 'N/A',
             screenType: t.screenType || 'N/A',
             smartTv: t.smartTv || 'N/A',
-            operativeSystem: t.operativeSystem || 'N/A',
+            operativeSystem: t.operativeSystem || 'N/A',    
             addressIp: t.addressIp || 'N/A',
             mac: t.mac || 'N/A',
             resolution: t.resolution || 'N/A',
@@ -134,6 +134,90 @@ export async function createTelevisor(req: Request, res: Response, next: NextFun
         const newTelevisor = await televisor.save();
 
         return res.status(201).json({televisor});
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function updateTelevisor(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const {
+            name,
+            location,
+            brand,
+            model,
+            serial,
+            pulgadas,
+            screenType,
+            smartTv,
+            operativeSystem,
+            addressIp,
+            mac,
+            resolution,
+            numPuertosHdmi,
+            numPuertosUsb,
+            connectivity,
+            purchaseDate,
+            warrantyTime,
+            warranty,
+            deliveryDate,
+            inventoryNumber,
+            observation,
+            status,
+            acquisitionValue,
+            controlRemote,
+            utility,
+            responsable
+        }  = req.body;
+
+        const televisor = await Televisor.findOneBy({ id: parseInt(id) });
+
+        if (!televisor) {
+            return res.status(404).json({ message: "Televisor no encontrado" });
+        }
+
+        televisor.name = name.toLowerCase() || televisor.name;
+        televisor.location = location || televisor.location;
+        televisor.brand = brand || televisor.brand;
+        televisor.model = model || televisor.model;
+        televisor.serial = serial || televisor.serial;
+        televisor.pulgadas = Number(pulgadas) || televisor.pulgadas;
+        televisor.screenType = screenType || televisor.screenType;
+        televisor.smartTv = smartTv || televisor.smartTv;
+        televisor.operativeSystem = operativeSystem || televisor.operativeSystem;
+        televisor.addressIp = addressIp || televisor.addressIp;
+        televisor.mac = mac || televisor.mac;
+        televisor.resolution = resolution || televisor.resolution;
+        televisor.numPuertosHdmi = Number(numPuertosHdmi) || televisor.numPuertosHdmi;
+        televisor.numPuertosUsb = Number(numPuertosUsb) || televisor.numPuertosUsb;
+        televisor.connectivity = connectivity || televisor.connectivity;
+        televisor.purchaseDate = purchaseDate || televisor.purchaseDate;
+        televisor.warrantyTime = warrantyTime || televisor.warrantyTime;
+        televisor.warranty = warranty || televisor.warranty;
+        televisor.deliveryDate = deliveryDate || televisor.deliveryDate;
+        televisor.inventoryNumber = inventoryNumber || televisor.inventoryNumber;
+        televisor.observation = observation || televisor.observation;
+        televisor.status = status || televisor.status;
+        televisor.acquisitionValue = Number(acquisitionValue) || televisor.acquisitionValue;
+        televisor.controlRemote = controlRemote || televisor.controlRemote;
+        televisor.utility = utility || televisor.utility;
+        televisor.idResponsable = Number(responsable) || televisor.idResponsable;
+
+        const errors = await validate(televisor);
+        if (errors.length > 0) {
+            const errorMessages = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }))
+            return res.status(400).json({ message: "Error de validación", errors: errorMessages });
+        }
+
+        const updatedTelevisor = await televisor.save();
+
+        return res.status(200).json({televisor: updatedTelevisor});
 
     } catch (error) {
         next(error);
