@@ -6,19 +6,19 @@ export async function createProcessTelevisor(req: Request, res: Response, next: 
     try {
         
         const {
-            televisorId,
+            itemId,
             eventDate,
-            eventType,
+            typeEvent,
             description,
-            responsableId
+            responsable
         } = req.body;
 
         const newProcess = await SeguimientoTelevisor.create()
-        newProcess.televisorId = parseInt(televisorId);
+        newProcess.televisorId = parseInt(itemId);
         newProcess.eventDate = eventDate;
-        newProcess.eventType = eventType;
+        newProcess.eventType = typeEvent;
         newProcess.description = description;
-        newProcess.responsable = parseInt(responsableId);
+        newProcess.responsable = parseInt(responsable);
 
         const errors = await validate(newProcess);
 

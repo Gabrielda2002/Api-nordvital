@@ -11,6 +11,7 @@ export async function getTelevisorBySedeId(req: Request, res: Response, next: Ne
         .leftJoinAndSelect('televisor.sedeRelation', 'sede')
         .leftJoinAndSelect('televisor.responsableRelation', 'responsable')
         .leftJoinAndSelect('televisor.seguimientoRelation', 'seguimiento')
+        .leftJoinAndSelect('seguimiento.usuarioRelation', 'responsable_seguimiento')
         .where("televisor.sede_id = :id", { id })
         .getMany();
 
@@ -48,6 +49,15 @@ export async function getTelevisorBySedeId(req: Request, res: Response, next: Ne
             acquisitionValue: t.acquisitionValue || 'N/A',
             controlRemote: t.controlRemote || 'N/A',
             utility: t.utility,
+            seguimiento: t.seguimientoRelation?.map( s => ({
+                id: s.id || 'N/A',
+                eventDate: s.eventDate || 'N/A',
+                typeEvent: s.eventType || 'N/A',
+                description: s.description || 'N/A',
+                responsableId: s.usuarioRelation?.id || 'N/A',
+                responsableName: s.usuarioRelation?.name || 'N/A',
+                responsableLastName: s.usuarioRelation?.lastName || 'N/A'
+            }))
         }))
 
         return res.status(200).json(televisorFormatted);

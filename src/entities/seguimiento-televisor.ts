@@ -15,7 +15,6 @@ export class SeguimientoTelevisor extends BaseEntity {
     televisorId: number;
 
     @Column({name: "fecha_evento"})
-    @IsDate()
     @IsNotEmpty({message: "La fecha del evento es requerida"})
     eventDate: Date;
 
