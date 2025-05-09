@@ -75,7 +75,6 @@ export async function createEquipment(
     } = req.body;
 
     const file = req.file;
-    console.log(req.file)
     let documentId: number | null = null;
 
     // Procesar el documento si existe
@@ -133,7 +132,7 @@ export async function createEquipment(
     equipment.dhcp = dhcp === "true";
     equipment.idUsuario = managerId || null;
     equipment.lock = lock === "true";
-    equipment.lockKey = codeLock ? parseInt(codeLock) : null;
+    equipment.lockKey = codeLock || null;
     
     // Asignar el ID del documento guardado, no el filename
     equipment.docId = documentId;
@@ -269,7 +268,7 @@ export async function updateEquipment(
     equipment.dhcp = dhcp == "true";
     equipment.idUsuario = managerId || null;
     equipment.lock = lock == "true";
-    equipment.lockKey = parseInt(codeLock) || null;
+    equipment.lockKey = codeLock || null;
 
     const errors = await validate(equipment);
 
@@ -371,8 +370,8 @@ export async function getEquipmentBySede(
       lastNameUser: e.userRelation?.lastName || 'N/A',
       processEquipment: e.seguimientoEquipos?.map(s => ({
         id: s.id || 'N/A',
-        dateEvent: s.eventDate || 'N/A',
-        eventType: s.eventType || 'N/A',
+        eventDate: s.eventDate || 'N/A',
+        typeEvent: s.eventType || 'N/A',
         description: s.description || 'N/A',
         responsableLastName: s.userRelation?.name || 'N/A',
         responsableName: s.userRelation?.lastName || 'N/A',

@@ -63,7 +63,11 @@ import tipoAreaRoutes from './tipo-area_routes';
 import tipoActivoRoutes from './tipo-activo_routes';
 import areaDependenciaRoutes from './area-dependencia_routes';
 import seguimientoGeneralRoutes from './seguimiento-inventario-general_routes';
-import oarticipantesRoutes from './participantes_routes';
+import participantesRoutes from './participantes_routes';
+import celularesRoutes from './celular_routes';
+import televisoresRoutes from './televisor_routes';
+import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
+import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
 
 const router = Router();
 
@@ -131,6 +135,10 @@ router.use(tipoAreaRoutes);
 router.use(tipoActivoRoutes);
 router.use(areaDependenciaRoutes);
 router.use(seguimientoGeneralRoutes);
-router.use(oarticipantesRoutes)
+router.use(participantesRoutes);
+router.use(celularesRoutes);
+router.use(televisoresRoutes);
+router.use(seguimientoTelevisorRoutes);
+router.use(seguimientoCelularesRoutes);
 
 export default router;

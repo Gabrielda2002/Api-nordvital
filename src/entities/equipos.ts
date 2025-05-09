@@ -107,12 +107,9 @@ export class Equipos extends BaseEntity {
     @IsNotEmpty({message: "El candado es requerido"})
     lock: boolean
 
-    @Column({name: "clave_candado", nullable: true, type: "int"})
-    @IsInt()
+    @Column({name: "clave_candado", nullable: true, type: "varchar"})
     @IsOptional({message: "La clave del candado es opcional"})
-    @Min(1000, {message: "La clave del candado debe tenere 4 digitos."})
-    @Max(9999, {message: "La clave del candado debe tenere 4 digitos."})
-    lockKey: number | null
+    lockKey: string | null;
 
     @Column({name: "acta_id", nullable: true})
     @IsInt()

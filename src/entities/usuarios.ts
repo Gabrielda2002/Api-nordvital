@@ -41,6 +41,10 @@ import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
 import { RegistroEntrada } from "./registro-entrada";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
+import { Televisor } from "./televisor";
+import { Celular } from "./celular";
+import { SeguimientoTelevisor } from "./seguimiento-televisor";
+import { SeguimientoCelular } from "./seguimiento-celular";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -215,4 +219,17 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => SeguimientoInventarioGeneral, (seguimientoIvGeneral) => seguimientoIvGeneral.usuario)
   seguimientoInventarioGeneralRelation: SeguimientoInventarioGeneral[];
+
+  // Nuevas relaciones con televisores y celulares
+  @OneToMany(() => Televisor, (televisor) => televisor.responsableRelation)
+  televisoresRelation: Televisor[];
+  
+  @OneToMany(() => Celular, (celular) => celular.usuarioRelation)
+  celularesRelation: Celular[];
+  
+  @OneToMany(() => SeguimientoTelevisor, (seguimientoTv) => seguimientoTv.usuarioRelation)
+  seguimientoTelevisoresRelation: SeguimientoTelevisor[];
+  
+  @OneToMany(() => SeguimientoCelular, (seguimientoCel) => seguimientoCel.usuarioRelation)
+  seguimientoCelularesRelation: SeguimientoCelular[];
 }
