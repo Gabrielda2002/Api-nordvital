@@ -75,7 +75,6 @@ export async function createEquipment(
     } = req.body;
 
     const file = req.file;
-    console.log(req.file)
     let documentId: number | null = null;
 
     // Procesar el documento si existe
@@ -133,7 +132,7 @@ export async function createEquipment(
     equipment.dhcp = dhcp === "true";
     equipment.idUsuario = managerId || null;
     equipment.lock = lock === "true";
-    equipment.lockKey = codeLock ? parseInt(codeLock) : null;
+    equipment.lockKey = codeLock || null;
     
     // Asignar el ID del documento guardado, no el filename
     equipment.docId = documentId;
@@ -269,7 +268,7 @@ export async function updateEquipment(
     equipment.dhcp = dhcp == "true";
     equipment.idUsuario = managerId || null;
     equipment.lock = lock == "true";
-    equipment.lockKey = parseInt(codeLock) || null;
+    equipment.lockKey = codeLock || null;
 
     const errors = await validate(equipment);
 
