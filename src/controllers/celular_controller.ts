@@ -5,6 +5,7 @@ import path from "path";
 import { ifError } from "assert";
 import { validate } from "class-validator";
 import fs from "fs";
+import { saveFileToDisk } from "../middlewares/upload-doc-delivery_middleware";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -44,10 +45,7 @@ export async function getPhoneBySedeId(
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       sedeId: p.sedeId,
-      actaRelation: {
-        id: p.actaRelation?.id || null,
-        name: p.actaRelation?.name || null,
-      },
+      nameSaved: p.actaRelation?.nameSaved, 
       seguimientoRelation: p.seguimientoRelation?.map((s) => ({
         id: s.id,
         description: s.description,
@@ -163,9 +161,6 @@ export async function createPhone(
 
     // Solo procesamos el archivo si las validaciones del teléfono son correctas
     if (file) {
-        // Importamos la función saveFileToDisk desde el middleware
-        const { saveFileToDisk } = await import("../middlewares/upload-doc-delivery_middleware");
-        
         // Verificamos si ya existe un archivo con el mismo nombre
         const savedFile = saveFileToDisk(file.buffer, file.originalname);
         filePath = savedFile.path;
