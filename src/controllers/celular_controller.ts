@@ -21,7 +21,7 @@ export async function getPhoneBySedeId(
         "seguimiento.usuarioRelation",
         "responsableSeguimiento"
       )
-      .where("celular.sedeId = :sedeId", { id })
+      .where("celular.sedeId = :id", { id })
       .getMany();
 
     if (phones.length === 0) {
@@ -56,11 +56,9 @@ export async function getPhoneBySedeId(
         eventDate: s.eventDate,
         createdAt: s.createdAt,
       })),
-      responsableRelation: {
-        id: p.usuarioRelation?.id || null,
-        name:
-          `${p.usuarioRelation?.name} ${p.usuarioRelation?.lastName}` || null,
-      },
+      responsableId: p.usuarioRelation?.id || 'N/A',
+      responsableName: p.usuarioRelation?.name || 'N/A',
+      responsableLastNames: p.usuarioRelation?.lastName || 'N/A',
     }));
 
     return res.status(200).json(phonesWithDetails);
@@ -97,7 +95,7 @@ export async function createPhone(
       macWifi,
       addressBluetooth,
       purchaseDate,
-      warrantyDate,
+      warrantyTime,
       warranty,
       deliveryDate,
       inventoryNumber = "no aplica",
@@ -109,6 +107,8 @@ export async function createPhone(
       acquisitionValue,
       sedeId,
     } = req.body;
+
+    console.log(req.body)
 
     const file = req.file;
     let actaId: number | null = null;
@@ -164,7 +164,7 @@ export async function createPhone(
     newPhone.macWifi = macWifi;
     newPhone.addressBluetooth = addressBluetooth;
     newPhone.purchaseDate = purchaseDate;
-    newPhone.warrantyTime = warrantyDate;
+    newPhone.warrantyTime = warrantyTime;
     newPhone.warranty = warranty === 1 ? true : false;
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
@@ -202,6 +202,143 @@ export async function createPhone(
     await queryRunner.rollbackTransaction();
     next(error);
   }finally {
+    await queryRunner.release();
+  }
+}
+
+// actualizar celular
+export async function updatePhone(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const queryRunner = Celular.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    const { id } = req.params;
+
+    const phone = await Celular.findOneBy({ id: parseInt(id) });
+
+    if (!phone) {
+      return res.status(404).json({ message: "Celular no encontrado" });
+    }
+
+    const {
+      name,
+      brand,
+      model,
+      serial,
+      imei,
+      operativeSystem,
+      versionSO,
+      storage,
+      storageRam,
+      phoneNumber,
+      operador,
+      typePlan,
+      dueDatePlan,
+      macWifi,
+      addressBluetooth,
+      purchaseDate,
+      warrantyTime,
+      warranty,
+      deliveryDate,
+      inventoryNumber = "no aplica",
+      responsable,
+      caseProtector,
+      tenperedGlass,
+      observations,
+      status,
+      acquisitionValue,
+    } = req.body;
+
+    const file = req.file;
+    let actaId: number | null = null;
+
+    if (file) {
+        const docExists = await Soportes.findOneBy({nameSaved: path.basename(file.filename)})
+
+        if (docExists) {
+            return res.status(400).json({message: "El archivo ya existe"})
+        }
+
+        const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+        const acta = Soportes.create({
+            name: fileNameWithoutExt.normalize('NFC'),
+            url: file.path,
+            size: file.size,
+            type: file.mimetype,
+            nameSaved: path.basename(file.filename),
+        });
+
+        const errorsActa = await validate(acta);
+        if (errorsActa.length > 0) {
+            const errorMessages = errorsActa?.map((err) => ({
+                property: err.property,
+                constraints: err.constraints,
+            }));
+            return res.status(400).json({
+                message: "Error al crear el acta",
+                errors: errorMessages,
+            });
+        }
+
+        await queryRunner.manager.save(acta);
+        actaId = acta.id;
+
+    }
+
+    phone.name = name.toLowerCase();
+    phone.brand = brand.toLowerCase();
+    phone.model = model;
+    phone.serial = serial;
+    phone.imei = imei;
+    phone.operativeSystem = operativeSystem;
+    phone.versionSO = versionSO;
+    phone.storage = storage;
+    phone.storageRam = storageRam;
+    phone.phoneNumber = phoneNumber;
+    phone.operador = operador;
+    phone.typePlan = typePlan;
+    phone.dueDatePlan = dueDatePlan;
+    phone.macWifi = macWifi;
+    phone.addressBluetooth = addressBluetooth;
+    phone.purchaseDate = purchaseDate;
+    phone.warrantyTime = warrantyTime;
+    phone.warranty = warranty === 1 ? true : false;
+    phone.deliveryDate = deliveryDate;
+    phone.inventoryNumber = inventoryNumber;
+    phone.responsable = parseInt(responsable);
+    phone.caseProtector = caseProtector === 1 ? true : false;
+    phone.temperedGlass = tenperedGlass === 1 ? true : false;
+    phone.observation = observations;
+    phone.status = status;
+    phone.acquisitionValue = Number(acquisitionValue);
+
+    const errorsPhone = await validate(phone);
+
+    if (errorsPhone.length > 0) {
+      const errorMessages = errorsPhone?.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+      await queryRunner.rollbackTransaction();
+      return res.status(400).json({
+        message: "Error al actualizar el celular",
+        errors: errorMessages,
+      });
+    }
+    await queryRunner.manager.save(phone);
+    await queryRunner.commitTransaction();
+    return res.status(200).json(phone);
+  }
+  catch (error) {
+    await queryRunner.rollbackTransaction();
+    next(error);
+  } finally {
     await queryRunner.release();
   }
 }

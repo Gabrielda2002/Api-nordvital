@@ -89,7 +89,6 @@ export class Celular extends BaseEntity {
     typePlan: string;
 
     @Column({name: "fecha_vencimiento_plan", nullable: true})
-    @IsDate()
     @IsOptional()
     dueDatePlan: Date;
 
@@ -112,7 +111,6 @@ export class Celular extends BaseEntity {
     // idCorporativo: string;
 
     @Column({name: "fecha_compra"})
-    @IsDate()
     @IsNotEmpty({message: "La fecha de compra es requerida"})
     purchaseDate: Date;
 
@@ -128,7 +126,6 @@ export class Celular extends BaseEntity {
     warranty: boolean;
 
     @Column({name: "fecha_entrega"})
-    @IsDate()
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
     deliveryDate: Date;
 
@@ -138,7 +135,7 @@ export class Celular extends BaseEntity {
     @Length(3, 255, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string;
 
-    @Column({name: "id_usuario", nullable: true})
+    @Column({name: "responsable", nullable: true})
     @IsInt()
     @IsOptional()
     responsable: number;
@@ -186,7 +183,7 @@ export class Celular extends BaseEntity {
     sedeRelation: LugarRadicacion;
 
     @ManyToOne(() => Usuarios, usuario => usuario.celularesRelation)
-    @JoinColumn({ name: "id_usuario" })
+    @JoinColumn({ name: "responsable" })
     usuarioRelation: Usuarios;
 
     @ManyToOne(() => Soportes, soportes => soportes.celularesRelation)
