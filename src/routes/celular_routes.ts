@@ -9,8 +9,8 @@ const router = Router();
 
 router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1']), getPhoneBySedeId);
 
-router.post('/celular', authenticate, authorizeRoles(['1']),uploadDocDelivery.single('file'), createPhone);
+router.post('/celular', authenticate, authorizeRoles(['1']), uploadDocDelivery, createPhone);
 
-router.put('/celular/:id', authenticate, authorizeRoles(['1']),uploadDocDelivery.single('file'), validarId, updatePhone);
+router.put('/celular/:id', authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery, updatePhone);
 
 export default router;

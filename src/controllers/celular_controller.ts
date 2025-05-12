@@ -4,6 +4,7 @@ import { Soportes } from "../entities/soportes";
 import path from "path";
 import { ifError } from "assert";
 import { validate } from "class-validator";
+import fs from "fs";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -72,10 +73,12 @@ export async function createPhone(
   res: Response,
   next: NextFunction
 ) {
+  const queryRunner = Celular.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
-    const queryRunner = Celular.getRepository().manager.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  let filePath = null;
+  let fileName = null;
 
   try {
     const {
@@ -108,45 +111,12 @@ export async function createPhone(
       sedeId,
     } = req.body;
 
-    console.log(req.body)
+    console.log(req.body);
 
     const file = req.file;
     let actaId: number | null = null;
 
-    if (file) {
-        const docExists = await Soportes.findOneBy({nameSaved: path.basename(file.filename)})
-
-        if (docExists) {
-            return res.status(400).json({message: "El archivo ya existe"})
-        }
-
-        const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
-
-        const acta = Soportes.create({
-            name: fileNameWithoutExt.normalize('NFC'),
-            url: file.path,
-            size: file.size,
-            type: file.mimetype,
-            nameSaved: path.basename(file.filename),
-        });
-
-        const errorsActa = await validate(acta);
-        if (errorsActa.length > 0) {
-            const errorMessages = errorsActa?.map((err) => ({
-                property: err.property,
-                constraints: err.constraints,
-            }));
-            return res.status(400).json({
-                message: "Error al crear el acta",
-                errors: errorMessages,
-            });
-        }
-
-        await queryRunner.manager.save(acta);
-        actaId = acta.id;
-
-    }
-
+    // Validamos el objeto del teléfono primero antes de guardar cualquier archivo
     const newPhone = new Celular();
     newPhone.name = name.toLowerCase();
     newPhone.brand = brand.toLowerCase();
@@ -177,9 +147,9 @@ export async function createPhone(
     newPhone.sedeId = parseInt(sedeId);
     newPhone.brand = brand;
     
-     const errorsPhone = await validate(newPhone);
+    const errorsPhone = await validate(newPhone);
 
-     if (errorsPhone.length > 0) {
+    if (errorsPhone.length > 0) {
         const errorMessages = errorsPhone?.map(err => ({
             property: err.property,
             constraints: err.constraints,
@@ -189,19 +159,81 @@ export async function createPhone(
             message: "Error al crear el celular",
             errors: errorMessages,
         });
-     }
+    }
 
-     await queryRunner.manager.save(newPhone);
+    // Solo procesamos el archivo si las validaciones del teléfono son correctas
+    if (file) {
+        // Importamos la función saveFileToDisk desde el middleware
+        const { saveFileToDisk } = await import("../middlewares/upload-doc-delivery_middleware");
+        
+        // Verificamos si ya existe un archivo con el mismo nombre
+        const savedFile = saveFileToDisk(file.buffer, file.originalname);
+        filePath = savedFile.path;
+        fileName = savedFile.filename;
 
-     await queryRunner.commitTransaction();
+        // Verificamos si ya existe un soporte con ese nombre guardado
+        const docExists = await Soportes.findOneBy({nameSaved: savedFile.filename});
 
-    await newPhone.save();
+        if (docExists) {
+            // Si existe, eliminamos el archivo que acabamos de guardar
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+            await queryRunner.rollbackTransaction();
+            return res.status(400).json({message: "El archivo ya existe"});
+        }
+
+        const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+        const acta = Soportes.create({
+            name: fileNameWithoutExt.normalize('NFC'),
+            url: savedFile.path,
+            size: file.size,
+            type: file.mimetype,
+            nameSaved: savedFile.filename,
+        });
+
+        const errorsActa = await validate(acta);
+        if (errorsActa.length > 0) {
+            // Si hay errores en la validación del acta, eliminamos el archivo
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+            const errorMessages = errorsActa?.map((err) => ({
+                property: err.property,
+                constraints: err.constraints,
+            }));
+            await queryRunner.rollbackTransaction();
+            return res.status(400).json({
+                message: "Error al crear el acta",
+                errors: errorMessages,
+            });
+        }
+
+        await queryRunner.manager.save(acta);
+        actaId = acta.id;
+        newPhone.actaId = actaId;
+    }
+
+    await queryRunner.manager.save(newPhone);
+    await queryRunner.commitTransaction();
 
     return res.status(201).json(newPhone);
   } catch (error) {
     await queryRunner.rollbackTransaction();
+    
+    // Si ocurrió un error y se guardó un archivo, lo eliminamos
+    if (filePath && fs.existsSync(filePath)) {
+        try {
+            fs.unlinkSync(filePath);
+            console.log(`Archivo eliminado debido a error: ${filePath}`);
+        } catch (err) {
+            console.error(`Error al eliminar archivo: ${err}`);
+        }
+    }
+    
     next(error);
-  }finally {
+  } finally {
     await queryRunner.release();
   }
 }
@@ -216,12 +248,16 @@ export async function updatePhone(
   await queryRunner.connect();
   await queryRunner.startTransaction();
 
+  let filePath = null;
+  let fileName = null;
+
   try {
     const { id } = req.params;
 
     const phone = await Celular.findOneBy({ id: parseInt(id) });
 
     if (!phone) {
+      await queryRunner.rollbackTransaction();
       return res.status(404).json({ message: "Celular no encontrado" });
     }
 
@@ -254,43 +290,7 @@ export async function updatePhone(
       acquisitionValue,
     } = req.body;
 
-    const file = req.file;
-    let actaId: number | null = null;
-
-    if (file) {
-        const docExists = await Soportes.findOneBy({nameSaved: path.basename(file.filename)})
-
-        if (docExists) {
-            return res.status(400).json({message: "El archivo ya existe"})
-        }
-
-        const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
-
-        const acta = Soportes.create({
-            name: fileNameWithoutExt.normalize('NFC'),
-            url: file.path,
-            size: file.size,
-            type: file.mimetype,
-            nameSaved: path.basename(file.filename),
-        });
-
-        const errorsActa = await validate(acta);
-        if (errorsActa.length > 0) {
-            const errorMessages = errorsActa?.map((err) => ({
-                property: err.property,
-                constraints: err.constraints,
-            }));
-            return res.status(400).json({
-                message: "Error al crear el acta",
-                errors: errorMessages,
-            });
-        }
-
-        await queryRunner.manager.save(acta);
-        actaId = acta.id;
-
-    }
-
+    // Primero validamos las actualizaciones al teléfono antes de procesar cualquier archivo
     phone.name = name.toLowerCase();
     phone.brand = brand.toLowerCase();
     phone.model = model;
@@ -331,12 +331,82 @@ export async function updatePhone(
         errors: errorMessages,
       });
     }
+
+    // Solo procesamos el archivo si las validaciones del teléfono son correctas
+    const file = req.file;
+    let actaId: number | null = null;
+
+    if (file) {
+      // Importamos la función saveFileToDisk desde el middleware
+      const { saveFileToDisk } = await import("../middlewares/upload-doc-delivery_middleware");
+        
+      // Guardamos el archivo usando nuestra función helper
+      const savedFile = saveFileToDisk(file.buffer, file.originalname);
+      filePath = savedFile.path;
+      fileName = savedFile.filename;
+
+      // Verificamos si ya existe un soporte con ese nombre guardado
+      const docExists = await Soportes.findOneBy({nameSaved: savedFile.filename});
+
+      if (docExists) {
+        // Si existe, eliminamos el archivo que acabamos de guardar
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({message: "El archivo ya existe"});
+      }
+
+      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+      const acta = Soportes.create({
+        name: fileNameWithoutExt.normalize('NFC'),
+        url: savedFile.path,
+        size: file.size,
+        type: file.mimetype,
+        nameSaved: savedFile.filename,
+      });
+
+      const errorsActa = await validate(acta);
+      if (errorsActa.length > 0) {
+        // Si hay errores en la validación del acta, eliminamos el archivo
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+        const errorMessages = errorsActa?.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({
+          message: "Error al crear el acta",
+          errors: errorMessages,
+        });
+      }
+
+      await queryRunner.manager.save(acta);
+      actaId = acta.id;
+      phone.actaId = actaId;
+    }
+
     await queryRunner.manager.save(phone);
     await queryRunner.commitTransaction();
+    
     return res.status(200).json(phone);
   }
   catch (error) {
     await queryRunner.rollbackTransaction();
+    
+    // Si ocurrió un error y se guardó un archivo, lo eliminamos
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+        console.log(`Archivo eliminado debido a error: ${filePath}`);
+      } catch (err) {
+        console.error(`Error al eliminar archivo: ${err}`);
+      }
+    }
+    
     next(error);
   } finally {
     await queryRunner.release();
