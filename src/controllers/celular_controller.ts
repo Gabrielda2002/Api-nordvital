@@ -38,10 +38,26 @@ export async function getPhoneBySedeId(
       brand: p.brand,
       model: p.model,
       serial: p.serial,
+      phoneNumber: p.phoneNumber,
+      operador: p.operador,
+      typePlan: p.typePlan,
+      dueDatePlan: p.dueDatePlan,
+      macWifi: p.macWifi,
+      addressBluetooth: p.addressBluetooth,
+      purchaseDate: p.purchaseDate,
+      warrantyTime: p.warrantyTime,
+      warranty: p.warranty,
+      deliveryDate: p.deliveryDate,
+      protectorCase: p.caseProtector,
+      temperedGlass: p.temperedGlass,
+      status: p.status,
+      observation: p.observation,
+      acquisitionValue: p.acquisitionValue,
       imei: p.imei,
       operativeSystem: p.operativeSystem,
       versionSO: p.versionSO,
       storage: p.storage,
+      storageRam: p.storageRam,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       sedeId: p.sedeId,
@@ -57,7 +73,7 @@ export async function getPhoneBySedeId(
       })),
       responsableId: p.usuarioRelation?.id || 'N/A',
       responsableName: p.usuarioRelation?.name || 'N/A',
-      responsableLastNames: p.usuarioRelation?.lastName || 'N/A',
+      responsableLastName: p.usuarioRelation?.lastName || 'N/A',
     }));
 
     return res.status(200).json(phonesWithDetails);
@@ -133,15 +149,15 @@ export async function createPhone(
     newPhone.addressBluetooth = addressBluetooth;
     newPhone.purchaseDate = purchaseDate;
     newPhone.warrantyTime = warrantyTime;
-    newPhone.warranty = warranty === 1 ? true : false;
+    newPhone.warranty = warranty == 'true' ? true : false;
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
     newPhone.responsable = parseInt(responsable);
-    newPhone.caseProtector = caseProtector === 1 ? true : false;
-    newPhone.temperedGlass = tenperedGlass === 1 ? true : false;
+    newPhone.caseProtector = caseProtector == 'true' ? true : false;
+    newPhone.temperedGlass = tenperedGlass == 'true' ? true : false;
     newPhone.observation = observations;
     newPhone.status = status;
-    newPhone.acquisitionValue = Number(acquisitionValue);
+    newPhone.acquisitionValue = parseInt(acquisitionValue, 10);
     newPhone.sedeId = parseInt(sedeId);
     newPhone.brand = brand;
     
