@@ -345,59 +345,93 @@ export async function updatePhone(
 
     // Solo procesamos el archivo si las validaciones del teléfono son correctas
     const file = req.file;
-    let actaId: number | null = null;
+    let actaId: number | null = phone.actaId; // Guardamos el ID del acta actual
 
     if (file) {
-      // Importamos la función saveFileToDisk desde el middleware
-      const { saveFileToDisk } = await import("../middlewares/upload-doc-delivery_middleware");
+      try {
+        // Importamos la función saveFileToDisk desde el middleware
+        const { saveFileToDisk } = await import("../middlewares/upload-doc-delivery_middleware");
+        const { updateFileAndRecord } = await import("../utils/file-manager");
         
-      // Guardamos el archivo usando nuestra función helper
-      const savedFile = saveFileToDisk(file.buffer, file.originalname);
-      filePath = savedFile.path;
-      fileName = savedFile.filename;
+        // Guardamos el archivo usando nuestra función helper
+        const savedFile = saveFileToDisk(file.buffer, file.originalname);
+        filePath = savedFile.path;
+        fileName = savedFile.filename;
+        
+        const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
 
-      // Verificamos si ya existe un soporte con ese nombre guardado
-      const docExists = await Soportes.findOneBy({nameSaved: savedFile.filename});
+        // Si ya existe un acta vinculada al teléfono, actualizamos ese registro
+        if (actaId) {
+          const updatedActa = await updateFileAndRecord(
+            queryRunner,
+            actaId,
+            {
+              originalName: fileNameWithoutExt.normalize('NFC'),
+              size: file.size,
+              mimetype: file.mimetype
+            },
+            savedFile.path,
+            savedFile.filename
+          );
+          
+          if (!updatedActa) {
+            // Si no se pudo actualizar (acta no encontrada), creamos una nueva
+            actaId = null;
+          }
+        }
+        
+        // Si no hay acta previa o no se pudo actualizar, creamos una nueva
+        if (!actaId) {
+          // Verificamos si ya existe un soporte con ese nombre guardado
+          const docExists = await Soportes.findOneBy({name: fileNameWithoutExt.normalize('NFC')});
 
-      if (docExists) {
-        // Si existe, eliminamos el archivo que acabamos de guardar
-        if (fs.existsSync(filePath)) {
+          if (docExists) {
+            // Si existe, eliminamos el archivo que acabamos de guardar
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+            await queryRunner.rollbackTransaction();
+            return res.status(400).json({message: "El archivo ya existe"});
+          }
+
+          const acta = Soportes.create({
+            name: fileNameWithoutExt.normalize('NFC'),
+            url: savedFile.path,
+            size: file.size,
+            type: file.mimetype,
+            nameSaved: savedFile.filename,
+          });
+
+          const errorsActa = await validate(acta);
+          if (errorsActa.length > 0) {
+            // Si hay errores en la validación del acta, eliminamos el archivo
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+            const errorMessages = errorsActa?.map((err) => ({
+              property: err.property,
+              constraints: err.constraints,
+            }));
+            await queryRunner.rollbackTransaction();
+            return res.status(400).json({
+              message: "Error al crear el acta",
+              errors: errorMessages,
+            });
+          }
+
+          await queryRunner.manager.save(acta);
+          actaId = acta.id;
+        }
+        
+        // Actualizamos el actaId del teléfono
+        phone.actaId = actaId;
+      } catch (error) {
+        // Si hay error en el proceso de archivo, limpiamos y propagamos el error
+        if (filePath && fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({message: "El archivo ya existe"});
+        throw error;
       }
-
-      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
-
-      const acta = Soportes.create({
-        name: fileNameWithoutExt.normalize('NFC'),
-        url: savedFile.path,
-        size: file.size,
-        type: file.mimetype,
-        nameSaved: savedFile.filename,
-      });
-
-      const errorsActa = await validate(acta);
-      if (errorsActa.length > 0) {
-        // Si hay errores en la validación del acta, eliminamos el archivo
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-        const errorMessages = errorsActa?.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({
-          message: "Error al crear el acta",
-          errors: errorMessages,
-        });
-      }
-
-      await queryRunner.manager.save(acta);
-      actaId = acta.id;
-      phone.actaId = actaId;
     }
 
     await queryRunner.manager.save(phone);
