@@ -6,19 +6,19 @@ export async function createProcessPhone(req: Request, res: Response, next: Next
     try {
         
         const {
-            phoneId,
+            itemId,
             eventDate,
-            eventType,
+            typeEvent,
             description,
-            responsableId
+            responsable
         } = req.body;
 
         const processPhone = new SeguimientoCelular();
-        processPhone.phoneId = parseInt(phoneId);
+        processPhone.phoneId = parseInt(itemId);
         processPhone.eventDate = new Date(eventDate);
-        processPhone.eventType = eventType;
+        processPhone.eventType = typeEvent;
         processPhone.description = description;
-        processPhone.responsable = parseInt(responsableId);
+        processPhone.responsable = parseInt(responsable);
         
         const errors = await validate(processPhone);
         if (errors.length > 0) {
