@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { PacientesCoosalud } from "../entities/pacientes-coosalud";
-import * as XLSX from "xlsx";
+import * as ExcelJS from "exceljs";
 
 export async function getAllPatientsCoosalud(req: Request, res: Response, next: NextFunction){
     try {
@@ -161,24 +161,41 @@ export async function updatePatientsStatusFromExcel(req: Request, res: Response,
         }
 
         try {
-            // Leer el archivo Excel con manejo de errores
-            const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+            // Leer el archivo Excel con ExcelJS en lugar de XLSX
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(req.file.buffer);
             
             // Verificar que hay hojas en el libro
-            if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+            if (workbook.worksheets.length === 0) {
                 return res.status(400).json({ message: "El archivo Excel no contiene hojas" });
             }
             
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
+            const worksheet = workbook.worksheets[0];
             
             // Verificar que la hoja contiene datos
-            if (!sheet) {
+            if (!worksheet) {
                 return res.status(400).json({ message: "La hoja de cálculo está vacía" });
             }
 
-            // Convertir los datos del Excel a JSON
-            const data: any[] = XLSX.utils.sheet_to_json(sheet);
+            // Convertir el contenido de la hoja a JSON
+            const data: any[] = [];
+            const headers: string[] = [];
+
+            // Obtener los encabezados
+            worksheet.getRow(1).eachCell((cell, colNumber) => {
+                headers[colNumber - 1] = cell.value ? cell.value.toString() : '';
+            });
+
+            // Obtener los datos
+            worksheet.eachRow((row, rowNumber) => {
+                if (rowNumber > 1) { // Saltar la fila de encabezado
+                    const rowData: any = {};
+                    row.eachCell((cell, colNumber) => {
+                        rowData[headers[colNumber - 1]] = cell.value;
+                    });
+                    data.push(rowData);
+                }
+            });
             
             if (!data || data.length === 0) {
                 return res.status(400).json({ message: "No se encontraron datos en el archivo" });
