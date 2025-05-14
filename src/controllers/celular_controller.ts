@@ -7,6 +7,8 @@ import { validate } from "class-validator";
 import fs from "fs";
 import { saveFileToDisk } from "../middlewares/upload-doc-delivery_middleware";
 import { updateFileAndRecord } from "../utils/file-manager";
+import { addMonths, differenceInDays, subYears } from "date-fns";
+import { Between, MoreThan } from "typeorm";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -467,5 +469,131 @@ export async function updatePhone(
     next(error);
   } finally {
     await queryRunner.release();
+  }
+}
+
+// cantidad de celulares por sede
+export async function getCountPhonesByHeadquartersId(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const phoneCount = await Celular.createQueryBuilder("celular")
+    .leftJoinAndSelect('celular.sedeRelation', 'sede')
+    .select('sede.name', 'sedeName')
+    .addSelect('COUNT(celular.id)', 'count')
+    .groupBy('sede.name')
+    .orderBy('count', 'DESC')
+    .getRawMany();
+
+    if (!phoneCount) {
+      return res.status(404).json({ message: "No se encontraron celulares" });
+    }
+
+    return res.status(200).json(phoneCount);
+
+  } catch (error) {
+    next(error);
+  }
+}
+// edad de sedes
+export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const now = new Date();
+    const oneYearAgo = subYears(now, 1);
+    const twoYearsAgo = subYears(now, 2);
+    const threeYearsAgo = subYears(now, 3);
+
+    const lessThanOneYear = await Celular.count({
+      where: { purchaseDate: MoreThan(oneYearAgo)}
+    })
+
+    const betweenOneAndTwoYears = await Celular.count({
+      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo)}
+    })
+
+    const betweenTwoAndThreeYears = await Celular.count({
+      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo)}
+    })
+
+    const moreThanThreeYears = await Celular.count({
+      where: { purchaseDate: MoreThan(threeYearsAgo)}
+    })
+
+    const phoneAge = await Celular.find({
+      select: ['purchaseDate']
+    });
+    let totalAge = 0;
+    
+    phoneAge.forEach((p) =>{
+      if (p.purchaseDate) {
+        const age = differenceInDays(now, new Date(p.purchaseDate))
+        totalAge += age;
+      }
+    });
+
+    const averageAgeInDays = totalAge / phoneAge.length || 0;
+    const averageAgeInMoths = averageAgeInDays / 30;
+    const averageAgeInYears = averageAgeInDays / 12;
+
+    return res.json({
+      distribution: [
+        {label: 'Menos de 1 año', value: lessThanOneYear},
+        {label: 'Entre 1 y 2 años', value: betweenOneAndTwoYears},
+        {label: 'Entre 2 y 3 años', value: betweenTwoAndThreeYears},
+        {label: 'Mas de tres años', value: moreThanThreeYears}
+      ],
+      averageAge: {
+        days: Math.round(averageAgeInDays),
+        months: Math.round(averageAgeInMoths),
+        years: averageAgeInYears.toFixed(1)
+      },
+    })
+
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+// estadisticas de expiracion de garantia
+export async function getPhoneWarrantyStatistics(req: Request, res: Response, next: NextFunction){
+  try {
+
+      const totalPhones = await Celular.count()
+      const phonesInWarranty = await Celular.count({
+        where: { warranty:  true }
+      })
+
+    const phonesWithWarranty = await Celular.find({
+      where: { warranty: true },
+      select: ['id', 'purchaseDate', 'warrantyTime']
+    });
+
+    const expiringWarranties = phonesWithWarranty.filter( p => {
+      const warrantyMonths = parseInt(p.warrantyTime.match(/\d+/)?.[0] || "0");
+
+      if (warrantyMonths > 0) {
+        const expirationDate = addMonths(
+          new Date(p.purchaseDate),
+          warrantyMonths
+        );
+        const expiresSoon = expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
+        return expiresSoon;
+      }
+      return false
+    });
+
+    return res.json({
+      total: totalPhones,
+      inWarranty: phonesInWarranty,
+      percentage: ((phonesInWarranty / totalPhones) * 100).toFixed(2),
+      expiringSoon: {
+        count: expiringWarranties.length,
+        phones: expiringWarranties
+      }
+    })
+
+  } catch (error) {
+    next(error);
   }
 }
