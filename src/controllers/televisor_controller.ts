@@ -242,7 +242,7 @@ export async function getTvHeadquartersDistribution(req: Request, res: Response,
 
         const tvDistribution = await Televisor.createQueryBuilder("televisor")
         .leftJoinAndSelect('televisor.sedeRelation', 'sede')
-        .select("sede.name", "sedeName'")
+        .select("sede.name", "sedeName")
         .addSelect("COUNT(televisor.id)", "count")
         .groupBy("sede.name")
         .orderBy("count", "DESC")
@@ -339,7 +339,7 @@ export async function getTvWarrantyStatistics(req: Request, res: Response, next:
         });
 
         return res.status(200).json({
-            totalTvs: tvs,
+            total: tvs,
             inWarranty:  tvWithWarranty.length,
             percentage: ((tvs / tvWithWarranty.length) * 100).toFixed(2),
             expiringSoon: {
