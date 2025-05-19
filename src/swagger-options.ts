@@ -1687,6 +1687,48 @@ export const options = {
             },
           },
         },
+        SeguimientoCelular: {
+          type: "object",
+          required: [
+            "phoneId",
+            "eventDate",
+            "eventType",
+            "description",
+            "responsable",
+          ],
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del seguimiento",
+            },
+            phoneId: {
+              type: "integer",
+              description: "ID del celular relacionado",
+            },
+            eventDate: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha del evento",
+            },
+            eventType: {
+              type: "string",
+              description: "Tipo de evento realizado",
+            },
+            description: {
+              type: "string",
+              description: "Descripción del evento",
+            },
+            responsable: {
+              type: "integer",
+              description: "ID del usuario responsable del evento",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha de creación del registro",
+            },
+          },
+        },
       },
     },
     tags: [
@@ -1915,6 +1957,10 @@ export const options = {
       {
         name: "Televisores",
         description: "Endpoints para la gestión de televisores",
+      },
+      {
+        name: 'SeguimientoCelular',
+        description: "Endpoints para la gestión de seguimiento de celulares",
       }
     ],
   },
