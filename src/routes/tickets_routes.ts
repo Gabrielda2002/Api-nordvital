@@ -135,8 +135,58 @@ router.put('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, updat
  */
 router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, deleteTicket)
 
+/**
+ * @swagger
+ * /tickets-table:
+ *   get:
+ *     summary: Obtener todos los tickets con información detallada para mostrar en tabla
+ *     tags: [Tickets]
+ *     responses:
+ *       200:
+ *         description: Lista de tickets con información detallada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tickets'
+ *       404:
+ *         description: No se encontraron tickets
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable)
 
+/**
+ * @swagger
+ * /user-ticket/{userId}:
+ *   get:
+ *     summary: Verificar si un usuario tiene tickets abiertos
+ *     tags: [Tickets]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Resultado de la verificación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje indicando si el usuario tiene o no tickets abiertos
+ *                 have:
+ *                   type: boolean
+ *                   description: Indica si el usuario tiene tickets abiertos (true) o no (false)
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18']), validateUserTickets)
 
 export default router;
