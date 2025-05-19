@@ -1327,28 +1327,28 @@ export const options = {
         },
         Comentarios: {
           type: "object",
-          required: ["comment", "userId", "ticketId"],
+          required: ["ticketId", "usuarioId", "comment"],
           properties: {
             id: {
               type: "integer",
               description: "ID del comentario",
             },
-            comment: {
-              type: "string",
-              description: "Comentario",
-            },
-            userId: {
-              type: "integer",
-              description: "ID del usuario",
-            },
             ticketId: {
               type: "integer",
-              description: "ID del ticket",
+              description: "ID del ticket relacionado",
+            },
+            usuarioId: {
+              type: "integer",
+              description: "ID del usuario que realiza el comentario",
+            },
+            comment: {
+              type: "string",
+              description: "Texto del comentario",
             },
             createdAt: {
               type: "string",
               format: "date-time",
-              description: "Fecha de creación",
+              description: "Fecha de creación del comentario",
             },
           },
         },
@@ -1969,7 +1969,7 @@ export const options = {
       },
       {
         name: "Comentarios",
-        description: "Endpoints para la gestión de comentarios de tickets",
+        description: "Gestión y registro de comentarios en tickets.",
       },
       {
         name: "Prioridades",
