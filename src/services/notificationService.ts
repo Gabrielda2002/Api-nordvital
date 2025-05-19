@@ -19,7 +19,7 @@ export class NotificationService {
     notification.title = title;
     notification.message = `Se actualizó el estado de tu ticket "${ticket.title}".`;
     notification.referenceId = ticket.id;
-    notification.referenceType = "ticket";
+    notification.referenceType = "update_ticket";
     notification.isRead = false;
 
     await notification.save();
@@ -95,7 +95,7 @@ export class NotificationService {
   }
 
   static async createNotificationForRole(
-    roleId: number,
+    roleIds: number[],
     title: string,
     message: string,
     referenceId: number,
@@ -103,24 +103,26 @@ export class NotificationService {
   ): Promise<void> {
     try {
       const users = await Usuarios.createQueryBuilder("usuario")
-        .where("usuario.rol = :roleId", { roleId })
+        .where("usuario.rol IN (:...roleIds)", { roleIds })
         .getMany();
 
       if (!users.length) {
-        console.log("No users found for role", roleId);
+        console.log("No users found for role", roleIds);
         return;
       }
 
       console.log(
-        `[ENVIANDO NOTIFICACIONES A ${users.length} usuarios con el rol ${roleId} const user of users]`
+        `[ENVIANDO NOTIFICACIONES A ${users.length} usuarios con el rol ${roleIds} const user of users]`
       );
 
-      io.to(`role_${roleId}`).emit("newNotification", {
-        title,
-        message,
-        referenceId,
-        referenceType,
-      });
+      roleIds.forEach(r => {
+        io.to(`role_${r}`).emit("newNotification", {
+          title,
+          message,
+          referenceId,
+          referenceType,
+        });
+      })      
 
       for (const user of users) {
         const notification = new Notification();

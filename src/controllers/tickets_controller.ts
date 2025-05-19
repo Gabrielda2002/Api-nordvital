@@ -59,8 +59,8 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         await ticket.save();
 
         await NotificationService.createNotificationForRole(
-            1,
-            'Nuevo ticket creado',
+            [1,17],
+            'Nuevo Ticket Creado',
             `Se ha creado un nuevo ticket: "${title}"`,
             ticket.id,
             "new_ticket"

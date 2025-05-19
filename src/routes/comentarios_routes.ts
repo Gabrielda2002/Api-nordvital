@@ -127,7 +127,7 @@ router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, u
  */
 router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteComment);
 
-router.post('/comment-status', authenticate, authorizeRoles(['1', '10']), createCommentAndChangeTicketStatus);
+router.post('/comment-status', authenticate, authorizeRoles(['1', '17']), createCommentAndChangeTicketStatus);
 
 router.get('/comment/tickets/:id', authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']),validarId ,getCommentsByTicket);
 
