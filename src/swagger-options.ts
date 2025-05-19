@@ -37,6 +37,141 @@ export const options = {
                 }
             },
             schemas: {
+                Celular: {
+                    type: 'object',
+                    required: ['name', 'brand', 'model', 'serial', 'imei', 'operativeSystem', 'storage', 'storageRam', 'purchaseDate', 'warrantyTime', 'warranty', 'deliveryDate', 'inventoryNumber', 'status', 'sedeId'],
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'ID del celular'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Nombre del celular'
+                        },
+                        brand: {
+                            type: 'string',
+                            description: 'Marca del celular'
+                        },
+                        model: {
+                            type: 'string',
+                            description: 'Modelo del celular'
+                        },
+                        serial: {
+                            type: 'string',
+                            description: 'Número de serie del celular'
+                        },
+                        imei: {
+                            type: 'string',
+                            description: 'IMEI del celular'
+                        },
+                        operativeSystem: {
+                            type: 'string',
+                            description: 'Sistema operativo del celular'
+                        },
+                        versionSO: {
+                            type: 'string',
+                            description: 'Versión del sistema operativo'
+                        },
+                        storage: {
+                            type: 'string',
+                            description: 'Capacidad de almacenamiento'
+                        },
+                        storageRam: {
+                            type: 'string',
+                            description: 'Capacidad de memoria RAM'
+                        },
+                        phoneNumber: {
+                            type: 'string',
+                            description: 'Número telefónico'
+                        },
+                        operador: {
+                            type: 'string',
+                            description: 'Operador telefónico'
+                        },
+                        typePlan: {
+                            type: 'string',
+                            description: 'Tipo de plan'
+                        },
+                        dueDatePlan: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de vencimiento del plan'
+                        },
+                        macWifi: {
+                            type: 'string',
+                            description: 'Dirección MAC WiFi'
+                        },
+                        addressBluetooth: {
+                            type: 'string',
+                            description: 'Dirección Bluetooth'
+                        },
+                        purchaseDate: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de compra'
+                        },
+                        warrantyTime: {
+                            type: 'string',
+                            description: 'Tiempo de garantía'
+                        },
+                        warranty: {
+                            type: 'boolean',
+                            description: 'Estado de la garantía'
+                        },
+                        deliveryDate: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de entrega'
+                        },
+                        inventoryNumber: {
+                            type: 'string',
+                            description: 'Número de inventario'
+                        },
+                        responsable: {
+                            type: 'integer',
+                            description: 'ID del responsable'
+                        },
+                        actaId: {
+                            type: 'integer',
+                            description: 'ID del acta'
+                        },
+                        caseProtector: {
+                            type: 'boolean',
+                            description: 'Tiene protector'
+                        },
+                        temperedGlass: {
+                            type: 'boolean',
+                            description: 'Tiene vidrio templado'
+                        },
+                        observation: {
+                            type: 'string',
+                            description: 'Observaciones'
+                        },
+                        status: {
+                            type: 'string',
+                            description: 'Estado del celular'
+                        },
+                        acquisitionValue: {
+                            type: 'number',
+                            description: 'Valor de adquisición'
+                        },
+                        sedeId: {
+                            type: 'integer',
+                            description: 'ID de la sede'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de creación'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Fecha de actualización'
+                        }
+                    }
+                },
                 IpsRemite: {
                     type: 'object',
                     required: ['name'],
@@ -1513,6 +1648,10 @@ export const options = {
             {
                 name: 'Participantes',
                 description: 'Endpoints para la gestión de participantes'
+            },
+            {
+                name: 'Celulares',
+                description: 'Endpoints para la gestión de celulares'
             }
         ]
     },
