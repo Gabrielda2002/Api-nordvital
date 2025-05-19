@@ -175,6 +175,8 @@ export async function getCommentsByTicket(req: Request, res: Response, next: Nex
         const { id } = req.params;
 
         const comments = await Comentarios.createQueryBuilder("comentarios")
+            .leftJoinAndSelect("comentarios.ticketsRelation", "tickets")
+            .leftJoinAndSelect("comentarios.userRelation", "usuarios")
             .where("comentarios.ticketId = :ticketId", { ticketId: id })
             .orderBy("comentarios.createdAt", "DESC")
             .getMany();
@@ -183,7 +185,15 @@ export async function getCommentsByTicket(req: Request, res: Response, next: Nex
             return res.status(404).json({ message: "Comments not found" });
         }
 
-        return res.json(comments);
+        const commentsFormatted = comments.map(c => ({
+            id: c.id,
+            comment: c.comment,
+            createdAt: c.createdAt,
+            responsable: c.userRelation?.name,
+            lastName: c.userRelation?.lastName,
+        }));
+
+        return res.json(commentsFormatted);
     } catch (error) {
         next(error);
     }
