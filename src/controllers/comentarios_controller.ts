@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, query, Request, Response } from "express";
 import { Comentarios } from "../entities/comentarios";
 import { validate } from "class-validator";
 import { Tickets } from "../entities/tickets";
@@ -122,9 +122,14 @@ export async function deleteComment(req: Request, res: Response, next: NextFunct
 
 // crear comentario a ticket y cambiar estado de ticket
 export async function createCommentAndChangeTicketStatus(req: Request, res: Response, next: NextFunction){
+    const queryRunner = Comentarios.getRepository().manager.connection.createQueryRunner(); 
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
         
-        const { ticketId, usuarioId, coment, status } = req.body;
+
+        const { ticketId, usuarioId, coment, status, remote } = req.body;
+        console.log("body", req.body);
 
         const comment = new Comentarios();
         comment.ticketId = ticketId;
@@ -139,6 +144,8 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
                 constraints: err.constraints
             }))
 
+            await queryRunner.rollbackTransaction();
+
             return res.status(400).json({ mesage: 'Error al crear comentario' ,messages });
         }
 
@@ -146,15 +153,19 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         const ticket = await Tickets.findOneBy({ id: ticketId });
         
         if (!ticket) {
+            await queryRunner.rollbackTransaction();
             return res.status(404).json({ message: "Ticket not found" });
         }
         
         const oldStatusId = ticket.statusId;
 
         ticket.statusId = parseInt(status);
+        ticket.remote = remote === 'true';
 
-        await comment.save();
-        await ticket.save();
+        await queryRunner.manager.save(comment);
+        await queryRunner.manager.save(ticket);
+
+        await queryRunner.commitTransaction();
 
         // si el estado es cerrado crear notificacion
         if (oldStatusId !== 2) {
@@ -164,7 +175,10 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         return res.json(comment);
 
     } catch (error) {
+        await queryRunner.rollbackTransaction();    
         next(error);
+    }finally{
+        await queryRunner.release();
     }
 }
 

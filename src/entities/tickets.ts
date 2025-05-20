@@ -29,6 +29,9 @@ export class Tickets extends BaseEntity {
     @Column({ name: "prioridad_id" })
     preorityId: number;
 
+    @Column({ name: 'remoto', type: "tinyint", width: 1, default: 0 })
+    remote: boolean;
+
     @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })
     createdAt: Date;
 
