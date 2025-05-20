@@ -6,6 +6,8 @@ import path from "path";
 import fs from "fs";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, LessThan, MoreThan } from "typeorm";
+import { saveFileToDisk } from "../middlewares/upload-doc-delivery_middleware";
+import { updateFileAndRecord } from "../utils/file-manager";
 
 export async function getAllEquipments(
   req: Request,
@@ -47,9 +49,13 @@ export async function createEquipment(
   next: NextFunction
 ) {
   // Iniciar una transacción para asegurar la atomicidad
-  const queryRunner = Equipos.getRepository().manager.connection.createQueryRunner();
+  const queryRunner =
+    Equipos.getRepository().manager.connection.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.startTransaction();
+
+  let filePath = null;
+  let fileName = null;
 
   try {
     const {
@@ -71,46 +77,11 @@ export async function createEquipment(
       dhcp,
       managerId,
       lock,
-      codeLock
+      codeLock,
     } = req.body;
 
     const file = req.file;
     let documentId: number | null = null;
-
-    // Procesar el documento si existe
-    if (file) {
-      const docExist = await Soportes.findOneBy({ nameSaved: path.basename(file.filename) });
-
-      if (docExist) {
-        return res.status(409).json({
-          message: "El documento ya existe",
-        });
-      }
-
-      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
-
-      const document = Soportes.create({
-        name: fileNameWithoutExt.normalize('NFC'),
-        url: file.path,
-        size: file.size,
-        type: file.mimetype,
-        nameSaved: path.basename(file.filename)
-      });
-
-      const errorsDoc = await validate(document);
-
-      if (errorsDoc.length > 0) {
-        const message = errorsDoc.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
-        return res.status(400).json({ message });
-      }
-
-      // Guardar el documento dentro de la transacción
-      await queryRunner.manager.save(document);
-      documentId = document.id;
-    }
 
     // Crear y configurar el equipo
     const equipment = new Equipos();
@@ -133,9 +104,6 @@ export async function createEquipment(
     equipment.idUsuario = managerId || null;
     equipment.lock = lock === "true";
     equipment.lockKey = codeLock || null;
-    
-    // Asignar el ID del documento guardado, no el filename
-    equipment.docId = documentId;
 
     const errors = await validate(equipment);
 
@@ -149,19 +117,80 @@ export async function createEquipment(
       return res.status(400).json({ message });
     }
 
+    // Procesar el documento si existe
+    if (file) {
+      const savedFile = saveFileToDisk(file.buffer, file.originalname);
+      filePath = savedFile.path;
+      fileName = savedFile.filename;
+
+      const fileNameWithoutExt = path.basename(
+        file.originalname,
+        path.extname(file.originalname)
+      );
+
+      const docExist = await Soportes.findOneBy({
+        name: fileNameWithoutExt.normalize("NFC"),
+      });
+
+      if (docExist) {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        await queryRunner.rollbackTransaction();
+        return res.status(409).json({
+          message: "El documento ya existe",
+        });
+      }
+
+      const document = Soportes.create({
+        name: fileNameWithoutExt.normalize("NFC"),
+        url: savedFile.path,
+        size: file.size,
+        type: file.mimetype,
+        nameSaved: savedFile.filename,
+      });
+
+      const errorsDoc = await validate(document);
+
+      if (errorsDoc.length > 0) {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        const message = errorsDoc.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({ message });
+      }
+
+      // Guardar el documento dentro de la transacción
+      await queryRunner.manager.save(document);
+      documentId = document.id;
+    }
+
     // Guardar el equipo dentro de la transacción
+    equipment.docId = documentId;
     await queryRunner.manager.save(equipment);
-    
+
     // Confirmar la transacción
     await queryRunner.commitTransaction();
-    
+
     return res.json(equipment);
   } catch (error) {
-    // Revertir la transacción en caso de error
     await queryRunner.rollbackTransaction();
+
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+        console.log("Archivo eliminado:", filePath);
+      } catch (error) {
+        console.log("Error al eliminar el archivo:", error);
+      }
+    }
+
     next(error);
   } finally {
-    // Liberar el queryRunner
     await queryRunner.release();
   }
 }
@@ -171,10 +200,13 @@ export async function updateEquipment(
   res: Response,
   next: NextFunction
 ) {
-
-  const queryRunner= Equipos.getRepository().manager.connection.createQueryRunner();
+  const queryRunner =
+    Equipos.getRepository().manager.connection.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.startTransaction();
+
+  let filePath = null;
+  let fileName = null;
 
   try {
     const { id } = req.params;
@@ -196,8 +228,9 @@ export async function updateEquipment(
       dhcp,
       managerId,
       lock,
-      codeLock
+      codeLock,
     } = req.body;
+    console.log(req.body)
 
     const equipment = await Equipos.findOneBy({ id: parseInt(id) });
 
@@ -207,52 +240,8 @@ export async function updateEquipment(
       });
     }
 
-    // procesar el archivo si existe
-    if (req.file) {
-      if (equipment.docId) {
-        const oldDocument = await Soportes.findOneBy({ id: equipment.docId });
-        if (oldDocument) {
-          // Eliminar el archivo antiguo
-          console.log("id doc antiguo" + oldDocument.id)
-          if (fs.existsSync(oldDocument.url)) {
-            fs.unlinkSync(oldDocument.url);
-          }
-          
-          await queryRunner.manager.remove(oldDocument);
-          console.log("se elimina el archivo viejo")
-        }
-      }
-      const file = req.file;
-      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
-
-      const document = Soportes.create({
-        name: fileNameWithoutExt.normalize('NFC'),
-        url: file.path,
-        size: file.size,
-        type: file.mimetype,
-        nameSaved: path.basename(file.filename)
-      });
-
-      const errorsDoc = await validate(document);
-
-      if (errorsDoc.length > 0) {
-        const message = errorsDoc.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
-        return res.status(400).json({ message });
-      }
-
-      await queryRunner.manager.save(document);
-
-      equipment.docId = document.id
-
-      console.log("se asigna un nuevo id" + document.id)
-
-    }
-
     equipment.name = name;
-    equipment.ubicacion = "Sin ubicación" ;
+    equipment.ubicacion = "Sin ubicación";
     equipment.typeEquipment = typeEquipment;
     equipment.brand = brand;
     equipment.model = model;
@@ -277,9 +266,99 @@ export async function updateEquipment(
         property: err.property,
         constraints: err.constraints,
       }));
-      // Revertir la transacción si hay errores de validación
       await queryRunner.rollbackTransaction();
       return res.status(400).json({ message });
+    }
+
+    const file = req.file;
+    let documentId: number | null = equipment.docId;
+
+    // procesar el archivo si existe
+    if (file) {
+      try {
+        const savedFile = saveFileToDisk(file.buffer, file.originalname);
+        filePath = savedFile.path;
+        fileName = savedFile.filename;
+
+        const fileNameWithoutExt = path.basename(
+          file.originalname,
+          path.extname(file.originalname)
+        );
+  
+         const docExistByName = await Soportes.findOneBy({ name: fileNameWithoutExt.normalize("NFC") });
+        
+        if (docExistByName) {
+          if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+          }
+          await queryRunner.rollbackTransaction();
+          return res.status(409).json({
+            message: "El documento ya existe",
+          });
+        }
+        // si ya existe un documento, se actualiza sus datos con el nuevo
+        if (documentId) {
+          const updatedDoc = await updateFileAndRecord(
+            queryRunner,
+            documentId,
+            {
+              originalName: fileNameWithoutExt.normalize("NFC"),
+              size: file.size,
+              mimetype: file.mimetype,
+            },
+            savedFile.path,
+            savedFile.filename
+          );
+
+          if (!updatedDoc) {
+            documentId = null;
+          }
+        }
+
+        if (!documentId) {
+          
+          // validar si el documento existe
+
+          const newDoc = Soportes.create({
+            name: fileNameWithoutExt.normalize("NFC"),
+            url: savedFile.path,
+            size: file.size,
+            type: file.mimetype,
+            nameSaved: savedFile.filename,
+          });
+
+          const errorsDoc = await validate(newDoc);
+  
+          if (errorsDoc.length > 0) {
+
+            if (fs.existsSync(file.path)) {
+              fs.unlinkSync(file.path);
+            }
+
+            const message = errorsDoc.map((err) => ({
+              property: err.property,
+              constraints: err.constraints,
+            }));
+
+            await queryRunner.rollbackTransaction();
+            return res.status(400).json({ message });
+
+          }
+          
+          await queryRunner.manager.save(newDoc);
+    
+          documentId = newDoc.id;
+    
+        }
+  
+        equipment.docId = documentId;      
+        
+      } catch (error) {
+        if (filePath && fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+        throw error;
+      }
     }
 
     await queryRunner.manager.save(equipment);
@@ -288,8 +367,18 @@ export async function updateEquipment(
     return res.json(equipment);
   } catch (error) {
     await queryRunner.rollbackTransaction();
+
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+        console.log('Archivo eliminado debido a errror: ', filePath);
+      } catch (error) {
+        console.log('Error al eliminar el archivo:', error);
+      }
+    }
+
     next(error);
-  }finally{
+  } finally {
     await queryRunner.release();
   }
 }
@@ -327,15 +416,15 @@ export async function getEquipmentBySede(
   try {
     const { id } = req.params;
     const equipment = await Equipos.createQueryBuilder("equipos")
-    .leftJoinAndSelect("equipos.seguimientoEquipos", "seguimientoEquipos")
-    .leftJoinAndSelect("equipos.accessoriesRelation", "accesoriosEquipos")
-    .leftJoinAndSelect("equipos.componentRelation", "componentRelation")
-    .leftJoinAndSelect("equipos.softwareRelation", "softwareRelation")
-    .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
-    .leftJoinAndSelect('equipos.soportRelacion', 'document')
-    .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
-    .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
-    .getMany();
+      .leftJoinAndSelect("equipos.seguimientoEquipos", "seguimientoEquipos")
+      .leftJoinAndSelect("equipos.accessoriesRelation", "accesoriosEquipos")
+      .leftJoinAndSelect("equipos.componentRelation", "componentRelation")
+      .leftJoinAndSelect("equipos.softwareRelation", "softwareRelation")
+      .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
+      .leftJoinAndSelect("equipos.soportRelacion", "document")
+      .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
+      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .getMany();
 
     if (!equipment) {
       return res.status(404).json({
@@ -343,70 +432,70 @@ export async function getEquipmentBySede(
       });
     }
 
-    const equipmentFormatted = equipment.map(e => ({
-      id: e.id || 'N/A',
-      sedeId: e.sedeId || 'N/A',
-      nameEquipment: e.name || 'N/A',
-      area: e.ubicacion || 'N/A',
-      typeEquipment: e.typeEquipment || 'N/A',
-      brandEquipment: e.brand || 'N/A',
-      modelEquipment: e.model || 'N/A',
-      serialEquipment: e.serial || 'N/A',
-      operationalSystem: e.operationalSystem || 'N/A',
-      addressIp: e.addressIp || 'N/A',
-      mac: e.mac || 'N/A',
-      purchaseDate: e.purchaseDate || 'N/A',
-      warrantyTime: e.warrantyTime || 'N/A',
-      warranty: e.warranty || 'N/A',
-      deliveryDate: e.deliveryDate || 'N/A',
-      inventoryNumberEquipment: e.inventoryNumber || 'N/A',
-      dhcp: e.dhcp || 'N/A',
+    const equipmentFormatted = equipment.map((e) => ({
+      id: e.id || "N/A",
+      sedeId: e.sedeId || "N/A",
+      nameEquipment: e.name || "N/A",
+      area: e.ubicacion || "N/A",
+      typeEquipment: e.typeEquipment || "N/A",
+      brandEquipment: e.brand || "N/A",
+      modelEquipment: e.model || "N/A",
+      serialEquipment: e.serial || "N/A",
+      operationalSystem: e.operationalSystem || "N/A",
+      addressIp: e.addressIp || "N/A",
+      mac: e.mac || "N/A",
+      purchaseDate: e.purchaseDate || "N/A",
+      warrantyTime: e.warrantyTime || "N/A",
+      warranty: e.warranty || "N/A",
+      deliveryDate: e.deliveryDate || "N/A",
+      inventoryNumberEquipment: e.inventoryNumber || "N/A",
+      dhcp: e.dhcp || "N/A",
       lock: e.lock === false ? false : true,
-      lockKey: e.lockKey || 'N/A',
-      createAt: e.createAt || 'N/A',
-      updateAt: e.updateAt || 'N/A',
-      idUser: e.userRelation?.id || 'N/A',
-      nameUser: e.userRelation?.name || 'N/A',
-      lastNameUser: e.userRelation?.lastName || 'N/A',
-      processEquipment: e.seguimientoEquipos?.map(s => ({
-        id: s.id || 'N/A',
-        eventDate: s.eventDate || 'N/A',
-        typeEvent: s.eventType || 'N/A',
-        description: s.description || 'N/A',
-        responsableLastName: s.userRelation?.name || 'N/A',
-        responsableName: s.userRelation?.lastName || 'N/A',
+      lockKey: e.lockKey || "N/A",
+      createAt: e.createAt || "N/A",
+      updateAt: e.updateAt || "N/A",
+      idUser: e.userRelation?.id || "N/A",
+      nameUser: e.userRelation?.name || "N/A",
+      lastNameUser: e.userRelation?.lastName || "N/A",
+      processEquipment: e.seguimientoEquipos?.map((s) => ({
+        id: s.id || "N/A",
+        eventDate: s.eventDate || "N/A",
+        typeEvent: s.eventType || "N/A",
+        description: s.description || "N/A",
+        responsableLastName: s.userRelation?.name || "N/A",
+        responsableName: s.userRelation?.lastName || "N/A",
       })),
-      accessories: e.accessoriesRelation?.map(a => ({
-        id: a.id || 'N/A',
-        name: a.name || 'N/A',
-        brand: a.brand || 'N/A',
-        model: a.model || 'N/A',
-        serial: a.serial || 'N/A',
-        description: a.otherData || 'N/A',
-        status: a.status || 'N/A',
-        inventoryNumber: a.inventoryNumber || 'N/A',
+      accessories: e.accessoriesRelation?.map((a) => ({
+        id: a.id || "N/A",
+        name: a.name || "N/A",
+        brand: a.brand || "N/A",
+        model: a.model || "N/A",
+        serial: a.serial || "N/A",
+        description: a.otherData || "N/A",
+        status: a.status || "N/A",
+        inventoryNumber: a.inventoryNumber || "N/A",
       })),
-      components: e.componentRelation?.map(c => ({
-        id: c.id || 'N/A',
-        name: c.name || 'N/A',
-        brand: c.brand || 'N/A',
-        capacity: c.capacity || 'N/A',
-        speed: c.speed || 'N/A',
-        otherData: c.otherData || 'N/A',
-        model: c.model || 'N/A',
-        serial: c.serial || 'N/A',
+      components: e.componentRelation?.map((c) => ({
+        id: c.id || "N/A",
+        name: c.name || "N/A",
+        brand: c.brand || "N/A",
+        capacity: c.capacity || "N/A",
+        speed: c.speed || "N/A",
+        otherData: c.otherData || "N/A",
+        model: c.model || "N/A",
+        serial: c.serial || "N/A",
       })),
-      software: e.softwareRelation?.map(s => ({
-        id: s.id || 'N/A',
-        name: s.name || 'N/A',
-        versions: s.versions || 'N/A',
-        license: s.license || 'N/A',
-        otherData: s.otherData || 'N/A',
-        installDate: s.installDate || 'N/A',
-        status: s.status || 'N/A',
+      software: e.softwareRelation?.map((s) => ({
+        id: s.id || "N/A",
+        name: s.name || "N/A",
+        versions: s.versions || "N/A",
+        license: s.license || "N/A",
+        otherData: s.otherData || "N/A",
+        installDate: s.installDate || "N/A",
+        status: s.status || "N/A",
       })),
-      nameDocument: e.soportRelacion?.nameSaved || 'N/A',
-    }))
+      nameDocument: e.soportRelacion?.nameSaved || "N/A",
+    }));
 
     return res.json(equipmentFormatted);
   } catch (error) {
@@ -415,15 +504,18 @@ export async function getEquipmentBySede(
 }
 
 // distribucion equipos por tipo
-export async function getEquipmentTypeDistribution(req: Request, res: Response, next: NextFunction){
+export async function getEquipmentTypeDistribution(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const equipment = await Equipos.createQueryBuilder("equipos")
-    .select("equipos.typeEquipment", "typeEquipment")
-    .addSelect("COUNT(equipos.id)", "count")
-    .groupBy("equipos.typeEquipment")
-    .orderBy("count", "DESC")
-    .getRawMany()
+      .select("equipos.typeEquipment", "typeEquipment")
+      .addSelect("COUNT(equipos.id)", "count")
+      .groupBy("equipos.typeEquipment")
+      .orderBy("count", "DESC")
+      .getRawMany();
 
     if (!equipment) {
       return res.status(404).json({
@@ -431,23 +523,26 @@ export async function getEquipmentTypeDistribution(req: Request, res: Response, 
       });
     }
 
-  return res.json(equipment);
+    return res.json(equipment);
   } catch (error) {
     next(error);
   }
 }
 
-// distribucion por sede 
-export async function getEquipmentHeadquartersDistribution(req: Request, res: Response, next: NextFunction){
+// distribucion por sede
+export async function getEquipmentHeadquartersDistribution(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const equipment = await Equipos.createQueryBuilder("equipos")
-    .leftJoinAndSelect('equipos.placeRelation', 'sede')
-    .select("sede.name", "sedeName")
-    .addSelect("COUNT(equipos.id)", "count")
-    .groupBy("sede.name")
-    .orderBy("count", "DESC")
-    .getRawMany()
+      .leftJoinAndSelect("equipos.placeRelation", "sede")
+      .select("sede.name", "sedeName")
+      .addSelect("COUNT(equipos.id)", "count")
+      .groupBy("sede.name")
+      .orderBy("count", "DESC")
+      .getRawMany();
 
     if (!equipment) {
       return res.status(404).json({
@@ -455,40 +550,46 @@ export async function getEquipmentHeadquartersDistribution(req: Request, res: Re
       });
     }
 
-  return res.json(equipment);
+    return res.json(equipment);
   } catch (error) {
     next(error);
   }
 }
 // obtener edada de equipos por sede
-export async function getEquipmentAgeBySede(req: Request, res: Response, next: NextFunction){
+export async function getEquipmentAgeBySede(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const now = new Date();
     const oneYearAgo = subYears(now, 1);
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
-    
-    const lessThanOneYear = await Equipos.count({ where: { purchaseDate: MoreThan(oneYearAgo) } });
-    const betweenOneAndTwoYears = await Equipos.count({ 
-      where: { 
-        purchaseDate: Between(twoYearsAgo, oneYearAgo) 
-      } 
+
+    const lessThanOneYear = await Equipos.count({
+      where: { purchaseDate: MoreThan(oneYearAgo) },
     });
-    const betweenTwoAndThreeYears = await Equipos.count({ 
-      where: { 
-        purchaseDate: Between(threeYearsAgo, twoYearsAgo) 
-      } 
+    const betweenOneAndTwoYears = await Equipos.count({
+      where: {
+        purchaseDate: Between(twoYearsAgo, oneYearAgo),
+      },
     });
-    const moreThanThreeYears = await Equipos.count({ 
-      where: { 
-        purchaseDate: LessThan(threeYearsAgo) 
-      } 
+    const betweenTwoAndThreeYears = await Equipos.count({
+      where: {
+        purchaseDate: Between(threeYearsAgo, twoYearsAgo),
+      },
     });
-    
+    const moreThanThreeYears = await Equipos.count({
+      where: {
+        purchaseDate: LessThan(threeYearsAgo),
+      },
+    });
+
     // Cálculo de la edad promedio en días
     const equipments = await Equipos.find({ select: ["purchaseDate"] });
     let totalAge = 0;
-    equipments.forEach(equipment => {
+    equipments.forEach((equipment) => {
       if (equipment.purchaseDate) {
         const age = differenceInDays(now, new Date(equipment.purchaseDate));
         totalAge += age;
@@ -497,7 +598,7 @@ export async function getEquipmentAgeBySede(req: Request, res: Response, next: N
     const averageAgeInDays = totalAge / equipments.length || 0;
     const averageAgeInMonths = averageAgeInDays / 30;
     const averageAgeInYears = averageAgeInMonths / 12;
-    
+
     return res.json({
       distribution: [
         { label: "Menos de 1 año", value: lessThanOneYear },
@@ -508,8 +609,8 @@ export async function getEquipmentAgeBySede(req: Request, res: Response, next: N
       averageAge: {
         days: Math.round(averageAgeInDays),
         months: Math.round(averageAgeInMonths),
-        years: averageAgeInYears.toFixed(1)
-      }
+        years: averageAgeInYears.toFixed(1),
+      },
     });
   } catch (error) {
     next(error);
@@ -517,23 +618,33 @@ export async function getEquipmentAgeBySede(req: Request, res: Response, next: N
 }
 
 // estadisticas sobre garantia
-export async function getEquipmentWarrantyStatistics(req: Request, res: Response, next: NextFunction){
+export async function getEquipmentWarrantyStatistics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
-    const totalEquipments =  await Equipos.count();
-    const equipmentsInWarranty = await Equipos.count({ where: { warranty: true }});
-
-    // obtener equipos con garantia para calcular fecha de vencimiento
-    const equipmentWithWarranty =  await Equipos.find({
+    const totalEquipments = await Equipos.count();
+    const equipmentsInWarranty = await Equipos.count({
       where: { warranty: true },
-      select: ["id" ,'purchaseDate', 'warrantyTime']
     });
 
-    const expiringWarranties = equipmentWithWarranty.filter(e => {
-      const warrantyMonths = parseInt(e.warrantyTime.match(/\d+/)?.[0] || '0');
+    // obtener equipos con garantia para calcular fecha de vencimiento
+    const equipmentWithWarranty = await Equipos.find({
+      where: { warranty: true },
+      select: ["id", "purchaseDate", "warrantyTime"],
+    });
+
+    const expiringWarranties = equipmentWithWarranty.filter((e) => {
+      const warrantyMonths = parseInt(e.warrantyTime.match(/\d+/)?.[0] || "0");
       if (warrantyMonths > 0) {
-        const expirationDate = addMonths(new Date(e.purchaseDate), warrantyMonths);
-        const expiresSoon =  expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
+        const expirationDate = addMonths(
+          new Date(e.purchaseDate),
+          warrantyMonths
+        );
+        const expiresSoon =
+          expirationDate > new Date() &&
+          expirationDate < addMonths(new Date(), 3);
         return expiresSoon;
       }
       return false;
@@ -545,28 +656,29 @@ export async function getEquipmentWarrantyStatistics(req: Request, res: Response
       percentage: ((equipmentsInWarranty / totalEquipments) * 100).toFixed(2),
       expiringSoon: {
         count: expiringWarranties.length,
-        equiment: expiringWarranties
-      }
-    })
-
+        equiment: expiringWarranties,
+      },
+    });
   } catch (error) {
     next(error);
   }
 }
 
 // estadisticas sobre equipos con candado
-export async function getEquipmentLockStatistics(req: Request, res: Response, next: NextFunction){
+export async function getEquipmentLockStatistics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
-    const totalEquipments =  await Equipos.count();
-    const equipmentsWithLock = await Equipos.count({ where: { lock: true }});
+    const totalEquipments = await Equipos.count();
+    const equipmentsWithLock = await Equipos.count({ where: { lock: true } });
 
     return res.json({
       total: totalEquipments,
       withLock: equipmentsWithLock,
       percentage: ((equipmentsWithLock / totalEquipments) * 100).toFixed(2),
-    })
-
+    });
   } catch (error) {
     next(error);
   }

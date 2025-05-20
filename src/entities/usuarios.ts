@@ -45,6 +45,7 @@ import { Televisor } from "./televisor";
 import { Celular } from "./celular";
 import { SeguimientoTelevisor } from "./seguimiento-televisor";
 import { SeguimientoCelular } from "./seguimiento-celular";
+import { Comentarios } from "./comentarios";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -232,4 +233,7 @@ export class Usuarios extends BaseEntity {
   
   @OneToMany(() => SeguimientoCelular, (seguimientoCel) => seguimientoCel.usuarioRelation)
   seguimientoCelularesRelation: SeguimientoCelular[];
+
+  @OneToMany(() => Comentarios, (comentarios) => comentarios.userRelation)
+  commentTicketsRelation: Comentarios[];
 }

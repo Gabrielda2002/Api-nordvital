@@ -127,8 +127,75 @@ router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, u
  */
 router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteComment);
 
-router.post('/comment-status', authenticate, authorizeRoles(['1', '10']), createCommentAndChangeTicketStatus);
+/**
+ * @swagger
+ * /comment-status:
+ *   post:
+ *     summary: Crear comentario y cambiar el estado de un ticket
+ *     tags: [Comentarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - ticketId
+ *               - usuarioId
+ *               - coment
+ *               - status
+ *             properties:
+ *               ticketId:
+ *                 type: integer
+ *                 description: ID del ticket
+ *               usuarioId:
+ *                 type: integer
+ *                 description: ID del usuario
+ *               coment:
+ *                 type: string
+ *                 description: Comentario
+ *               status:
+ *                 type: integer
+ *                 description: Nuevo estado del ticket
+ *     responses:
+ *       200:
+ *         description: Comentario creado y estado de ticket actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comentarios'
+ *       400:
+ *         description: Error al crear comentario
+ *       404:
+ *         description: Ticket no encontrado
+ */
+router.post('/comment-status', authenticate, authorizeRoles(['1', '17']), createCommentAndChangeTicketStatus);
 
+/**
+ * @swagger
+ * /comment/tickets/{id}:
+ *   get:
+ *     summary: Obtener comentarios por ticket
+ *     tags: [Comentarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del ticket
+ *     responses:
+ *       200:
+ *         description: Lista de comentarios del ticket
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comentarios'
+ *       404:
+ *         description: Comentarios no encontrados
+ */
 router.get('/comment/tickets/:id', authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']),validarId ,getCommentsByTicket);
 
 export default router;

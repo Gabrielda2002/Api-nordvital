@@ -129,7 +129,7 @@ router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAl
  *       400:
  *         description: Datos inválidos
  */
-router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery.single('file'), generateInventoryNumber, createEquipment);
+router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, generateInventoryNumber, createEquipment);
 
 /**
  * @swagger
@@ -157,7 +157,7 @@ router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery.s
  *       404:
  *         description: Equipo no encontrado
  */
-router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery.single('file'), updateEquipment);
+router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery, updateEquipment);
 
 /**
  * @swagger

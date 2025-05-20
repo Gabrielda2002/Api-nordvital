@@ -28,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos
  */
-router.get("/eventos", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '18']), getAllEvents)
+router.get("/eventos", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17'    ,'18']), getAllEvents)
 
 /**
  * @swagger

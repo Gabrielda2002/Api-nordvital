@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { NotasTecnicas } from "../entities/notas-tecnicas";
 import { validate } from "class-validator";
-import * as XLSX from "xlsx";
+import * as ExcelJS from "exceljs";
 import { off } from "node:process";
 
 export async function getAllNotaTecnica(req: Request, res: Response, next: NextFunction){
@@ -146,28 +146,43 @@ export async function updateNotaTecnicaStatusFromExcel(req: Request, res: Respon
             return res.status(400).json({ message: "El archivo está vacío" });
         }
 
-        // Leer el archivo Excel
-        const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+        // Leer el archivo Excel con ExcelJS en lugar de XLSX
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(req.file.buffer);
 
-        if (!Array.isArray(workbook.SheetNames) || workbook.SheetNames.length === 0) {
+        if (workbook.worksheets.length === 0) {
             return res.status(400).json({ message: "El archivo no contiene hojas" });
         }
 
-
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        const worksheet = workbook.worksheets[0];
 
         if (!worksheet) {
             return res.status(400).json({ message: "La hoja esta vacia" });
         }
 
         // Convertir el contenido de la hoja a JSON
-        const data: any[] = XLSX.utils.sheet_to_json(worksheet);
+        const data: any[] = [];
+        const headers: string[] = [];
+
+        // Obtener los encabezados
+        worksheet.getRow(1).eachCell((cell, colNumber) => {
+            headers[colNumber - 1] = cell.value ? cell.value.toString() : '';
+        });
+
+        // Obtener los datos
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 1) { // Saltar la fila de encabezado
+                const rowData: any = {};
+                row.eachCell((cell, colNumber) => {
+                    rowData[headers[colNumber - 1]] = cell.value;
+                });
+                data.push(rowData);
+            }
+        });
 
         if (!data || data.length === 0) {
             return res.status(400).json({ message: "No se encontraron datos en la hoja" });
         }
-
 
         const firstRow = data[0];
         const columnName = Object.keys(firstRow);

@@ -1,6 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Tickets } from "./tickets";
+import { Usuarios } from "./usuarios";
 
 @Entity("comentarios")
 export class Comentarios extends BaseEntity {
@@ -26,5 +27,9 @@ export class Comentarios extends BaseEntity {
     @ManyToOne(() => Tickets, (ticket) => ticket.commentRelation)
     @JoinColumn({ name: "ticket_id" })
     ticketsRelation: Tickets;
+
+    @ManyToOne(() => Usuarios, (usuario) => usuario.commentTicketsRelation)
+    @JoinColumn({ name: "usuario_id" })
+    userRelation: Usuarios;
 
 }

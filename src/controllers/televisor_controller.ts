@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Televisor } from "../entities/televisor";
 import { validate } from "class-validator";
+import { Between, LessThan, MoreThan } from "typeorm";
+import { addMonths, differenceInDays, subYears } from "date-fns";
 
 export async function getTelevisorBySedeId(req: Request, res: Response, next: NextFunction){
     try {
@@ -231,5 +233,123 @@ export async function updateTelevisor(req: Request, res: Response, next: NextFun
 
     } catch (error) {
         next(error);
+    }
+}
+
+export async function getTvHeadquartersDistribution(req: Request, res: Response, next: NextFunction){
+    try {
+        const { sedeId } = req.params;
+
+        const tvDistribution = await Televisor.createQueryBuilder("televisor")
+        .leftJoinAndSelect('televisor.sedeRelation', 'sede')
+        .select("sede.name", "sedeName")
+        .addSelect("COUNT(televisor.id)", "count")
+        .groupBy("sede.name")
+        .orderBy("count", "DESC")
+        .getRawMany();
+
+        if (!tvDistribution) {
+            return res.status(404).json({ message: "No se encontraron televisores para esta sede" });
+        }
+        return res.status(200).json(tvDistribution);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// edad de tv
+export async function getTvAgeByHeadquarter(req: Request, res: Response, next: NextFunction){
+    try {
+        const now = new Date();
+        const oneYearAgo = subYears(now, 1);
+        const twoYearsAgo = subYears(now, 2);
+        const threeYearsAgo = subYears(now, 3);
+
+        const lessThanOneYear = await Televisor.count({
+            where: { purchaseDate: MoreThan(oneYearAgo)}
+        });
+        const betweenOneAndTwoYears = await Televisor.count({
+            where: { purchaseDate: Between(twoYearsAgo, oneYearAgo)}
+        });
+        const betweenTwoAndThreeYears = await Televisor.count({
+            where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo)}
+        });
+        const moreThanThreeYears = await Televisor.count({
+            where: { purchaseDate: LessThan(threeYearsAgo)}
+        });
+
+        const tv = await Televisor.find({select: ['purchaseDate']});
+        let totalAge= 0;
+
+        tv.forEach(t => {
+            if (t.purchaseDate) {
+                const age = differenceInDays(now, new Date(t.purchaseDate))
+                totalAge += age;
+            }
+        });
+
+        const averageAgeInDays = totalAge / tv.length || 0;
+        const averageAgeInMonths = averageAgeInDays / 30;
+        const averageAgeInYears = averageAgeInDays / 12;
+
+        return res.json({
+            distribution: [
+                {label: 'Menos de 1 año', value: lessThanOneYear},
+                {label: 'Entre 1 y 2 años', value: betweenOneAndTwoYears},
+                {label: 'Entre 2 y 3 años', value: betweenTwoAndThreeYears},
+                {label: 'Más de 3 años', value: moreThanThreeYears}
+            ],
+            averageAge: {
+                days: averageAgeInDays,
+                months: averageAgeInMonths,
+                years: averageAgeInYears.toFixed(1)
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getTvWarrantyStatistics(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const tvs = await Televisor.count({
+            where: { warranty: true }
+        });
+
+        const tvWithWarranty = await Televisor.find({
+            where: { warranty: true},
+            select: ['id', 'purchaseDate', 'warrantyTime']
+        });
+
+        const expiringWarranties = tvWithWarranty.filter(tv => {
+            const warrantyMonths = parseInt(tv.warrantyTime.match(/\d+/)?.[0] || "0");
+            if (warrantyMonths > 0) {
+                const expirationDate = addMonths(
+                    new Date(tv.purchaseDate),
+                    warrantyMonths
+                );
+                const expiresSoon = expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
+
+                return expiresSoon;
+            }
+            return false;
+        });
+
+        return res.status(200).json({
+            total: tvs,
+            inWarranty:  tvWithWarranty.length,
+            percentage: ((tvs / tvWithWarranty.length) * 100).toFixed(2),
+            expiringSoon: {
+                count: expiringWarranties.length,
+                tvs: expiringWarranties,
+            }
+        });
+
+    } catch (error) {
+        next(error);
+        
     }
 }
