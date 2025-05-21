@@ -276,7 +276,8 @@ export async function updatePatientsStatusFromExcel(
           // Saltar la fila de encabezado
           const rowData: any = {};
           row.eachCell((cell, colNumber) => {
-            rowData[headers[colNumber - 1]] = cell.value;
+            rowData[headers[colNumber - 1]] = cell.value !== null && cell.value !== undefined ?
+            cell.value.toString() : null;
           });
           data.push(rowData);
         }
@@ -287,8 +288,7 @@ export async function updatePatientsStatusFromExcel(
           .status(400)
           .json({ message: "No se encontraron datos en el archivo" });
       }
-      // Obtener la lista de cédulas desde la columna correspondiente
-      // Comprobamos si la columna existe en los datos
+      
       const primeraFila = data[0];
       const nombreColumnas = Object.keys(primeraFila);
 
