@@ -19,6 +19,6 @@ router.delete('/pacientes-coosalud/:id', authenticate, authorizeRoles([ '1']),va
 
 router.post('/paciente-identificacion', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18']), getPatientByIdentificationCoosalud)
 
-router.put('/update-patients-status', authenticate, authorizeRoles(['1']), uploadXlsx, updatePatientsStatusFromExcel)
+router.put('/patients/status', authenticate, authorizeRoles(['1']), uploadXlsx, updatePatientsStatusFromExcel)
 
 export default router
