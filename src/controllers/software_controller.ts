@@ -93,7 +93,7 @@ export async function updateSoftware(
         const { id } = req.params;
 
         const {
-            equipmentId,
+            name,
             versions,
             license,
             otherData,
@@ -109,7 +109,7 @@ export async function updateSoftware(
         });
         }
 
-        software.equipmentId = equipmentId;
+        software.name = name;
         software.versions = versions;
         software.license = license;
         software.otherData = otherData;
