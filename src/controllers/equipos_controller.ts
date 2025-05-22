@@ -481,7 +481,7 @@ export async function getEquipmentBySede(
         brand: c.brand || "N/A",
         capacity: c.capacity || "N/A",
         speed: c.speed || "N/A",
-        otherData: c.otherData || "N/A",
+        description: c.otherData || "N/A",
         model: c.model || "N/A",
         serial: c.serial || "N/A",
       })),
