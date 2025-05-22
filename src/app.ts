@@ -123,10 +123,10 @@ const spects = swaggerJsDoc(options)
 app.use(apiPrefix, routes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
 
-// Middleware para manejar errores
-app.use(errorHandler);
-
 // * middleware para manejar los errores en los logs
 app.use(errorLoggerMiddleware);
+// * Middleware para manejar errores
+app.use(errorHandler);
+
 
 export default server;
