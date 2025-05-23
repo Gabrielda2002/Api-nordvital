@@ -98,12 +98,11 @@ export async function updateComponent(
     try {
         const { id } = req.params;
         const {
-            idEquipments,
             name,
             brand,
             capacity,
             speed,
-            otherData,
+            description,
             model,
             serial,
         } = req.body;
@@ -116,12 +115,11 @@ export async function updateComponent(
             });
         }
     
-        component.idEquipments = parseInt(idEquipments);
         component.name = name;
         component.brand = brand;
         component.capacity = capacity;
         component.speed = speed;
-        component.otherData = otherData;
+        component.otherData = description;
         component.model = model;
         component.serial = serial;
     

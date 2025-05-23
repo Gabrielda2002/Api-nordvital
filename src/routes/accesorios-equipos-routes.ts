@@ -179,7 +179,7 @@ router.post("/accesorios-equipos", authenticate, authorizeRoles(['1']), generate
  *       400:
  *         description: Error de validación
  */
-router.put("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']), validarId, updateAccessory);
+router.put("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), validarId, updateAccessory);
 
 /**
  * @swagger

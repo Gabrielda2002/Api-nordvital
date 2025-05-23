@@ -95,7 +95,7 @@ export async function updateAccessory(
   try {
     const { id } = req.params;
 
-    const { name, brand, model, serial, otherData, status, inventoryNumber } =
+    const { name, brand, model, serial, description, status, inventoryNumber } =
       req.body;
 
     const accessory = await AccesoriosEquipos.findOne({
@@ -110,7 +110,7 @@ export async function updateAccessory(
     accessory.brand = brand;
     accessory.model = model;
     accessory.serial = serial;
-    accessory.otherData = otherData;
+    accessory.otherData = description;
     accessory.status = status;
     accessory.inventoryNumber = inventoryNumber;
 
