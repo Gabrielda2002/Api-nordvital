@@ -116,7 +116,7 @@ export class Celular extends BaseEntity {
 
     @Column({name: "tiempo_garantia"})
     @IsString()
-    @IsNotEmpty({message: "El tiempo de garantía es requerido"})
+    @IsOptional({message: "El tiempo de garantía es requerido"})
     @Length(2, 100, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
     warrantyTime: string;
 

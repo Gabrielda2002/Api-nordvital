@@ -136,8 +136,8 @@ export async function createPhone(
 
     // Validamos el objeto del teléfono primero antes de guardar cualquier archivo
     const newPhone = new Celular();
-    newPhone.name = name.toLowerCase();
-    newPhone.brand = brand.toLowerCase();
+    newPhone.name = name.toUpperCase();
+    newPhone.brand = brand.toUpperCase();
     newPhone.model = model;
     newPhone.serial = serial;
     newPhone.imei = imei;
@@ -152,7 +152,7 @@ export async function createPhone(
     newPhone.macWifi = macWifi;
     newPhone.addressBluetooth = addressBluetooth;
     newPhone.purchaseDate = purchaseDate;
-    newPhone.warrantyTime = warrantyTime;
+    newPhone.warrantyTime = warrantyTime || 'No Aplica';
     newPhone.warranty = warranty == "true" ? true : false;
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
@@ -307,8 +307,8 @@ export async function updatePhone(
       acquisitionValue,
     } = req.body;
 
-    phone.name = name.toLowerCase();
-    phone.brand = brand.toLowerCase();
+    phone.name = name.toUpperCase();
+    phone.brand = brand.toUpperCase();
     phone.model = model;
     phone.serial = serial;
     phone.imei = imei;
@@ -323,7 +323,7 @@ export async function updatePhone(
     phone.macWifi = macWifi;
     phone.addressBluetooth = addressBluetooth;
     phone.purchaseDate = purchaseDate;
-    phone.warrantyTime = warrantyTime;
+    phone.warrantyTime = warrantyTime || 'No Aplica';
     phone.warranty = warranty === 'true' ? true : false;
     phone.deliveryDate = deliveryDate;
     phone.inventoryNumber = inventoryNumber;
