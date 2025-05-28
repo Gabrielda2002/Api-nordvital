@@ -63,9 +63,9 @@ export class dispositivosRed extends BaseEntity {
     status: string
 
     @Column({name: "numero_inventario"})
-    @IsString()
-    @IsNotEmpty({message: "El número de inventario es requerido"})
-    @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
+    // @IsString()
+    // @IsNotEmpty({message: "El número de inventario es requerido"})
+    // @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})
     inventoryNumber: string
 
     @CreateDateColumn({name: "fecha_creacion"})
