@@ -719,7 +719,8 @@ export async function searchEquipmentGlobal(
           LOWER(equipos.model) LIKE :searchTerm OR
           LOWER(CONCAT(equipmentUser.name, ' ', equipmentUser.lastName)) LIKE :searchTerm OR
           LOWER(equipmentUser.name) LIKE :searchTerm OR
-          LOWER(equipmentUser.lastName) LIKE :searchTerm
+          LOWER(equipmentUser.lastName) LIKE :searchTerm OR
+          LOWER(accesoriosEquipos.serial) LIKE :searchTerm
         )`,
         { searchTerm }
       )
