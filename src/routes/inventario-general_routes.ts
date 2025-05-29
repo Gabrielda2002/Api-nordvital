@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, updateInventoryGeneral } from "../controllers/inventario-general_controller";
+import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, searchInventoryGeneral, updateInventoryGeneral } from "../controllers/inventario-general_controller";
 
 const router = Router();
 
@@ -193,5 +193,7 @@ router.get('/inventario/general/statistics/age', authenticate, authorizeRoles(['
  *         description: Error interno del servidor.
  */
 router.get('/inventario/general/statistics/headquarters', authenticate, authorizeRoles(['1']), getInventoryGeneralByHeadquartersStatistics);
+
+router.get('/search/inventario/general', authenticate, authorizeRoles(['1']), searchInventoryGeneral);
 
 export default router;

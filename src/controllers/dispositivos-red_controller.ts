@@ -72,7 +72,7 @@ export async function createDevice(
     device.mac = mac;
     device.otherData = otherData;
     device.status = status;
-    device.inventoryNumber = inventoryNumber || 'No aplica';
+    device.inventoryNumber = inventoryNumber || "No aplica";
 
     const errors = await validate(device);
     if (errors.length > 0) {
@@ -179,12 +179,16 @@ export async function getDevicesBySede(
   next: NextFunction
 ) {
   try {
-    const {id} = req.params;
-    const devices = await dispositivosRed.createQueryBuilder("dispositivosRed")
-    .leftJoinAndSelect("dispositivosRed.seguimientoDispositivosRedRelation", "seguimiento")
-    .leftJoinAndSelect("seguimiento.userRelation", "user")
-    .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
-    .getMany();
+    const { id } = req.params;
+    const devices = await dispositivosRed
+      .createQueryBuilder("dispositivosRed")
+      .leftJoinAndSelect(
+        "dispositivosRed.seguimientoDispositivosRedRelation",
+        "seguimiento"
+      )
+      .leftJoinAndSelect("seguimiento.userRelation", "user")
+      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .getMany();
 
     if (devices.length < 0) {
       return res.status(404).json({
@@ -211,8 +215,8 @@ export async function getDevicesBySede(
         description: s.description,
         responsableName: s.userRelation?.name,
         responsableLastName: s.userRelation?.lastName,
-      }))
-    }))
+      })),
+    }));
 
     return res.json(deviceDataFormatted);
   } catch (error) {
@@ -225,15 +229,15 @@ export async function getDevicesCountByHeadquarters(
   req: Request,
   res: Response,
   next: NextFunction
- ) {
+) {
   try {
-    
-    const devices = await dispositivosRed.createQueryBuilder("dispositivosRed")
-    .leftJoin('dispositivosRed.placeRelation', 'place')
-    .select("place.name", "name")
-    .addSelect("COUNT(dispositivosRed.id)", "count")
-    .groupBy("place.name")
-    .getRawMany();
+    const devices = await dispositivosRed
+      .createQueryBuilder("dispositivosRed")
+      .leftJoin("dispositivosRed.placeRelation", "place")
+      .select("place.name", "name")
+      .addSelect("COUNT(dispositivosRed.id)", "count")
+      .groupBy("place.name")
+      .getRawMany();
 
     if (devices.length < 0) {
       return res.status(404).json({
@@ -244,11 +248,89 @@ export async function getDevicesCountByHeadquarters(
     const deviceDataFormatted = devices.map((d) => ({
       sedeName: d.name,
       count: parseInt(d.count),
-    }))
+    }));
 
     return res.json(deviceDataFormatted);
-
   } catch (error) {
     next(error);
   }
- }
+}
+
+// busqueda global de dispositivos
+
+export async function searchDevices(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { query } = req.query;
+    console.log("Query:", query);
+
+    if (!query || typeof query !== "string" || query.trim().length < 2) {
+      return res.status(400).json({
+        message: "La consulta debe ser una cadena de al menos 2 caracteres",
+      });
+    }
+
+    const searchTerm = `%${query.trim().toLowerCase()}%`;
+
+    const devices = await dispositivosRed
+      .createQueryBuilder("dispositivosRed")
+      .leftJoinAndSelect(
+        "dispositivosRed.seguimientoDispositivosRedRelation",
+        "seguimiento"
+      )
+      .leftJoinAndSelect("seguimiento.userRelation", "user")
+      .leftJoinAndSelect("dispositivosRed.placeRelation",'sede')
+      .leftJoinAndSelect("sede.departmentRelation", "department")
+      .where(
+        `(
+          LOWER(dispositivosRed.name) LIKE :searchTerm OR
+          LOWER(dispositivosRed.serial) LIKE :searchTerm
+        )`, 
+        { searchTerm }
+      )
+      .orderBy("dispositivosRed.name", "ASC")
+      .limit(50)
+      .getMany();
+
+    if (devices.length < 0) {
+      return res.status(404).json({
+        message: "No se encontraron dispositivos",
+      });
+    }
+
+    const deviceDataFormatted = devices.map((d) => ({
+      item : {
+        id: d.id,
+        sedeId: d.sedeId,
+        name: d.name,
+        brand: d.brand,
+        model: d.model,
+        serial: d.serial,
+        addressIp: d.addressIp,
+        mac: d.mac,
+        otherData: d.otherData,
+        status: d.status,
+        inventoryNumber: d.inventoryNumber,
+        seguimiento: d.seguimientoDispositivosRedRelation.map((s) => ({
+          id: s.id,
+          eventDate: s.dateEvent,
+          typeEvent: s.eventType,
+          description: s.description,
+          responsableName: s.userRelation?.name,
+          responsableLastName: s.userRelation?.lastName,
+        }))
+      },
+      departmentId: d.placeRelation?.departmentRelation?.id || 0,
+      departmentRelationName: d.placeRelation?.departmentRelation?.name || "N/A",
+      sedeName: d.placeRelation?.name || "N/A",
+      sedeId: d.placeRelation.id || 0
+    }));
+
+    return res.json(deviceDataFormatted);
+  } catch (error) {
+    next(error);
+  }
+}

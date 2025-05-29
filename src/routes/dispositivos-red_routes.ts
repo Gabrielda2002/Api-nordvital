@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createDevice, deleteDevice, getAllDevices, getDevice, getDevicesBySede, getDevicesCountByHeadquarters, updateDevice } from "../controllers/dispositivos-red_controller";
+import { createDevice, deleteDevice, getAllDevices, getDevice, getDevicesBySede, getDevicesCountByHeadquarters, searchDevices, updateDevice } from "../controllers/dispositivos-red_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -205,5 +205,7 @@ router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),valid
 router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1']),validarId, getDevicesBySede);
 
 router.get('/dispositivos-red/statistics/headquarters', authenticate, authorizeRoles(['1']), getDevicesCountByHeadquarters);
+
+router.get('/search/dispositivos-red', authenticate, authorizeRoles(['1']), searchDevices);
 
 export default router;

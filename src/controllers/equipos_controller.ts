@@ -683,3 +683,125 @@ export async function getEquipmentLockStatistics(
     next(error);
   }
 }
+
+
+export async function searchEquipmentGlobal(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string' || query.trim().length < 2) {
+      return res.json([]);
+    }
+
+    const searchTerm = `%${query.trim().toLowerCase()}%`;
+
+    const equipment = await Equipos.createQueryBuilder("equipos")
+      .leftJoinAndSelect("equipos.seguimientoEquipos", "seguimientoEquipos")
+      .leftJoinAndSelect("equipos.accessoriesRelation", "accesoriosEquipos")
+      .leftJoinAndSelect("equipos.componentRelation", "componentRelation")
+      .leftJoinAndSelect("equipos.softwareRelation", "softwareRelation")
+      .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
+      .leftJoinAndSelect("equipos.soportRelacion", "document")
+      .leftJoinAndSelect("equipos.placeRelation", "sede_equipo")
+      .leftJoinAndSelect("sede_equipo.departmentRelation", "departamento_sede")
+      .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
+      // Aquí está la clave: usamos CONCAT y LOWER para buscar en múltiples campos
+      .where(
+        `(
+          LOWER(equipos.name) LIKE :searchTerm OR
+          LOWER(equipos.serial) LIKE :searchTerm OR
+          LOWER(equipos.inventoryNumber) LIKE :searchTerm OR
+          LOWER(equipos.brand) LIKE :searchTerm OR
+          LOWER(equipos.model) LIKE :searchTerm OR
+          LOWER(CONCAT(equipmentUser.name, ' ', equipmentUser.lastName)) LIKE :searchTerm OR
+          LOWER(equipmentUser.name) LIKE :searchTerm OR
+          LOWER(equipmentUser.lastName) LIKE :searchTerm
+        )`,
+        { searchTerm }
+      )
+      .orderBy("equipos.name", "ASC")
+      .limit(50)
+      .getMany();
+
+    // Formatear los resultados para incluir información de departamento y sede
+    const searchResults = equipment.map((e) => ({
+      item: {
+        id: e.id || "N/A",
+        sedeId: e.sedeId || "N/A",
+        nameEquipment: e.name || "N/A",
+        area: e.ubicacion || "N/A",
+        typeEquipment: e.typeEquipment || "N/A",
+        brandEquipment: e.brand || "N/A",
+        modelEquipment: e.model || "N/A",
+        serialEquipment: e.serial || "N/A",
+        operationalSystem: e.operationalSystem || "N/A",
+        addressIp: e.addressIp || "N/A",
+        mac: e.mac || "N/A",
+        purchaseDate: e.purchaseDate || "N/A",
+        warrantyTime: e.warrantyTime || "N/A",
+        warranty: e.warranty || "N/A",
+        deliveryDate: e.deliveryDate || "N/A",
+        inventoryNumberEquipment: e.inventoryNumber || "N/A",
+        dhcp: e.dhcp || "N/A",
+        lock: e.lock === false ? false : true,
+        lockKey: e.lockKey || "N/A",
+        createAt: e.createAt || "N/A",
+        updateAt: e.updateAt || "N/A",
+        idUser: e.userRelation?.id || "N/A",
+        nameUser: e.userRelation?.name || "N/A",
+        lastNameUser: e.userRelation?.lastName || "N/A",
+        processEquipment: e.seguimientoEquipos?.map((s) => ({
+          id: s.id || "N/A",
+          eventDate: s.eventDate || "N/A",
+          typeEvent: s.eventType || "N/A",
+          description: s.description || "N/A",
+          responsableLastName: s.userRelation?.name || "N/A",
+          responsableName: s.userRelation?.lastName || "N/A",
+        })),
+        accessories: e.accessoriesRelation?.map((a) => ({
+          id: a.id || "N/A",
+          name: a.name || "N/A",
+          brand: a.brand || "N/A",
+          model: a.model || "N/A",
+          serial: a.serial || "N/A",
+          description: a.otherData || "N/A",
+          status: a.status || "N/A",
+          inventoryNumber: a.inventoryNumber || "N/A",
+        })),
+        components: e.componentRelation?.map((c) => ({
+          id: c.id || "N/A",
+          name: c.name || "N/A",
+          brand: c.brand || "N/A",
+          capacity: c.capacity || "N/A",
+          speed: c.speed || "N/A",
+          description: c.otherData || "N/A",
+          model: c.model || "N/A",
+          serial: c.serial || "N/A",
+        })),
+        software: e.softwareRelation?.map((s) => ({
+          id: s.id || "N/A",
+          name: s.name || "N/A",
+          versions: s.versions || "N/A",
+          license: s.license || "N/A",
+          otherData: s.otherData || "N/A",
+          installDate: s.installDate || "N/A",
+          status: s.status || "N/A",
+        })),
+        nameDocument: e.soportRelacion?.nameSaved || "N/A",
+      },
+      departmentId: e.placeRelation?.departmentRelation?.id || 0,
+      departmentRelationName: e.placeRelation?.departmentRelation?.name || "N/A",
+      sedeId: e.placeRelation?.id || 0,
+      sedeName: e.placeRelation?.name || "N/A"
+    }));
+
+    return res.json(searchResults);
+  } catch (error) {
+    console.error('Error in searchEquipmentGlobal:', error);
+    next(error);
+  }
+}

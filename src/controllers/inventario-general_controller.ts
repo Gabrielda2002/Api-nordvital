@@ -392,3 +392,106 @@ export async function getInventoryGeneralByHeadquartersStatistics(req: Request, 
     next(error);
   }
 }
+
+// busqueda global de inventario general
+export async function searchInventoryGeneral(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string' || query.trim().length < 2) {
+      return res.status(400).json({
+        message: "La consulta debe tener al menos 2 caracteres.",
+      });
+    }
+
+    const searchTerm = `%${query.trim().toLowerCase()}%`;
+
+    const ItemsGeneral = await InventarioGeneral.createQueryBuilder("inventario")
+      .leftJoinAndSelect("inventario.headquartersRelation", "sede")
+      .leftJoinAndSelect('inventario.responsibleRelation', 'responsable')
+      .leftJoinAndSelect('inventario.classificationRelation', 'clasificacion')
+      .leftJoinAndSelect('inventario.assetRelation', 'activo')
+      .leftJoinAndSelect('inventario.materialRelation', 'material')
+      .leftJoinAndSelect('inventario.statusRelation', 'estado')
+      .leftJoinAndSelect('inventario.areaTypeRelation', 'tipoArea')
+      .leftJoinAndSelect('inventario.dependencyAreaRelation', 'areaDependencia')
+      .leftJoinAndSelect('inventario.assetTypeRelation', 'tipoActivo')
+      .leftJoinAndSelect('inventario.seguimiento', 'seguimiento')
+      .leftJoinAndSelect('inventario.headquartersRelation', 'sedeInventario')
+      .leftJoinAndSelect('sedeInventario.departmentRelation', 'departamento')
+      .leftJoinAndSelect('seguimiento.usuario', 'usuario')
+      .where(
+        `(
+          LOWER(inventario.name) LIKE :searchTerm OR
+          LOWER(inventario.serialNumber) LIKE :searchTerm OR
+          LOWER(responsable.name) LIKE :searchTerm
+        )`, 
+        { searchTerm }
+      )
+      .orderBy("inventario.name", "ASC")
+      .limit(50)
+      .getMany();
+
+    if (ItemsGeneral.length === 0) {
+      return res.status(404).json({ message: "No se encontraron registros." });
+    }
+
+    const inventarioGeneralFormated = ItemsGeneral.map((i) => ({
+      item: {
+        id: i.id,
+        name: i.name,
+        brand: i.brand,
+        model: i.model,
+        serialNumber: i.serialNumber,
+        location: i.location,
+        quantity: i.quantity,
+        otherDetails: i.otherDetails,
+        acquisitionDate: i.acquisitionDate,
+        purchaseValue: i.purchaseValue,
+        warranty: i.warranty,
+        warrantyPeriod: i.warrantyPeriod,
+        inventoryNumber: i.inventoryNumber,
+        createdAt: i.createdAt,
+        updatedAt: i.updatedAt,
+        classificationId: i.classificationId,
+        headquarters: i.headquartersRelation?.name,
+        responsable: i.responsibleRelation?.name,
+        classification: i.classificationRelation?.name,
+        asset: i.assetRelation?.name, 
+        assetId: i.assetId,
+        material: i.materialRelation?.name,
+        materialId: i.materialId,
+        statusId: i.statusId,
+        status: i.statusRelation?.name,
+        areaType: i.areaTypeRelation?.name,
+        areaTypeId: i.areaTypeId,
+        assetType: i.assetTypeRelation?.name,
+        assetTypeId: i.assetTypeId,
+        dependencyAreaId: i.dependencyAreaId,
+        dependencyArea: i.dependencyAreaRelation?.name,
+        seguimiento: i.seguimiento.map((s) => ({
+          id: s.id,
+          eventDate: s.fecha_evento,
+          typeEvent: s.typeEvent,
+          description: s.description,
+          responsableName: s.usuario?.name,
+          responsableLastName: s.usuario?.lastName,
+        })),
+      },
+      departmentId: i.headquartersRelation?.departmentRelation?.id || 0,
+      departmentRelationName: i.headquartersRelation?.departmentRelation?.name || "N/A",
+      sedeName: i.headquartersRelation?.name || "N/A",
+      sedeId: i.headquartersRelation.id || 0
+    }));
+
+    res.status(200).json(inventarioGeneralFormated);
+
+  } catch (error) {
+    next(error);
+  }
+}
