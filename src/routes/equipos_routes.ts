@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, updateEquipment } from "../controllers/equipos_controller";
+import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment } from "../controllers/equipos_controller";
 import { validarId } from "../middlewares/validar-id";
 import { generateInventoryNumber } from "../middlewares/generate-inventory-number";
 import { uploadDocDelivery } from "../middlewares/upload-doc-delivery_middleware";
@@ -218,5 +218,7 @@ router.get('/equipments/statics/age', authenticate, authorizeRoles(['1']), getEq
 router.get('/equipments/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getEquipmentWarrantyStatistics);
 
 router.get('/equipments/statics/withLock', authenticate, authorizeRoles(['1']), getEquipmentLockStatistics);
+
+router.get('/search/equipos', authenticate, authorizeRoles(['1']), searchEquipmentGlobal);
 
 export default router;

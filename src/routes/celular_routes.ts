@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createPhone, getCountPhonesByHeadquartersId, getPhoneAgeByHeadquartersId, getPhoneBySedeId, getPhoneWarrantyStatistics, updatePhone } from "../controllers/celular_controller";
+import { createPhone, getCountPhonesByHeadquartersId, getPhoneAgeByHeadquartersId, getPhoneBySedeId, getPhoneWarrantyStatistics, searchPhone, updatePhone } from "../controllers/celular_controller";
 import { uploadDocDelivery } from "../middlewares/upload-doc-delivery_middleware";
 import { validarId } from "../middlewares/validar-id";
 
@@ -308,5 +308,7 @@ router.get('/celular/statics/age', authenticate, authorizeRoles(['1']), getPhone
  *         description: Error interno del servidor
  */
 router.get('/celular/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getPhoneWarrantyStatistics);
+
+router.get('/search/inventario/celulares', authenticate, authorizeRoles(['1']), searchPhone);
 
 export default router;

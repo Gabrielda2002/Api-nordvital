@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { validarId } from "../middlewares/validar-id";
-import { createTelevisor, getTelevisorBySedeId, getTvAgeByHeadquarter, getTvHeadquartersDistribution, getTvWarrantyStatistics, updateTelevisor } from "../controllers/televisor_controller";
+import { createTelevisor, getTelevisorBySedeId, getTvAgeByHeadquarter, getTvHeadquartersDistribution, getTvWarrantyStatistics, searchTv, updateTelevisor } from "../controllers/televisor_controller";
 
 const router = Router();
 
@@ -327,5 +327,7 @@ router.get('/tv/statics/age', authenticate, authorizeRoles(['1']), getTvAgeByHea
  *         description: Error interno del servidor
  */
 router.get('/tv/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getTvWarrantyStatistics);
+
+router.get('/search/inventario/televisores', authenticate, authorizeRoles(['1']), searchTv);
 
 export default router;

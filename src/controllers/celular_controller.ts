@@ -597,3 +597,104 @@ export async function getPhoneWarrantyStatistics(req: Request, res: Response, ne
     next(error);
   }
 }
+
+export async function searchPhone(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+    const { query } = req.query;
+
+    if (!query || typeof query !== "string" || query.trim().length < 2) {
+      return res.status(400).json({
+        message: "La consulta debe ser una cadena de al menos 2 caracteres",
+      });
+    }
+
+    const searchTerm = `%${query.trim().toLowerCase()}%`;
+
+    const phones = await Celular.createQueryBuilder("celular")
+      .leftJoinAndSelect("celular.usuarioRelation", "responsable")
+      .leftJoinAndSelect("celular.actaRelation", "acta")
+      .leftJoinAndSelect("celular.seguimientoRelation", "seguimiento")
+      .leftJoinAndSelect(
+        "seguimiento.usuarioRelation",
+        "responsableSeguimiento"
+      )
+      .leftJoinAndSelect('celular.sedeRelation', 'sede')
+      .leftJoinAndSelect('sede.departmentRelation', 'department')
+      .where(
+        `(
+          LOWER(celular.name) LIKE :searchTerm OR
+          LOWER(celular.serial) LIKE :searchTerm OR
+          LOWER(responsable.name) LIKE :searchTerm
+        )`, { searchTerm }
+      )
+      .orderBy("celular.name", "ASC")
+      .limit(50)
+      .getMany();
+
+    if (phones.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron celulares para esta sede" });
+    }
+
+    const phonesWithDetails = phones.map((p) => ({
+      item: {
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        model: p.model,
+        serial: p.serial,
+        phoneNumber: p.phoneNumber,
+        operador: p.operador,
+        typePlan: p.typePlan,
+        dueDatePlan: p.dueDatePlan,
+        macWifi: p.macWifi,
+        addressBluetooth: p.addressBluetooth,
+        purchaseDate: p.purchaseDate,
+        warrantyTime: p.warrantyTime,
+        warranty: p.warranty,
+        deliveryDate: p.deliveryDate,
+        protectorCase: p.caseProtector,
+        temperedGlass: p.temperedGlass,
+        status: p.status,
+        observation: p.observation,
+        acquisitionValue: p.acquisitionValue,
+        imei: p.imei,
+        operativeSystem: p.operativeSystem,
+        versionSO: p.versionSO,
+        storage: p.storage,
+        storageRam: p.storageRam,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+        sedeId: p.sedeId,
+        nameSaved: p.actaRelation?.nameSaved,
+        seguimientoRelation: p.seguimientoRelation?.map((s) => ({
+          id: s.id,
+          description: s.description,
+          responsableName: s.usuarioRelation?.name,
+          responsableLastNames: s.usuarioRelation?.lastName || null,
+          typeEvent: s.eventType,
+          eventDate: s.eventDate,
+          createdAt: s.createdAt,
+        })),
+        responsableId: p.usuarioRelation?.id || "N/A",
+        responsableName: p.usuarioRelation?.name || "N/A",
+        responsableLastName: p.usuarioRelation?.lastName || "N/A",
+      }, 
+      departmentId: p.sedeRelation?.departmentRelation?.id || 0,
+      departmentRelationName: p.sedeRelation?.departmentRelation?.name || "N/A",
+      sedeName: p.sedeRelation?.name || "N/A",
+      sedeId: p.sedeRelation?.id || 0
+    }));
+
+    return res.status(200).json(phonesWithDetails);
+
+  } catch (error) {
+    next(error);
+  }
+}

@@ -199,6 +199,6 @@ router.put("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), valid
  *       200:
  *         description: Accesorio eliminado exitosamente
  */
-router.delete("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']), validarId, deleteAccessory);
+router.delete("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), validarId, deleteAccessory);
 
 export default router;
