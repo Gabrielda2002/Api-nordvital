@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
 import dotenv from "dotenv";
+import { time } from "console";
 
 dotenv.config();
 
@@ -172,4 +173,26 @@ export async function logoutAll(req: Request, res: Response, next: NextFunction)
     } catch (error) {
         next(error);
     }
+}
+
+// stats tokens 
+export async function getStatsTokens(req: Request, res: Response, next: NextFunction) {
+  try {
+
+    const stats = await TokenService.getTokensStats();
+
+    const response = {
+      statistics: {
+        total: stats.total,
+        active: stats.active,
+        expired: stats.expired,
+      },
+      timestamp: new Date().toISOString(),
+    }
+    
+  res.json(response);
+
+  } catch (error) {
+    next(error);
+  }
 }

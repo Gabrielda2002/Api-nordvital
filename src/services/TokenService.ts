@@ -79,4 +79,25 @@ export class TokenService {
       .where("userId = :userId", { userId })
       .execute();
   }
+
+  static async getTokensStats(): Promise<{total: number, expired: number, active: number}> {
+    const now = new Date();
+
+    const [total, expired, active] = await Promise.all([
+      RefreshToken.count(),
+      RefreshToken.createQueryBuilder()
+      .where("expires_at < :now OR is_revoked = true", { now })
+      .getCount(),
+      RefreshToken.createQueryBuilder()
+      .where("expires_at > :now AND is_revoked = false", { now })
+      .getCount()
+    ]);
+
+    return {
+      total,
+      expired,
+      active
+    };
+
+  }
 }
