@@ -34,7 +34,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles(['1']), getAllInventoryTrackingGeneralByItem);
+router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles(['1', '6']), getAllInventoryTrackingGeneralByItem);
 
 /**
  * @swagger
@@ -62,6 +62,6 @@ router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles([
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/seguimiento/inventario-general', authenticate, authorizeRoles(['1']), createInventoryTrackingGeneral);
+router.post('/seguimiento/inventario-general', authenticate, authorizeRoles(['1', '6']), createInventoryTrackingGeneral);
 
 export default router;

@@ -5,6 +5,6 @@ import { getAllClassifications } from "../controllers/clasificacion_controllers"
 
 const router = Router();
 
-router.get('/clasificaciones', authenticate, authorizeRoles(['1']), getAllClassifications);
+router.get('/clasificaciones', authenticate, authorizeRoles(['1', '6']), getAllClassifications);
 
 export default router;

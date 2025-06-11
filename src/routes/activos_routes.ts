@@ -6,6 +6,6 @@ import { getAllByAssetId } from "../controllers/activos_controller";
 
 const router = Router();
 
-router.get('/activos/:id', authenticate, authorizeRoles(['1']),validarId ,getAllByAssetId);
+router.get('/activos/:id', authenticate, authorizeRoles(['1', '6']),validarId ,getAllByAssetId);
 
 export default router;

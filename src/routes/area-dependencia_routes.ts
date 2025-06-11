@@ -5,6 +5,6 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/area-dependencia', authenticate, authorizeRoles(['1']), getAllAreaDependency);
+router.get('/area-dependencia', authenticate, authorizeRoles(['1', '6']), getAllAreaDependency);
 
 export default router;

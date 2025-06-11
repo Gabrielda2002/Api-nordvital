@@ -5,6 +5,6 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/tipo-activo', authenticate, authorizeRoles(['1']), getAllAssetTypes);
+router.get('/tipo-activo', authenticate, authorizeRoles(['1', '6']), getAllAssetTypes);
 
 export default router;
