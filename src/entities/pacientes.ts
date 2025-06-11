@@ -5,6 +5,7 @@ import { IpsPrimaria } from "./ips-primaria";
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Radicacion } from "./radicacion";
 import { Cirugias } from "./cirugias";
+import { DemandaInducida } from "./demanda-inducida";
 
 
 @Entity("pacientes")
@@ -99,5 +100,9 @@ export class Pacientes extends BaseEntity {
 
     @OneToMany(() => Radicacion, (radicacion) => radicacion.patientRelation)
     radicacionRelation: Radicacion[]
+
+    // * relacion con demanda inducida
+    @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.pacienteRelation)
+    demandaInducidaRelation: DemandaInducida[];
     
 }
