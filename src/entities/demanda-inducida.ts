@@ -1,0 +1,245 @@
+import { 
+    BaseEntity, 
+    Column, 
+    CreateDateColumn, 
+    Entity, 
+    JoinColumn, 
+    ManyToOne, 
+    PrimaryGeneratedColumn 
+} from "typeorm";
+import { 
+    IsBoolean, 
+    IsDate, 
+    IsEnum, 
+    IsInt, 
+    IsNotEmpty, 
+    IsOptional, 
+    IsString, 
+    Length 
+} from "class-validator";
+import { ElementoDemandaInducida } from "./elemento-demanda-inducida";
+import { TipoDemandaInducida } from "./tipo-demanda-inducida";
+import { ObjetivoDemandaInducida } from "./objetivo-demanda-inducida";
+import { RelacionUsuario } from "./relacion-usuario";
+import { AreaEps } from "./area-eps";
+import { ResumenSeguimientoActividad } from "./resumen-seguimiento-actividad";
+import { ResultadoLlamada } from "./resultado-llamada";
+import { MotivoVisita } from "./motivo-visita";
+import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
+import { Pacientes } from "./pacientes";
+import { Usuarios } from "./usuarios";
+import { departamentos } from "./departamentos";
+import { Municipio } from "./municipio";
+
+enum AreaDificultad {
+    IPS = "IPS",
+    EPS = "EPS"
+}
+
+@Entity({ name: "demanda_inducida" })
+export class DemandaInducida extends BaseEntity {
+
+    @PrimaryGeneratedColumn({ name: "id" })
+    id: number;
+
+    @Column({ name: "paciente_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El ID del paciente es requerido" })
+    pacienteId: number;
+
+    @Column({ name: "elemento_demanda_inducida_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El elemento de demanda inducida es requerido" })
+    elementoDemandaInducidaId: number;
+
+    @Column({ name: "tipo_demanda_inducida_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El tipo de demanda inducida es requerido" })
+    tipoDemandaInducidaId: number;
+
+    @Column({ name: "objetivo_demanda_inducida_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El objetivo de demanda inducida es requerido" })
+    objetivoDemandaInducidaId: number;
+
+    @Column({ name: "relacion_usuario_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "La relación con el usuario es requerida" })
+    relacionUsuarioId: number;
+
+    @Column({ name: "area_eps_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El área EPS es requerida" })
+    areaEpsId: number;
+
+    @Column({ name: "resumen_seguimiento_actividad_id" })
+    @IsInt()
+    @IsNotEmpty({ message: "El resumen de seguimiento de actividad es requerido" })
+    resumenSeguimientoActividadId: number;
+
+    @Column({ name: "resultado_llamada_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    resultadoLlamadaId: number;
+
+    @Column({ name: "motivo_visita_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    motivoVisitaId: number;
+
+    @Column({ name: "area_persona_seguimiento_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    areaPersonaSeguimientoId: number;
+
+    @Column({ name: "clasificacion", type: "tinyint", default: 0, nullable: true })
+    @IsBoolean()
+    @IsOptional()
+    clasificacion: boolean;
+
+    @Column({ name: "persona_recibe", type: "varchar", length: 60 })
+    @IsString()
+    @IsNotEmpty({ message: "La persona que recibe es requerida" })
+    @Length(3, 60, { message: "La persona que recibe debe tener entre $constraint1 y $constraint2 caracteres" })
+    personaRecibe: string;
+
+    @Column({ name: "texto_llamada", type: "text", nullable: true })
+    @IsString()
+    @IsOptional()
+    textoLlamada: string;
+
+    @Column({ name: "dificultad_acceso", type: "tinyint", default: 0, nullable: true })
+    @IsBoolean()
+    @IsOptional()
+    dificultadAcceso: boolean;
+
+    @Column({ name: "area_dificultad", type: "enum", enum: AreaDificultad, nullable: true })
+    @IsEnum(AreaDificultad)
+    @IsOptional()
+    areaDificultad: AreaDificultad;
+
+    @Column({ name: "condiocion_paciente", type: "tinyint", default: 0, nullable: true })
+    @IsBoolean()
+    @IsOptional()
+    condicionPaciente: boolean;
+
+    @Column({ name: "soporte_recuperados", type: "varchar", length: 200, nullable: true })
+    @IsString()
+    @IsOptional()
+    @Length(1, 200, { message: "Los soportes recuperados deben tener entre 1 y 200 caracteres" })
+    soporteRecuperados: string;
+
+    @Column({ name: "departamento_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    departamentoId: number;
+
+    @Column({ name: "municipio_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    municipioId: number;
+
+    @Column({ name: "barrio_vereda", type: "varchar", length: 200, nullable: true })
+    @IsString()
+    @IsOptional()
+    @Length(1, 200, { message: "El barrio/vereda debe tener entre 1 y 200 caracteres" })
+    barrioVereda: string;
+
+    @Column({ name: "fecha_envio", type: "date", nullable: true })
+    @IsDate()
+    @IsOptional()
+    fechaEnvio: Date;
+
+    @Column({ name: "hora_envio", type: "time", nullable: true })
+    @IsString()
+    @IsOptional()
+    horaEnvio: string;
+
+    @Column({ name: "text_envio", type: "text", nullable: true })
+    @IsString()
+    @IsOptional()
+    textEnvio: string;
+
+    @Column({ name: "fecha_visita", type: "date", nullable: true })
+    @IsDate()
+    @IsOptional()
+    fechaVisita: Date;
+
+    @Column({ name: "resumen_visita", type: "text", nullable: true })
+    @IsString()
+    @IsOptional()
+    resumenVisita: string;
+
+    @Column({ name: "persona_seguimiento_id", nullable: true })
+    @IsInt()
+    @IsOptional()
+    personaSeguimientoId: number;
+
+    @Column({ name: "programa", type: "varchar", length: 60, nullable: true })
+    @IsString()
+    @IsOptional()
+    @Length(1, 60, { message: "El programa debe tener entre 1 y 60 caracteres" })
+    programa: string;
+
+    @Column({ name: "fecha_cita", type: "date", nullable: true })
+    @IsDate()
+    @IsOptional()
+    fechaCita: Date;
+
+    @CreateDateColumn({ name: "fecha_creacion" })
+    createdAt: Date;
+
+    // * Relaciones
+
+    @ManyToOne(() => Pacientes, (paciente) => paciente.demandaInducidaRelation)
+    @JoinColumn({ name: "paciente_id" })
+    pacienteRelation: Pacientes;
+
+    @ManyToOne(() => ElementoDemandaInducida, (elemento) => elemento.demandaInducidaRelation)
+    @JoinColumn({ name: "elemento_demanda_inducida_id" })
+    elementoRelation: ElementoDemandaInducida;
+
+    @ManyToOne(() => TipoDemandaInducida, (tipo) => tipo.demandaInducidaRelation)
+    @JoinColumn({ name: "tipo_demanda_inducida_id" })
+    tipoRelation: TipoDemandaInducida;
+
+    @ManyToOne(() => ObjetivoDemandaInducida, (objetivo) => objetivo.demandaInducidaRelation)
+    @JoinColumn({ name: "objetivo_demanda_inducida_id" })
+    objetivoRelation: ObjetivoDemandaInducida;
+
+    @ManyToOne(() => RelacionUsuario, (relacion) => relacion.demandaInducidaRelation)
+    @JoinColumn({ name: "relacion_usuario_id" })
+    relacionRelation: RelacionUsuario;
+
+    @ManyToOne(() => AreaEps, (areaEps) => areaEps.demandaInducidaRelation)
+    @JoinColumn({ name: "area_eps_id" })
+    areaEpsRelation: AreaEps;
+
+    @ManyToOne(() => ResumenSeguimientoActividad, (resumen) => resumen.demandaInducidaRelation)
+    @JoinColumn({ name: "resumen_seguimiento_actividad_id" })
+    resumenRelation: ResumenSeguimientoActividad;
+
+    @ManyToOne(() => ResultadoLlamada, (resultado) => resultado.demandaInducidaRelation)
+    @JoinColumn({ name: "resultado_llamada_id" })
+    resultadoRelation: ResultadoLlamada;
+
+    @ManyToOne(() => MotivoVisita, (motivo) => motivo.demandaInducidaRelation)
+    @JoinColumn({ name: "motivo_visita_id" })
+    motivoRelation: MotivoVisita;
+
+    @ManyToOne(() => AreaPersonaSeguimiento, (areaPerson) => areaPerson.demandaInducidaRelation)
+    @JoinColumn({ name: "area_persona_seguimiento_id" })
+    areaPersonaRelation: AreaPersonaSeguimiento;
+
+    @ManyToOne(() => Usuarios, (usuario) => usuario.demandaInducidaSeguimientoRelation)
+    @JoinColumn({ name: "persona_seguimiento_id" })
+    personaSeguimientoRelation: Usuarios;
+
+    // @ManyToOne(() => departamentos, (departamento) => departamento.demandaInducidaRelation)
+    // @JoinColumn({ name: "departamento_id" })
+    // departamentoRelation: departamentos;
+
+    // @ManyToOne(() => Municipio, (municipio) => municipio.demandaInducidaRelation)
+    // @JoinColumn({ name: "municipio_id" })
+    // municipioRelation: Municipio;
+}

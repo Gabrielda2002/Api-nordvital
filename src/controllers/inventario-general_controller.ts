@@ -209,7 +209,7 @@ export async function updateInventoryGeneral(
       warrantyPeriod,
       inventoryNumber,
       classificationId,
-      headquartersId,
+      // headquartersId,
       statusId,
       assetId,
       materialId,
@@ -240,7 +240,7 @@ export async function updateInventoryGeneral(
     inventarioGeneral.warrantyPeriod = warrantyPeriod;
     inventarioGeneral.inventoryNumber = inventoryNumber;
     inventarioGeneral.classificationId = parseInt(classificationId);
-    inventarioGeneral.headquartersId = parseInt(headquartersId);
+    // inventarioGeneral.headquartersId = parseInt(headquartersId);
     inventarioGeneral.statusId = parseInt(statusId); 
     inventarioGeneral.assetId = parseInt(assetId);
     inventarioGeneral.materialId = parseInt(materialId);

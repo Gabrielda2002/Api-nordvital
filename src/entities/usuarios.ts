@@ -46,6 +46,8 @@ import { Celular } from "./celular";
 import { SeguimientoTelevisor } from "./seguimiento-televisor";
 import { SeguimientoCelular } from "./seguimiento-celular";
 import { Comentarios } from "./comentarios";
+import { RefreshToken } from "./refresh-tokens";
+import { DemandaInducida } from "./demanda-inducida";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -236,4 +238,12 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => Comentarios, (comentarios) => comentarios.userRelation)
   commentTicketsRelation: Comentarios[];
+
+  // * Relación con refresh tokens
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.userRelation)
+  refreshTokensRelation: RefreshToken[];
+
+  // * Relación con demanda inducida (persona seguimiento)
+  @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.personaSeguimientoRelation)
+  demandaInducidaSeguimientoRelation: DemandaInducida[];
 }

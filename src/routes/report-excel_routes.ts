@@ -6,6 +6,7 @@ import {
   downloadReportExcelFilter,
   getReportBiometric,
   getReportBreakesActive,
+  getReportTickets,
   reporteGestionAuxiliar,
   reportExcelCirugias,
   reportExcelCirugiasFiltros,
@@ -238,5 +239,12 @@ router.post(
   authorizeRoles(["1", "2", "6", "18"]),
   getReportBiometric
 );
+
+router.post(
+  "/report/tickets"
+  , authenticate
+  , authorizeRoles(["1"])
+  , getReportTickets
+)
 
 export default router;

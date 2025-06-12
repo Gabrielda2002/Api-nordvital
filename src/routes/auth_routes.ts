@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { login } from "../controllers/auth_controller";
+import { getStatsTokens, login, logout, logoutAll, refreshToken } from "../controllers/auth_controller";
+import { TokenService } from "../services/TokenService";
 
 const router = Router();
+
 
 /**
  * @swagger
@@ -85,5 +87,13 @@ const router = Router();
  *                   type: string
  */
 router.post('/login', login);
+
+router.post('/refresh', refreshToken);
+
+router.post('/logout', logout);
+
+router.post('/logout-all', logoutAll);
+
+router.get('/statistics/tokens', getStatsTokens)
 
 export default router;

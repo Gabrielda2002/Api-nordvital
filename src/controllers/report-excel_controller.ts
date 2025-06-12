@@ -7,6 +7,7 @@ import { PausasActivas } from "../entities/pausas-activas";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { RegistroEntrada } from "../entities/registro-entrada";
+import { Tickets } from "../entities/tickets";
 
 export async function downloadReportExcel(
   req: Request,
@@ -129,7 +130,8 @@ export async function downloadReportExcel(
             cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
               worksheet.addRow({
                 ...row,
-                Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
+                Observacion_seguimiento_auxiliar:
+                  seguimiento.observation || "N/A",
                 Fecha_registro: seguimiento.createdAt || "N/A",
               });
             });
@@ -173,13 +175,8 @@ export async function downloadReportExcelFilter(
   next: NextFunction
 ) {
   try {
-    const {
-      auditDateStart,
-      auditDateEnd,
-      dateStart,
-      dateEnd,
-      cupsCode,
-    } = req.body;
+    const { auditDateStart, auditDateEnd, dateStart, dateEnd, cupsCode } =
+      req.body;
 
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
@@ -212,10 +209,10 @@ export async function downloadReportExcelFilter(
     }
     // * filtro por fecha de radicado
     if (dateStart && dateEnd) {
-      query.andWhere(
-        "radicacion.createdAt BETWEEN :dateStart AND :dateEnd",
-        { dateStart, dateEnd }
-      );
+      query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
     }
 
     // * filtro por codigo cups
@@ -331,7 +328,8 @@ export async function downloadReportExcelFilter(
             cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
               worksheet.addRow({
                 ...row,
-                Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
+                Observacion_seguimiento_auxiliar:
+                  seguimiento.observation || "N/A",
                 Fecha_registro: seguimiento.createdAt || "N/A",
               });
             });
@@ -342,7 +340,7 @@ export async function downloadReportExcelFilter(
 
     // const dateStr = format(new Date(), "yyyyMMdd_HHmmss");
 
-    console.log(dataRadicacion)
+    console.log(dataRadicacion);
     const randomStr = randomBytes(4).toString("hex");
 
     const fileName = `Reporte_Radicacion_${randomStr}.xlsx`;
@@ -368,18 +366,23 @@ export async function downloadReportExcelFilter(
   }
 }
 
-
-export async function reportExcelCirugias(req: Request, res: Response, next: NextFunction){
+export async function reportExcelCirugias(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const dataCirugias = await Cirugias.createQueryBuilder("cirugias")
-    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
-    .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
-    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
-    .leftJoinAndSelect("gestionCirugias.estadoSeguimientoRelation", "estadoSeguimiento")
-    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
-    .getMany();
+      .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
+      .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
+      .leftJoinAndSelect(
+        "gestionCirugias.estadoSeguimientoRelation",
+        "estadoSeguimiento"
+      )
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
+      .getMany();
 
     const worjbook = new ExcelJS.Workbook();
     const worksheet = worjbook.addWorksheet("Reporte Cirugias");
@@ -396,7 +399,11 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
       { header: "Codigo Diagnostico", key: "diagnostico_code", width: 30 },
       { header: "Especialista", key: "especialista", width: 30 },
       { header: "Fecha paraclinico", key: "fecha_paraclinico", width: 30 },
-      { header: "Fecha anesteciologia", key: "fecha_anesteciologia", width: 30 },
+      {
+        header: "Fecha anesteciologia",
+        key: "fecha_anesteciologia",
+        width: 30,
+      },
       { header: "Estado", key: "Estado", width: 20 },
       { header: "Observaciones", key: "Observaciones", width: 30 },
       { header: "Fecha de Registro", key: "Fecha_registro", width: 20 },
@@ -409,13 +416,15 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
         Hora_programada: data.scheduledTime || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
         Observaciones: data.observation || "N/A",
-        diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
-        diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
+        diagnostico_name:
+          data.radicacionRelation?.diagnosticoRelation.description || "N/A",
+        diagnostico_code:
+          data.radicacionRelation?.diagnosticoRelation.code || "N/A",
         especialista: data.specialist || "N/A",
         fecha_paraclinico: data.paraclinicalDate || "N/A",
         fecha_anesteciologia: data.anesthesiologyDate || "N/A",
-      }
-      
+      };
+
       // agregar gilas por cada cups
       if (data.radicacionRelation?.cupsRadicadosRelation?.length > 0) {
         data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
@@ -425,7 +434,7 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
             Descripcion_cups: cups.DescriptionCode || "N/A",
           });
         });
-      }else {
+      } else {
         worksheet.addRow(row);
       }
 
@@ -440,12 +449,7 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
           });
         });
       }
-      
-
-
-
-    })
-
+    });
 
     const randomStr = randomBytes(4).toString("hex");
 
@@ -458,7 +462,6 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
 
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
 
-
     await worjbook.xlsx.write(res);
 
     res.end();
@@ -468,29 +471,40 @@ export async function reportExcelCirugias(req: Request, res: Response, next: Nex
 }
 
 // reporte cirugias con filtros de Fecha_ordenamiento
-export async function reportExcelCirugiasFiltros(req: Request, res: Response, next: NextFunction){
+export async function reportExcelCirugiasFiltros(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
-    const { dateStart, dateEnd   } = req.body;
+    const { dateStart, dateEnd } = req.body;
 
     const query = await Cirugias.createQueryBuilder("cirugias")
-    .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
-    .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
-    .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
-    .leftJoinAndSelect("gestionCirugias.estadoSeguimientoRelation", "estadoSeguimiento")
-    .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-    .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
-    
+      .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
+      .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
+      .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
+      .leftJoinAndSelect(
+        "gestionCirugias.estadoSeguimientoRelation",
+        "estadoSeguimiento"
+      )
+      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico");
+
     if (dateStart && dateEnd) {
-      query.andWhere("cirugias.createdAt BETWEEN :dateStart AND :dateEnd", { dateStart: dateStart, dateEnd: dateEnd });
-    }else{
-      return res.status(400).json({ message: "Debe enviar la fecha de ordenamiento" });
+      query.andWhere("cirugias.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart: dateStart,
+        dateEnd: dateEnd,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Debe enviar la fecha de ordenamiento" });
     }
 
     query.orderBy("cirugias.createdAt", "DESC");
 
     const dataCirugias = await query.getMany();
-    
+
     const worjbook = new ExcelJS.Workbook();
     const worksheet = worjbook.addWorksheet("Reporte Cirugias");
 
@@ -503,7 +517,11 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
       { header: "Codigo Diagnostico", key: "diagnostico_code", width: 30 },
       { header: "Diagnostico", key: "diagnostico_name", width: 30 },
       { header: "Especialista", key: "especialista", width: 30 },
-      { header: "Fecha anesteciologia", key: "fecha_anesteciologia", width: 30 },
+      {
+        header: "Fecha anesteciologia",
+        key: "fecha_anesteciologia",
+        width: 30,
+      },
       { header: "Fecha paraclinico", key: "fecha_paraclinico", width: 30 },
       { header: "Codigo CUPS", key: "Codigo_cups", width: 30 },
       { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
@@ -513,13 +531,41 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     ];
 
     dataCirugias.forEach((data) => {
-
-      const fechaCirugia = data.surgeryDate ? formatInTimeZone(new Date(data.surgeryDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
-      const fechaOrdenamiento = data.radicacionRelation.orderDate ? formatInTimeZone(new Date(data.radicacionRelation.orderDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
-      const fechaParaclinico = data.paraclinicalDate ? formatInTimeZone(new Date(data.paraclinicalDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
-      const fechaAnesteciologia = data.anesthesiologyDate ? formatInTimeZone(new Date(data.anesthesiologyDate), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
-      const fechaRegistro = data.createdAt ? formatInTimeZone(new Date(data.createdAt), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
-
+      const fechaCirugia = data.surgeryDate
+        ? formatInTimeZone(
+            new Date(data.surgeryDate),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
+      const fechaOrdenamiento = data.radicacionRelation.orderDate
+        ? formatInTimeZone(
+            new Date(data.radicacionRelation.orderDate),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
+      const fechaParaclinico = data.paraclinicalDate
+        ? formatInTimeZone(
+            new Date(data.paraclinicalDate),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
+      const fechaAnesteciologia = data.anesthesiologyDate
+        ? formatInTimeZone(
+            new Date(data.anesthesiologyDate),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
+      const fechaRegistro = data.createdAt
+        ? formatInTimeZone(
+            new Date(data.createdAt),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
 
       const row = {
         Fecha_ordenamiento: fechaOrdenamiento,
@@ -527,14 +573,16 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
         Hora_programada: data.scheduledTime || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
         Observaciones: data.observation || "N/A",
-        diagnostico_name: data.radicacionRelation?.diagnosticoRelation.description || "N/A",
-        diagnostico_code: data.radicacionRelation?.diagnosticoRelation.code || "N/A",
+        diagnostico_name:
+          data.radicacionRelation?.diagnosticoRelation.description || "N/A",
+        diagnostico_code:
+          data.radicacionRelation?.diagnosticoRelation.code || "N/A",
         especialista: data.specialist || "N/A",
         fecha_paraclinico: fechaParaclinico,
         fecha_anesteciologia: fechaAnesteciologia,
         Fecha_registro: fechaRegistro,
-      }
-      
+      };
+
       // agregar gilas por cada cups
       if (data.radicacionRelation?.cupsRadicadosRelation?.length > 0) {
         data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
@@ -546,7 +594,7 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
             Estado: cups.statusRelation?.name || "N/A",
           });
         });
-      }else {
+      } else {
         worksheet.addRow(row);
       }
 
@@ -561,12 +609,7 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
           });
         });
       }
-      
-
-
-
-    })
-
+    });
 
     const randomStr = randomBytes(4).toString("hex");
 
@@ -578,7 +621,6 @@ export async function reportExcelCirugiasFiltros(req: Request, res: Response, ne
     );
 
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
-
 
     await worjbook.xlsx.write(res);
 
@@ -611,7 +653,10 @@ export async function reportExcelRadicacion(
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
       .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
       .leftJoinAndSelect("cups.statusRelation", "estado_cups")
-      .leftJoinAndSelect("cups.seguimientoAuxiliarRelation", "seguimiento_auxiliar");
+      .leftJoinAndSelect(
+        "cups.seguimientoAuxiliarRelation",
+        "seguimiento_auxiliar"
+      );
 
     // Filtro por estado de CUPS
     if (statusCups) {
@@ -622,7 +667,7 @@ export async function reportExcelRadicacion(
     if (dateStart && dateEnd) {
       query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
         dateStart,
-        dateEnd
+        dateEnd,
       });
     }
 
@@ -717,8 +762,16 @@ export async function reportExcelRadicacion(
       // * agregar filas por cada CUPS
       if (data.cupsRadicadosRelation?.length > 0) {
         data.cupsRadicadosRelation.forEach((cups) => {
-
-          const observations = cups.seguimientoAuxiliarRelation.map(s => `${s.observation}, ${format(new Date(s.createdAt), 'yyyy-MM-dd HH:mm:ss')}`).join(' || ') || "N/A";
+          const observations =
+            cups.seguimientoAuxiliarRelation
+              .map(
+                (s) =>
+                  `${s.observation}, ${format(
+                    new Date(s.createdAt),
+                    "yyyy-MM-dd HH:mm:ss"
+                  )}`
+              )
+              .join(" || ") || "N/A";
 
           worksheet.addRow({
             ...row,
@@ -760,21 +813,30 @@ export async function reportExcelRadicacion(
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     next(error);
   }
 }
 
-export async function reporteGestionAuxiliar(req: Request, res: Response, next: NextFunction) {
+export async function reporteGestionAuxiliar(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const { dateStart, dateEnd } = req.body;
 
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-      .leftJoinAndSelect("cups.seguimientoAuxiliarRelation", "seguimiento_auxiliar")
-      .leftJoinAndSelect("seguimiento_auxiliar.estadoSeguimientoRelation", "estado_seguimiento")
+      .leftJoinAndSelect(
+        "cups.seguimientoAuxiliarRelation",
+        "seguimiento_auxiliar"
+      )
+      .leftJoinAndSelect(
+        "seguimiento_auxiliar.estadoSeguimientoRelation",
+        "estado_seguimiento"
+      )
       .leftJoinAndSelect("seguimiento_auxiliar.usuarioRelation", "usuario")
       .orderBy("radicacion.createdAt", "DESC");
 
@@ -782,7 +844,7 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
     if (dateStart && dateEnd) {
       query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
         dateStart,
-        dateEnd
+        dateEnd,
       });
     }
 
@@ -795,15 +857,15 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
     // Definir columnas
     worksheet.columns = [
       { header: "ID Radicado", key: "id_radicado", width: 15 },
-      {header: "Fecha-hora", key: "radicadoDate", width: 20 },
+      { header: "Fecha-hora", key: "radicadoDate", width: 20 },
       { header: "Número Documento", key: "numero_documento", width: 20 },
       { header: "Nombre Paciente", key: "nombre_paciente", width: 30 },
       { header: "Código CUPS", key: "codigo_cups", width: 15 },
       { header: "Descripción CUPS", key: "descripcion_cups", width: 40 },
       { header: "Estado Gestión", key: "estado_gestion", width: 20 },
-      {header: "Observación", key: "observacion", width: 30},
+      { header: "Observación", key: "observacion", width: 30 },
       { header: "Fecha Registro", key: "fecha_registro", width: 20 },
-      { header: "Usuario Registro", key: "usuario_registro", width: 20 }
+      { header: "Usuario Registro", key: "usuario_registro", width: 20 },
     ];
 
     // Agregar datos
@@ -815,14 +877,16 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
               worksheet.addRow({
                 id_radicado: radicado.id,
                 radicadoDate: radicado.createdAt || "N/A",
-                numero_documento: radicado.patientRelation?.documentNumber || "N/A",
+                numero_documento:
+                  radicado.patientRelation?.documentNumber || "N/A",
                 nombre_paciente: radicado.patientRelation?.name || "N/A",
                 codigo_cups: cups.code || "N/A",
                 descripcion_cups: cups.DescriptionCode || "N/A",
-                estado_gestion: seguimiento.estadoSeguimientoRelation?.name || "N/A",
+                estado_gestion:
+                  seguimiento.estadoSeguimientoRelation?.name || "N/A",
                 observacion: seguimiento.observation || "N/A",
                 fecha_registro: seguimiento.createdAt || "N/A",
-                usuario_registro: seguimiento.usuarioRelation?.name || "N/A"
+                usuario_registro: seguimiento.usuarioRelation?.name || "N/A",
               });
             });
           }
@@ -831,7 +895,9 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
     });
 
     // Configurar respuesta
-    const fileName = `Reporte_Gestion_Auxiliar_${randomBytes(4).toString("hex")}.xlsx`;
+    const fileName = `Reporte_Gestion_Auxiliar_${randomBytes(4).toString(
+      "hex"
+    )}.xlsx`;
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -840,14 +906,17 @@ export async function reporteGestionAuxiliar(req: Request, res: Response, next: 
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     next(error);
   }
 }
 
 // controlador para reporte de pausas activas.
-export async function getReportBreakesActive(req: Request, res: Response, next: NextFunction) {
+export async function getReportBreakesActive(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const { dateStart, dateEnd } = req.body;
 
@@ -858,10 +927,13 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     // Aplicar filtro de fechas si se proporcionan
     if (dateStart && dateEnd) {
-      query.andWhere("pausas_activas.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd
-      });
+      query.andWhere(
+        "pausas_activas.createdAt BETWEEN :dateStart AND :dateEnd",
+        {
+          dateStart,
+          dateEnd,
+        }
+      );
     }
 
     const data = await query.getMany();
@@ -884,8 +956,13 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     // Agregar datos
     data.forEach((pausa) => {
-
-      const fechaCreacion = pausa.createdAt ? formatInTimeZone(new Date(pausa.createdAt), "America/Bogota", "yyyy-MM-dd HH:mm:ss") : "N/A";
+      const fechaCreacion = pausa.createdAt
+        ? formatInTimeZone(
+            new Date(pausa.createdAt),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "N/A";
 
       worksheet.addRow({
         fecha_creacion: fechaCreacion,
@@ -900,7 +977,9 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
     });
 
     // Configurar respuesta
-    const fileName = `Reporte_Pausas_Activas_${randomBytes(4).toString("hex")}.xlsx`;
+    const fileName = `Reporte_Pausas_Activas_${randomBytes(4).toString(
+      "hex"
+    )}.xlsx`;
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -909,57 +988,69 @@ export async function getReportBreakesActive(req: Request, res: Response, next: 
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     next(error);
   }
 }
 
 // controlador reporte registios biometricos
-export async function getReportBiometric(req: Request, res: Response, next: NextFunction) {
-
+export async function getReportBiometric(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const { dateStart, dateEnd } = req.body;
 
-    const query = await RegistroEntrada.createQueryBuilder('registro_entrada')
-    .leftJoinAndSelect('registro_entrada.userRelation', 'usuario')
-    .leftJoinAndSelect('registro_entrada.sedeRelation', 'sede')
-    .orderBy('registro_entrada.createdAt', 'DESC');
+    const query = await RegistroEntrada.createQueryBuilder("registro_entrada")
+      .leftJoinAndSelect("registro_entrada.userRelation", "usuario")
+      .leftJoinAndSelect("registro_entrada.sedeRelation", "sede")
+      .orderBy("registro_entrada.createdAt", "DESC");
 
     if (dateStart && dateEnd) {
-      query.andWhere('registro_entrada.registerDate BETWEEN :dateStart AND :dateEnd', { dateStart, dateEnd });
+      query.andWhere(
+        "registro_entrada.registerDate BETWEEN :dateStart AND :dateEnd",
+        { dateStart, dateEnd }
+      );
     }
 
-    query.orderBy('registro_entrada.registerDate', 'DESC');
+    query.orderBy("registro_entrada.registerDate", "DESC");
     const data = await query.getMany();
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Repore Registros Biometricos');
+    const worksheet = workbook.addWorksheet("Repore Registros Biometricos");
 
     worksheet.columns = [
-      {header: "Numero Documento", key: "numero_documento", width: 20},
-      {header: "Nombre Usuario", key: "nombre_usuario", width: 30},
-      {header: "Apellidos", key: "apellidos", width: 30},
-      {header: "Fecha Registro", key: "fecha_registro", width: 20},
-      {header: "Hora Registro", key: "hora_registro", width: 20},
-      {header: "Sede", key: "sede", width: 20},
+      { header: "Numero Documento", key: "numero_documento", width: 20 },
+      { header: "Nombre Usuario", key: "nombre_usuario", width: 30 },
+      { header: "Apellidos", key: "apellidos", width: 30 },
+      { header: "Fecha Registro", key: "fecha_registro", width: 20 },
+      { header: "Hora Registro", key: "hora_registro", width: 20 },
+      { header: "Sede", key: "sede", width: 20 },
     ];
 
-    data.forEach(r => {
-      const fechaRegistro = r.registerDate ? formatInTimeZone(new Date(r.registerDate), "America/Bogota", "yyyy-MM-dd") : "N/A";
+    data.forEach((r) => {
+      const fechaRegistro = r.registerDate
+        ? formatInTimeZone(
+            new Date(r.registerDate),
+            "America/Bogota",
+            "yyyy-MM-dd"
+          )
+        : "N/A";
 
       worksheet.addRow({
         numero_documento: r.userRelation?.dniNumber || "N/A",
         nombre_usuario: r.userRelation?.name || "N/A",
         apellidos: r.userRelation?.lastName || "N/A",
         fecha_registro: fechaRegistro,
-        hora_registro: r.hourRegister || "N/A", 
+        hora_registro: r.hourRegister || "N/A",
         sede: r.sedeRelation?.name || "N/A",
       });
-    })
+    });
 
-    const fileName = `Reporte_Registros_Biometricos_${randomBytes(4).toString("hex")}.xlsx`;
+    const fileName = `Reporte_Registros_Biometricos_${randomBytes(4).toString(
+      "hex"
+    )}.xlsx`;
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -968,10 +1059,124 @@ export async function getReportBiometric(req: Request, res: Response, next: Next
 
     await workbook.xlsx.write(res);
     res.end();
-
-
   } catch (error) {
     next(error);
   }
+}
 
+// * reporte excel de tickets mesa de ayuda
+export async function getReportTickets(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await Tickets.createQueryBuilder("tickets")
+      .leftJoinAndSelect("tickets.categoryRelation", "categoria")
+      .leftJoinAndSelect("tickets.userRelation", "usuario")
+      .leftJoinAndSelect("usuario.sedeRelation", "sede")
+      .leftJoinAndSelect("tickets.statusRelation", "estado")
+      .leftJoinAndSelect("tickets.priorityRelation", "prioridad")
+      .leftJoinAndSelect("tickets.commentRelation", "comentarios")
+      .leftJoinAndSelect("comentarios.userRelation", "usuario_responsdedor")
+      .leftJoinAndSelect("tickets.surveyRelation", "encuesta")
+      .orderBy("tickets.createdAt", "DESC");
+
+    if (dateStart && dateEnd) {
+      query.where("tickets.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
+    }
+
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Tickets Mesa de Ayuda");
+
+    worksheet.columns = [
+      { header: "Fecha Registro", key: "fecha_registro", width: 20 },
+      { header: "Descripcion", key: "descripcion", width: 30 },
+      { header: "Categoria", key: "categoria", width: 20 },
+      { header: "Titulo", key: "titulo", width: 30 },
+      { header: "Usuario Solicitante", key: "usuario_solicitante", width: 30 },
+      { header: "Usuario Respondedor", key: "usuario_responsable", width: 30 },
+      { header: "Ultimo Estado", key: "ultimo_estado", width: 20 },
+      { header: "Ultimo Comentario", key: "ultimo_comentario", width: 30 },
+      {
+        header: "Fecha Ultimo Comentario",
+        key: "fecha_ultimo_comentario",
+        width: 20,
+      },
+    ];
+
+    if (!data || data.length === 0) {
+      return res
+        .status(404)
+        .json({
+          message:
+            "No se encontraron tickets en el rango de fechas especificado.",
+        });
+    }
+    
+    data.forEach((t) => {
+      const rows = {
+        fecha_registro: t.createdAt
+          ? formatInTimeZone(
+              new Date(t.createdAt),
+              "America/Bogota",
+              "yyyy-MM-dd HH:mm:ss"
+            )
+          : "N/A",
+        descripcion: t.description || "N/A",
+        categoria: t.categoryRelation?.name || "N/A",
+        titulo: t.title || "N/A",
+        usuario_solicitante:
+          `${t.userRelation?.name} ${t.userRelation.lastName}` || "N/A",
+        usuario_responsable:
+          t.commentRelation?.length > 0
+            ? `${t.commentRelation[0]?.userRelation?.name || ""} ${
+                t.commentRelation[0]?.userRelation?.lastName || ""
+              }`
+            : "N/A",
+        ultimo_estado: t.statusRelation?.name || "N/A",
+        ultimo_comentario:
+          t.commentRelation?.length > 0
+            ? t.commentRelation[t.commentRelation.length - 1]?.comment || "N/A"
+            : "N/A",
+        fecha_ultimo_comentario:
+          t.commentRelation?.length > 0
+            ? formatInTimeZone(
+                new Date(
+                  t.commentRelation[t.commentRelation.length - 1]?.createdAt
+                ),
+                "America/Bogota",
+                "yyyy-MM-dd HH:mm:ss"
+              )
+            : "N/A",
+      };
+
+      worksheet.addRow({
+        ...rows,
+      });
+    });
+
+    const fileName = `Reporte_Tickets_Mesa_Ayuda_${randomBytes(4).toString(
+      "hex"
+    )}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+
+    res.end();
+  } catch (error) {
+    next(error);
+  }
 }

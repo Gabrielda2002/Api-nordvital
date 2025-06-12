@@ -15,15 +15,12 @@ import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "./swagger-options";
 import { Server as SocketIOServer } from "socket.io";
 import http from "http";
+import cookieParser from "cookie-parser";
 
 // * cargar variables de entorno
 dotenv.config();
 
 const app = express();
-
-app.get("/ping", (req, res) => {
-  res.send("API funcionando correctamente");
-});
 
 app.set("trust proxy", 1);
 
@@ -59,20 +56,6 @@ io.on('connection', (socket) => {
   socket.on('join', (room) => {
     socket.join(room)
     console.log(`Se unicio el usuario ${socket.id} a la sala ${room}`)
-
-    // const testNotification = {
-    //   id: Date.now(),
-    //   userId: parseInt(room.replace('user_', '')),
-    //   title: 'Conexión exitosa',
-    //   message: 'Tu conexión de notificaciones está funcionando correctamente',
-    //   referenceId: null,
-    //   referenceType: 'connection_test',
-    //   isRead: false,
-    //   createdAt: new Date()
-    // };
-    // io.to(room).emit('newNotification', testNotification);
-    // console.log(`[Socket.io] Enviada notificación de prueba a ${room}`, testNotification);
-
   })
 
   socket.on('disconnect', () => {
@@ -99,6 +82,10 @@ app.use(
 
 app.use(limiter);
 app.use(morgan("dev"));
+
+app.use(cookieParser());
+
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 // * Middleware para proteger la aplicación

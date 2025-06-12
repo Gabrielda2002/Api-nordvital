@@ -5,6 +5,6 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/materiales', authenticate, authorizeRoles(['1']), getAllMaterials);
+router.get('/materiales', authenticate, authorizeRoles(['1', '6']), getAllMaterials);
 
 export default router;

@@ -3,6 +3,7 @@ import server from "./app";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
 import { PushService } from "./services/pushService";
+import { TokenCleanupJob } from "./services/tokenCleanupJob";
 
 
     const start = async () => {
@@ -12,6 +13,9 @@ import { PushService } from "./services/pushService";
             await PushService.initialize();
 
             await AppDataSource.initialize();
+
+            // jop cleanup de tokens revokes
+            TokenCleanupJob.start();
             console.log('Conexión a la base de datos establecida');
         
             const PUERTO = process.env.PORT;
