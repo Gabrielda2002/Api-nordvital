@@ -4,6 +4,7 @@ import path from "path";
 import { validate } from "class-validator";
 import fs from "fs";
 import { promises as fsPromises } from "fs";
+import { Carpeta } from "../entities/carpeta";
 
 
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
@@ -202,5 +203,136 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
 
     } catch (error) {
         next(error)
+    }
+}
+
+export async function moveFiles(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { fileIds, newParentId } = req.body;
+
+        if (!Array.isArray(fileIds) || fileIds.length === 0) {
+            return res.status(400).json({ message: "fileIds array is required" });
+        }
+
+        if (!fileIds && !newParentId) {
+            return res.status(400).json({ message: "fileIds and newParentId are required" });
+        }
+
+        const destinationFolder = await Carpeta.findOneBy({ id: newParentId });
+        if (!destinationFolder) {
+            return res.status(404).json({ message: "Destination folder not found" });
+        }
+
+        const movedFiles = [];
+        const errors = [];
+
+        for(const fileId of fileIds) {
+            try {
+                
+                const file = await Archivos.findOne({ where: { id: parseInt(fileId)}});
+                if (!file) {
+                    errors.push({ fileId, error: "File not found" });
+                    continue;
+                }
+                // ? Verificar si hay un archivo con el mismo nombre en la nueva carpeta destino
+                const existingFile = await Archivos.createQueryBuilder("archivo")
+                .where("archivo.name = :name AND archivo.folderId = :folderId", {
+                    name: file.name,
+                    folderId: newParentId
+                })
+                .getOne();
+
+                if (existingFile) {
+                        errors.push({fileId, fileName: file.name, error: "File with the same name already exists in the destination folder"});
+                        continue;
+                }
+
+                // construir nuevas rutas
+                const oldPthysicalPath = path.resolve(__dirname,'src/',file.path);
+                console.log(oldPthysicalPath)
+                const newFileName = file.nameSaved;
+                const newPhysicalPath = path.join(destinationFolder.path, newFileName);
+
+                // ? verificar que el archivo fisico existe
+                if (!fs.existsSync(oldPthysicalPath)) {
+                    errors.push({
+                        fileId,
+                        fileName: file.name,
+                        error: "Physical file does not exist"
+                    });
+                    continue;
+                }
+
+                await fsPromises.rename(oldPthysicalPath, newPhysicalPath);
+
+                // actualizar la base de datos
+                const uploadsFolder = path.resolve(__dirname, "uploads");
+                const newRelativePath = path.relative(uploadsFolder, newPhysicalPath).replace(/\\/g, "/");
+
+                file.folderId = newParentId;
+                file.path = newRelativePath;
+
+                const validationErrors =  await validate(file);
+                if (validationErrors.length > 0) {
+                    const message = validationErrors.map(err => ({
+                        property: err.property,
+                        constraints: err.constraints
+                    }));
+                    errors.push({fileId, fileName: file.name, error: message});
+                    continue;
+                }
+
+                await file.save();
+                movedFiles.push(file);
+
+            } catch (error) {
+                errors.push({
+                    fileId,
+                    error: `Error moving file with ID ${fileId}: ${error instanceof Error ? error.message : "Unknown error"}`
+                })
+            }
+        }
+
+        const response = {
+            movedFiles,
+            errors,
+            summary: {
+                totalFiles: fileIds.length,
+                movedFilesCount: movedFiles.length,
+                errorsCount: errors.length
+            }
+        };
+
+        if (errors.length > 0 && movedFiles.length > 0) {
+            return res.status(207).json(response); // Multi-Status response
+        }
+
+        if (errors.length > 0 && movedFiles.length === 0) {
+            return res.status(400).json(response);
+        }
+
+        return res.status(200).json(response); 
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function moveFile(req: Request, res: Response, next: NextFunction){
+    try {
+        
+        const { id } = req.params;
+        const { newParentId } = req.body;
+
+        req.body = {
+            fileIds: [parseInt(id)],
+            newParentId: newParentId
+        };
+
+        return moveFiles(req, res, next);
+
+    } catch (error) {
+        
     }
 }
