@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, updateFolder } from "../controllers/carpeta_controller";
+import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta_controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
@@ -202,4 +202,6 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  */
 router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), getSgcFoldersFiles);
 
+
+router.put('/carpetas/:id/move', authenticate, authorizeRoles(['1', '4']), validarId, moveFolder);
 export default router;
