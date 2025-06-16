@@ -307,6 +307,7 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
         const { id } = req.params;
 
         const { newParentId, municipio, section } = req.body;
+        
 
         const folderToMove = await Carpeta.findOneBy({ id: parseInt(id) });
         // ? validar carpeta a mover
@@ -354,9 +355,11 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
         if (folderExists) {
             return res.status(409).json({ message: "Folder already exists at the new location" });
         }
+        // ? ruta donde se movera la carpeta
+        const pathToMove = path.join(__dirname, "uploads", folderToMove.path);
 
-        // mover carpeta fisica
-        await fsPromises.rename(folderToMove.path, newPath);
+        // mover carpeta fisicamente
+        await fsPromises.rename(pathToMove, newPath);
 
         const uploadsFolder = path.join(__dirname, "uploads");
         const relativeNewPath = path.relative(uploadsFolder, newPath).replace(/\\/g, '/');

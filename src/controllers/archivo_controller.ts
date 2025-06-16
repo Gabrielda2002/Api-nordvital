@@ -250,9 +250,8 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
 
                 // construir nuevas rutas
                 const oldPthysicalPath = path.resolve(__dirname,'src/',file.path);
-                console.log(oldPthysicalPath)
                 const newFileName = file.nameSaved;
-                const newPhysicalPath = path.join(destinationFolder.path, newFileName);
+                const newPhysicalPath = path.join(destinationFolder.path , newFileName);
 
                 // ? verificar que el archivo fisico existe
                 if (!fs.existsSync(oldPthysicalPath)) {
