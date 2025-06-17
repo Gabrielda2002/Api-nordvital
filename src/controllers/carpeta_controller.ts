@@ -299,3 +299,135 @@ export async function getSgcFoldersFiles(req: Request, res: Response, next: Next
         next(error);
     }
 }
+
+// mueve una carpeta a una nueva ubicacion
+export async function moveFolder(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { id } = req.params;
+
+        const { newParentId, municipio, section } = req.body;
+        
+
+        const folderToMove = await Carpeta.findOneBy({ id: parseInt(id) });
+        // ? validar carpeta a mover
+        if (!folderToMove) {
+            return res.status(404).json({ message: "Folder not found" });
+        }
+
+        // ? validar carpeta padre destino si existe
+        let newParentFolder = null;
+        if (newParentId) {
+            newParentFolder = await Carpeta.findOneBy({ id: parseInt(newParentId) });
+            if (!newParentFolder) {
+                return res.status(404).json({ message: "New parent folder not found" });
+            }
+            // ! verificar que no se este moviendo la carpeta a una subcarpeta de si misma
+            if (await isDescendentFolder(newParentId, folderToMove.id)) {
+                return res.status(400).json({ message: "Cannot move folder into its own subfolder" });
+            }
+        }
+
+        let newPath: string;
+        //  ? definir nueva ruta
+        if (newParentFolder) {
+            newPath = path.join(newParentFolder.path, folderToMove.name);
+        }else {
+            newPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", folderToMove.name);
+        }
+
+        // ? verificar que no exista una carpeta con el mismo nombre en la nueva ubicacion
+        const existingFolder = await Carpeta.findOne({
+            where: {
+                name: folderToMove.name,
+                parentFolderId: newParentId || IsNull(),
+                idMunicipio: municipio,
+                seccion: section
+            }
+        });
+
+        if (existingFolder) {
+            return res.status(409).json({ message: "A folder with the same name already exists in the new location" });
+        }
+
+        // verificar que la nueva ruta no exista fisicamente
+        const folderExists = await fsPromises.access(newPath).then(() => true).catch(() => false);
+        if (folderExists) {
+            return res.status(409).json({ message: "Folder already exists at the new location" });
+        }
+        // ? ruta donde se movera la carpeta
+        const pathToMove = path.join(__dirname, "uploads", folderToMove.path);
+
+        // mover carpeta fisicamente
+        await fsPromises.rename(pathToMove, newPath);
+
+        const uploadsFolder = path.join(__dirname, "uploads");
+        const relativeNewPath = path.relative(uploadsFolder, newPath).replace(/\\/g, '/');
+
+        // actualizar carpeta en la base de datos
+        const oldPath = folderToMove.path;
+        folderToMove.parentFolderId = newParentId || null;
+        folderToMove.path = relativeNewPath;
+        folderToMove.idMunicipio = municipio;
+        folderToMove.seccion = section;
+
+        const errors = await validate(folderToMove);
+        if (errors.length > 0) {
+            const message = errors.map(err => ({
+                property: err.property,
+                constraints: err.constraints
+            }));
+            return res.status(400).json({ messages: "Error validating data", message });
+        }
+
+        await folderToMove.save();
+        // actualizar rutas de archivos y subcarpetas
+        await updatteAllSubItemsPaths(folderToMove.id, newPath);
+
+        return res.status(200).json(folderToMove);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// funcion para verificar si una carpeta es descendiente de otra
+async function isDescendentFolder(parentId: number, childId: number): Promise<boolean>{
+    // ? Si el parentId es igual al childId, significa que son la misma carpeta
+    if (parentId === childId) {
+        return true;
+    }
+    // ? Buscar todas las carpetas hijas del childId
+    const children = await Carpeta.find({ where: { parentFolderId: childId } });
+    // ? Si no hay carpetas hijas, significa que no es descendiente
+    for (const child of children) {
+        if (child.id === childId || await isDescendentFolder(parentId, child.id)) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+// funcion auxiliar para actualizar todas las rutas de subcarpetas y archivos
+async function updatteAllSubItemsPaths(folderId: number, newBasePath: string) {
+
+    const updateFolder  = path.join(__dirname, "uploads");
+    const relativeNewPath = path.relative(updateFolder, newBasePath).replace(/\\/g, '/');
+
+    console.log("ruta actualizada:", relativeNewPath);
+
+    await updateSubFiles(folderId, relativeNewPath);
+
+    const subFolders = await Carpeta.find({ where: { parentFolderId: folderId}})
+
+    for (const subFolder of subFolders) {
+        const newSubPath = path.join(newBasePath, subFolder.name);
+        const relativeSubPath = path.relative(updateFolder, newSubPath).replace(/\\/g, '/');
+        subFolder.path = relativeSubPath;
+        await subFolder.save();
+
+        await updatteAllSubItemsPaths(subFolder.id, newSubPath);
+    }
+}

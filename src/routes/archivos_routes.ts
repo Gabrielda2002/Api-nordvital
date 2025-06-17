@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { uploadSggc } from "../middlewares/multer-config-ssgc";
-import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, updateFile } from "../controllers/archivo_controller";
+import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile } from "../controllers/archivo_controller";
 import { validarId } from "../middlewares/validar-id";
 import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
 
@@ -204,5 +204,7 @@ router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId,
  *         description: Archivo no encontrado
  */
 router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']),validarId, downloadFile);
+
+router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), validarId, moveFile);
 
 export default router;
