@@ -74,6 +74,7 @@ import objetiveDemandInducedRoutes from './objetivo-demanda-inducida.route';
 import relationUserRoutes from './relacion-usuario.route';
 import areaEpsRoutes from './area-eps.route';
 import summaryActivityRoutes from './resumen-seguimiento-actividad.route';
+import resultCallsRoutes from './resultado-llamada.route';
 
 const router = Router();
 
@@ -152,5 +153,6 @@ router.use(objetiveDemandInducedRoutes);
 router.use(relationUserRoutes);
 router.use(areaEpsRoutes);
 router.use(summaryActivityRoutes);
+router.use(resultCallsRoutes);
 
 export default router;
