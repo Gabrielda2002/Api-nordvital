@@ -20,12 +20,12 @@ export class TipoDemandaInducida extends BaseEntity {
     @IsString()
     @IsNotEmpty({ message: "El nombre del tipo es requerido" })
     @Length(1, 60, { message: "El nombre debe tener entre 1 y 60 caracteres" })
-    nombre: string;
+    name: string;
 
     @Column({ name: "activo", type: "tinyint", default: 1 })
     @IsBoolean()
     @IsOptional()
-    activo: boolean;
+    status: boolean;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
