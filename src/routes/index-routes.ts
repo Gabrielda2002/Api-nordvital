@@ -68,6 +68,7 @@ import celularesRoutes from './celular_routes';
 import televisoresRoutes from './televisor_routes';
 import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
 import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
+import elementDemandaInducidaRoutes from './elemento-demanda-inducida.route';
 
 const router = Router();
 
@@ -140,5 +141,6 @@ router.use(celularesRoutes);
 router.use(televisoresRoutes);
 router.use(seguimientoTelevisorRoutes);
 router.use(seguimientoCelularesRoutes);
+router.use(elementDemandaInducidaRoutes);
 
 export default router;
