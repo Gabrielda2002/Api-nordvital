@@ -72,6 +72,7 @@ import elementDemandaInducidaRoutes from './elemento-demanda-inducida.route';
 import typeElementDemandInducedRoutes from './tipo-demanda-inducida.route';
 import objetiveDemandInducedRoutes from './objetivo-demanda-inducida.route';
 import relationUserRoutes from './relacion-usuario.route';
+import areaEpsRoutes from './area-eps.route';
 
 const router = Router();
 
@@ -148,5 +149,6 @@ router.use(elementDemandaInducidaRoutes);
 router.use(typeElementDemandInducedRoutes);
 router.use(objetiveDemandInducedRoutes);
 router.use(relationUserRoutes);
+router.use(areaEpsRoutes);
 
 export default router;
