@@ -70,6 +70,7 @@ import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
 import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
 import elementDemandaInducidaRoutes from './elemento-demanda-inducida.route';
 import typeElementDemandInducedRoutes from './tipo-demanda-inducida.route';
+import objetiveDemandInducedRoutes from './objetivo-demanda-inducida.route';
 
 const router = Router();
 
@@ -144,5 +145,6 @@ router.use(seguimientoTelevisorRoutes);
 router.use(seguimientoCelularesRoutes);
 router.use(elementDemandaInducidaRoutes);
 router.use(typeElementDemandInducedRoutes);
+router.use(objetiveDemandInducedRoutes);
 
 export default router;
