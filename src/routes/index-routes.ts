@@ -75,6 +75,7 @@ import relationUserRoutes from './relacion-usuario.route';
 import areaEpsRoutes from './area-eps.route';
 import summaryActivityRoutes from './resumen-seguimiento-actividad.route';
 import resultCallsRoutes from './resultado-llamada.route';
+import areaPersonRoutes from './area-persona-seguimiento.route';
 
 const router = Router();
 
@@ -154,5 +155,6 @@ router.use(relationUserRoutes);
 router.use(areaEpsRoutes);
 router.use(summaryActivityRoutes);
 router.use(resultCallsRoutes);
+router.use(areaPersonRoutes);
 
 export default router;
