@@ -66,8 +66,6 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             // Obtener ruta relativa uniforme
             const uploadsFolder = path.resolve(__dirname, "uploads");
             const relativePath = path.relative(uploadsFolder, file.path).replace(/\\/g, "/");
-            console.log(relativePath)
-
             newFile.path = relativePath;
             newFile.size = file.size;
             newFile.mimeType = file.mimetype;
@@ -182,21 +180,17 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
         if (!file) {
             return res.status(404).json({message: "Archivo no encontrado"});
         }
-        console.log(file.path);
 
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
-        console.log("ruta limpia: ", cleanPath);
 
         // * Obtener la ruta absoluta del archivo
-        const filePath = path.resolve(__dirname, '..', cleanPath);
-        console.log('ruta absoluta' + filePath);
+        const filePath = path.resolve(__dirname, '../uploads', cleanPath);
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({message: "Archivo no encontrado en el servidor"});
         }
 
         res.download(filePath, file.nameSaved, (err) => {
             if (err) {
-              console.error("Error al descargar el archivo: ", err);
               res.status(500).json({ message: "Error al descargar el archivo" });
             }
           });
