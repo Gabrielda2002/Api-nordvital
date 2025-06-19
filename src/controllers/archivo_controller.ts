@@ -52,6 +52,12 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             return res.status(400).json({ message: "At least one file is required" });
         }
 
+        const parentFolder = await Carpeta.findOne({ where: { id: parseInt(parentFolderId as string) } });
+
+        if (!parentFolder) {
+            return res.status(404).json({ message: "Parent folder not found" });
+        }
+
         const fileResponses = await Promise.all(files.map(async (file) => {
             const fileExists = await Archivos.findOne({ where: { name: file.originalname } });
             if (fileExists) {
@@ -64,8 +70,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             newFile.name = fileNameWithoutExt?.normalize("NFC");
 
             // Obtener ruta relativa uniforme
-            const uploadsFolder = path.resolve(__dirname, "uploads");
-            const relativePath = path.relative(uploadsFolder, file.path).replace(/\\/g, "/");
+            const relativePath = path.join(parentFolder.path, file.filename).replace(/\\/g, '/');
             newFile.path = relativePath;
             newFile.size = file.size;
             newFile.mimeType = file.mimetype;
@@ -182,9 +187,8 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
         }
 
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
-
         // * Obtener la ruta absoluta del archivo
-        const filePath = path.resolve(__dirname, '../uploads', cleanPath);
+        const filePath = path.resolve(__dirname, ".." , 'uploads', cleanPath);
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({message: "Archivo no encontrado en el servidor"});
         }
@@ -243,9 +247,9 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
                 }
 
                 // construir nuevas rutas
-                const oldPthysicalPath = path.resolve(__dirname,'src/',file.path);
+                const oldPthysicalPath = path.join(__dirname , '..', 'uploads',file.path);
                 const newFileName = file.nameSaved;
-                const newPhysicalPath = path.join(destinationFolder.path , newFileName);
+                const newPhysicalPath = path.join(__dirname, '..', "uploads", destinationFolder.path, newFileName);
 
                 // ? verificar que el archivo fisico existe
                 if (!fs.existsSync(oldPthysicalPath)) {
@@ -260,8 +264,7 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
                 await fsPromises.rename(oldPthysicalPath, newPhysicalPath);
 
                 // actualizar la base de datos
-                const uploadsFolder = path.resolve(__dirname, "uploads");
-                const newRelativePath = path.relative(uploadsFolder, newPhysicalPath).replace(/\\/g, "/");
+                const newRelativePath = path.join(destinationFolder.path, newFileName).replace(/\\/g, '/');
 
                 file.folderId = newParentId;
                 file.path = newRelativePath;
