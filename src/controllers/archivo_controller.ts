@@ -150,20 +150,20 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
         }
 
          // Obtener la ruta absoluta del archivo
-         const filePath = path.resolve('src', 'uploads', file.path);
+         const fileAbsolutePath = path.resolve(__dirname, ".." ,'uploads', file.path);
 
          // Verificar si el archivo existe en el sistema
-         if (fs.existsSync(filePath)) {
+         if (fs.existsSync(fileAbsolutePath)) {
              try {
                  // Eliminar el archivo del sistema de archivos
-                 await fsPromises.unlink(filePath);
-                 console.log(`Archivo eliminado: ${filePath}`);
+                 await fsPromises.unlink(fileAbsolutePath);
+                 console.log(`Archivo eliminado: ${fileAbsolutePath}`);
              } catch (error) {
                  console.error(`Error al eliminar el archivo: ${error}`);
                  return res.status(500).json({ message: "Error al eliminar el archivo físico" });
              }
          } else {
-             console.warn(`El archivo no existe en la ruta: ${filePath}`);
+             console.warn(`El archivo no existe en la ruta: ${fileAbsolutePath}`);
          }
 
         await file.remove();
