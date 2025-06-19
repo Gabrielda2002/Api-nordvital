@@ -134,10 +134,17 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
             if (!parentFolder) {
                 return res.status(404).json({ message: "Parent folder not found" });
             }
-            newPath = path.join(parentFolder.path, name);
+            newPath = path.join(parentFolder.path, name).replace(/\\/g, '/');
         } else {
-            newPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", name);
+            newPath = path.join("SistemaGestionCalidad", name).replace(/\\/g, '/');
         }
+
+        console.log("New path:", newPath);
+
+        const newPathAbsolute = path.join(__dirname, '..', "uploads", newPath);
+        console.log("New path absolute:", newPathAbsolute);
+        const oldPathAbsolute = path.join(__dirname, '..', "uploads", folder.path);
+        console.log("Old path absolute:", oldPathAbsolute);
 
         // Verificar si la nueva ruta ya existe con el nuevo nombre
         try {
@@ -157,10 +164,10 @@ export async function updateFolder(req: Request, res: Response, next: NextFuncti
         }
 
         // Renombrar la carpeta en el sistema de archivos
-        await fsPromises.rename(folder.path, newPath);
+        await fsPromises.rename(oldPathAbsolute, newPathAbsolute);
 
         // Actualizar la entidad Carpeta en la base de datos
-        folder.name = name;
+        folder.name = name.trim();
         folder.parentFolderId = parentFolderId;
         folder.path = newPath;
 
@@ -240,19 +247,16 @@ export async function deleteFolder(req: Request, res: Response, next: NextFuncti
         }
 
         // * validacion para no eliminar carpetas con archivos
-
         const files = await Archivos.find({ where: { folderId: folder.id } });
+
         const subFolders = await Carpeta.find({ where: { parentFolderId: folder.id } });
 
         if (files.length > 0 || subFolders.length > 0) {
             return res.status(400).json({ message: "Folder has files or subfolders", subFilesCount: files.length, subFoldersCount: subFolders.length });
             
         }
-
-
-
-        // Eliminar la carpeta en el sistema de archivos
-        await fsPromises.rmdir(folder.path, { recursive: true });
+        const folderAbsolutePath = path.join(__dirname, "..", "uploads", folder.path)
+        await fsPromises.rmdir(folderAbsolutePath, { recursive: true });
 
         // Eliminar la entidad Carpeta en la base de datos
         await folder.remove();
