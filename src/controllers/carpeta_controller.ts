@@ -79,7 +79,7 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
 
 
         const folder = new Carpeta();
-        folder.name = folderName;
+        folder.name = folderName.trim();
         folder.idMunicipio = municipio;
         folder.parentFolderId = parentFolderId;
         folder.path = folderPath;
