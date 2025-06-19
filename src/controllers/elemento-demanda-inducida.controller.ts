@@ -44,10 +44,7 @@ export const getElementDemandInducedByName = async (req: Request, res: Response,
             });
         }
 
-        res.status(200).json({
-            message: "Elements demand induced found",
-            data: elementDemandInduced
-        });
+        res.status(200).json(elementDemandInduced);
 
     } catch (error) {
         next(error);

@@ -9,7 +9,6 @@ import {
 } from "typeorm";
 import { 
     IsBoolean, 
-    IsDate, 
     IsEnum, 
     IsInt, 
     IsNotEmpty, 
@@ -146,7 +145,6 @@ export class DemandaInducida extends BaseEntity {
     barrioVereda: string;
 
     @Column({ name: "fecha_envio", type: "date", nullable: true })
-    @IsDate()
     @IsOptional()
     fechaEnvio: Date;
 
@@ -161,7 +159,6 @@ export class DemandaInducida extends BaseEntity {
     textEnvio: string;
 
     @Column({ name: "fecha_visita", type: "date", nullable: true })
-    @IsDate()
     @IsOptional()
     fechaVisita: Date;
 
@@ -182,9 +179,17 @@ export class DemandaInducida extends BaseEntity {
     programa: string;
 
     @Column({ name: "fecha_cita", type: "date", nullable: true })
-    @IsDate()
     @IsOptional()
     fechaCita: Date;
+
+    @Column({ name: "fecha_llamada", type: "date", nullable: true })
+    @IsOptional()
+    fechaLlamada: Date;
+
+    @Column({ name: "hora_llamada", type: "time", nullable: true })
+    @IsString()
+    @IsOptional()
+    horaLlamada: string;
 
     @CreateDateColumn({ name: "fecha_creacion" })
     createdAt: Date;
