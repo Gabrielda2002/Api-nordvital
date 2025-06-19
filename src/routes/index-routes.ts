@@ -68,6 +68,14 @@ import celularesRoutes from './celular_routes';
 import televisoresRoutes from './televisor_routes';
 import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
 import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
+import elementDemandaInducidaRoutes from './elemento-demanda-inducida.route';
+import typeElementDemandInducedRoutes from './tipo-demanda-inducida.route';
+import objetiveDemandInducedRoutes from './objetivo-demanda-inducida.route';
+import relationUserRoutes from './relacion-usuario.route';
+import areaEpsRoutes from './area-eps.route';
+import summaryActivityRoutes from './resumen-seguimiento-actividad.route';
+import resultCallsRoutes from './resultado-llamada.route';
+import areaPersonRoutes from './area-persona-seguimiento.route';
 
 const router = Router();
 
@@ -140,5 +148,13 @@ router.use(celularesRoutes);
 router.use(televisoresRoutes);
 router.use(seguimientoTelevisorRoutes);
 router.use(seguimientoCelularesRoutes);
+router.use(elementDemandaInducidaRoutes);
+router.use(typeElementDemandInducedRoutes);
+router.use(objetiveDemandInducedRoutes);
+router.use(relationUserRoutes);
+router.use(areaEpsRoutes);
+router.use(summaryActivityRoutes);
+router.use(resultCallsRoutes);
+router.use(areaPersonRoutes);
 
 export default router;

@@ -55,21 +55,28 @@ export async function createFolder(req: Request, res: Response, next: NextFuncti
             if (!parentFolder) {
                 return res.status(404).json({ message: "Parent folder not found" });
             }
-            console.log("carpeta padre:" , parentFolder)
-            folderPath = path.join(parentFolder.path, folderName);
-            console.log(folderPath);
+            folderPath = path.join(parentFolder.path, folderName).replace(/\\/g, '/');
         }else{
             // * si es una carpeta raiz
-            folderPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", folderName);
+            folderPath = path.join("SistemaGestionCalidad", folderName).replace(/\\/g, '/');
         }
 
-        const folderExists = await fsPromises.access(folderPath).then(() => true).catch(() => false);
+        // ruta fisica absoluta
+        const absoluteFolderPath = path.join(__dirname, '..', "uploads", folderPath);
+        console.log("ruta absoluta de la carpeta:", absoluteFolderPath);
+        console.log("ruta de la carpeta:", folderPath);
+        
+        const folderExists = await fsPromises.access(absoluteFolderPath).then(() => true).catch(() => false);
 
         if (folderExists) {
             return res.status(409).json({ message: "Folder already exists" });
         }
+        // crear carpeta fisica y verificar que se haya creado correctamente
+        await fsPromises.mkdir(absoluteFolderPath, {recursive: true}).catch((err) => {
+            return res.status(500).json({ message: "Error creating folder", error: err.message });
+        });
 
-        await fsPromises.mkdir(folderPath, {recursive: true});
+
 
         const folder = new Carpeta();
         folder.name = folderName;
@@ -317,6 +324,8 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
 
         // ? validar carpeta padre destino si existe
         let newParentFolder = null;
+        let newRelativePath: string;
+
         if (newParentId) {
             newParentFolder = await Carpeta.findOneBy({ id: parseInt(newParentId) });
             if (!newParentFolder) {
@@ -326,15 +335,15 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
             if (await isDescendentFolder(newParentId, folderToMove.id)) {
                 return res.status(400).json({ message: "Cannot move folder into its own subfolder" });
             }
+
+            newRelativePath = path.join(newParentFolder.path, folderToMove.name).replace(/\\/g, '/');
+        }else {
+            // si no se especifica una carpeta padre, se movera a la carpeta raiz
+            newRelativePath = path.join("SistemaGestionCalidad", folderToMove.name).replace(/\\/g, '/');
         }
 
-        let newPath: string;
-        //  ? definir nueva ruta
-        if (newParentFolder) {
-            newPath = path.join(newParentFolder.path, folderToMove.name);
-        }else {
-            newPath = path.join(__dirname, "..", "uploads/SistemaGestionCalidad", folderToMove.name);
-        }
+        const oldAbsolutePath = path.join(__dirname, "..", "uploads", folderToMove.path);
+        const newAbsolutePath = path.join(__dirname, "..", "uploads", newRelativePath);
 
         // ? verificar que no exista una carpeta con el mismo nombre en la nueva ubicacion
         const existingFolder = await Carpeta.findOne({
@@ -351,23 +360,17 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
         }
 
         // verificar que la nueva ruta no exista fisicamente
-        const folderExists = await fsPromises.access(newPath).then(() => true).catch(() => false);
+        const folderExists = await fsPromises.access(newAbsolutePath).then(() => true).catch(() => false);
         if (folderExists) {
             return res.status(409).json({ message: "Folder already exists at the new location" });
         }
-        // ? ruta donde se movera la carpeta
-        const pathToMove = path.join(__dirname, "uploads", folderToMove.path);
-
         // mover carpeta fisicamente
-        await fsPromises.rename(pathToMove, newPath);
-
-        const uploadsFolder = path.join(__dirname, "uploads");
-        const relativeNewPath = path.relative(uploadsFolder, newPath).replace(/\\/g, '/');
+        await fsPromises.rename(oldAbsolutePath, newAbsolutePath);
 
         // actualizar carpeta en la base de datos
         const oldPath = folderToMove.path;
         folderToMove.parentFolderId = newParentId || null;
-        folderToMove.path = relativeNewPath;
+        folderToMove.path = newRelativePath;
         folderToMove.idMunicipio = municipio;
         folderToMove.seccion = section;
 
@@ -382,7 +385,7 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
 
         await folderToMove.save();
         // actualizar rutas de archivos y subcarpetas
-        await updatteAllSubItemsPaths(folderToMove.id, newPath);
+        await updatteAllSubItemsPaths(folderToMove.id, newRelativePath);
 
         return res.status(200).json(folderToMove);
 
@@ -413,18 +416,14 @@ async function isDescendentFolder(parentId: number, childId: number): Promise<bo
 // funcion auxiliar para actualizar todas las rutas de subcarpetas y archivos
 async function updatteAllSubItemsPaths(folderId: number, newBasePath: string) {
 
-    const updateFolder  = path.join(__dirname, "uploads");
-    const relativeNewPath = path.relative(updateFolder, newBasePath).replace(/\\/g, '/');
 
-    console.log("ruta actualizada:", relativeNewPath);
-
-    await updateSubFiles(folderId, relativeNewPath);
+    await updateSubFiles(folderId, newBasePath);
 
     const subFolders = await Carpeta.find({ where: { parentFolderId: folderId}})
 
     for (const subFolder of subFolders) {
         const newSubPath = path.join(newBasePath, subFolder.name);
-        const relativeSubPath = path.relative(updateFolder, newSubPath).replace(/\\/g, '/');
+        const relativeSubPath = path.relative(newBasePath, newSubPath).replace(/\\/g, '/');
         subFolder.path = relativeSubPath;
         await subFolder.save();
 

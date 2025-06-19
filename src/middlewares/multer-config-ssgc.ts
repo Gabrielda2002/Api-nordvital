@@ -20,7 +20,7 @@ export const storage = multer.diskStorage({
       }
 
       // * se asigna la ruta de la carpeta padre si se encuentra
-      uploadPath = parentFolder.path;
+      uploadPath = path.join(__dirname, "../uploads", parentFolder.path);
     } else {
       // * ruta predeterminada en caso de que el archivo no tenga
       uploadPath = path.join(__dirname, '../uploads/SistemaGestionCalidad');
