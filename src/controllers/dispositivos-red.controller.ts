@@ -72,7 +72,7 @@ export async function createDevice(
     device.mac = mac;
     device.otherData = otherData;
     device.status = status;
-    device.inventoryNumber = inventoryNumber || "No aplica";
+    device.inventoryNumber = inventoryNumber;
 
     const errors = await validate(device);
     if (errors.length > 0) {
