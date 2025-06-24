@@ -67,7 +67,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
             const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
 
             const newFile = new Archivos();
-            newFile.name = fileNameWithoutExt?.normalize("NFC");
+            newFile.name = fileNameWithoutExt?.normalize("NFC").trim();
 
             // Obtener ruta relativa uniforme
             const relativePath = path.join(parentFolder.path, file.filename).replace(/\\/g, '/');
@@ -114,8 +114,7 @@ export async function updateFile(req: Request, res: Response, next: NextFunction
             return res.status(404).json({message: "Archivo no encontrado"});
         }
 
-
-        file.name = name;
+        file.name = name.trim();
         file.folderId = parentFolderId;
 
         const errors = await validate(file);

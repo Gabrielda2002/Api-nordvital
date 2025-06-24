@@ -76,6 +76,7 @@ import areaEpsRoutes from './area-eps.route';
 import summaryActivityRoutes from './resumen-seguimiento-actividad.route';
 import resultCallsRoutes from './resultado-llamada.route';
 import areaPersonRoutes from './area-persona-seguimiento.route';
+import reasonVisitRoutes from './motivo-visita.route';
 
 const router = Router();
 
@@ -156,5 +157,6 @@ router.use(areaEpsRoutes);
 router.use(summaryActivityRoutes);
 router.use(resultCallsRoutes);
 router.use(areaPersonRoutes);
+router.use(reasonVisitRoutes);
 
 export default router;
