@@ -3,8 +3,6 @@ import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { createAccessory, deleteAccessory, getAccessory, getAllAccessories, updateAccessory } from "../controllers/accesorios-equipos_controller";
 import { validarId } from "../middlewares/validar-id";
-import { generateInventoryNumber } from "../middlewares/generate-inventory-number";
-import { generateInventoryNumberPheripheral } from "../middlewares/generate-inventory-number-peripheral";
 
 const router = Router();
 
@@ -130,7 +128,7 @@ router.get("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']), valid
  *       400:
  *         description: Error de validación
  */
-router.post("/accesorios-equipos", authenticate, authorizeRoles(['1']), generateInventoryNumberPheripheral,createAccessory);
+router.post("/accesorios-equipos", authenticate, authorizeRoles(['1']),createAccessory);
 
 /**
  * @swagger

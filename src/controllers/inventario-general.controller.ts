@@ -83,6 +83,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       createdAt: i.createdAt,
       updatedAt: i.updatedAt,
       classificationId: i.classificationId,
+      headquartersId: i.headquartersId,
       headquarters: i.headquartersRelation?.name,
       responsable: i.responsibleRelation?.name,
       classification: i.classificationRelation?.name,
@@ -166,7 +167,6 @@ export async function createInventoryGeneral(
     newInventarioGeneral.assetTypeId = parseInt(assetTypeId);
     newInventarioGeneral.responsableId = parseInt(responsableId);
     newInventarioGeneral.dependencyAreaId = parseInt(dependencyAreaId);
-    console.log(newInventarioGeneral);
 
     const errors = await validate(newInventarioGeneral);
     if (errors.length > 0) {
@@ -209,7 +209,7 @@ export async function updateInventoryGeneral(
       warrantyPeriod,
       inventoryNumber,
       classificationId,
-      // headquartersId,
+      headquartersId,
       statusId,
       assetId,
       materialId,
@@ -240,7 +240,7 @@ export async function updateInventoryGeneral(
     inventarioGeneral.warrantyPeriod = warrantyPeriod;
     inventarioGeneral.inventoryNumber = inventoryNumber;
     inventarioGeneral.classificationId = parseInt(classificationId);
-    // inventarioGeneral.headquartersId = parseInt(headquartersId);
+    inventarioGeneral.headquartersId = parseInt(headquartersId);
     inventarioGeneral.statusId = parseInt(statusId); 
     inventarioGeneral.assetId = parseInt(assetId);
     inventarioGeneral.materialId = parseInt(materialId);

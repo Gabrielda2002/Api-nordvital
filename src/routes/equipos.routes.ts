@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment } from "../controllers/equipos_controller";
+import { createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment } from "../controllers/equipos.controller";
 import { validarId } from "../middlewares/validar-id";
-import { generateInventoryNumber } from "../middlewares/generate-inventory-number";
 import { uploadDocDelivery } from "../middlewares/upload-doc-delivery_middleware";
 
 const router = Router();
@@ -129,7 +128,7 @@ router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAl
  *       400:
  *         description: Datos inválidos
  */
-router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, generateInventoryNumber, createEquipment);
+router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, createEquipment);
 
 /**
  * @swagger

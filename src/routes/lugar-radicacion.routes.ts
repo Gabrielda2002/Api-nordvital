@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion_controller";
+import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

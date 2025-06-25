@@ -31,6 +31,7 @@ export async function getTelevisorBySedeId(
 
     const televisorFormatted = televisor.map((t) => ({
       id: t.id || "N/A",
+      sedeId: t.sedeId || "N/A",
       name: t.name || "N/A",
       location: t.location || "N/A",
       brand: t.brand || "N/A",
@@ -196,6 +197,7 @@ export async function updateTelevisor(
       controlRemote,
       utility,
       responsable,
+      sedeId
     } = req.body;
 
     const televisor = await Televisor.findOneBy({ id: parseInt(id) });
@@ -232,6 +234,7 @@ export async function updateTelevisor(
     televisor.controlRemote = controlRemote || televisor.controlRemote;
     televisor.utility = utility || televisor.utility;
     televisor.idResponsable = Number(responsable) || televisor.idResponsable;
+    televisor.sedeId = Number(sedeId) || televisor.sedeId;
 
     const errors = await validate(televisor);
     if (errors.length > 0) {

@@ -72,7 +72,7 @@ export async function createDevice(
     device.mac = mac;
     device.otherData = otherData;
     device.status = status;
-    device.inventoryNumber = inventoryNumber || "No aplica";
+    device.inventoryNumber = inventoryNumber;
 
     const errors = await validate(device);
     if (errors.length > 0) {
@@ -109,6 +109,7 @@ export async function updateDevice(
       otherData,
       status,
       inventoryNumber,
+      sedeId,
     } = req.body;
 
     const device = await dispositivosRed.findOneBy({ id: parseInt(id) });
@@ -128,6 +129,7 @@ export async function updateDevice(
     device.otherData = otherData;
     device.status = status;
     device.inventoryNumber = inventoryNumber;
+    device.sedeId = parseInt(sedeId);
 
     const errors = await validate(device);
     if (errors.length > 0) {
