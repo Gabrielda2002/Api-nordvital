@@ -166,7 +166,6 @@ export async function createInventoryGeneral(
     newInventarioGeneral.assetTypeId = parseInt(assetTypeId);
     newInventarioGeneral.responsableId = parseInt(responsableId);
     newInventarioGeneral.dependencyAreaId = parseInt(dependencyAreaId);
-    console.log(newInventarioGeneral);
 
     const errors = await validate(newInventarioGeneral);
     if (errors.length > 0) {
