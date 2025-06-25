@@ -306,6 +306,7 @@ export async function updatePhone(
       observations,
       status,
       acquisitionValue,
+      sedeId,
     } = req.body;
 
     phone.name = name.toUpperCase();
@@ -334,6 +335,7 @@ export async function updatePhone(
     phone.observation = observations;
     phone.status = status;
     phone.acquisitionValue = Number(acquisitionValue);
+    phone.sedeId = parseInt(sedeId);
 
     const errorsPhone = await validate(phone);
 

@@ -224,11 +224,12 @@ export async function updateEquipment(
       warrantyTime,
       warranty,
       deliveryDate,
-      // inventoryNumber,
+      inventoryNumber,
       dhcp,
       managerId,
       lock,
       codeLock,
+      sedeId
     } = req.body;
     console.log(req.body)
 
@@ -253,11 +254,12 @@ export async function updateEquipment(
     equipment.warrantyTime = warrantyTime;
     equipment.warranty = warranty == "true";
     equipment.deliveryDate = deliveryDate;
-    // equipment.inventoryNumber = inventoryNumber;
     equipment.dhcp = dhcp == "true";
     equipment.idUsuario = managerId || null;
     equipment.lock = lock == "true";
     equipment.lockKey = codeLock || null;
+    equipment.inventoryNumber = inventoryNumber;
+    equipment.sedeId = parseInt(sedeId);
 
     const errors = await validate(equipment);
 
