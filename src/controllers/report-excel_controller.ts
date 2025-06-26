@@ -1102,6 +1102,7 @@ export async function getReportTickets(
       { header: "Categoria", key: "categoria", width: 20 },
       { header: "Titulo", key: "titulo", width: 30 },
       { header: "Usuario Solicitante", key: "usuario_solicitante", width: 30 },
+      { header: "Sede Solicitante", key: "sede_solicitante", width: 20 },
       { header: "Usuario Respondedor", key: "usuario_responsable", width: 30 },
       { header: "Ultimo Estado", key: "ultimo_estado", width: 20 },
       { header: "Ultimo Comentario", key: "ultimo_comentario", width: 30 },
@@ -1135,6 +1136,7 @@ export async function getReportTickets(
         titulo: t.title || "N/A",
         usuario_solicitante:
           `${t.userRelation?.name} ${t.userRelation.lastName}` || "N/A",
+        sede_solicitante: t.userRelation?.sedeRelation?.name || "N/A",
         usuario_responsable:
           t.commentRelation?.length > 0
             ? `${t.commentRelation[0]?.userRelation?.name || ""} ${
