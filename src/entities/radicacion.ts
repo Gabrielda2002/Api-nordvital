@@ -23,6 +23,7 @@ import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
 import { Estados } from "./estados";
 import { CartaRecobro } from "./Carta_recobro";
+import { Profesionales } from "./profesionales";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -110,6 +111,9 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty({message: "El diagnostico es requerido"})
   idDiagnostico: number;
 
+  @Column({ name: "id_profesional", nullable: true })
+  idProfesional: number;
+
   // * relaciones
 
   // * relaciones con llaves foraneas
@@ -172,5 +176,9 @@ export class Radicacion extends BaseEntity {
 
   @OneToMany(() => CartaRecobro, carta => carta.radicacionRelation)
   cartaRelation: CartaRecobro[];
+
+  @ManyToOne(() => Profesionales, (profesionales) => profesionales.radicacionRelation)
+  @JoinColumn({ name: "id_profesional" })
+  profesionalesRelation: Profesionales;
 
 }
