@@ -173,6 +173,11 @@ export class CreateProfesionalesAndUpdateRadicacion1750948366048
         onDelete: "SET NULL",
       })
     );
+    
+    await queryRunner.query(
+      `ALTER TABLE radicacion CHANGE COLUMN Profesional profesional varchar(255) NULL`
+    )
+
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

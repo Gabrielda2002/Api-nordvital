@@ -48,11 +48,8 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty({message: "La ips remitente es requerida"})
   ipsRemitente: number;
 
-  @Column({ name: "Profesional" })
-  @IsString()
-  @IsNotEmpty({message: "El profesional es requerido"})
-  @Length(3, 100, {message: "El profesional debe tener entre 3 y 100 caracteres"})
-  profetional: string;
+  @Column({ name: "profesional", nullable: true, type: "varchar" })
+  profetional: string | null;
 
   @Column({ name: "Especialidad" })
   @IsInt()
