@@ -23,6 +23,7 @@ import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
 import { Estados } from "./estados";
 import { CartaRecobro } from "./Carta_recobro";
+import { Profesionales } from "./profesionales";
 
 @Entity("radicacion")
 export class Radicacion extends BaseEntity {
@@ -47,11 +48,8 @@ export class Radicacion extends BaseEntity {
   @IsNotEmpty({message: "La ips remitente es requerida"})
   ipsRemitente: number;
 
-  @Column({ name: "Profesional" })
-  @IsString()
-  @IsNotEmpty({message: "El profesional es requerido"})
-  @Length(3, 100, {message: "El profesional debe tener entre 3 y 100 caracteres"})
-  profetional: string;
+  @Column({ name: "profesional", nullable: true, type: "varchar" })
+  profetional: string | null;
 
   @Column({ name: "Especialidad" })
   @IsInt()
@@ -109,6 +107,9 @@ export class Radicacion extends BaseEntity {
   @IsInt()
   @IsNotEmpty({message: "El diagnostico es requerido"})
   idDiagnostico: number;
+
+  @Column({ name: "id_profesional", nullable: true })
+  idProfesional: number;
 
   // * relaciones
 
@@ -172,5 +173,9 @@ export class Radicacion extends BaseEntity {
 
   @OneToMany(() => CartaRecobro, carta => carta.radicacionRelation)
   cartaRelation: CartaRecobro[];
+
+  @ManyToOne(() => Profesionales, (profesionales) => profesionales.radicacionRelation)
+  @JoinColumn({ name: "id_profesional" })
+  profesionalesRelation: Profesionales;
 
 }

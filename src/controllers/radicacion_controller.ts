@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
-import { Between } from "typeorm";
+import { Between, IsNull } from "typeorm";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { UnidadFuncional } from "../entities/unidad-funcional";
 import { CupsRadicados } from "../entities/cups-radicados";
@@ -68,6 +68,7 @@ export async function getRadicacionById(
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .getOne();
 
     if (!radicacion) {
@@ -88,7 +89,7 @@ export async function getRadicacionById(
       auditDate: radicacion.auditDate,
       createdAt: radicacion.createdAt,
       orderDate: radicacion.orderDate,
-      profetional: radicacion.profetional,
+      profetional: radicacion.idProfesional === null ? radicacion.profetional : radicacion.profesionalesRelation?.name,
       groupServices: radicacion.groupServices,
       typeServices: radicacion.typeServices,
       justify: radicacion.justify,
@@ -137,7 +138,7 @@ export async function createRadicado(
     radicacado.orderDate = orderDate;
     radicacado.place = parseInt(place);
     radicacado.ipsRemitente = parseInt(ipsRemitente);
-    radicacado.profetional = profetional;
+    radicacado.idProfesional = Number(profetional);
     radicacado.specialty = parseInt(specialty);
     radicacado.groupServices = parseInt(groupServices);
     radicacado.typeServices = parseInt(typeServices);
@@ -205,7 +206,8 @@ export async function updateRadicado(
     radicacado.orderDate = orderDate;
     radicacado.place = place;
     radicacado.ipsRemitente = ipsRemitente;
-    radicacado.profetional = profetional;
+    radicacado.idProfesional = Number(profetional);
+    radicacado.profetional = null;
     radicacado.specialty = specialty;
     radicacado.groupServices = groupServices;
     radicacado.typeServices = typeServices;
@@ -258,45 +260,6 @@ export async function deleteRadicado(
     next(error);
   }
 }
-// export async function mostrarTabla(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) {
-//   try {
-//     const radicaciones = await Radicacion.createQueryBuilder("radicacion")
-//       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
-//       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
-//       .leftJoinAndSelect("pacientes.documentRelation", "document")
-//       .leftJoinAndSelect(
-//         "radicacion.seguimientoAuxiliarRelation",
-//         "seguimientoAuxiliar"
-//       )
-//       .orderBy("radicacion.id", "DESC")
-//       .getMany();
-
-//     const formatedRadicaciones = radicaciones.map((r) => {
-//       const latestSeguimiento = r.seguimientoAuxiliarRelation?.sort(
-//         (a, b) => b.id - a.id
-//       )[0];
-
-//       return {
-//         createdAt: r.createdAt,
-//         typeDocument: r.patientRelation?.documentRelation?.name || "N/A",
-//         id: r.id,
-//         convenio: r.patientRelation?.convenioRelation?.name || "N/A",
-//         document: r.patientRelation?.documentNumber || "N/A",
-//         patientName: r.patientRelation?.name || "N/A",
-//         auditDate: r.auditDate,
-//         management: latestSeguimiento ? latestSeguimiento.observation : "N/A",
-//       };
-//     });
-
-//     return res.json(formatedRadicaciones);
-//   } catch (error) {
-//     next(error);
-//   }
-// }
 
 export async function tablaPorAuditar(
   req: Request,
@@ -305,6 +268,7 @@ export async function tablaPorAuditar(
 ) {
   try {
     const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
@@ -345,7 +309,7 @@ export async function tablaPorAuditar(
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
-      profetional: r.profetional || "N/A",
+      profetional: r.idProfesional === null ? r.profetional : r.profesionalesRelation?.name || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
       radicador: r.usuarioRelation?.name || "N/A",
@@ -616,6 +580,7 @@ export async function buscarRadicadoPorDocumento(
     }
 
     const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
@@ -681,7 +646,7 @@ export async function buscarRadicadoPorDocumento(
       auditDate: r.auditDate || "N/A",
       suportName: r.soportesRelation?.nameSaved || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
-      profetional: r.profetional || "N/A",
+      profetional: r.idProfesional === null ? r.profetional : r.profesionalesRelation?.name || "N/A",
       specialty: r.specialtyRelation?.name || "N/A",
       orderDate: r.orderDate || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
