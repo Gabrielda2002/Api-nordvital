@@ -34,14 +34,18 @@ export const createProfesionales = async (
   try {
     const { name } = req.body;
 
-    if (!name || name.length < 3 || name.length > 100) {
+    const nombreNormalizado = name.trim().toUpperCase();
+
+    const existingProfesional = await Profesionales.findOne({
+      where: { name: nombreNormalizado },
+    });
+
+    if (existingProfesional) {
       return res.status(400).json({
-        message:
-          "El nombre del profesional debe tener entre 3 y 100 caracteres",
+        message: "Profesional already exists",
+        profesional: existingProfesional,
       });
     }
-
-    const nombreNormalizado = name.trim().toLowerCase();
 
     const newProfesional = Profesionales.create({
       name: nombreNormalizado,
