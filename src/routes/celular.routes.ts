@@ -56,7 +56,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1']), getPhoneBySedeId);
+router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1','4']), getPhoneBySedeId);
 
 /**
  * @swagger

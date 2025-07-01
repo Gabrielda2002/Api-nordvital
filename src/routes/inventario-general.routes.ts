@@ -58,7 +58,7 @@ router.get('/inventario/general', authenticate, authorizeRoles(['1']), getAllInv
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/inventario/general-sede/:id', authenticate, authorizeRoles(['1', '6']), getAllInventoryGeneralByHeadquarters);
+router.get('/inventario/general-sede/:id', authenticate, authorizeRoles(['1', '6', '4']), getAllInventoryGeneralByHeadquarters);
 
 /**
  * @swagger

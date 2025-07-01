@@ -202,7 +202,7 @@ router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),valid
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1']),validarId, getDevicesBySede);
+router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4']),validarId, getDevicesBySede);
 
 router.get('/dispositivos-red/statistics/headquarters', authenticate, authorizeRoles(['1']), getDevicesCountByHeadquarters);
 
