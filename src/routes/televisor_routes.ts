@@ -60,7 +60,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1']), validarId, getTelevisorBySedeId);
+router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1', '4']), validarId, getTelevisorBySedeId);
 
 /**
  * @swagger

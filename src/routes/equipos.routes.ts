@@ -206,7 +206,7 @@ router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, de
  *       404:
  *         description: No se encontraron equipos
  */
-router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1']), validarId, getEquipmentBySede);
+router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4']), validarId, getEquipmentBySede);
 
 router.get('/equipments/statics/typeEquipment', authenticate, authorizeRoles(['1']), getEquipmentTypeDistribution);
 

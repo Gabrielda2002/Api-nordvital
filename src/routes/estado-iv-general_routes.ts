@@ -5,6 +5,6 @@ import { authenticate } from "../middlewares/auth";
 
 const router = Router();
 
-router.get('/estado/iv-general', authenticate, authorizeRoles(['1', '6']), getAllStatusIVGeneral);
+router.get('/estado/iv-general', authenticate, authorizeRoles(['1', '6', '4']), getAllStatusIVGeneral);
 
 export default router;

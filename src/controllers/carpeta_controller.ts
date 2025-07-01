@@ -372,7 +372,6 @@ export async function moveFolder(req: Request, res: Response, next: NextFunction
         await fsPromises.rename(oldAbsolutePath, newAbsolutePath);
 
         // actualizar carpeta en la base de datos
-        const oldPath = folderToMove.path;
         folderToMove.parentFolderId = newParentId || null;
         folderToMove.path = newRelativePath;
         folderToMove.idMunicipio = municipio;
@@ -427,8 +426,7 @@ async function updatteAllSubItemsPaths(folderId: number, newBasePath: string) {
 
     for (const subFolder of subFolders) {
         const newSubPath = path.join(newBasePath, subFolder.name);
-        const relativeSubPath = path.relative(newBasePath, newSubPath).replace(/\\/g, '/');
-        subFolder.path = relativeSubPath;
+        subFolder.path = path.join(newBasePath, subFolder.name).replace(/\\/g, '/');
         await subFolder.save();
 
         await updatteAllSubItemsPaths(subFolder.id, newSubPath);
