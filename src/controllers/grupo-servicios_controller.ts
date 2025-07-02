@@ -130,9 +130,17 @@ export async function getGrupoServiciosByName(req: Request, res: Response, next:
   try {
     const { name } = req.body;
 
-    const grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
-      .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
-      .getMany();
+    let grupoServicios;
+    
+    if (name === "@") {
+      grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
+        .limit(100)
+        .getMany();
+    }else{
+      grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
+        .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
+        .getMany();
+    }
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });

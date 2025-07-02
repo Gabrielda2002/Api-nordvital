@@ -29,9 +29,17 @@ export const getAreaEpsByName = async (
   try {
     const { name } = req.body;
 
-    const areaEps = await AreaEps.createQueryBuilder("areaEps")
-      .where("areaEps.name LIKE :name", { name: `%${name}%` })
-      .getMany();
+    let areaEps;
+
+    if (name === "@") {
+      areaEps = await AreaEps.createQueryBuilder("areaEps")
+        .limit(100)
+        .getMany();
+    } else {
+      areaEps = await AreaEps.createQueryBuilder("areaEps")
+        .where("areaEps.name LIKE :name", { name: `%${name}%` })
+        .getMany();
+    }
 
     if (!areaEps || areaEps.length === 0) {
       return res.status(404).json({

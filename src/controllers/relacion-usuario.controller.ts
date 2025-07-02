@@ -22,9 +22,17 @@ export const getRelationUserByName = async (req: Request, res: Response, next: N
         
         const { name } = req.body;
 
-        const relationUser = await RelacionUsuario.createQueryBuilder("relation_user")
-        .where("relation_user.name LIKE :name", { name: `%${name}%` })
-        .getMany();
+        let relationUser;
+        if (name === "@") {
+            relationUser = await RelacionUsuario.createQueryBuilder("relation_user")
+            .limit(100)
+            .getMany();
+            
+        }else {
+            relationUser = await RelacionUsuario.createQueryBuilder("relation_user")
+            .where("relation_user.name LIKE :name", { name: `%${name}%` })
+            .getMany();
+        }
 
         if (relationUser.length === 0) {
             return res.status(404).json({ message: "Relation User not found" });

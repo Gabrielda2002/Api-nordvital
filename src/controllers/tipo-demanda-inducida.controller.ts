@@ -25,23 +25,29 @@ export const getTypeDemandInducedByName = async (
   res: Response,
   next: NextFunction
 ) => {
-    try {
-        
-        const { name } = req.body;
+  try {
+    const { name } = req.body;
 
-        const typeDemandInduced = await TipoDemandaInducida.createQueryBuilder("tipo")
+    let typeDemandInduced;
+
+    if (name === "@") {
+      typeDemandInduced = await TipoDemandaInducida.createQueryBuilder("tipo")
+        .limit(100)
+        .getMany();
+    }else {
+      typeDemandInduced = await TipoDemandaInducida.createQueryBuilder("tipo")
         .where("tipo.name LIKE :name", { name: `%${name}%` })
         .getMany();
-
-        if (typeDemandInduced.length === 0) {
-            return res.status(404).json({
-                message: "Type Demand Induced not found",
-            });
-        }
-
-        res.status(200).json(typeDemandInduced);
-
-    } catch (error) {
-        next(error);
     }
-}
+
+    if (typeDemandInduced.length === 0) {
+      return res.status(404).json({
+        message: "Type Demand Induced not found",
+      });
+    }
+
+    res.status(200).json(typeDemandInduced);
+  } catch (error) {
+    next(error);
+  }
+};

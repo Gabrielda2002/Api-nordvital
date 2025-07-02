@@ -22,9 +22,17 @@ export const getResultCallByName = async (req: Request, res: Response, next: Nex
         
         const { name } = req.body;
 
-        const resultCall = await ResultadoLlamada.createQueryBuilder("resultado_llamada")
-        .where("resultado_llamada.name LIKE :name", { name: `%${name}%` })
-        .getMany();
+        let resultCall;
+        
+        if (name === "@") {
+            resultCall = await ResultadoLlamada.createQueryBuilder("resultado_llamada")
+            .limit(100)
+            .getMany();
+        }else {
+            resultCall = await ResultadoLlamada.createQueryBuilder("resultado_llamada")
+            .where("resultado_llamada.name LIKE :name", { name: `%${name}%` })
+            .getMany();
+        }
 
         if (!resultCall || resultCall.length === 0) {
             return res.status(404).json({ message: "Result Call not found" });
