@@ -180,7 +180,7 @@ export class CreateTablePrograma1751381414826 implements MigrationInterface {
             ('Vacuna bivalente mayores de 60'),
             ('Hipertension Arterial (HTA)'),
             ('Diabetes Mellitus (DM)'),
-            ('Odontologia'),
+            ('Odontologia')
         `);
     }
 
