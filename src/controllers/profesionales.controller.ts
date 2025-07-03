@@ -10,9 +10,17 @@ export const getProfesionalByName = async (
   try {
     const { name } = req.body;
 
-    const profesional = await Profesionales.createQueryBuilder("profesionales")
-      .where("profesionales.name LIKE :name", { name: `%${name}%` })
-      .getMany();
+    let profesional;
+    
+    if (name === "@") {
+      profesional = await Profesionales.createQueryBuilder("profesionales")
+        .limit(100)
+        .getMany();
+    }else{
+      profesional = await Profesionales.createQueryBuilder("profesionales")
+        .where("profesionales.name LIKE :name", { name: `%${name}%` })
+        .getMany();
+    }
 
     if (!profesional || profesional.length === 0) {
       return res.status(404).json({

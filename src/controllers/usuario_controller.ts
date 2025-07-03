@@ -28,10 +28,10 @@ export async function getUsuario(
   try {
     const { id } = req.params;
 
-    const usuario = await Usuarios.findOne({ 
+    const usuario = await Usuarios.findOne({
       where: { id: parseInt(id) },
       relations: ["rolesRelation", "municipioRelation", "typeDocumentRelation"],
-     });
+    });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -60,14 +60,15 @@ export async function createUsuario(
       area,
       cargo,
       sedeId,
-      phoneNumber
+      phoneNumber,
     } = req.body;
 
-    const userExist = await Usuarios.createQueryBuilder('usuarios')
-    .where('usuarios.dniNumber = :dniNumber', {dniNumber})
-    .getOne();
+    const userExist = await Usuarios.createQueryBuilder("usuarios")
+      .where("usuarios.dniNumber = :dniNumber", { dniNumber })
+      .getOne();
 
-    if(userExist) return res.status(409).json({message: 'El usuario ya existe'});
+    if (userExist)
+      return res.status(409).json({ message: "El usuario ya existe" });
 
     const usuario = new Usuarios();
     usuario.dniNumber = parseInt(dniNumber);
@@ -77,7 +78,7 @@ export async function createUsuario(
     usuario.email = email;
     // incriptacion password
     const saltRounds = 10;
-    usuario.password = await bcrypt.hash(password, saltRounds); 
+    usuario.password = await bcrypt.hash(password, saltRounds);
     usuario.status = true;
     usuario.rol = parseInt(rol);
     usuario.area = area.toUpperCase();
@@ -88,18 +89,19 @@ export async function createUsuario(
     const errors = await validate(usuario);
 
     if (errors.length > 0) {
-        const messageError = errors.map((error) => ({
-            property: error.property,
-            constraints: error.constraints
-        }));
+      const messageError = errors.map((error) => ({
+        property: error.property,
+        constraints: error.constraints,
+      }));
 
-        return res.status(400).json({"message" : "Ocurrio un error: ", messageError});
+      return res
+        .status(400)
+        .json({ message: "Ocurrio un error: ", messageError });
     }
 
     await usuario.save();
 
     return res.json(usuario);
-
   } catch (error) {
     next(error);
   }
@@ -112,16 +114,8 @@ export async function updateUsuario(
 ) {
   try {
     const { id } = req.params;
-    const {
-      dniNumber,
-      name,
-      lastName,
-      dniType,
-      email,
-      password,
-      status,
-      rol,
-    } = req.body;
+    const { dniNumber, name, lastName, dniType, email, password, status, rol } =
+      req.body;
 
     const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
 
@@ -136,8 +130,8 @@ export async function updateUsuario(
     usuario.email = email;
 
     if (password) {
-        const saltRounds = 10;
-        usuario.password = await bcrypt.hash(password, saltRounds);
+      const saltRounds = 10;
+      usuario.password = await bcrypt.hash(password, saltRounds);
     }
     usuario.status = status;
     usuario.rol = rol;
@@ -145,12 +139,14 @@ export async function updateUsuario(
     const errors = await validate(usuario);
 
     if (errors.length > 0) {
-        const messageError = errors.map((error) => ({
-            property: error.property,
-            constraints: error.constraints
-        }));
+      const messageError = errors.map((error) => ({
+        property: error.property,
+        constraints: error.constraints,
+      }));
 
-        return res.status(400).json({"message" : "Ocurrio un error: ", messageError});
+      return res
+        .status(400)
+        .json({ message: "Ocurrio un error: ", messageError });
     }
 
     await usuario.save();
@@ -169,12 +165,7 @@ export async function updateUsuarioBasicData(
 ) {
   try {
     const { id } = req.params;
-    const {
-      name,
-      lastName,
-      email,
-      phone
-    } = req.body;
+    const { name, lastName, email, phone } = req.body;
 
     const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
 
@@ -185,17 +176,19 @@ export async function updateUsuarioBasicData(
     usuario.name = name;
     usuario.lastName = lastName;
     usuario.email = email;
-  usuario.phoneNumber = parseInt(phone);
+    usuario.phoneNumber = parseInt(phone);
 
     const errors = await validate(usuario);
 
     if (errors.length > 0) {
-        const messageError = errors.map((error) => ({
-            property: error.property,
-            constraints: error.constraints
-        }));
+      const messageError = errors.map((error) => ({
+        property: error.property,
+        constraints: error.constraints,
+      }));
 
-        return res.status(400).json({"message" : "Ocurrio un error: ", messageError});
+      return res
+        .status(400)
+        .json({ message: "Ocurrio un error: ", messageError });
     }
 
     await usuario.save();
@@ -238,7 +231,7 @@ export async function uploadPhoto(
   try {
     const file = req.file;
 
-    const { id } = req.params; 
+    const { id } = req.params;
 
     const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
 
@@ -275,7 +268,7 @@ export async function deletePhoto(
     }
 
     // Obtén la ruta de la foto de perfil
-    const filePath = path.join(__dirname, '..', usuario.photo); // Ajusta según la estructura de tu proyecto
+    const filePath = path.join(__dirname, "..", usuario.photo); // Ajusta según la estructura de tu proyecto
 
     // Verifica si el archivo existe antes de intentar eliminarlo
     if (fs.existsSync(filePath)) {
@@ -301,16 +294,16 @@ export async function getUsuariosTable(
 ) {
   try {
     const usuariosData = await Usuarios.createQueryBuilder("usuarios")
-    .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
-    .leftJoinAndSelect("usuarios.rolesRelation", "roles")
-    .leftJoinAndSelect("usuarios.sedeRelation", "sede")
-    .leftJoinAndSelect("sede.municipioRelation", "municipio")
-    .getMany();
+      .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
+      .leftJoinAndSelect("usuarios.rolesRelation", "roles")
+      .leftJoinAndSelect("usuarios.sedeRelation", "sede")
+      .leftJoinAndSelect("sede.municipioRelation", "municipio")
+      .getMany();
 
     const usuarios = usuariosData.map((usuario) => ({
       id: usuario.id || "N/A",
       dniNumber: usuario.dniNumber || "N/A",
-      name: usuario.name  || "N/A",
+      name: usuario.name || "N/A",
       lastName: usuario.lastName || "N/A",
       email: usuario.email || "N/A",
       status: usuario.status !== undefined ? usuario.status : "N/A",
@@ -322,11 +315,11 @@ export async function getUsuariosTable(
       idRol: usuario.rolesRelation?.id || "N/A",
       municipio: usuario.sedeRelation?.municipioRelation?.name || "N/A",
       idMunicipio: usuario.sedeRelation?.municipioRelation?.id || "N/A",
-      area: usuario.area|| "N/A",
+      area: usuario.area || "N/A",
       cargo: usuario.position || "N/A",
       sedeId: usuario.headquarters || "N/A",
       celular: usuario.phoneNumber || "N/A",
-    }))
+    }));
 
     return res.json(usuarios);
   } catch (error) {
@@ -371,16 +364,32 @@ export async function updatePassword(
 }
 
 // actualizar datos del usuario
-export async function updateUsuarioTable(request: Request, response: Response, next: NextFunction){
+export async function updateUsuarioTable(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
   try {
-    
-    const {id} = request.params;
-    const { dniNumber, name, lastName, dniType, email, password,status, rol, area, position, headquarters, phoneNumber } = request.body;
+    const { id } = request.params;
+    const {
+      dniNumber,
+      name,
+      lastName,
+      dniType,
+      email,
+      password,
+      status,
+      rol,
+      area,
+      position,
+      headquarters,
+      phoneNumber,
+    } = request.body;
     console.log(request.body);
 
-    const usuario = await Usuarios.findOneBy({id: parseInt(id)});
-    if(!usuario){
-      return response.status(404).json({message: 'Usuario no encontrado'});
+    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    if (!usuario) {
+      return response.status(404).json({ message: "Usuario no encontrado" });
     }
 
     usuario.dniNumber = parseInt(dniNumber);
@@ -400,37 +409,53 @@ export async function updateUsuarioTable(request: Request, response: Response, n
     usuario.phoneNumber = parseInt(phoneNumber);
 
     const errors = await validate(usuario);
-    if(errors.length > 0){
-      const messageError = errors.map(error => ({
+    if (errors.length > 0) {
+      const messageError = errors.map((error) => ({
         property: error.property,
-        constraints: error.constraints
+        constraints: error.constraints,
       }));
-      return response.status(400).json({message: 'Ocurrio un error', messageError});
+      return response
+        .status(400)
+        .json({ message: "Ocurrio un error", messageError });
     }
 
     await usuario.save();
 
     return response.json(usuario);
-
   } catch (error) {
     next(error);
   }
 }
 
 // buscar usuarios por nombre
-export async function searchUsuarios(req: Request, res: Response, next: NextFunction){
+export async function searchUsuarios(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const { name } = req.body;
-    const usuarios = await Usuarios.createQueryBuilder('usuarios')
-    .where('CONCAT(usuarios.name, " ", usuarios.lastName) like :name', {name: `%${name}%`})
-    .getMany();
 
-    if(usuarios.length === 0){
-      return res.status(404).json({message: 'Usuario no encontrado'});
+    let usuarios;
+
+    if (name === "@") {
+      usuarios = await Usuarios.createQueryBuilder("usuarios")
+        .limit(100)
+        .getMany();
+    } else {
+      usuarios = await Usuarios.createQueryBuilder("usuarios")
+        .where('CONCAT(usuarios.name, " ", usuarios.lastName) like :name', {
+          name: `%${name}%`,
+        })
+        .getMany();
+    }
+
+    if (usuarios.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
     // Transformar el resultado para concatenar nombre y apellido
-    const usuariosTransformed = usuarios.map(usuario => ({
+    const usuariosTransformed = usuarios.map((usuario) => ({
       ...usuario,
       name: `${usuario.name} ${usuario.lastName}`,
       id: usuario.id,
@@ -443,23 +468,25 @@ export async function searchUsuarios(req: Request, res: Response, next: NextFunc
 }
 
 // funcion para actualizar contrasenas de usuarios a claves genenericas
-export  async function updatePasswordGeneric(req: Request, res: Response, next: NextFunction){
+export async function updatePasswordGeneric(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
-    const genericPassword = 'Colombia24@';
+    const genericPassword = "Colombia24@";
 
     const saltRounds = 10;
 
     const hashedPassword = await bcrypt.hash(genericPassword, saltRounds);
 
     await Usuarios.createQueryBuilder()
-    .update(Usuarios)
-    .set({password: hashedPassword})
-    .where('id > 72')
-    .execute();
+      .update(Usuarios)
+      .set({ password: hashedPassword })
+      .where("id > 72")
+      .execute();
 
-    return res.json({message: 'Contraseñas actualizadas correctamente'});
-
+    return res.json({ message: "Contraseñas actualizadas correctamente" });
   } catch (error) {
     next(error);
   }

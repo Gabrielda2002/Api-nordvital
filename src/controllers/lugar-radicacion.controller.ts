@@ -130,9 +130,18 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
         const { name } = req.body;
 
 
-        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
-        .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
-        .getMany();
+        let lugaresRadicacion;
+        
+        if (name === "@") {
+            lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+            .limit(100)
+            .getMany();
+            
+        }else{
+            lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+            .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
+            .getMany();
+        }
 
         if (!lugaresRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });

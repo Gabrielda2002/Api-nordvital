@@ -78,6 +78,7 @@ import resultCallsRoutes from './resultado-llamada.route';
 import areaPersonRoutes from './area-persona-seguimiento.route';
 import reasonVisitRoutes from './motivo-visita.route';
 import professionalRoutes from './profesionales.route';
+import programsRoutes from './programa.route';
 
 const router = Router();
 
@@ -160,5 +161,6 @@ router.use(resultCallsRoutes);
 router.use(areaPersonRoutes);
 router.use(reasonVisitRoutes);
 router.use(professionalRoutes);
+router.use(programsRoutes);
 
 export default router;

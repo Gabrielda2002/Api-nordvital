@@ -22,9 +22,17 @@ export const getAreaPersonByName = async (req: Request, res: Response, next: Nex
         
         const { name } = req.body;
 
-        const areaPerson = await AreaPersonaSeguimiento.createQueryBuilder("area")
-        .where("area.name LIKE :name", { name: `%${name}%` })
+        let areaPerson;
+        
+        if (name === "@") {
+            areaPerson = await AreaPersonaSeguimiento.createQueryBuilder("area")
+            .limit(100)
+            .getMany();
+        }else{
+            areaPerson = await AreaPersonaSeguimiento.createQueryBuilder("area")
+            .where("area.name LIKE :name", { name: `%${name}%` })
         .getMany();
+        }
 
         if (!areaPerson || areaPerson.length === 0) {
             return res.status(404).json({ message: "Area Person not found" });
