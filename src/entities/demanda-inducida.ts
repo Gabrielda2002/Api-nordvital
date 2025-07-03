@@ -29,6 +29,7 @@ import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
 import { departamentos } from "./departamentos";
 import { Municipio } from "./municipio";
+import { Programa } from "./programa";
 
 enum AreaDificultad {
     IPS = "IPS",
@@ -169,14 +170,13 @@ export class DemandaInducida extends BaseEntity {
 
     @Column({ name: "persona_seguimiento_id", nullable: true })
     @IsInt()
-    @IsOptional()
+    @IsNotEmpty({ message: "El ID de la persona de seguimiento es requerido" })
     personaSeguimientoId: number;
 
-    @Column({ name: "programa", type: "varchar", length: 60, nullable: true })
-    @IsString()
-    @IsOptional()
-    @Length(1, 60, { message: "El programa debe tener entre 1 y 60 caracteres" })
-    programa: string;
+    @Column({ name: "programa_id", type: "int", nullable: true })
+    @IsInt()
+    @IsNotEmpty({ message: "El ID del programa es requerido" })
+    programaId: number;
 
     @Column({ name: "fecha_cita", type: "date", nullable: true })
     @IsOptional()
@@ -245,11 +245,7 @@ export class DemandaInducida extends BaseEntity {
     @JoinColumn({ name: "persona_seguimiento_id" })
     personaSeguimientoRelation: Usuarios;
 
-    // @ManyToOne(() => departamentos, (departamento) => departamento.demandaInducidaRelation)
-    // @JoinColumn({ name: "departamento_id" })
-    // departamentoRelation: departamentos;
-
-    // @ManyToOne(() => Municipio, (municipio) => municipio.demandaInducidaRelation)
-    // @JoinColumn({ name: "municipio_id" })
-    // municipioRelation: Municipio;
+    @ManyToOne(() => Programa, (programa) => programa.demandaInducidaRelation)
+    @JoinColumn({ name: "programa_id" })
+    programaRelation: Programa;
 }

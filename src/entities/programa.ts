@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { DemandaInducida } from "./demanda-inducida";
 @Entity({ name: "programa" })
 export class Programa extends BaseEntity {
 
@@ -16,4 +17,8 @@ export class Programa extends BaseEntity {
 
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;    
+
+    @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.programaRelation)
+    demandaInducidaRelation: DemandaInducida[];
+
 }
