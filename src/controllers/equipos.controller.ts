@@ -83,6 +83,16 @@ export async function createEquipment(
     const file = req.file;
     let documentId: number | null = null;
 
+    const serialExist = await Equipos.findOneBy({
+      serial: serial,
+    });
+
+    if (serialExist) {
+      return res.status(409).json({
+        message: "El número de serie ya existe",
+      });
+    }
+
     // Crear y configurar el equipo
     const equipment = new Equipos();
     equipment.sedeId = parseInt(sedeId);
@@ -232,6 +242,16 @@ export async function updateEquipment(
       sedeId
     } = req.body;
     console.log(req.body)
+
+    const serialExist = await Equipos.findOneBy({
+      serial: serial,
+    });
+
+    if (serialExist && serialExist.id !== parseInt(id)) {
+      return res.status(409).json({
+        message: "El número de serie ya existe",
+      });
+    }
 
     const equipment = await Equipos.findOneBy({ id: parseInt(id) });
 

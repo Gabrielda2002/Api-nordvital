@@ -230,7 +230,7 @@ export class DemandaInducida extends BaseEntity {
     resumenRelation: ResumenSeguimientoActividad;
 
     @ManyToOne(() => ResultadoLlamada, (resultado) => resultado.demandaInducidaRelation)
-    @JoinColumn({ name: "resultado_llamada_id" })
+    @JoinColumn({ name: "resultado_llamada_isid" })
     resultadoRelation: ResultadoLlamada;
 
     @ManyToOne(() => MotivoVisita, (motivo) => motivo.demandaInducidaRelation)
