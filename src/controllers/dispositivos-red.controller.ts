@@ -62,6 +62,16 @@ export async function createDevice(
       inventoryNumber,
     } = req.body;
 
+    const serialExist = await dispositivosRed.findOneBy({
+      serial: serial,
+    });
+
+    if (serialExist) {
+      return res.status(409).json({
+        message: "El número de serie ya existe",
+      });
+    }
+
     const device = new dispositivosRed();
     device.sedeId = parseInt(sedeId);
     device.name = name;
@@ -111,6 +121,16 @@ export async function updateDevice(
       inventoryNumber,
       sedeId,
     } = req.body;
+
+    const serialExist = await dispositivosRed.findOneBy({
+      serial: serial,
+    });
+
+    if (serialExist) {
+      return res.status(409).json({
+        message: "El número de serie ya existe",
+      });
+    }
 
     const device = await dispositivosRed.findOneBy({ id: parseInt(id) });
 

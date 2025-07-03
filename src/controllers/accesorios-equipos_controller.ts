@@ -60,6 +60,21 @@ export async function createAccessory(
       inventoryNumber,
     } = req.body;
 
+    if (name === "Impresora") {
+
+      console.log("entre a impresora");
+      const existSerial = await AccesoriosEquipos.createQueryBuilder("accesorio")
+        .where("accesorio.serial = :serial", { serial })
+        .getOne();
+  
+      if (existSerial) {
+        return res.status(409).json({
+          message: "El número de serie ya existe para este accesorio",
+        });
+      }
+    }
+
+
     const accessory = new AccesoriosEquipos();
     accessory.equipmentId = parseInt(equipmentId);
     accessory.name = name;
@@ -97,6 +112,17 @@ export async function updateAccessory(
 
     const { name, brand, model, serial, description, status, inventoryNumber } =
       req.body;
+
+    const existSerial = await AccesoriosEquipos.createQueryBuilder()
+      .where("serial = :serial", { serial })
+      .andWhere("id != :id", { id: parseInt(id) })
+      .getOne();
+
+    if (existSerial) {
+      return res.status(409).json({
+        message: "El número de serie ya existe para este accesorio",
+      });
+    }
 
     const accessory = await AccesoriosEquipos.findOne({
       where: { id: parseInt(id) },
