@@ -191,6 +191,11 @@ export class DemandaInducida extends BaseEntity {
     @IsOptional()
     horaLlamada: string;
 
+    @Column({ name: "profesional", type: "enum", enum: ["Medicina General", "Enfermería"], default: "Medicina General" })
+    @IsEnum(["Medicina General", "Enfermería"])
+    @IsNotEmpty({ message: "El profesional es requerido" })
+    profesional: "Medicina General" | "Enfermería";
+
     @CreateDateColumn({ name: "fecha_creacion" })
     createdAt: Date;
 
