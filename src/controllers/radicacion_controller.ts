@@ -444,24 +444,33 @@ export async function cirugiasTable(
       .leftJoinAndSelect('seguimientoCups.estadoSeguimientoRelation', 'statusSeguimientoCups')
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect(
-        "cupsRadicados.functionalUnitRelation",
-        "unidadFuncional"
+      "cupsRadicados.functionalUnitRelation",
+      "unidadFuncional"
       )
       .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
       .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
       .leftJoinAndSelect(
-        "cirugias.gestionCirugiasRelation",
-        "gestionAuxiliarCirugia"
+      "cirugias.gestionCirugiasRelation",
+      "gestionAuxiliarCirugia"
       )
       .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento')
       .leftJoinAndSelect(
-        "gestionAuxiliarCirugia.estadoSeguimientoRelation",
-        "statusGestionAuxiliarCirugia"
+      "gestionAuxiliarCirugia.estadoSeguimientoRelation",
+      "statusGestionAuxiliarCirugia"
       )
-      .where("convenio.id <> 1")
-      .andWhere('(servicesGroup.id = 6 OR servicesGroup.id = 9)')
+      .where(qb => {
+        const subQuery = qb.subQuery()
+        .select("MAX(gestion.id)", "maxId")
+        .from("gestion_auxiliar_cirugias", "gestion")
+        .where("gestion.cirugia_id = cirugias.id")
+        .getQuery();
+        return `(cirugias.id IS NULL OR gestionAuxiliarCirugia.id = (${subQuery}))`;
+      })
+      .andWhere("convenio.id <> :convenioId", { convenioId: 1 })
+      .andWhere("servicesGroup.id IN (:...groupIds)", { groupIds: [6, 9] })
+      .andWhere("(gestionAuxiliarCirugia.id IS NULL OR statusGestionAuxiliarCirugia.id NOT IN (:...statusIds))", { statusIds: [3, 4] })
       .orderBy("radicacion.id", "DESC")
       .getMany();
 

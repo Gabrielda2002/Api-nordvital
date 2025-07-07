@@ -4,6 +4,7 @@ import { validate } from "class-validator";
 import { stat } from "fs";
 import { Radicacion } from "../entities/radicacion";
 import { CupsRadicados } from "../entities/cups-radicados";
+import { Profesionales } from "../entities/profesionales";
 
 export async function getAllSurgery(req: Request, res: Response, next: NextFunction){
     try {
@@ -52,6 +53,15 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
             specialist
         } = req.body;
 
+        const specialistEntity = await Profesionales.findOne({
+            where: { id: parseInt(specialist) },
+            select: ["name"]
+        });
+
+        if (!specialistEntity) {
+            return res.status(404).json({ message: "Specialist not found" });
+        }
+
         const surgery = new Cirugias();
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
@@ -61,7 +71,7 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         surgery.radicadoId = parseInt(radicadoId);
         surgery.paraclinicalDate = paraclinicalDate || "0000-00-00";
         surgery.anesthesiologyDate = anesthesiologyDate || "0000-00-00";
-        surgery.specialist = specialist.toUpperCase();
+        surgery.specialist = specialistEntity.name;
 
         const errors = await validate(surgery);
 
