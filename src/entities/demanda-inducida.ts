@@ -196,6 +196,12 @@ export class DemandaInducida extends BaseEntity {
     @IsNotEmpty({ message: "El profesional es requerido" })
     profesional: "Medicina General" | "Enfermería";
 
+    @Column({ name: "numeros_contacto", type: "text", nullable: true })
+    @IsString()
+    @IsNotEmpty({ message: "Los números de contacto son requeridos" })
+    @Length(1, 500, { message: "Los números de contacto deben tener entre 1 y 500 caracteres" })
+    contactNumbers: string;
+
     @CreateDateColumn({ name: "fecha_creacion" })
     createdAt: Date;
 
