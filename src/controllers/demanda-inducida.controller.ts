@@ -9,13 +9,66 @@ export const getAllDemandInduded = async (
   next: NextFunction
 ) => {
   try {
-    const demandInduced = await DemandaInducida.find();
+    const demandInduced = await DemandaInducida.createQueryBuilder("demandInduced")
+      .leftJoinAndSelect("demandInduced.pacienteRelation", "paciente")
+      .leftJoinAndSelect("paciente.documentRelation", "document")
+      .leftJoinAndSelect("demandInduced.elementoRelation", "elemento")
+      .leftJoinAndSelect("demandInduced.tipoRelation", "tipo")
+      .leftJoinAndSelect("demandInduced.objetivoRelation", "objetivo")
+      .leftJoinAndSelect("demandInduced.relacionRelation", "relacion")
+      .leftJoinAndSelect("demandInduced.areaEpsRelation", "areaEps")
+      .leftJoinAndSelect("demandInduced.resumenRelation", "resumen")
+      .leftJoinAndSelect("demandInduced.resultadoRelation", "resultado")
+      .leftJoinAndSelect("demandInduced.motivoRelation", "motivo")
+      .leftJoinAndSelect("demandInduced.areaPersonaRelation", "areaPersona")
+      .leftJoinAndSelect("demandInduced.programaRelation", "programa")
+      .leftJoinAndSelect("demandInduced.personaSeguimientoRelation", "personaSeguimiento")
+      .getMany();
+
+      console.log("Demand Induced Data:", demandInduced);
 
     if (demandInduced.length === 0) {
       return res.status(404).json({ message: "Demand not found" });
     }
 
-    return res.status(200).json(demandInduced);
+    const demandInducedFormatted = demandInduced.map(d => ({
+        id: d.id || "N/A",
+        typeDocument: d.pacienteRelation?.documentRelation?.name || "N/A",
+        document: d.pacienteRelation?.documentNumber || "N/A",
+        dateCreated: d.createdAt || "N/A",
+        elementDI: d.elementoRelation?.name || "N/A",
+        typeElementDI: d.tipoRelation?.name || "N/A",
+        objetive: d.objetivoRelation?.name || "N/A",
+        numbersContact: d.contactNumbers || "N/A",
+        classification: d.clasificacion,
+        perconReceive: d.personaRecibe || "N/A",
+        relationshipUser: d.relacionRelation?.name || "N/A",
+        dateCall: d.fechaLlamada || "N/A",
+        hourCall: d.horaLlamada || "N/A",
+        textCall: d.textoLlamada || "N/A",
+        dificulties: d.dificultadAcceso || "N/A",
+        areaDificulties: d.areaDificultad || "N/A",
+        areaEps: d.areaEpsRelation?.name || "N/A" || "N/A",
+        summaryCall: d.resumenRelation?.name || "N/A",
+        conditionUser: d.condicionPaciente || "N/A",
+        suport: d.soporteRecuperados || "N/A",
+        phoneNumberPatient: d.pacienteRelation?.phoneNumber || "N/A",
+        emailPatient: d.pacienteRelation?.email || "N/A",
+        resultCALL: d.resultadoRelation?.name || "N/A" || "N/A",
+        dateSend: d.fechaEnvio || "N/A",
+        hourSend: d.horaEnvio || "N/A",
+        textSend: d.textEnvio || "N/A",
+        dateVisit: d.fechaVisita || "N/A",
+        sumaryVisit: d.resumenVisita || "N/A",
+        reasonVisit: d.motivoRelation?.name || "N/A" || "N/A",
+        personProcess: `${d.personaSeguimientoRelation?.name} ${d.personaSeguimientoRelation?.lastName}` || "N/A",
+        areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
+        programPerson: d.programaRelation?.name || "N/A",
+        assignmentDate: d.fechaCita || "N/A",
+        profetional: d.profesional || "N/A",
+    }))
+
+    return res.status(200).json(demandInducedFormatted);
   } catch (error) {
     next(error);
   }
