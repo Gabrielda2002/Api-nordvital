@@ -135,6 +135,60 @@ router.put('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId
  */
 router.delete('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId, deleteNotaTecnica);
 
+/**
+ * @swagger
+ * /notas/tecnicas/status:
+ *   put:
+ *     summary: Actualizar estado de notas técnicas desde archivo Excel
+ *     tags: [Notas Técnicas]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo Excel (.xlsx) que contiene la columna 'id_servicio' con los IDs de servicios a actualizar
+ *     responses:
+ *       200:
+ *         description: Estado de las notas técnicas actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de confirmación
+ *                 primerasCincoIds:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                   description: Primeros cinco IDs procesados del archivo
+ *       400:
+ *         description: Error en el archivo o formato incorrecto
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 columnasDisponibles:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Columnas disponibles en el archivo (cuando falta 'id_servicio')
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.put('/notas/tecnicas/status', authenticate, authorizeRoles(['1']), uploadXlsx ,updateNotaTecnicaStatusFromExcel);
 
 export default router;

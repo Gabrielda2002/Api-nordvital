@@ -309,6 +309,54 @@ router.get('/celular/statics/age', authenticate, authorizeRoles(['1']), getPhone
  */
 router.get('/celular/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getPhoneWarrantyStatistics);
 
+/**
+ * @swagger
+ * /search/inventario/celulares:
+ *   get:
+ *     summary: Buscar celulares por nombre, serial o responsable
+ *     tags: [Celulares]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         required: true
+ *         description: Término de búsqueda (mínimo 2 caracteres)
+ *         example: "iPhone"
+ *     responses:
+ *       200:
+ *         description: Celulares encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item:
+ *                     $ref: '#/components/schemas/Celular'
+ *                   departmentId:
+ *                     type: integer
+ *                     description: ID del departamento
+ *                   departmentRelationName:
+ *                     type: string
+ *                     description: Nombre del departamento
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   sedeId:
+ *                     type: integer
+ *                     description: ID de la sede
+ *       400:
+ *         description: Consulta inválida (debe ser una cadena de al menos 2 caracteres)
+ *       404:
+ *         description: No se encontraron celulares que coincidan con la búsqueda
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get('/search/inventario/celulares', authenticate, authorizeRoles(['1']), searchPhone);
 
 export default router;

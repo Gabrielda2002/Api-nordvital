@@ -202,6 +202,55 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  */
 router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), getSgcFoldersFiles);
 
-
+/**
+ * @swagger
+ * /carpetas/{id}/move:
+ *   put:
+ *     summary: Mueve una carpeta a otra ubicación
+ *     tags: [Carpetas]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de la carpeta a mover
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - municipio
+ *               - section
+ *             properties:
+ *               newParentId:
+ *                 type: integer
+ *                 nullable: true
+ *                 description: ID de la carpeta destino (null para mover a raíz)
+ *               municipio:
+ *                 type: integer
+ *                 description: ID del municipio
+ *               section:
+ *                 type: string
+ *                 description: Sección del sistema de gestión de calidad
+ *     responses:
+ *       200:
+ *         description: Carpeta movida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Carpeta'
+ *       400:
+ *         description: Error en los datos proporcionados o no se puede mover la carpeta a una subcarpeta de sí misma
+ *       404:
+ *         description: Carpeta no encontrada o carpeta destino no encontrada
+ *       409:
+ *         description: Ya existe una carpeta con el mismo nombre en la nueva ubicación
+ */
 router.put('/carpetas/:id/move', authenticate, authorizeRoles(['1', '4']), validarId, moveFolder);
+
 export default router;

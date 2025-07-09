@@ -204,8 +204,81 @@ router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),valid
  */
 router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4']),validarId, getDevicesBySede);
 
+/**
+ * @swagger
+ * /dispositivos-red/statistics/headquarters:
+ *   get:
+ *     summary: Obtiene estadísticas de dispositivos por sede
+ *     tags: [Dispositivos de Red]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas de dispositivos por sede
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   count:
+ *                     type: integer
+ *                     description: Cantidad de dispositivos en la sede
+ *       404:
+ *         description: No se encontraron dispositivos
+ */
 router.get('/dispositivos-red/statistics/headquarters', authenticate, authorizeRoles(['1']), getDevicesCountByHeadquarters);
 
+/**
+ * @swagger
+ * /search/dispositivos-red:
+ *   get:
+ *     summary: Buscar dispositivos de red por nombre o serial
+ *     tags: [Dispositivos de Red]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         required: true
+ *         description: Término de búsqueda (mínimo 2 caracteres)
+ *         example: "Switch"
+ *     responses:
+ *       200:
+ *         description: Dispositivos encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item:
+ *                     $ref: '#/components/schemas/DispositivoRed'
+ *                   departmentId:
+ *                     type: integer
+ *                     description: ID del departamento
+ *                   departmentRelationName:
+ *                     type: string
+ *                     description: Nombre del departamento
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   sedeId:
+ *                     type: integer
+ *                     description: ID de la sede
+ *       400:
+ *         description: Consulta inválida (debe ser una cadena de al menos 2 caracteres)
+ *       404:
+ *         description: No se encontraron dispositivos que coincidan con la búsqueda
+ */
 router.get('/search/dispositivos-red', authenticate, authorizeRoles(['1']), searchDevices);
 
 export default router;

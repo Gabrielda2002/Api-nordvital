@@ -1771,6 +1771,340 @@ export const options = {
             },
           },
         },
+        AreaDependencia: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del área dependencia",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del área dependencia",
+            },
+          },
+        },
+        AreaEps: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del área EPS",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del área EPS",
+            },
+          },
+        },
+        AreaPersonaSeguimiento: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del área persona seguimiento",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del área persona seguimiento",
+            },
+          },
+        },
+        Clasificacion: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la clasificación",
+            },
+            name: {
+              type: "string",
+              description: "Nombre de la clasificación",
+            },
+          },
+        },
+        DemandaInducida: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la demanda inducida",
+            },
+            typeDocument: {
+              type: "string",
+              description: "Tipo de documento del paciente",
+            },
+            document: {
+              type: "string",
+              description: "Número de documento del paciente",
+            },
+            dateCreated: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha de creación",
+            },
+            elementDI: {
+              type: "string",
+              description: "Elemento de demanda inducida",
+            },
+            typeElementDI: {
+              type: "string",
+              description: "Tipo de elemento de demanda inducida",
+            },
+            objetive: {
+              type: "string",
+              description: "Objetivo",
+            },
+            numbersContact: {
+              type: "string",
+              description: "Números de contacto",
+            },
+            classification: {
+              type: "string",
+              description: "Clasificación",
+            },
+            perconReceive: {
+              type: "string",
+              description: "Persona que recibe",
+            },
+            relationshipUser: {
+              type: "string",
+              description: "Relación con el usuario",
+            },
+            dateCall: {
+              type: "string",
+              format: "date",
+              description: "Fecha de llamada",
+            },
+            hourCall: {
+              type: "string",
+              description: "Hora de llamada",
+            },
+            textCall: {
+              type: "string",
+              description: "Texto de llamada",
+            },
+            areaEps: {
+              type: "string",
+              description: "Área EPS",
+            },
+            summaryCall: {
+              type: "string",
+              description: "Resumen de llamada",
+            },
+            resultCALL: {
+              type: "string",
+              description: "Resultado de llamada",
+            },
+            profetional: {
+              type: "string",
+              description: "Profesional asignado",
+            },
+          },
+        },
+        ElementoDemandaInducida: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del elemento de demanda inducida",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del elemento de demanda inducida",
+            },
+          },
+        },
+        EstadoIvGeneral: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del estado de inventario general",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del estado de inventario general",
+            },
+          },
+        },
+        Material: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del material",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del material",
+            },
+          },
+        },
+        MotivoVisita: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del motivo de visita",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del motivo de visita",
+            },
+          },
+        },
+        ObjetivoDemandaInducida: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del objetivo de demanda inducida",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del objetivo de demanda inducida",
+            },
+          },
+        },
+        Profesional: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del profesional",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del profesional",
+            },
+          },
+        },
+        Programa: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del programa",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del programa",
+            },
+          },
+        },
+        TipoActivo: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del tipo de activo",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del tipo de activo",
+            },
+          },
+        },
+        TipoArea: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del tipo de área",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del tipo de área",
+            },
+          },
+        },
+        TipoDemandaInducida: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del tipo de demanda inducida",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del tipo de demanda inducida",
+            },
+          },
+        },
+        RegistroEntrada: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del registro de entrada",
+            },
+            userName: {
+              type: "string",
+              description: "Nombre del usuario",
+            },
+            userLastName: {
+              type: "string",
+              description: "Apellido del usuario",
+            },
+            documentNumber: {
+              type: "integer",
+              description: "Número de documento del usuario",
+            },
+            headquarters: {
+              type: "string",
+              description: "Nombre de la sede",
+            },
+            registerDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha de registro",
+            },
+            hourRegister: {
+              type: "string",
+              description: "Hora de registro",
+            },
+          },
+        },
+        RelacionUsuario: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la relación usuario",
+            },
+            name: {
+              type: "string",
+              description: "Nombre de la relación usuario",
+            },
+          },
+        },
+        ResultadoLlamada: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del resultado de llamada",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del resultado de llamada",
+            },
+          },
+        },
+        ResumenSeguimientoActividad: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del resumen de seguimiento de actividad",
+            },
+            name: {
+              type: "string",
+              description: "Nombre del resumen de seguimiento de actividad",
+            },
+          },
+        },
       },
     },
     tags: [
@@ -2007,7 +2341,83 @@ export const options = {
       {
         name: 'SeguimientoTelevisor',
         description: "Endpoints para la gestión de seguimiento de televisores",
-      }
+      },
+      {
+        name: "Area Dependencia",
+        description: "Endpoints para la gestión de áreas de dependencia",
+      },
+      {
+        name: "Area EPS",
+        description: "Endpoints para la gestión de áreas EPS",
+      },
+      {
+        name: "Area Persona Seguimiento",
+        description: "Endpoints para la gestión de áreas persona seguimiento",
+      },
+      {
+        name: "Clasificaciones",
+        description: "Endpoints para la gestión de clasificaciones",
+      },
+      {
+        name: "Demanda Inducida",
+        description: "Endpoints para la gestión de demanda inducida",
+      },
+      {
+        name: "Elementos Demanda Inducida",
+        description: "Endpoints para la gestión de elementos de demanda inducida",
+      },
+      {
+        name: "Estados Inventario General",
+        description: "Endpoints para la gestión de estados de inventario general",
+      },
+      {
+        name: "Materiales",
+        description: "Endpoints para la gestión de materiales",
+      },
+      {
+        name: "Motivos Visita",
+        description: "Endpoints para la gestión de motivos de visita",
+      },
+      {
+        name: "Objetivos Demanda Inducida",
+        description: "Endpoints para la gestión de objetivos de demanda inducida",
+      },
+      {
+        name: "Profesionales",
+        description: "Endpoints para la gestión de profesionales",
+      },
+      {
+        name: "Programas",
+        description: "Endpoints para la gestión de programas",
+      },
+      {
+        name: "Tipos Activo",
+        description: "Endpoints para la gestión de tipos de activo",
+      },
+      {
+        name: "Tipos Área",
+        description: "Endpoints para la gestión de tipos de área",
+      },
+      {
+        name: "Tipos Demanda Inducida",
+        description: "Endpoints para la gestión de tipos de demanda inducida",
+      },
+      {
+        name: "Registro Entrada",
+        description: "Endpoints para la gestión de registros de entrada",
+      },
+      {
+        name: "Relaciones Usuario",
+        description: "Endpoints para la gestión de relaciones de usuario",
+      },
+      {
+        name: "Resultados Llamada",
+        description: "Endpoints para la gestión de resultados de llamada",
+      },
+      {
+        name: "Resúmenes Seguimiento Actividad",
+        description: "Endpoints para la gestión de resúmenes de seguimiento de actividad",
+      },
     ],
   },
   apis: ["./src/routes/*.ts"],
