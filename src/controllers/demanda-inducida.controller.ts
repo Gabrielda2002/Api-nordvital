@@ -23,6 +23,7 @@ export const getAllDemandInduded = async (
       .leftJoinAndSelect("demandInduced.areaPersonaRelation", "areaPersona")
       .leftJoinAndSelect("demandInduced.programaRelation", "programa")
       .leftJoinAndSelect("demandInduced.personaSeguimientoRelation", "personaSeguimiento")
+      .orderBy("demandInduced.createdAt", "DESC")
       .getMany();
 
       console.log("Demand Induced Data:", demandInduced);
@@ -52,6 +53,7 @@ export const getAllDemandInduded = async (
         summaryCall: d.resumenRelation?.name || "N/A",
         conditionUser: d.condicionPaciente || "N/A",
         suport: d.soporteRecuperados || "N/A",
+        namePatient: d.pacienteRelation?.name || "N/A",
         phoneNumberPatient: d.pacienteRelation?.phoneNumber || "N/A",
         emailPatient: d.pacienteRelation?.email || "N/A",
         resultCALL: d.resultadoRelation?.name || "N/A" || "N/A",
