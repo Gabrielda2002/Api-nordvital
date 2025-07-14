@@ -9,23 +9,22 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
         .where("goal.activo = true")
-        .select([
-            "goal.id",
-            "goal.meta",
-            "goal.año",
-            "goal.mes",
-            "program.id",
-            "program.name",
-            "goal.createdAt",
-        ])
         .orderBy("program.name", "ASC")
         .getMany();
         
         if (!programs || programs.length === 0) {
             return res.status(404).json({ message: "No se encontraron metas activas." });
         }
+        
+        const programsFormatted = programs.map(g => ({
+            id: g.id,
+            program: g.programaRelation?.name || "N/A",
+            goal: g.meta,
+            year: g.año,
+            month: g.mes,
+        }))
 
-        return res.status(200).json(programs);
+        return res.status(200).json(programsFormatted);
 
     } catch (error) {
         next(error);
