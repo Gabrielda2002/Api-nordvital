@@ -328,6 +328,52 @@ router.get('/tv/statics/age', authenticate, authorizeRoles(['1']), getTvAgeByHea
  */
 router.get('/tv/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getTvWarrantyStatistics);
 
+/**
+ * @swagger
+ * /search/inventario/televisores:
+ *   get:
+ *     summary: Búsqueda global de televisores
+ *     tags: [Televisores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Término de búsqueda (mínimo 2 caracteres)
+ *     responses:
+ *       200:
+ *         description: Televisores encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item:
+ *                     $ref: '#/components/schemas/Televisor'
+ *                   departmentId:
+ *                     type: integer
+ *                     description: ID del departamento
+ *                   departmentRelationName:
+ *                     type: string
+ *                     description: Nombre del departamento
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   sedeId:
+ *                     type: integer
+ *                     description: ID de la sede
+ *       400:
+ *         description: Consulta inválida
+ *       404:
+ *         description: No se encontraron televisores
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get('/search/inventario/televisores', authenticate, authorizeRoles(['1']), searchTv);
 
 export default router;

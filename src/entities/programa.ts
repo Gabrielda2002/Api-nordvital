@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { DemandaInducida } from "./demanda-inducida";
+import { ProgramaMetaHistorico } from "./programa-meta-historico";
 @Entity({ name: "programa" })
 export class Programa extends BaseEntity {
 
@@ -21,4 +22,6 @@ export class Programa extends BaseEntity {
     @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.programaRelation)
     demandaInducidaRelation: DemandaInducida[];
 
+    @OneToMany(() => ProgramaMetaHistorico, (metaHistorico) => metaHistorico.programaRelation)
+    metaHistoricoRelation: ProgramaMetaHistorico[];
 }

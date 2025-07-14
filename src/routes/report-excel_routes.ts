@@ -233,6 +233,44 @@ router.post(
   getReportBreakesActive
 );
 
+/**
+ * @swagger
+ * /api/v1/report/excel/biometric:
+ *   post:
+ *     summary: Descarga reporte de registros biométricos en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Parámetros inválidos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post(
   "/report/excel/biometric",
   authenticate,
@@ -240,6 +278,46 @@ router.post(
   getReportBiometric
 );
 
+/**
+ * @swagger
+ * /api/v1/report/tickets:
+ *   post:
+ *     summary: Descarga reporte de tickets de mesa de ayuda en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: No se encontraron tickets en el rango de fechas especificado
+ *       400:
+ *         description: Parámetros inválidos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post(
   "/report/tickets"
   , authenticate

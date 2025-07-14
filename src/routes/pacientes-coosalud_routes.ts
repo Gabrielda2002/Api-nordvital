@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createPatientCoosalud, deletePatientCoosalud, getAllPatientsCoosalud, getPatientByIdentificationCoosalud, updatePatientCoosalud, updatePatientsStatusFromExcel } from "../controllers/pacientes-coosalud_controller";
+import { createPatientCoosalud, deletePatientCoosalud, getAllPatientsCoosalud, getPatientByIdentificationCoosalud, updatePatientCoosalud, updatePatientsStatusFromExcel, updatePatientsRegimenFromExcel } from "../controllers/pacientes-coosalud_controller";
 import { validarId } from "../middlewares/validar-id";
 import { uploadXlsx } from "../middlewares/upload-xlsx-PS";
 
@@ -20,5 +20,7 @@ router.delete('/pacientes-coosalud/:id', authenticate, authorizeRoles([ '1']),va
 router.post('/paciente-identificacion', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18']), getPatientByIdentificationCoosalud)
 
 router.put('/patients/status', authenticate, authorizeRoles(['1']), uploadXlsx, updatePatientsStatusFromExcel)
+
+router.put('/patients/regimen', authenticate, authorizeRoles(['1']), uploadXlsx, updatePatientsRegimenFromExcel)
 
 export default router

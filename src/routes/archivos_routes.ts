@@ -205,6 +205,65 @@ router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId,
  */
 router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']),validarId, downloadFile);
 
+/**
+ * @swagger
+ * /archivos/{id}/move:
+ *   put:
+ *     summary: Mueve un archivo a otra carpeta
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Archivos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del archivo a mover
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newParentId
+ *             properties:
+ *               newParentId:
+ *                 type: integer
+ *                 description: ID de la carpeta destino
+ *     responses:
+ *       200:
+ *         description: Archivo movido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 movedFiles:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Archivo'
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     totalFiles:
+ *                       type: integer
+ *                     movedFilesCount:
+ *                       type: integer
+ *                     errorsCount:
+ *                       type: integer
+ *       400:
+ *         description: Error en los datos proporcionados
+ *       404:
+ *         description: Archivo o carpeta destino no encontrado
+ *       207:
+ *         description: Operación parcialmente exitosa (algunos archivos movidos, otros con errores)
+ */
 router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), validarId, moveFile);
 
 export default router;

@@ -121,7 +121,6 @@ router.post("/especialidades", authenticate, authorizeRoles(['1', '2']), createE
  */
 router.put("/especialidades/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateEspecialidad);
 
-
 /**
  * @swagger
  * /especialidades/{id}:

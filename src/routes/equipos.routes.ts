@@ -208,16 +208,224 @@ router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, de
  */
 router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4']), validarId, getEquipmentBySede);
 
+/**
+ * @swagger
+ * /equipments/statics/typeEquipment:
+ *   get:
+ *     summary: Obtiene estadísticas de equipos por tipo
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Distribución de equipos por tipo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   typeEquipment:
+ *                     type: string
+ *                     description: Tipo de equipo
+ *                   count:
+ *                     type: integer
+ *                     description: Cantidad de equipos de este tipo
+ *       404:
+ *         description: No se encontraron equipos
+ */
 router.get('/equipments/statics/typeEquipment', authenticate, authorizeRoles(['1']), getEquipmentTypeDistribution);
 
+/**
+ * @swagger
+ * /equipments/statics/headquarters:
+ *   get:
+ *     summary: Obtiene estadísticas de equipos por sede
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Distribución de equipos por sede
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   count:
+ *                     type: integer
+ *                     description: Cantidad de equipos en la sede
+ *       404:
+ *         description: No se encontraron equipos
+ */
 router.get('/equipments/statics/headquarters', authenticate, authorizeRoles(['1']), getEquipmentHeadquartersDistribution);
 
+/**
+ * @swagger
+ * /equipments/statics/age:
+ *   get:
+ *     summary: Obtiene estadísticas de antigüedad de equipos
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas de antigüedad de equipos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 distribution:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       label:
+ *                         type: string
+ *                         description: Rango de antigüedad
+ *                       value:
+ *                         type: integer
+ *                         description: Cantidad de equipos en ese rango
+ *                 averageAge:
+ *                   type: object
+ *                   properties:
+ *                     days:
+ *                       type: integer
+ *                       description: Promedio de antigüedad en días
+ *                     months:
+ *                       type: integer
+ *                       description: Promedio de antigüedad en meses
+ *                     years:
+ *                       type: string
+ *                       description: Promedio de antigüedad en años
+ *       404:
+ *         description: No se encontraron equipos
+ */
 router.get('/equipments/statics/age', authenticate, authorizeRoles(['1']), getEquipmentAgeBySede);
 
+/**
+ * @swagger
+ * /equipments/statics/warrantyExpiration:
+ *   get:
+ *     summary: Obtiene estadísticas de expiración de garantía
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas de garantía de equipos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   description: Total de equipos
+ *                 inWarranty:
+ *                   type: integer
+ *                   description: Cantidad de equipos en garantía
+ *                 percentage:
+ *                   type: string
+ *                   description: Porcentaje de equipos en garantía
+ *                 expiringSoon:
+ *                   type: object
+ *                   properties:
+ *                     count:
+ *                       type: integer
+ *                       description: Cantidad de equipos con garantía próxima a vencer
+ *                     equiment:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Equipo'
+ *       404:
+ *         description: No se encontraron equipos
+ */
 router.get('/equipments/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getEquipmentWarrantyStatistics);
 
+/**
+ * @swagger
+ * /equipments/statics/withLock:
+ *   get:
+ *     summary: Obtiene estadísticas de equipos con candado
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas de equipos con candado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   description: Total de equipos
+ *                 withLock:
+ *                   type: integer
+ *                   description: Cantidad de equipos con candado
+ *                 percentage:
+ *                   type: string
+ *                   description: Porcentaje de equipos con candado
+ *       404:
+ *         description: No se encontraron equipos
+ */
 router.get('/equipments/statics/withLock', authenticate, authorizeRoles(['1']), getEquipmentLockStatistics);
 
+/**
+ * @swagger
+ * /search/equipos:
+ *   get:
+ *     summary: Buscar equipos por nombre, serial, marca, modelo o responsable
+ *     tags: [Equipos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         required: true
+ *         description: Término de búsqueda (mínimo 2 caracteres)
+ *         example: "Dell"
+ *     responses:
+ *       200:
+ *         description: Equipos encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item:
+ *                     $ref: '#/components/schemas/Equipo'
+ *                   departmentId:
+ *                     type: integer
+ *                     description: ID del departamento
+ *                   departmentRelationName:
+ *                     type: string
+ *                     description: Nombre del departamento
+ *                   sedeId:
+ *                     type: integer
+ *                     description: ID de la sede
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *       400:
+ *         description: Consulta inválida (debe ser una cadena de al menos 2 caracteres)
+ *       404:
+ *         description: No se encontraron equipos que coincidan con la búsqueda
+ */
 router.get('/search/equipos', authenticate, authorizeRoles(['1']), searchEquipmentGlobal);
 
 export default router;

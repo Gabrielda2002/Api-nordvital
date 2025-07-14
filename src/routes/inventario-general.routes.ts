@@ -194,6 +194,54 @@ router.get('/inventario/general/statistics/age', authenticate, authorizeRoles(['
  */
 router.get('/inventario/general/statistics/headquarters', authenticate, authorizeRoles(['1', '6']), getInventoryGeneralByHeadquartersStatistics);
 
+/**
+ * @swagger
+ * /search/inventario/general:
+ *   get:
+ *     summary: Buscar registros del inventario general por nombre, serial o responsable
+ *     tags: [Inventario General]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         required: true
+ *         description: Término de búsqueda (mínimo 2 caracteres)
+ *         example: "Monitor"
+ *     responses:
+ *       200:
+ *         description: Registros encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item:
+ *                     $ref: '#/components/schemas/InventarioGeneral'
+ *                   departmentId:
+ *                     type: integer
+ *                     description: ID del departamento
+ *                   departmentRelationName:
+ *                     type: string
+ *                     description: Nombre del departamento
+ *                   sedeName:
+ *                     type: string
+ *                     description: Nombre de la sede
+ *                   sedeId:
+ *                     type: integer
+ *                     description: ID de la sede
+ *       400:
+ *         description: La consulta debe tener al menos 2 caracteres.
+ *       404:
+ *         description: No se encontraron registros.
+ *       500:
+ *         description: Error interno del servidor.
+ */
 router.get('/search/inventario/general', authenticate, authorizeRoles(['1', '6']), searchInventoryGeneral);
 
 export default router;
