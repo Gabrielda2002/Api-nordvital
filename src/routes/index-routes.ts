@@ -80,6 +80,7 @@ import reasonVisitRoutes from './motivo-visita.route';
 import professionalRoutes from './profesionales.route';
 import programsRoutes from './programa.route';
 import demandInducedRoutes from './demanda-inducida.routes';
+import goalsRoutes from './programa-meta-historico.routes';
 
 const router = Router();
 
@@ -164,5 +165,6 @@ router.use(reasonVisitRoutes);
 router.use(professionalRoutes);
 router.use(programsRoutes);
 router.use(demandInducedRoutes);
+router.use(goalsRoutes);
 
 export default router;
