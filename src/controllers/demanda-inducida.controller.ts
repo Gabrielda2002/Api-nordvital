@@ -26,12 +26,6 @@ export const getAllDemandInduded = async (
       .orderBy("demandInduced.createdAt", "DESC")
       .getMany();
 
-      console.log("Demand Induced Data:", demandInduced);
-
-    if (demandInduced.length === 0) {
-      return res.status(404).json({ message: "Demand not found" });
-    }
-
     const demandInducedFormatted = demandInduced.map(d => ({
         id: d.id || "N/A",
         typeDocument: d.pacienteRelation?.documentRelation?.name || "N/A",
