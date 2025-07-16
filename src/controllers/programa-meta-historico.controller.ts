@@ -34,36 +34,20 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const { programId, goal } = req.body;
+        const { program :id, goal } = req.body;
 
         const yearNow = new Date().getFullYear();
         const monthNow = new Date().getMonth() + 1;
 
-        if (!programId || !goal) {
+        if (!id || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
         }
 
-        // const newGoal = new ProgramaMetaHistorico();
-        // newGoal.programaId = programId;
-        // newGoal.meta = goal;
-        // newGoal.año = yearNow;
-        // newGoal.mes = monthNow;
-        // newGoal.activo = true;
-
-        // const errors = await validate(newGoal);
-        // if (errors.length > 0) {
-        //     const message = errors.map(err => ({
-        //         property: err.property,
-        //         constraints: err.constraints
-        //     }));
-        //     return res.status(400).json({ message: "Validation failed", errors: message });
-        // }
-
-        const savedGoal = ProgramaMetaService.setGoalMonth(
-            programId,
+        const savedGoal = await ProgramaMetaService.setGoalMonth(
+            id,
             goal,
             yearNow,
-            monthNow  
+            monthNow
         );
         
         return res.status(201).json(savedGoal);
