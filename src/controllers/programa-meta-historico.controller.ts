@@ -12,10 +12,6 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         .orderBy("program.name", "ASC")
         .getMany();
         
-        if (!programs || programs.length === 0) {
-            return res.status(404).json({ message: "No se encontraron metas activas." });
-        }
-        
         const programsFormatted = programs.map(g => ({
             id: g.id,
             program: g.programaRelation?.name || "N/A",
