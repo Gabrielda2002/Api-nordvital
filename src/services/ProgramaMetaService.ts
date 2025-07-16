@@ -17,29 +17,58 @@ export class ProgramaMetaService {
       .getOne();
 
     if (goalExist) {
-      goalExist.meta = goal;
-      goalExist.activo = true;
-      return await goalExist.save();
-    } else {
-      const newGoal = new ProgramaMetaHistorico();
-      newGoal.programaId = programId;
-      newGoal.meta = goal;
-      newGoal.año = year;
-      newGoal.mes = month;
-      newGoal.activo = true;
+      throw new Error("Goal for this month already exists.");
+    }
 
-        const errors = await validate(newGoal);
+    const newGoal = new ProgramaMetaHistorico();
+    newGoal.programaId = programId;
+    newGoal.meta = goal;
+    newGoal.año = year;
+    newGoal.mes = month;
+    newGoal.activo = true;
+
+    const errors = await validate(newGoal);
 
     if (errors.length > 0) {
-        const message = errors.map(err => ({
-            property: err.property,
-            constraints: err.constraints
-        }));
-        throw new Error(`Validation failed: ${message}`);
+      const message = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+      throw new Error(`Validation failed: ${message}`);
     }
 
-      return await newGoal.save();
+    return await newGoal.save();
+  }
+
+  static async updateGoalMonth(
+    programId: number,
+    goal: number,
+    year: number,
+    month: number
+  ): Promise<ProgramaMetaHistorico> {
+    const goalExist = await ProgramaMetaHistorico.createQueryBuilder("goal")
+      .where("goal.programaId = :programId", { programId })
+      .andWhere("goal.año = :year", { year })
+      .andWhere("goal.mes = :month", { month })
+      .andWhere("goal.activo = true")
+      .getOne();
+
+    if (!goalExist) {
+      throw new Error("Goal for this month does not exist.");
     }
+
+    goalExist.meta = goal;
+
+    const errors = await validate(goalExist);
+    if (errors.length > 0) {
+      const message = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+      throw new Error(`Validation failed: ${message}`);
+    }
+
+    return await goalExist.save();
   }
 
   static async getGoalMonth(
