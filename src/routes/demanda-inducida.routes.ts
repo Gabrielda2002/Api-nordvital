@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createDemandInduced, getAllDemandInduded } from "../controllers/demanda-inducida.controller";
+import { createDemandInduced, getAllDemandInduded, getEstadisticasDemandaInducida } from "../controllers/demanda-inducida.controller";
 
 const router = Router();
 
@@ -234,5 +234,7 @@ router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20']),
  *         description: Paciente no encontrado
  */
 router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20']), createDemandInduced);
+
+router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20']), getEstadisticasDemandaInducida);
 
 export default router;
