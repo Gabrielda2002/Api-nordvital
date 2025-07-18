@@ -30,6 +30,9 @@ export class ProgramaMetaHistorico extends BaseEntity {
     @Column({ name: "activo", type: "boolean", default: true })
     activo: boolean;
 
+    @Column({ name: "profesional", type: "enum", enum: ['Medicina General', 'Enfermería'], default: 'Medicina General' })
+    professional: 'Medicina General' | 'Enfermería';
+
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
 

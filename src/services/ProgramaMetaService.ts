@@ -4,16 +4,19 @@ import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 
 export class ProgramaMetaService {
+
   static async setGoalMonth(
     programId: number,
     goal: number,
     year: number,
-    month: number
+    month: number,
+    professional: string
   ): Promise<ProgramaMetaHistorico> {
     const goalExist = await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
+      .andWhere("goal.professional = :profesional", { profesional: professional })
       .getOne();
 
     if (goalExist) {
@@ -26,6 +29,7 @@ export class ProgramaMetaService {
     newGoal.año = year;
     newGoal.mes = month;
     newGoal.activo = true;
+    newGoal.professional = professional as 'Medicina General' | 'Enfermería';
 
     const errors = await validate(newGoal);
 
@@ -44,12 +48,14 @@ export class ProgramaMetaService {
     programId: number,
     goal: number,
     year: number,
-    month: number
+    month: number,
+    professional: string
   ): Promise<ProgramaMetaHistorico> {
     const goalExist = await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
+      .andWhere("goal.profesional = :profesional", { profesional: professional })
       .andWhere("goal.activo = true")
       .getOne();
 

@@ -18,6 +18,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
             goal: g.meta,
             year: g.año,
             month: g.mes,
+            professional: g.professional,
         }))
 
         return res.status(200).json(programsFormatted);
@@ -30,7 +31,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const { program :id, goal } = req.body;
+        const { program :id, goal, professional } = req.body;
 
         const yearNow = new Date().getFullYear();
         const monthNow = new Date().getMonth() + 1;
@@ -43,7 +44,8 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
             id,
             goal,
             yearNow,
-            monthNow
+            monthNow,
+            professional
         );
         
         return res.status(201).json(savedGoal);
