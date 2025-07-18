@@ -397,7 +397,7 @@ async function getStatisticsCallNotEffective(
   mes: string,
   metaValue: number
 ) {
-  const query = DemandaInducida.createQueryBuilder("demanda")
+  const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("demanda.resultadoRelation", "resultado")
     .select([
@@ -406,26 +406,18 @@ async function getStatisticsCallNotEffective(
       "demanda.profesional as profesional",
       "COUNT(*) as cantidad",
     ])
-    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 }) // Llamadas telefónicas
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 })
     .andWhere("demanda.clasificacion = :clasificacion", {
       clasificacion: false,
-    }) // No efectivas
+    })
     .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
-    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes });
-
-  if (programaId && programaId !== "todos") {
-    query.andWhere("demanda.programaId = :programaId", { programaId });
-  }
-
-  if (profesional && profesional !== "todos") {
-    query.andWhere("demanda.profesional = :profesional", { profesional });
-  }
-
-  const resultados = await query
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    // .andWhere("demanda.programaId = :programaId", { programaId })
+    .andWhere("demanda.profesional = :profesional", { profesional })
     .groupBy("programa.name, resultado.name, demanda.profesional")
     .getRawMany();
 
-  return resultados.map((resultado) => ({
+  return query.map((resultado) => ({
     programa: resultado.programa,
     resultadoLlamada: resultado.resultadoLlamada,
     profesional: resultado.profesional,
@@ -436,5 +428,3 @@ async function getStatisticsCallNotEffective(
         : 0,
   }));
 }
-
-// ...existing code...
