@@ -98,7 +98,7 @@ export async function downloadReportExcel(
         Fecha_de_orden: data.orderDate || "N/A",
         Lugar_de_radicacion: data.placeRelation?.name || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.profetional || "N/A",
+        Profesional: data.idProfesional === 0 ? data.profetional : data.profesionalesRelation?.name,
         Especialidad: data.specialtyRelation?.name || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
@@ -179,6 +179,7 @@ export async function downloadReportExcelFilter(
       req.body;
 
     const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.documentRelation", "tipo_documento")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
@@ -294,7 +295,7 @@ export async function downloadReportExcelFilter(
         Fecha_de_orden: data.orderDate || "N/A",
         Lugar_de_radicacion: data.placeRelation?.name || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.profetional || "N/A",
+        Profesional: data.idProfesional === 0 ? data.profetional : data.profesionalesRelation?.name,
         Especialidad: data.specialtyRelation?.name || "N/A",
         codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
         descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
@@ -639,6 +640,7 @@ export async function reportExcelRadicacion(
     const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
 
     const query = await Radicacion.createQueryBuilder("radicacion")
+      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.documentRelation", "tipo_documento")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
@@ -678,7 +680,7 @@ export async function reportExcelRadicacion(
 
     const data = await query.getMany();
 
-    // Crear workbook y worksheet
+    // Crear workbook y workshee
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte CUPS");
 
@@ -748,7 +750,7 @@ export async function reportExcelRadicacion(
         Fecha_de_orden: data.orderDate || "N/A",
         Lugar_de_radicacion: data.placeRelation?.name || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.profetional || "N/A",
+        Profesional: data.idProfesional === null ? data.profetional : data.profesionalesRelation?.name,
         Especialidad: data.specialtyRelation?.name || "N/A",
         codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
         descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
