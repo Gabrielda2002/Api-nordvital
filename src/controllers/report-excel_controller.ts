@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { RegistroEntrada } from "../entities/registro-entrada";
 import { Tickets } from "../entities/tickets";
+import { DemandaInducida } from "../entities/demanda-inducida";
 
 export async function downloadReportExcel(
   req: Request,
@@ -166,8 +167,6 @@ export async function downloadReportExcel(
     next(error);
   }
 }
-
-// *  reporte excel con filtros de fecha e auditora, fecha de radicado y codigo cups
 
 export async function downloadReportExcelFilter(
   req: Request,
@@ -1180,6 +1179,167 @@ export async function getReportTickets(
     await workbook.xlsx.write(res);
 
     res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function reportDemandInduced(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await DemandaInducida.createQueryBuilder("demandas_inducidas")
+      .leftJoinAndSelect("demandas_inducidas.pacienteRelation", "paciente")
+      .leftJoinAndSelect("paciente.documentRelation", "tipo_documento")
+      .leftJoinAndSelect("demandas_inducidas.elementoRelation", "elemento")
+      .leftJoinAndSelect("demandas_inducidas.tipoRelation", "tipo_elemento")
+      .leftJoinAndSelect("demandas_inducidas.objetivoRelation", "objetivo")
+      .leftJoinAndSelect("demandas_inducidas.relacionRelation", "relacion_usuario")
+      .leftJoinAndSelect("demandas_inducidas.areaEpsRelation", "area_eps")
+      .leftJoinAndSelect("demandas_inducidas.resumenRelation", "resumen_seguimiento")
+      .leftJoinAndSelect("demandas_inducidas.resultadoRelation", "resultado_llamada")
+      .leftJoinAndSelect("demandas_inducidas.motivoRelation", "motivo")
+      .leftJoinAndSelect("demandas_inducidas.areaPersonaRelation", "area_persona")
+      .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
+      .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
+      .orderBy("demandas_inducidas.createdAt", "DESC");
+
+      if (dateStart && dateEnd) {
+        query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
+          start: dateStart,
+          end: dateEnd
+        });
+      }
+
+      const data = await query.getMany();
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
+
+      worksheet.columns = [
+        { header: "Tipo de documento", key: "tipo_documento", width: 20 },
+        { header: "Número de identificación", key: "numero_identificacion", width: 20 },
+        { header: "Fecha de actividad demanda inducida", key: "fecha_actividad", width: 20 },
+        { header: "Elemento demanda inducida", key: "elemento_demanda", width: 30 },
+        { header: "Tipo de elemento demanda inducida", key: "tipo_elemento", width: 30 },
+        { header: "Objetivo", key: "objetivo", width: 30 },
+        { header: "Número de telefono con el que se establece el contacto", key: "numero_telefono_contacto", width: 20 },
+        { header: "Clasificación del seguimiento", key: "clasificacion_seguimiento", width: 30 },
+        { header: "Persona que recibe la llamada", key: "persona_recibe_llamada", width: 30 },
+        { header: "Relación con el usuario", key: "relacion_usuario", width: 30 },
+        { header: "Fecha de llamada o sala de espera", key: "fecha_llamada", width: 20 },
+        { header: "hora de llamada o sala de espera", key: "hora_llamada", width: 20 },
+        { header: "Texto de la llamada o sala de espera", key: "texto_llamada", width: 30 },
+        { header: "Presenta barreras o dificultades para el acceso al tratamiento?", key: "barreras_acceso", width: 30 },
+        { header: "Area con la que presenta la dificultad?", key: "area_dificultad", width: 30 },
+        { header: "Area de la EPS", key: "area_eps", width: 30 },
+        { header: "Resumen de las actividades realizadas durante el seguimiento", key: "resumen_actividades", width: 30 },
+        { header: "Condición final usuario", key: "condicion_final_usuario", width: 30 },
+        { header: "Soportes recuperadosa", key: "soportes_recuperados", width: 30 },
+        { header: "Departamento", key: "departamento", width: 20 },
+        { header: "Municipio", key: "municipio", width: 20 },
+        { header: "Barrio o vereda", key: "barrio_vereda", width: 20 },
+        { header: "Número telefono", key: "numero_telefono", width: 20 },
+        { header: "Correo electronico", key: "correo_electronico", width: 30 },
+        { header: "Resultado de llamada o sala de espera", key: "resultado_llamada", width: 30 },
+        { header: "Fecha de envío", key: "fecha_envio", width: 30 },
+        { header: "Hora de envío", key: "hora_envio", width: 30 },
+        { header: "Texto del mensaje", key: "texto_mensaje", width: 30 },
+        { header: "Fecha de visita", key: "fecha_visita", width: 30 },
+        { header: "Resumen de visita", key: "resumen_visita", width: 30 },
+        { header: "Motivo de visita no efectiva", key: "motivo_visita_no_efectiva", width: 30 },
+        { header: "Persona que realiza el seguimiento", key: "persona_seguimiento", width: 30 },
+        { header: "Área", key: "area_persona", width: 30 },
+        { header: "Programa", key: "programa", width: 30 },
+        { header: "Fecha de asignacion de cita", key: "fecha_asignacion_cita", width: 30 },
+      ];
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          message: "Demand Induced Not Found.",
+        });
+      }
+
+      data.forEach((d)=> {
+
+        const row = {
+          tipo_documento: d.pacienteRelation?.documentRelation?.name || "",
+          numero_identificacion: d.pacienteRelation?.documentNumber || "",
+          fecha_actividad: d.createdAt ? formatInTimeZone(
+            new Date(d.createdAt),
+            "America/Bogota",
+            "yyyy-MM-dd HH:mm:ss"
+          ) : "",
+          elemento_demanda: d.elementoRelation?.name || "",
+          tipo_elemento: d.tipoRelation?.name || "",
+          objetivo: d.objetivoRelation?.name || "",
+          numero_telefono_contacto: d.contactNumbers || "",
+          clasificacion_seguimiento: d.clasificacion ? "Efectivo" : "No Efectivo",
+          persona_recibe_llamada: d.personaRecibe || "",
+          relacion_usuario: d.relacionRelation?.name || "",
+          fecha_llamada: d.fechaLlamada ? formatInTimeZone(
+            new Date(d.fechaLlamada),
+            "America/Bogota",
+            "yyyy-MM-dd"
+          ) : "",
+          hora_llamada: d.horaLlamada || "",
+          texto_llamada: d.textoLlamada || "",
+          barreras_acceso: d.dificultadAcceso ? "Si" : "No",
+          area_dificultad: d.areaDificultad || "",
+          area_eps: d.areaEpsRelation?.name || "",
+          resumen_actividades: d.resumenRelation?.name || "",
+          condicion_final_usuario: d.resultadoRelation?.name || "",
+          soportes_recuperados: d.soporteRecuperados || "",
+          departamento: "",
+          municipio: "",
+          barrio_vereda: "",
+          numero_telefono: "",
+          correo_electronico: "",
+          resultado_llamada: d.resultadoRelation?.name || "",
+          fecha_envio: d.fechaEnvio ? formatInTimeZone(
+            new Date(d.fechaEnvio),
+            "America/Bogota",
+            "yyyy-MM-dd"
+          ) : "",
+          hora_envio: d.horaEnvio || "",
+          texto_mensaje: d.textEnvio || "",
+          fecha_visita: d.fechaVisita ? formatInTimeZone(
+            new Date(d.fechaVisita),
+            "America/Bogota",
+            "yyyy-MM-dd"
+          ) : "",
+          resumen_visita: d.resumenRelation?.name || "",
+          motivo_visita_no_efectiva: d?.motivoRelation?.name || "",
+          persona_seguimiento: d.areaPersonaRelation?.name || "",
+          area_persona: d.areaPersonaRelation?.name || "",
+          programa: d.programaRelation?.name || "",
+          fecha_asignacion_cita: d.fechaCita ? formatInTimeZone(
+            new Date(d.fechaCita),
+            "America/Bogota",
+            "yyyy-MM-dd"
+          ) : "",
+        }
+        worksheet.addRow(row);
+      });
+
+      const fileName = `Reporte_Demandas_Inducidas_${randomBytes(4).toString(
+        "hex"
+      )}.xlsx`;
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+      await workbook.xlsx.write(res);
+
+      res.end();
   } catch (error) {
     next(error);
   }

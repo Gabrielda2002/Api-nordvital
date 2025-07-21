@@ -7,6 +7,7 @@ import {
   getReportBiometric,
   getReportBreakesActive,
   getReportTickets,
+  reportDemandInduced,
   reporteGestionAuxiliar,
   reportExcelCirugias,
   reportExcelCirugiasFiltros,
@@ -323,6 +324,13 @@ router.post(
   , authenticate
   , authorizeRoles(["1"])
   , getReportTickets
+)
+
+router.post(
+  "/reporte/demanda/inducida"
+  , authenticate
+  , authorizeRoles(["1", "19", "20"])
+  , reportDemandInduced
 )
 
 export default router;
