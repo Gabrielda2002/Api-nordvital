@@ -278,15 +278,93 @@ export async function getEstadisticasDemandaInducida(
         metaValue
       );
 
+    // 4. Cantidad de registros demanda inducida por programa por mes y por año
+    const cantidadDemandInduced = await getQuantityDemandInducedByProgram(
+      profesional,
+      programaId,
+      año,
+      mes,
+      elementoId
+    );
+
+    // 5. Estadísticas resultados de llamadas no efectivas
+    const estResultadoLlamadasNoEfectivas = await getStatisticsResultCallsNotEffective(
+      programaId,
+      profesional,
+      elementoId,
+      año,
+      mes
+    );
+
     return res.status(200).json({
       meta: metaValue,
-      estadisticasPorPrograma,
+      // estadisticasPorPrograma,
       estadisticasLlamadasTelefonicas,
-      estadisticasLlamadasNoEfectivas,
-    });
+      // estadisticasLlamadasNoEfectivas,
+      cantidadDemandInduced,
+      estResultadoLlamadasNoEfectivas,
+    }); 
   } catch (error) {
     next(error);
   }
+}
+
+async function getStatisticsResultCallsNotEffective(
+  programaId: string,
+  profesional: string,
+  elementoId: string,
+  año: string,
+  mes: string,
+) {
+  const query = await DemandaInducida.createQueryBuilder("demanda")
+  .leftJoinAndSelect("demanda.programaRelation", "programa")
+  .leftJoinAndSelect("demanda.resultadoRelation", "resultado")
+  .select([
+    "resultado.name as resultadoLlamada",
+    "COUNT(*) as cantidad",
+  ])
+  .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
+  .andWhere("demanda.clasificacion = :clasificacion", { clasificacion: false })
+  .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
+  .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+  .andWhere("demanda.programaId = :programaId", { programaId })
+  .andWhere("demanda.profesional = :profesional", { profesional })
+  .groupBy("resultado.name")
+  .getRawMany();
+
+  return query.map((resultado) => ({
+    resultadoLlamada: resultado.resultadoLlamada,
+    cantidad: parseInt(resultado.cantidad),
+  }));
+}
+
+// funcion auxiliar para arrojar la cantidad de registros demanda inducida por programa por mes y por ano
+async function getQuantityDemandInducedByProgram(
+  profesional: string,
+  programaId: string,
+  año: string,
+  mes: string,
+  elementoId: string
+) {
+  const query = await DemandaInducida.createQueryBuilder("demanda")
+    .leftJoinAndSelect("demanda.programaRelation", "programa")
+    .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
+    .select([
+      "programa.name as programa",
+      "COUNT(*) as cantidad",
+    ])
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
+    .andWhere("metaHistorico.año = :year", { year: año })
+    .andWhere("metaHistorico.mes = :month", { month: mes })
+    .andWhere("demanda.profesional = :profesional", { profesional })
+    .andWhere("demanda.programaId = :programaId", { programaId })
+    .groupBy("programa.name")
+    .getRawMany();
+
+  return query.map((resultado) => ({
+    programa: resultado.programa,
+    cantidad: parseInt(resultado.cantidad),
+  }));
 }
 
 // Función auxiliar: Estadísticas por programa, elemento y profesional
@@ -338,26 +416,19 @@ async function getStatisticsCalls(
   mes: string,
   metaValue: number
 ) {
-  const query = DemandaInducida.createQueryBuilder("demanda")
+  const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
+    .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
     .select([
       "demanda.clasificacion as esEfectiva",
       "demanda.profesional as profesional",
       "COUNT(*) as cantidad",
     ])
     .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 }) // ID 2 para llamadas telefónicas
-    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
-    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes });
-
-  if (programaId && programaId !== "todos") {
-    query.andWhere("demanda.programaId = :programaId", { programaId });
-  }
-
-  if (profesional && profesional !== "todos") {
-    query.andWhere("demanda.profesional = :profesional", { profesional });
-  }
-
-  const resultados = await query
+    .andWhere("metaHistorico.año = :year", { year: año })
+    .andWhere("metaHistorico.mes = :month", { month: mes })
+    .andWhere("demanda.programaId = :programaId", { programaId })
+    .andWhere("demanda.profesional = :profesional", { profesional })
     .groupBy("demanda.clasificacion, demanda.profesional")
     .getRawMany();
 
@@ -369,7 +440,7 @@ async function getStatisticsCalls(
     noEfectivas: [],
   };
 
-  resultados.forEach((resultado) => {
+  query.forEach((resultado) => {
     const data = {
       profesional: resultado.profesional,
       cantidad: parseInt(resultado.cantidad),
