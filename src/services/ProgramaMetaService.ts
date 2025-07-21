@@ -4,7 +4,6 @@ import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 
 export class ProgramaMetaService {
-
   static async setGoalMonth(
     programId: number,
     goal: number,
@@ -16,20 +15,19 @@ export class ProgramaMetaService {
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
-      .andWhere("goal.professional = :profesional", { profesional: professional })
+      .andWhere("goal.professional = :professional", { professional })
       .getOne();
 
     if (goalExist) {
       throw new Error("Goal for this month already exists.");
     }
-
     const newGoal = new ProgramaMetaHistorico();
     newGoal.programaId = programId;
-    newGoal.meta = goal;
+    newGoal.meta = Number(goal);
     newGoal.año = year;
     newGoal.mes = month;
     newGoal.activo = true;
-    newGoal.professional = professional as 'Medicina General' | 'Enfermería';
+    newGoal.professional = professional as "Medicina General" | "Enfermería";
 
     const errors = await validate(newGoal);
 
@@ -38,7 +36,7 @@ export class ProgramaMetaService {
         property: err.property,
         constraints: err.constraints,
       }));
-      throw new Error(`Validation failed: ${message}`);
+      throw new Error(`Validation failed: ${JSON.stringify(message)}`);
     }
 
     return await newGoal.save();
@@ -55,7 +53,7 @@ export class ProgramaMetaService {
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
-      .andWhere("goal.profesional = :profesional", { profesional: professional })
+      .andWhere("goal.professional = :professional", { professional })
       .andWhere("goal.activo = true")
       .getOne();
 
@@ -71,7 +69,7 @@ export class ProgramaMetaService {
         property: err.property,
         constraints: err.constraints,
       }));
-      throw new Error(`Validation failed: ${message}`);
+      throw new Error(`Validation failed: ${JSON.stringify(message)}`);
     }
 
     return await goalExist.save();

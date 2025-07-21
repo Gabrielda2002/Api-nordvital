@@ -6,9 +6,14 @@ import { ProgramaMetaService } from "../services/ProgramaMetaService";
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
+        const yearNow = new Date().getFullYear();
+        const monthNow = new Date().getMonth() + 1;
+
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
         .where("goal.activo = true")
+        .andWhere("goal.año = :year", { year: yearNow })
+        .andWhere("goal.mes = :month", { month: monthNow })
         .orderBy("program.name", "ASC")
         .getMany();
         
@@ -31,7 +36,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const { program :id, goal, professional } = req.body;
+        const {id, goal, professional } = req.body;
 
         const yearNow = new Date().getFullYear();
         const monthNow = new Date().getMonth() + 1;
