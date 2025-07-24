@@ -11,6 +11,24 @@ export class ProgramaMetaService {
     month: number,
     professional: string
   ): Promise<ProgramaMetaHistorico> {
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentDay = currentDate.getDate();
+
+    const lastDayOfCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+    const isLastDayOfMonth = currentDay === lastDayOfCurrentMonth;
+
+    let nextMonth = currentMonth + 1;
+    let nextYear = currentYear;
+    if (nextMonth > 12) {
+      nextMonth = 1;
+      nextYear = currentYear + 1;
+    }
+
+    const isCreatingNextMonthGoal = (year === nextYear && month === nextMonth);
+
     const goalExist = await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
@@ -21,6 +39,13 @@ export class ProgramaMetaService {
     if (goalExist) {
       throw new Error("Goal for this month already exists.");
     }
+
+    const isCurrentMonth = (year === currentYear && month === currentMonth);
+
+    if (!isCurrentMonth && !(isCreatingNextMonthGoal && isLastDayOfMonth)) {
+      throw new Error("Goals can only be created for the current month or the next month on the last day of the current month.");
+    }
+
     const newGoal = new ProgramaMetaHistorico();
     newGoal.programaId = programId;
     newGoal.meta = Number(goal);

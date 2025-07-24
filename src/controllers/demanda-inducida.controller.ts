@@ -123,7 +123,6 @@ export const createDemandInduced = async (
       profetional,
       idUser,
     } = req.body;
-    console.log("Received data:", req.body);
 
     if (idPatient === undefined || idPatient === null) {
       return res.status(400).json({ message: "Patient ID is required" });
@@ -178,7 +177,7 @@ export const createDemandInduced = async (
     demandInduced.areaPersonaSeguimientoId = areaPersonProcess
       ? parseInt(areaPersonProcess)
       : null;
-    demandInduced.clasificacion = classification;
+    demandInduced.clasificacion = elementDemand == 1 || elementDemand == 3 ? true : classification;
     demandInduced.contactNumbers = contactNumbers;
     demandInduced.personaRecibe = acceptCall || null;
     demandInduced.profesional = profetional;
@@ -394,7 +393,6 @@ async function getStatisticsByProgram(
     .groupBy("programa.name, elemento.name, demanda.profesional")
     .getRawMany();
 
-    console.log("Query Results:", query);
 
   return query.map((resultado) => ({
     programa: resultado.programa,

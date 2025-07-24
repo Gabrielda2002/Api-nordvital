@@ -38,8 +38,24 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         
         const {id, goal, professional } = req.body;
 
-        const yearNow = new Date().getFullYear();
-        const monthNow = new Date().getMonth() + 1;
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentDay = currentDate.getDate();
+
+        const lastDayOfCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+        const isLastDayOfMonth = currentDay === lastDayOfCurrentMonth;
+
+        let targetYear = currentYear;
+        let targetMonth = currentMonth;
+
+        if (isLastDayOfMonth) {
+            targetMonth = currentMonth + 1;
+            if (targetMonth > 12) {
+                targetMonth = 1;
+                targetYear = currentYear + 1;
+            }
+        }
 
         if (!id || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
@@ -48,8 +64,8 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         const savedGoal = await ProgramaMetaService.setGoalMonth(
             id,
             goal,
-            yearNow,
-            monthNow,
+            targetYear,
+            targetMonth,
             professional
         );
         
