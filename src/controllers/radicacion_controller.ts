@@ -460,17 +460,9 @@ export async function cirugiasTable(
       "gestionAuxiliarCirugia.estadoSeguimientoRelation",
       "statusGestionAuxiliarCirugia"
       )
-      .where(qb => {
-        const subQuery = qb.subQuery()
-        .select("MAX(gestion.id)", "maxId")
-        .from("gestion_auxiliar_cirugias", "gestion")
-        .where("gestion.cirugia_id = cirugias.id")
-        .getQuery();
-        return `(cirugias.id IS NULL OR gestionAuxiliarCirugia.id = (${subQuery}))`;
-      })
       .andWhere("convenio.id <> :convenioId", { convenioId: 1 })
       .andWhere("servicesGroup.id IN (:...groupIds)", { groupIds: [6, 9] })
-      .andWhere("(gestionAuxiliarCirugia.id IS NULL OR statusGestionAuxiliarCirugia.id NOT IN (:...statusIds))", { statusIds: [3, 4] })
+      .andWhere("(gestionAuxiliarCirugia.id IS NULL OR statusGestionAuxiliarCirugia.id NOT IN (:...statusIds))", { statusIds: [3, 4] }) 
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
