@@ -1221,43 +1221,144 @@ export async function reportDemandInduced(
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
 
+      // Definir las columnas base (sin headers para empezar)
       worksheet.columns = [
-        { header: "Tipo de documento", key: "tipo_documento", width: 20 },
-        { header: "Número de identificación", key: "numero_identificacion", width: 20 },
-        { header: "Fecha de actividad demanda inducida", key: "fecha_actividad", width: 20 },
-        { header: "Elemento demanda inducida", key: "elemento_demanda", width: 30 },
-        { header: "Tipo de elemento demanda inducida", key: "tipo_elemento", width: 30 },
-        { header: "Objetivo", key: "objetivo", width: 30 },
-        { header: "Número de telefono con el que se establece el contacto", key: "numero_telefono_contacto", width: 20 },
-        { header: "Clasificación del seguimiento", key: "clasificacion_seguimiento", width: 30 },
-        { header: "Persona que recibe la llamada", key: "persona_recibe_llamada", width: 30 },
-        { header: "Relación con el usuario", key: "relacion_usuario", width: 30 },
-        { header: "Fecha de llamada o sala de espera", key: "fecha_llamada", width: 20 },
-        { header: "hora de llamada o sala de espera", key: "hora_llamada", width: 20 },
-        { header: "Texto de la llamada o sala de espera", key: "texto_llamada", width: 30 },
-        { header: "Presenta barreras o dificultades para el acceso al tratamiento?", key: "barreras_acceso", width: 30 },
-        { header: "Area con la que presenta la dificultad?", key: "area_dificultad", width: 30 },
-        { header: "Area de la EPS", key: "area_eps", width: 30 },
-        { header: "Resumen de las actividades realizadas durante el seguimiento", key: "resumen_actividades", width: 30 },
-        { header: "Condición final usuario", key: "condicion_final_usuario", width: 30 },
-        { header: "Soportes recuperadosa", key: "soportes_recuperados", width: 30 },
-        { header: "Departamento", key: "departamento", width: 20 },
-        { header: "Municipio", key: "municipio", width: 20 },
-        { header: "Barrio o vereda", key: "barrio_vereda", width: 20 },
-        { header: "Número telefono", key: "numero_telefono", width: 20 },
-        { header: "Correo electronico", key: "correo_electronico", width: 30 },
-        { header: "Resultado de llamada o sala de espera", key: "resultado_llamada", width: 30 },
-        { header: "Fecha de envío", key: "fecha_envio", width: 30 },
-        { header: "Hora de envío", key: "hora_envio", width: 30 },
-        { header: "Texto del mensaje", key: "texto_mensaje", width: 30 },
-        { header: "Fecha de visita", key: "fecha_visita", width: 30 },
-        { header: "Resumen de visita", key: "resumen_visita", width: 30 },
-        { header: "Motivo de visita no efectiva", key: "motivo_visita_no_efectiva", width: 30 },
-        { header: "Persona que realiza el seguimiento", key: "persona_seguimiento", width: 30 },
-        { header: "Área", key: "area_persona", width: 30 },
-        { header: "Programa", key: "programa", width: 30 },
-        { header: "Fecha de asignacion de cita", key: "fecha_asignacion_cita", width: 30 },
+        { header: "", key: "tipo_documento", width: 20 },
+        { header: "", key: "numero_identificacion", width: 20 },
+        { header: "", key: "fecha_actividad", width: 20 },
+        { header: "", key: "elemento_demanda", width: 30 },
+        { header: "", key: "tipo_elemento", width: 30 },
+        { header: "", key: "objetivo", width: 30 },
+        { header: "", key: "numero_telefono_contacto", width: 20 },
+        { header: "", key: "clasificacion_seguimiento", width: 30 },
+        { header: "", key: "persona_recibe_llamada", width: 30 },
+        { header: "", key: "relacion_usuario", width: 30 },
+        { header: "", key: "fecha_llamada", width: 20 },
+        { header: "", key: "hora_llamada", width: 20 },
+        { header: "", key: "texto_llamada", width: 30 },
+        { header: "", key: "barreras_acceso", width: 30 },
+        { header: "", key: "area_dificultad", width: 30 },
+        { header: "", key: "area_eps", width: 30 },
+        { header: "", key: "resumen_actividades", width: 30 },
+        { header: "", key: "condicion_final_usuario", width: 30 },
+        { header: "", key: "soportes_recuperados", width: 30 },
+        { header: "", key: "departamento", width: 20 },
+        { header: "", key: "municipio", width: 20 },
+        { header: "", key: "barrio_vereda", width: 20 },
+        { header: "", key: "numero_telefono", width: 20 },
+        { header: "", key: "correo_electronico", width: 30 },
+        { header: "", key: "resultado_llamada", width: 30 },
+        { header: "", key: "fecha_envio", width: 30 },
+        { header: "", key: "hora_envio", width: 30 },
+        { header: "", key: "texto_mensaje", width: 30 },
+        { header: "", key: "fecha_visita", width: 30 },
+        { header: "", key: "resumen_visita", width: 30 },
+        { header: "", key: "motivo_visita_no_efectiva", width: 30 },
+        { header: "", key: "persona_seguimiento", width: 30 },
+        { header: "", key: "area_persona", width: 30 },
+        { header: "", key: "programa", width: 30 },
+        { header: "", key: "fecha_asignacion_cita", width: 30 },
       ];
+
+      // Crear encabezados agrupados en la fila 1
+      // Grupo 1: Demanda inducida (A1:F1)
+      worksheet.mergeCells('A1:F1');
+      worksheet.getCell('A1').value = 'DEMANDA INDUCIDA';
+      worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('A1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 2: Llamada telefónica efectiva (G1:S1)
+      worksheet.mergeCells('G1:S1');
+      worksheet.getCell('G1').value = 'LLAMADA TELEFÓNICA EFECTIVA';
+      worksheet.getCell('G1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('G1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 3: Actualización de datos de ubicación (T1:X1)
+      worksheet.mergeCells('T1:X1');
+      worksheet.getCell('T1').value = 'ACTUALIZACIÓN DE DATOS DE UBICACIÓN';
+      worksheet.getCell('T1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('T1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 4: Llamada no efectiva (Y1:Y1)
+      worksheet.mergeCells('Y1:Y1');
+      worksheet.getCell('Y1').value = 'LLAMADA NO EFECTIVA';
+      worksheet.getCell('Y1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('Y1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 5: Mensaje de texto (Z1:AB1)
+      worksheet.mergeCells('Z1:AB1');
+      worksheet.getCell('Z1').value = 'MENSAJE DE TEXTO';
+      worksheet.getCell('Z1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('Z1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 6: Visita preventiva de salud (AC1:AD1)
+      worksheet.mergeCells('AC1:AD1');
+      worksheet.getCell('AC1').value = 'VISITA PREVENTIVA DE SALUD';
+      worksheet.getCell('AC1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('AC1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Grupo 7: Persona que realiza el seguimiento (AE1:AI1)
+      worksheet.mergeCells('AE1:AI1');
+      worksheet.getCell('AE1').value = 'PERSONA QUE REALIZA EL SEGUIMIENTO';
+      worksheet.getCell('AE1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('AE1').font = { bold: true, color: { argb: '00000000' } };
+
+      // Agregar los encabezados específicos en la fila 2
+      const headers = [
+        'TIPO DOC',
+        'NUMERO DOC', 
+        'Fecha actividad DI',
+        'Elemento DI',
+        'Tipo elemento',
+        'Objetivo',
+        'Número de telefono con el que se establece el contacto',
+        'Clasificación del seguimiento',
+        'Persona que recibe la llamada',
+        'Relación con el usuario',
+        'Fecha de llamada',
+        'hora de llamada',
+        'Texto de la llamada',
+        'Presenta barreras o dificultades para el acceso al tratamiento?',
+        'Área con la que presenta la dificultad?',
+        'Área de la EPS',
+        'Resumen de las actividades realizadas durante el seguimiento',
+        'Condición final usuario',
+        'Soportes recuperados',
+        'Departamento',
+        'Municipio',
+        'Barrio o vereda',
+        'Número teléfono',
+        'Correo electrónico',
+        'Resultado de llamada',
+        'Fecha de envío',
+        'Hora de envío',
+        'Texto del mensaje',
+        'Fecha de visita',
+        'Resumen de visita',
+        'Motivo de visita no efectiva',
+        'Persona que realiza el seguimiento',
+        'Área',
+        'Programa',
+        'Fecha de asignación de cita'
+      ];
+
+      headers.forEach((header, index) => {
+        const cell = worksheet.getCell(2, index + 1);
+        cell.value = header;
+        cell.font = { bold: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+
+      // Ajustar altura de las filas de encabezado
+      worksheet.getRow(1).height = 25;
+      worksheet.getRow(2).height = 40;
 
       if (!data || data.length === 0) {
         return res.status(404).json({
@@ -1273,7 +1374,7 @@ export async function reportDemandInduced(
           fecha_actividad: d.createdAt ? formatInTimeZone(
             new Date(d.createdAt),
             "America/Bogota",
-            "yyyy-MM-dd HH:mm:ss"
+            "dd/MM/yyyy HH:mm:ss"
           ) : "",
           elemento_demanda: d.elementoRelation?.name || "",
           tipo_elemento: d.tipoRelation?.name || "",
@@ -1285,15 +1386,17 @@ export async function reportDemandInduced(
           fecha_llamada: d.fechaLlamada ? formatInTimeZone(
             new Date(d.fechaLlamada),
             "America/Bogota",
-            "yyyy-MM-dd"
+            "dd/MM/yyyy"
           ) : "",
-          hora_llamada: d.horaLlamada || "",
+          hora_llamada: d.horaLlamada
+            ? d.horaLlamada.slice(0, 5) // formato HH:mm
+            : "",
           texto_llamada: d.textoLlamada || "",
           barreras_acceso: d.dificultadAcceso ? "Si" : "No",
           area_dificultad: d.areaDificultad || "",
           area_eps: d.areaEpsRelation?.name || "",
           resumen_actividades: d.resumenRelation?.name || "",
-          condicion_final_usuario: d.resultadoRelation?.name || "",
+          // condicion_final_usuario: d.condicionPaciente ? "VIVO" : "MUERTO",
           soportes_recuperados: d.soporteRecuperados || "",
           departamento: "",
           municipio: "",
@@ -1304,24 +1407,26 @@ export async function reportDemandInduced(
           fecha_envio: d.fechaEnvio ? formatInTimeZone(
             new Date(d.fechaEnvio),
             "America/Bogota",
-            "yyyy-MM-dd"
+            "dd/MM/yyyy"
           ) : "",
-          hora_envio: d.horaEnvio || "",
+          hora_envio: d.horaEnvio
+            ? d.horaEnvio.slice(0, 5) // formato HH:mm
+            : "",
           texto_mensaje: d.textEnvio || "",
           fecha_visita: d.fechaVisita ? formatInTimeZone(
             new Date(d.fechaVisita),
             "America/Bogota",
-            "yyyy-MM-dd"
+            "dd/MM/yyyy"
           ) : "",
           resumen_visita: d.resumenRelation?.name || "",
           motivo_visita_no_efectiva: d?.motivoRelation?.name || "",
-          persona_seguimiento: d.areaPersonaRelation?.name || "",
+          persona_seguimiento: d.personaSeguimientoRelation?.name || "",
           area_persona: d.areaPersonaRelation?.name || "",
           programa: d.programaRelation?.name || "",
           fecha_asignacion_cita: d.fechaCita ? formatInTimeZone(
             new Date(d.fechaCita),
             "America/Bogota",
-            "yyyy-MM-dd"
+            "dd/MM/yyyy"
           ) : "",
         }
         worksheet.addRow(row);
