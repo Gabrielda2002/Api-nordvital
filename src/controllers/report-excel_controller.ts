@@ -1207,19 +1207,18 @@ export async function reportDemandInduced(
       .leftJoinAndSelect("demandas_inducidas.areaPersonaRelation", "area_persona")
       .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
       .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
-      .orderBy("demandas_inducidas.createdAt", "DESC");
+      .orderBy("demandas_inducidas.createdAt", "ASC"); // <-- Aquí, ASC para más viejo a más reciente
 
-      if (dateStart && dateEnd) {
-        query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
-          start: dateStart,
-          end: dateEnd
-        });
-      }
+    if (dateStart && dateEnd) {
+      query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
+      start: dateStart,
+      end: dateEnd
+      });
+    }
+    const data = await query.getMany();
 
-      const data = await query.getMany();
-
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
 
       // Definir las columnas base (sin headers para empezar)
       worksheet.columns = [
@@ -1260,50 +1259,57 @@ export async function reportDemandInduced(
         { header: "", key: "fecha_asignacion_cita", width: 30 },
       ];
 
-      // Crear encabezados agrupados en la fila 1
-      // Grupo 1: Demanda inducida (A1:F1)
-      worksheet.mergeCells('A1:F1');
+      // Crear encabezados agrupados que abarcan 2 filas (filas 1 y 2)
+      // Grupo 1: Demanda inducida (A1:F2)
+      worksheet.mergeCells('A1:F2');
       worksheet.getCell('A1').value = 'DEMANDA INDUCIDA';
       worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('A1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('A1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
 
-      // Grupo 2: Llamada telefónica efectiva (G1:S1)
-      worksheet.mergeCells('G1:S1');
+      // Grupo 2: Llamada telefónica efectiva (G1:S2)
+      worksheet.mergeCells('G1:S2');
       worksheet.getCell('G1').value = 'LLAMADA TELEFÓNICA EFECTIVA';
       worksheet.getCell('G1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('G1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('G1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('G1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
 
-      // Grupo 3: Actualización de datos de ubicación (T1:X1)
-      worksheet.mergeCells('T1:X1');
+      // Grupo 3: Actualización de datos de ubicación (T1:X2)
+      worksheet.mergeCells('T1:X2');
       worksheet.getCell('T1').value = 'ACTUALIZACIÓN DE DATOS DE UBICACIÓN';
       worksheet.getCell('T1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('T1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('T1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('T1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
 
-      // Grupo 4: Llamada no efectiva (Y1:Y1)
-      worksheet.mergeCells('Y1:Y1');
+      // Grupo 4: Llamada no efectiva (Y1:Y2)
+      worksheet.mergeCells('Y1:Y2');
       worksheet.getCell('Y1').value = 'LLAMADA NO EFECTIVA';
       worksheet.getCell('Y1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('Y1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('Y1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('Y1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
 
-      // Grupo 5: Mensaje de texto (Z1:AB1)
-      worksheet.mergeCells('Z1:AB1');
+      // Grupo 5: Mensaje de texto (Z1:AB2)
+      worksheet.mergeCells('Z1:AB2');
       worksheet.getCell('Z1').value = 'MENSAJE DE TEXTO';
       worksheet.getCell('Z1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('Z1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('Z1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('Z1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
 
-      // Grupo 6: Visita preventiva de salud (AC1:AD1)
-      worksheet.mergeCells('AC1:AD1');
+      // Grupo 6: Visita preventiva de salud (AC1:AD2)
+      worksheet.mergeCells('AC1:AD2');
       worksheet.getCell('AC1').value = 'VISITA PREVENTIVA DE SALUD';
       worksheet.getCell('AC1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('AC1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('AC1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('AC1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
 
-      // Grupo 7: Persona que realiza el seguimiento (AE1:AI1)
-      worksheet.mergeCells('AE1:AI1');
+      // Grupo 7: Persona que realiza el seguimiento (AE1:AI2)
+      worksheet.mergeCells('AE1:AI2');
       worksheet.getCell('AE1').value = 'PERSONA QUE REALIZA EL SEGUIMIENTO';
       worksheet.getCell('AE1').alignment = { horizontal: 'center', vertical: 'middle' };
-      worksheet.getCell('AE1').font = { bold: true, color: { argb: '00000000' } };
+      worksheet.getCell('AE1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('AE1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
 
-      // Agregar los encabezados específicos en la fila 2
+      // Agregar los encabezados específicos en la fila 3
       const headers = [
         'TIPO DOC',
         'NUMERO DOC', 
@@ -1319,16 +1325,16 @@ export async function reportDemandInduced(
         'hora de llamada',
         'Texto de la llamada',
         'Presenta barreras o dificultades para el acceso al tratamiento?',
-        'Área con la que presenta la dificultad?',
-        'Área de la EPS',
+        'Area con la que presenta la dificultad?',
+        'Area de la EPS',
         'Resumen de las actividades realizadas durante el seguimiento',
         'Condición final usuario',
         'Soportes recuperados',
         'Departamento',
         'Municipio',
         'Barrio o vereda',
-        'Número teléfono',
-        'Correo electrónico',
+        'Número telefono',
+        'Correo electronico',
         'Resultado de llamada',
         'Fecha de envío',
         'Hora de envío',
@@ -1339,14 +1345,14 @@ export async function reportDemandInduced(
         'Persona que realiza el seguimiento',
         'Área',
         'Programa',
-        'Fecha de asignación de cita'
+        'Fecha de asignacion de cita'
       ];
 
       headers.forEach((header, index) => {
-        const cell = worksheet.getCell(2, index + 1);
+        const cell = worksheet.getCell(3, index + 1);
         cell.value = header;
         cell.font = { bold: true };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E0E1E9' } };
         cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
         cell.border = {
           top: { style: 'thin' },
@@ -1358,7 +1364,8 @@ export async function reportDemandInduced(
 
       // Ajustar altura de las filas de encabezado
       worksheet.getRow(1).height = 25;
-      worksheet.getRow(2).height = 40;
+      worksheet.getRow(2).height = 25;
+      worksheet.getRow(3).height = 40;
 
       if (!data || data.length === 0) {
         return res.status(404).json({

@@ -36,7 +36,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const {id, goal, professional } = req.body;
+        const {program, goal, professional } = req.body;
 
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
@@ -57,12 +57,12 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
             }
         }
 
-        if (!id || !goal) {
+        if (!program || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
         }
 
         const savedGoal = await ProgramaMetaService.setGoalMonth(
-            id,
+            program,
             goal,
             targetYear,
             targetMonth,
