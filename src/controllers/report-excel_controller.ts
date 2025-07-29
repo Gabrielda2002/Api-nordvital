@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { RegistroEntrada } from "../entities/registro-entrada";
 import { Tickets } from "../entities/tickets";
+import { DemandaInducida } from "../entities/demanda-inducida";
 
 export async function downloadReportExcel(
   req: Request,
@@ -166,8 +167,6 @@ export async function downloadReportExcel(
     next(error);
   }
 }
-
-// *  reporte excel con filtros de fecha e auditora, fecha de radicado y codigo cups
 
 export async function downloadReportExcelFilter(
   req: Request,
@@ -1180,6 +1179,279 @@ export async function getReportTickets(
     await workbook.xlsx.write(res);
 
     res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function reportDemandInduced(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await DemandaInducida.createQueryBuilder("demandas_inducidas")
+      .leftJoinAndSelect("demandas_inducidas.pacienteRelation", "paciente")
+      .leftJoinAndSelect("paciente.documentRelation", "tipo_documento")
+      .leftJoinAndSelect("demandas_inducidas.elementoRelation", "elemento")
+      .leftJoinAndSelect("demandas_inducidas.tipoRelation", "tipo_elemento")
+      .leftJoinAndSelect("demandas_inducidas.objetivoRelation", "objetivo")
+      .leftJoinAndSelect("demandas_inducidas.relacionRelation", "relacion_usuario")
+      .leftJoinAndSelect("demandas_inducidas.areaEpsRelation", "area_eps")
+      .leftJoinAndSelect("demandas_inducidas.resumenRelation", "resumen_seguimiento")
+      .leftJoinAndSelect("demandas_inducidas.resultadoRelation", "resultado_llamada")
+      .leftJoinAndSelect("demandas_inducidas.motivoRelation", "motivo")
+      .leftJoinAndSelect("demandas_inducidas.areaPersonaRelation", "area_persona")
+      .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
+      .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
+      .orderBy("demandas_inducidas.createdAt", "ASC"); // <-- Aquí, ASC para más viejo a más reciente
+
+    if (dateStart && dateEnd) {
+      query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
+      start: dateStart,
+      end: dateEnd
+      });
+    }
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
+
+      // Definir las columnas base (sin headers para empezar)
+      worksheet.columns = [
+        { header: "", key: "tipo_documento", width: 20 },
+        { header: "", key: "numero_identificacion", width: 20 },
+        { header: "", key: "fecha_actividad", width: 20 },
+        { header: "", key: "elemento_demanda", width: 30 },
+        { header: "", key: "tipo_elemento", width: 30 },
+        { header: "", key: "objetivo", width: 30 },
+        { header: "", key: "numero_telefono_contacto", width: 20 },
+        { header: "", key: "clasificacion_seguimiento", width: 30 },
+        { header: "", key: "persona_recibe_llamada", width: 30 },
+        { header: "", key: "relacion_usuario", width: 30 },
+        { header: "", key: "fecha_llamada", width: 20 },
+        { header: "", key: "hora_llamada", width: 20 },
+        { header: "", key: "texto_llamada", width: 30 },
+        { header: "", key: "barreras_acceso", width: 30 },
+        { header: "", key: "area_dificultad", width: 30 },
+        { header: "", key: "area_eps", width: 30 },
+        { header: "", key: "resumen_actividades", width: 30 },
+        { header: "", key: "condicion_final_usuario", width: 30 },
+        { header: "", key: "soportes_recuperados", width: 30 },
+        { header: "", key: "departamento", width: 20 },
+        { header: "", key: "municipio", width: 20 },
+        { header: "", key: "barrio_vereda", width: 20 },
+        { header: "", key: "numero_telefono", width: 20 },
+        { header: "", key: "correo_electronico", width: 30 },
+        { header: "", key: "resultado_llamada", width: 30 },
+        { header: "", key: "fecha_envio", width: 30 },
+        { header: "", key: "hora_envio", width: 30 },
+        { header: "", key: "texto_mensaje", width: 30 },
+        { header: "", key: "fecha_visita", width: 30 },
+        { header: "", key: "resumen_visita", width: 30 },
+        { header: "", key: "motivo_visita_no_efectiva", width: 30 },
+        { header: "", key: "persona_seguimiento", width: 30 },
+        { header: "", key: "area_persona", width: 30 },
+        { header: "", key: "programa", width: 30 },
+        { header: "", key: "fecha_asignacion_cita", width: 30 },
+      ];
+
+      // Crear encabezados agrupados que abarcan 2 filas (filas 1 y 2)
+      // Grupo 1: Demanda inducida (A1:F2)
+      worksheet.mergeCells('A1:F2');
+      worksheet.getCell('A1').value = 'DEMANDA INDUCIDA';
+      worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('A1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+      // Grupo 2: Llamada telefónica efectiva (G1:S2)
+      worksheet.mergeCells('G1:S2');
+      worksheet.getCell('G1').value = 'LLAMADA TELEFÓNICA EFECTIVA';
+      worksheet.getCell('G1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('G1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('G1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
+
+      // Grupo 3: Actualización de datos de ubicación (T1:X2)
+      worksheet.mergeCells('T1:X2');
+      worksheet.getCell('T1').value = 'ACTUALIZACIÓN DE DATOS DE UBICACIÓN';
+      worksheet.getCell('T1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('T1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('T1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+      // Grupo 4: Llamada no efectiva (Y1:Y2)
+      worksheet.mergeCells('Y1:Y2');
+      worksheet.getCell('Y1').value = 'LLAMADA NO EFECTIVA';
+      worksheet.getCell('Y1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('Y1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('Y1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
+
+      // Grupo 5: Mensaje de texto (Z1:AB2)
+      worksheet.mergeCells('Z1:AB2');
+      worksheet.getCell('Z1').value = 'MENSAJE DE TEXTO';
+      worksheet.getCell('Z1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('Z1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('Z1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+      // Grupo 6: Visita preventiva de salud (AC1:AD2)
+      worksheet.mergeCells('AC1:AD2');
+      worksheet.getCell('AC1').value = 'VISITA PREVENTIVA DE SALUD';
+      worksheet.getCell('AC1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('AC1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('AC1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
+
+      // Grupo 7: Persona que realiza el seguimiento (AE1:AI2)
+      worksheet.mergeCells('AE1:AI2');
+      worksheet.getCell('AE1').value = 'PERSONA QUE REALIZA EL SEGUIMIENTO';
+      worksheet.getCell('AE1').alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getCell('AE1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      worksheet.getCell('AE1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+      // Agregar los encabezados específicos en la fila 3
+      const headers = [
+        'TIPO DOC',
+        'NUMERO DOC', 
+        'Fecha actividad DI',
+        'Elemento DI',
+        'Tipo elemento',
+        'Objetivo',
+        'Número de telefono con el que se establece el contacto',
+        'Clasificación del seguimiento',
+        'Persona que recibe la llamada',
+        'Relación con el usuario',
+        'Fecha de llamada',
+        'hora de llamada',
+        'Texto de la llamada',
+        'Presenta barreras o dificultades para el acceso al tratamiento?',
+        'Area con la que presenta la dificultad?',
+        'Area de la EPS',
+        'Resumen de las actividades realizadas durante el seguimiento',
+        'Condición final usuario',
+        'Soportes recuperados',
+        'Departamento',
+        'Municipio',
+        'Barrio o vereda',
+        'Número telefono',
+        'Correo electronico',
+        'Resultado de llamada',
+        'Fecha de envío',
+        'Hora de envío',
+        'Texto del mensaje',
+        'Fecha de visita',
+        'Resumen de visita',
+        'Motivo de visita no efectiva',
+        'Persona que realiza el seguimiento',
+        'Área',
+        'Programa',
+        'Fecha de asignacion de cita'
+      ];
+
+      headers.forEach((header, index) => {
+        const cell = worksheet.getCell(3, index + 1);
+        cell.value = header;
+        cell.font = { bold: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E0E1E9' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+
+      // Ajustar altura de las filas de encabezado
+      worksheet.getRow(1).height = 25;
+      worksheet.getRow(2).height = 25;
+      worksheet.getRow(3).height = 40;
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          message: "Demand Induced Not Found.",
+        });
+      }
+
+      data.forEach((d)=> {
+
+        const row = {
+          tipo_documento: d.pacienteRelation?.documentRelation?.name || "",
+          numero_identificacion: d.pacienteRelation?.documentNumber || "",
+          fecha_actividad: d.createdAt ? formatInTimeZone(
+            new Date(d.createdAt),
+            "America/Bogota",
+            "dd/MM/yyyy HH:mm:ss"
+          ) : "",
+          elemento_demanda: d.elementoRelation?.name || "",
+          tipo_elemento: d.tipoRelation?.name || "",
+          objetivo: d.objetivoRelation?.name || "",
+          numero_telefono_contacto: d.contactNumbers || "",
+          clasificacion_seguimiento: d.clasificacion ? "Efectivo" : "No Efectivo",
+          persona_recibe_llamada: d.personaRecibe || "",
+          relacion_usuario: d.relacionRelation?.name || "",
+          fecha_llamada: d.fechaLlamada ? formatInTimeZone(
+            new Date(d.fechaLlamada),
+            "America/Bogota",
+            "dd/MM/yyyy"
+          ) : "",
+          hora_llamada: d.horaLlamada
+            ? d.horaLlamada.slice(0, 5) // formato HH:mm
+            : "",
+          texto_llamada: d.textoLlamada || "",
+          barreras_acceso: d.dificultadAcceso ? "Si" : "No",
+          area_dificultad: d.areaDificultad || "",
+          area_eps: d.areaEpsRelation?.name || "",
+          resumen_actividades: d.resumenRelation?.name || "",
+          // condicion_final_usuario: d.condicionPaciente ? "VIVO" : "MUERTO",
+          soportes_recuperados: d.soporteRecuperados || "",
+          departamento: "",
+          municipio: "",
+          barrio_vereda: "",
+          numero_telefono: "",
+          correo_electronico: "",
+          resultado_llamada: d.resultadoRelation?.name || "",
+          fecha_envio: d.fechaEnvio ? formatInTimeZone(
+            new Date(d.fechaEnvio),
+            "America/Bogota",
+            "dd/MM/yyyy"
+          ) : "",
+          hora_envio: d.horaEnvio
+            ? d.horaEnvio.slice(0, 5) // formato HH:mm
+            : "",
+          texto_mensaje: d.textEnvio || "",
+          fecha_visita: d.fechaVisita ? formatInTimeZone(
+            new Date(d.fechaVisita),
+            "America/Bogota",
+            "dd/MM/yyyy"
+          ) : "",
+          resumen_visita: d.resumenRelation?.name || "",
+          motivo_visita_no_efectiva: d?.motivoRelation?.name || "",
+          persona_seguimiento: d.personaSeguimientoRelation?.name || "",
+          area_persona: d.areaPersonaRelation?.name || "",
+          programa: d.programaRelation?.name || "",
+          fecha_asignacion_cita: d.fechaCita ? formatInTimeZone(
+            new Date(d.fechaCita),
+            "America/Bogota",
+            "dd/MM/yyyy"
+          ) : "",
+        }
+        worksheet.addRow(row);
+      });
+
+      const fileName = `Reporte_Demandas_Inducidas_${randomBytes(4).toString(
+        "hex"
+      )}.xlsx`;
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+      await workbook.xlsx.write(res);
+
+      res.end();
   } catch (error) {
     next(error);
   }

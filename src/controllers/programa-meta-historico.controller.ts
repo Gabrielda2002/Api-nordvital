@@ -6,15 +6,16 @@ import { ProgramaMetaService } from "../services/ProgramaMetaService";
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
+        const yearNow = new Date().getFullYear();
+        const monthNow = new Date().getMonth() + 1;
+
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
         .where("goal.activo = true")
+        .andWhere("goal.año = :year", { year: yearNow })
+        .andWhere("goal.mes = :month", { month: monthNow })
         .orderBy("program.name", "ASC")
         .getMany();
-        
-        if (!programs || programs.length === 0) {
-            return res.status(404).json({ message: "No se encontraron metas activas." });
-        }
         
         const programsFormatted = programs.map(g => ({
             id: g.id,
@@ -22,6 +23,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
             goal: g.meta,
             year: g.año,
             month: g.mes,
+            professional: g.professional,
         }))
 
         return res.status(200).json(programsFormatted);
@@ -34,20 +36,37 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const { program :id, goal } = req.body;
+        const {program, goal, professional } = req.body;
 
-        const yearNow = new Date().getFullYear();
-        const monthNow = new Date().getMonth() + 1;
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentDay = currentDate.getDate();
 
-        if (!id || !goal) {
+        const lastDayOfCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+        const isLastDayOfMonth = currentDay === lastDayOfCurrentMonth;
+
+        let targetYear = currentYear;
+        let targetMonth = currentMonth;
+
+        if (isLastDayOfMonth) {
+            targetMonth = currentMonth + 1;
+            if (targetMonth > 12) {
+                targetMonth = 1;
+                targetYear = currentYear + 1;
+            }
+        }
+
+        if (!program || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
         }
 
         const savedGoal = await ProgramaMetaService.setGoalMonth(
-            id,
+            program,
             goal,
-            yearNow,
-            monthNow
+            targetYear,
+            targetMonth,
+            professional
         );
         
         return res.status(201).json(savedGoal);

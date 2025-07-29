@@ -58,7 +58,7 @@ const router = Router();
  *       404:
  *         description: No hay archivos registrados
  */
-router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']) , getAllFiles);
+router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']) , getAllFiles);
 
 /**
  * @swagger
@@ -85,7 +85,7 @@ router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/archivo/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']),validarId ,getFileById);
+router.get("/archivo/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']),validarId ,getFileById);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId,
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']),validarId, downloadFile);
+router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16','17','18', '19', '20']),validarId, downloadFile);
 
 /**
  * @swagger

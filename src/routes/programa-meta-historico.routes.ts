@@ -6,8 +6,8 @@ import { createGoal, getGoalsByPrograms } from "../controllers/programa-meta-his
 const router = Router();
 
 
-router.get("/metas/programas", authenticate, authorizeRoles(["1"]), getGoalsByPrograms);
+router.get("/metas/programas", authenticate, authorizeRoles(["1",  '19', '20']), getGoalsByPrograms);
 
-router.post("/metas/programas", authenticate, authorizeRoles(["1"]), createGoal);
+router.post("/metas/programas", authenticate, authorizeRoles(["1", '20']), createGoal);
 
 export default router;
