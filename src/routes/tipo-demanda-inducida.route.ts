@@ -85,7 +85,7 @@ router.get(
 router.post(
   "/tipo/demanda-inducida/buscar",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles(["1", '19', '20']),
   getTypeDemandInducedByName
 );
 

@@ -81,6 +81,6 @@ router.get("/elementos/demanda-inducida", authenticate, authorizeRoles(['1']), g
  *       404:
  *         description: No se encontraron elementos de demanda inducida
  */
-router.post("/elementos/demanda-inducida/buscar", authenticate, authorizeRoles(['1']), getElementDemandInducedByName);
+router.post("/elementos/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20']), getElementDemandInducedByName);
 
 export default router;
