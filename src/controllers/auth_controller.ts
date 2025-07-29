@@ -71,6 +71,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         area: user.area,
         position: user.position,
         headquarters: user.sedeRelation?.name,
+        headquartersId: user?.sedeRelation?.id
       },
       message: "Inicio de sesión exitoso",
     });
