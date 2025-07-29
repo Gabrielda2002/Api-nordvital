@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, TableIndex, TableForeignKey } from "typeorm";
 
-export class AlterIndexProgramaMetaHistorico20250729083042 implements MigrationInterface {
+export class AlterIndexProgramaMetaHistorico1753797466390 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         // 1. Primero, obtener información sobre la clave foránea
         const table = await queryRunner.getTable("programa_meta_historico");
