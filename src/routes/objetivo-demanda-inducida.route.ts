@@ -74,6 +74,6 @@ router.get('/objetivo/demanda-inducida', authenticate, authorizeRoles(['1']), ge
  *       404:
  *         description: No se encontraron objetivos de demanda inducida
  */
-router.post('/objetivo/demanda-inducida/buscar', authenticate, authorizeRoles(['1']), getObjetiveDemandInducedByName);
+router.post('/objetivo/demanda-inducida/buscar', authenticate, authorizeRoles(['1', '19', '20']), getObjetiveDemandInducedByName);
 
 export default router;

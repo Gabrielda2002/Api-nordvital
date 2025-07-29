@@ -74,6 +74,6 @@ router.get("/resumen/demanda-inducida", authenticate, authorizeRoles(['1']), get
  *       404:
  *         description: No se encontraron resúmenes de seguimiento de actividad
  */
-router.post("/resumen/demanda-inducida/buscar", authenticate, authorizeRoles(['1']), getSummaryActivityByName);
+router.post("/resumen/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20']), getSummaryActivityByName);
 
 export default router;

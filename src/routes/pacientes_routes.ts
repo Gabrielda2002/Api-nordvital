@@ -72,7 +72,7 @@ router.get("/pacientes/:id", authenticate, authorizeRoles(['1', '2', '3', '5']),
  *       400:
  *         description: Error en la validación
  */
-router.post("/pacientes", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), createPaciente);
+router.post("/pacientes", authenticate, authorizeRoles(['1', '3', '10', '15', '6',  '19', '20']), createPaciente);
 
 /**
  * @swagger
@@ -149,7 +149,7 @@ router.delete("/pacientes/:id", authenticate, authorizeRoles(['1']), validarId, 
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/pacientes-documento", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getPacientesByDocument);
+router.post("/pacientes-documento", authenticate, authorizeRoles(['1', '3', '10', '15', '6',  '19', '20']), getPacientesByDocument);
 
 /**
  * @swagger
