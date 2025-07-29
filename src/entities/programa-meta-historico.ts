@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
 import { Programa } from "./programa";
+import { LugarRadicacion } from "./lugar-radicacion";
 
 @Entity({ name: "programa_meta_historico" })
 export class ProgramaMetaHistorico extends BaseEntity {
@@ -33,6 +34,11 @@ export class ProgramaMetaHistorico extends BaseEntity {
     @Column({ name: "profesional", type: "enum", enum: ['Medicina General', 'Enfermería'], default: 'Medicina General' })
     professional: 'Medicina General' | 'Enfermería';
 
+    @Column({ name: "sede_id", type: "int", nullable: false, default: 1 })
+    @IsNumber()
+    @IsNotEmpty({ message: "La sede es requerida" })
+    sedeId: number;
+
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
 
@@ -43,4 +49,8 @@ export class ProgramaMetaHistorico extends BaseEntity {
     @ManyToOne(() => Programa, (programa) => programa.metaHistoricoRelation)
     @JoinColumn({ name: "programa_id" })
     programaRelation: Programa;
+
+    @ManyToOne(() => LugarRadicacion, (sede) => sede.programaMetaHistoricoRelation)
+    @JoinColumn({ name: "sede_id" })
+    sedeRelation: LugarRadicacion;
 }

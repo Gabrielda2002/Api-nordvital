@@ -12,6 +12,7 @@ import { InventarioGeneral } from "./inventario-general";
 import { Equipos } from "./equipos";
 import { Televisor } from "./televisor";
 import { Celular } from "./celular";
+import { ProgramaMetaHistorico } from "./programa-meta-historico";
 
 @Entity("sedes")
 export class LugarRadicacion extends BaseEntity{
@@ -96,4 +97,8 @@ export class LugarRadicacion extends BaseEntity{
 
     @OneToMany(() => Celular, (celular) => celular.sedeRelation)
     celularesRelation: Celular[]
+
+    // Relación con programa meta historico
+    @OneToMany(() => ProgramaMetaHistorico, (programaMeta) => programaMeta.sedeRelation)
+    programaMetaHistoricoRelation: ProgramaMetaHistorico[]
 }
