@@ -3,7 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { errorHandler } from "./middlewares/manejar-errores";
-import routes from "./routes/index-routes";
+import routes from "./routes/index.routes";
 import { loggerMiddleware } from "./middlewares/logger_middleware";
 import { limiter } from "./middlewares/rate-limit";
 import helmet from "helmet";
