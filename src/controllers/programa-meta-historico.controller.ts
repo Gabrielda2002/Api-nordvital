@@ -11,6 +11,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
+        .leftJoinAndSelect("goal.headquartersRelation", "sede")
         .where("goal.activo = true")
         .andWhere("goal.año = :year", { year: yearNow })
         .andWhere("goal.mes = :month", { month: monthNow })
@@ -19,11 +20,12 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         
         const programsFormatted = programs.map(g => ({
             id: g.id,
-            program: g.programaRelation?.name || "N/A",
+            program: g.programaRelation?.name,
             goal: g.meta,
             year: g.año,
             month: g.mes,
             professional: g.professional,
+            headquarters: g.headquartersRelation?.name,
         }))
 
         return res.status(200).json(programsFormatted);
@@ -36,7 +38,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const {program, goal, professional } = req.body;
+        const {program, goal, professional, headquarters } = req.body;
 
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
@@ -66,7 +68,8 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
             goal,
             targetYear,
             targetMonth,
-            professional
+            professional,
+            headquarters
         );
         
         return res.status(201).json(savedGoal);

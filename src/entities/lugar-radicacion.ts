@@ -99,6 +99,6 @@ export class LugarRadicacion extends BaseEntity{
     celularesRelation: Celular[]
 
     // Relación con programa meta historico
-    @OneToMany(() => ProgramaMetaHistorico, (programaMeta) => programaMeta.sedeRelation)
+    @OneToMany(() => ProgramaMetaHistorico, (programaMeta) => programaMeta.headquartersRelation)
     programaMetaHistoricoRelation: ProgramaMetaHistorico[]
 }

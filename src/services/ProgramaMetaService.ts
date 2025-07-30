@@ -9,7 +9,8 @@ export class ProgramaMetaService {
     goal: number,
     year: number,
     month: number,
-    professional: string
+    professional: string,
+    headquarter: number
   ): Promise<ProgramaMetaHistorico> {
 
     const currentDate = new Date();
@@ -34,6 +35,7 @@ export class ProgramaMetaService {
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
       .andWhere("goal.professional = :professional", { professional })
+      .andWhere("goal.headquartersId = :headquartersId", { headquartersId: headquarter })
       .getOne();
 
     if (goalExist) {
@@ -53,6 +55,7 @@ export class ProgramaMetaService {
     newGoal.mes = month;
     newGoal.activo = true;
     newGoal.professional = professional as "Medicina General" | "Enfermería";
+    newGoal.headquartersId = headquarter;
 
     const errors = await validate(newGoal);
 

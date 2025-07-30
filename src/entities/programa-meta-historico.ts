@@ -37,7 +37,7 @@ export class ProgramaMetaHistorico extends BaseEntity {
     @Column({ name: "sede_id", type: "int", nullable: false, default: 1 })
     @IsNumber()
     @IsNotEmpty({ message: "La sede es requerida" })
-    sedeId: number;
+    headquartersId: number;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
@@ -52,5 +52,5 @@ export class ProgramaMetaHistorico extends BaseEntity {
 
     @ManyToOne(() => LugarRadicacion, (sede) => sede.programaMetaHistoricoRelation)
     @JoinColumn({ name: "sede_id" })
-    sedeRelation: LugarRadicacion;
+    headquartersRelation: LugarRadicacion;
 }
