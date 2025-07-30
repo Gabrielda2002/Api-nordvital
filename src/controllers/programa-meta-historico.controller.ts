@@ -2,12 +2,21 @@ import { NextFunction, Request, Response } from "express";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/ProgramaMetaService";
+import { Usuarios } from "../entities/usuarios";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
         const yearNow = new Date().getFullYear();
         const monthNow = new Date().getMonth() + 1;
+
+        const rolCurrentUser = req.user?.rol;
+
+        const idCurrentUser = req.user?.id;
+
+        const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
+            .where("usuario.id = :id", { id: idCurrentUser })
+            .getOne();
 
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
@@ -16,9 +25,14 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         .andWhere("goal.año = :year", { year: yearNow })
         .andWhere("goal.mes = :month", { month: monthNow })
         .orderBy("program.name", "ASC")
-        .getMany();
-        
-        const programsFormatted = programs.map(g => ({
+
+        if (rolCurrentUser == "19" || rolCurrentUser == "21") {
+            programs.andWhere("goal.headquartersId = :headquartersId", { headquartersId: headquartersCurrentUser?.headquarters });
+        }
+
+        const programsList = await programs.getMany();
+
+        const programsFormatted = programsList.map(g => ({
             id: g.id,
             program: g.programaRelation?.name,
             goal: g.meta,

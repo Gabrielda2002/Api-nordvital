@@ -106,14 +106,25 @@ export class ProgramaMetaService {
   static async getGoalMonth(
     programId: number,
     year: number,
-    month: number
+    month: number,
+    headquartersId?: number,
+    rolCurrentUser?: string | number
   ): Promise<ProgramaMetaHistorico | null> {
-    return await ProgramaMetaHistorico.createQueryBuilder("goal")
+
+    console.log("id de la sede del usuario", headquartersId);
+    console.log("rol del usuario", rolCurrentUser);
+
+    const query =  await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
       .andWhere("goal.activo = true")
-      .getOne();
+
+      if (rolCurrentUser == "19" || rolCurrentUser == "21") {
+          query.andWhere("goal.headquartersId = :headquartersId", { headquartersId })
+      }
+
+    return await query.getOne();
   }
 
   static async getHistoryGoals(

@@ -3,6 +3,7 @@ import { DemandaInducida } from "../entities/demanda-inducida";
 import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/ProgramaMetaService";
+import { Usuarios } from "../entities/usuarios";
 
 export const getAllDemandInduded = async (
   req: Request,
@@ -10,6 +11,13 @@ export const getAllDemandInduded = async (
   next: NextFunction
 ) => {
   try {
+    const idCurrentUser = req.user?.id;
+    const idRoLCurrentUser = req.user?.rol;
+
+    const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
+      .where("usuario.id = :id", { id: idCurrentUser })
+      .getOne();
+
     const demandInduced = await DemandaInducida.createQueryBuilder(
       "demandInduced"
     )
@@ -29,10 +37,24 @@ export const getAllDemandInduded = async (
         "demandInduced.personaSeguimientoRelation",
         "personaSeguimiento"
       )
-      .orderBy("demandInduced.createdAt", "DESC")
-      .getMany();
+      .orderBy("demandInduced.createdAt", "DESC");
 
-    const demandInducedFormatted = demandInduced.map((d) => ({
+    if (idRoLCurrentUser == "19") {
+      demandInduced.andWhere("demandInduced.personaSeguimientoId = :userId", {
+        userId: idCurrentUser,
+      });
+    } else if (idRoLCurrentUser == "21") {
+      demandInduced.andWhere(
+        "personaSeguimiento.headquarters = :headquartersId",
+        {
+          headquartersId: headquartersCurrentUser?.headquarters,
+        }
+      );
+    }
+
+    const demandInducedList = await demandInduced.getMany();
+
+    const demandInducedFormatted = demandInducedList.map((d) => ({
       id: d.id || "N/A",
       typeDocument: d.pacienteRelation?.documentRelation?.name || "N/A",
       document: d.pacienteRelation?.documentNumber || "N/A",
@@ -177,7 +199,8 @@ export const createDemandInduced = async (
     demandInduced.areaPersonaSeguimientoId = areaPersonProcess
       ? parseInt(areaPersonProcess)
       : null;
-    demandInduced.clasificacion = elementDemand == 1 || elementDemand == 3 ? true : classification;
+    demandInduced.clasificacion =
+      elementDemand == 1 || elementDemand == 3 ? true : classification;
     demandInduced.contactNumbers = contactNumbers;
     demandInduced.personaRecibe = acceptCall || null;
     demandInduced.profesional = profetional;
@@ -236,46 +259,65 @@ export async function getEstadisticasDemandaInducida(
   next: NextFunction
 ) {
   try {
-    const {element: elementoId, program: programaId, professional: profesional, year: año, month: mes } = req.body;
+    const {
+      element: elementoId,
+      program: programaId,
+      professional: profesional,
+      year: año,
+      month: mes,
+    } = req.body;
+
+    const rolCurrentUser = req.user?.rol;
+
+    const idCurrentUser = req.user?.id;
+
+    const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
+      .where("usuario.id = :id", { id: idCurrentUser })
+      .getOne();
+
+    const idHeadquartersCurrentUser = headquartersCurrentUser?.headquarters;
 
     // Obtener meta del programa para el mes
     const metaPrograma = await ProgramaMetaService.getGoalMonth(
       parseInt(programaId),
       parseInt(año),
-      parseInt(mes)
+      parseInt(mes),
+      idHeadquartersCurrentUser,
+      rolCurrentUser
     );
 
     const metaValue = metaPrograma?.meta || 0;
 
     // 1. Estadísticas por programa, elemento y profesional
-    const estadisticasPorPrograma = await getStatisticsByProgram(
-      elementoId,
+    // const estadisticasPorPrograma = await getStatisticsByProgram(
+    //   elementoId,
+    //   programaId,
+    //   profesional,
+    //   año,
+    //   mes,
+    //   metaValue
+    // );
+
+    // 2. Llamadas telefónicas efectivas vs no efectivas
+    const estadisticasLlamadasTelefonicas = await getStatisticsCalls(
       programaId,
       profesional,
       año,
       mes,
-      metaValue
+      metaValue,
+      idCurrentUser,
+      idHeadquartersCurrentUser,
+      rolCurrentUser
     );
 
-    // 2. Llamadas telefónicas efectivas vs no efectivas
-    const estadisticasLlamadasTelefonicas =
-      await getStatisticsCalls(
-        programaId,
-        profesional,
-        año,
-        mes,
-        metaValue
-      );
-
     // 3. Resultados de llamadas no efectivas
-    const estadisticasLlamadasNoEfectivas =
-      await getStatisticsCallNotEffective(
-        programaId,
-        profesional,
-        año,
-        mes,
-        metaValue
-      );
+    // const estadisticasLlamadasNoEfectivas = await getStatisticsCallNotEffective(
+    //   programaId,
+    //   profesional,
+    //   año,
+    //   mes,
+    //   metaValue
+    // );
 
     // 4. Cantidad de registros demanda inducida por programa por mes y por año
     const cantidadDemandInduced = await getQuantityDemandInducedByProgram(
@@ -283,17 +325,24 @@ export async function getEstadisticasDemandaInducida(
       programaId,
       año,
       mes,
-      elementoId
+      elementoId,
+      idCurrentUser,
+      idHeadquartersCurrentUser,
+      rolCurrentUser
     );
 
     // 5. Estadísticas resultados de llamadas no efectivas
-    const estResultadoLlamadasNoEfectivas = await getStatisticsResultCallsNotEffective(
-      programaId,
-      profesional,
-      elementoId,
-      año,
-      mes
-    );
+    const estResultadoLlamadasNoEfectivas =
+      await getStatisticsResultCallsNotEffective(
+        programaId,
+        profesional,
+        elementoId,
+        año,
+        mes,
+        idCurrentUser,
+        rolCurrentUser,
+        idHeadquartersCurrentUser
+      );
 
     return res.status(200).json({
       meta: metaValue,
@@ -302,7 +351,7 @@ export async function getEstadisticasDemandaInducida(
       // estadisticasLlamadasNoEfectivas,
       cantidadDemandInduced,
       estResultadoLlamadasNoEfectivas,
-    }); 
+    });
   } catch (error) {
     next(error);
   }
@@ -314,24 +363,42 @@ async function getStatisticsResultCallsNotEffective(
   elementoId: string,
   año: string,
   mes: string,
+  currentUserId: string,
+  rolCurrentUser?: number | string,
+  currentUserHeadquartersId?: number
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
-  .leftJoinAndSelect("demanda.programaRelation", "programa")
-  .leftJoinAndSelect("demanda.resultadoRelation", "resultado")
-  .select([
-    "resultado.name as resultadoLlamada",
-    "COUNT(*) as cantidad",
-  ])
-  .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
-  .andWhere("demanda.clasificacion = :clasificacion", { clasificacion: false })
-  .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
-  .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
-  .andWhere("demanda.programaId = :programaId", { programaId })
-  .andWhere("demanda.profesional = :profesional", { profesional })
-  .groupBy("resultado.name")
-  .getRawMany();
+    .leftJoinAndSelect("demanda.programaRelation", "programa")
+    .leftJoinAndSelect("demanda.resultadoRelation", "resultado")
+    .leftJoinAndSelect(
+      "demanda.personaSeguimientoRelation",
+      "personaSeguimiento"
+    )
+    .select(["resultado.name as resultadoLlamada", "COUNT(*) as cantidad"])
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
+    .andWhere("demanda.clasificacion = :clasificacion", {
+      clasificacion: false,
+    })
+    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    .andWhere("demanda.programaId = :programaId", { programaId })
+    .andWhere("demanda.profesional = :profesional", { profesional })
+    .groupBy("resultado.name");
 
-  return query.map((resultado) => ({
+  // si el rol es 19 mostrar solo las DI de ese usuario
+  if (rolCurrentUser == "19") {
+    query.andWhere("demanda.personaSeguimientoId = :userId", {
+      userId: currentUserId,
+    });
+  } else if (rolCurrentUser == "21") {
+    query.andWhere("personaSeguimiento.headquarters = :headquartersId", {
+      headquartersId: currentUserHeadquartersId,
+    });
+  }
+
+  const results = await query.getRawMany();
+
+  return results.map((resultado) => ({
     resultadoLlamada: resultado.resultadoLlamada,
     cantidad: parseInt(resultado.cantidad),
   }));
@@ -343,24 +410,37 @@ async function getQuantityDemandInducedByProgram(
   programaId: string,
   año: string,
   mes: string,
-  elementoId: string
+  elementoId: string,
+  currentUserId: string,
+  currentUserHeadquartersId?: number,
+  rolCurrentUser?: string | number
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
-    .select([
-      "programa.name as programa",
-      "COUNT(*) as cantidad",
-    ])
+    .leftJoinAndSelect("demanda.personaSeguimientoRelation", "personaSeguimiento")
+    .select(["programa.name as programa", "COUNT(*) as cantidad"])
     .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
     .andWhere("metaHistorico.año = :year", { year: año })
     .andWhere("metaHistorico.mes = :month", { month: mes })
     .andWhere("demanda.profesional = :profesional", { profesional })
     .andWhere("demanda.programaId = :programaId", { programaId })
-    .groupBy("programa.name")
-    .getRawMany();
+    .groupBy("programa.name");
 
-  return query.map((resultado) => ({
+  // si el rol es 19 mostrar solo las DI de ese usuario
+  if (rolCurrentUser == "19") {
+    query.andWhere("demanda.personaSeguimientoId = :userId", {
+      userId: currentUserId,
+    });
+  } else if (rolCurrentUser == "21") {
+    query.andWhere("personaSeguimiento.headquarters = :headquartersId", {
+      headquartersId: currentUserHeadquartersId,
+    });
+  }
+
+  const queryResults = await query.getRawMany();
+
+  return queryResults.map((resultado) => ({
     programa: resultado.programa,
     cantidad: parseInt(resultado.cantidad),
   }));
@@ -393,7 +473,6 @@ async function getStatisticsByProgram(
     .groupBy("programa.name, elemento.name, demanda.profesional")
     .getRawMany();
 
-
   return query.map((resultado) => ({
     programa: resultado.programa,
     elemento: resultado.elemento,
@@ -412,11 +491,15 @@ async function getStatisticsCalls(
   profesional: string,
   año: string,
   mes: string,
-  metaValue: number
+  metaValue: number,
+  currentUserId: string,
+  currentUserHeadquartersId?: number,
+  rolCurrentUser?: string | number
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
+    .leftJoinAndSelect("demanda.personaSeguimientoRelation", "personaSeguimiento")
     .select([
       "demanda.clasificacion as esEfectiva",
       "demanda.profesional as profesional",
@@ -427,8 +510,20 @@ async function getStatisticsCalls(
     .andWhere("metaHistorico.mes = :month", { month: mes })
     .andWhere("demanda.programaId = :programaId", { programaId })
     .andWhere("demanda.profesional = :profesional", { profesional })
-    .groupBy("demanda.clasificacion, demanda.profesional")
-    .getRawMany();
+    .groupBy("demanda.clasificacion, demanda.profesional");
+
+  // si el rol es 19 mostrar solo las DI de ese usuario
+  if (rolCurrentUser == "19") {
+    query.andWhere("demanda.personaSeguimientoId = :userId", {
+      userId: currentUserId,
+    });
+  } else if (rolCurrentUser == "21") {
+    query.andWhere("personaSeguimiento.headquarters = :headquartersId", {
+      headquartersId: currentUserHeadquartersId,
+    });
+  }
+
+  const queryResults = await query.getRawMany();
 
   const estadisticas: {
     efectivas: { profesional: any; cantidad: number; porcentaje: number }[];
@@ -438,7 +533,7 @@ async function getStatisticsCalls(
     noEfectivas: [],
   };
 
-  query.forEach((resultado) => {
+  queryResults.forEach((resultado) => {
     const data = {
       profesional: resultado.profesional,
       cantidad: parseInt(resultado.cantidad),
