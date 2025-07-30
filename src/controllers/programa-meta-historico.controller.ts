@@ -75,3 +75,23 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 }
+
+export const deleteGoal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+        const { id } = req.params;
+
+        const goalExists = await ProgramaMetaHistorico.findOneBy({ id: Number(id) });
+
+        if (!goalExists) {
+            return res.status(404).json({ message: "Goal not found." });
+        }
+
+        await goalExists.remove();
+
+        return res.status(200).json({ message: "Goal deleted successfully." });
+
+    } catch (error) {
+        next(error);
+    }
+}
