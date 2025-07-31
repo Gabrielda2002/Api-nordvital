@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/ProgramaMetaService";
+import { Usuarios } from "../entities/usuarios";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -9,21 +10,36 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         const yearNow = new Date().getFullYear();
         const monthNow = new Date().getMonth() + 1;
 
+        const rolCurrentUser = req.user?.rol;
+
+        const idCurrentUser = req.user?.id;
+
+        const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
+            .where("usuario.id = :id", { id: idCurrentUser })
+            .getOne();
+
         const programs = await ProgramaMetaHistorico.createQueryBuilder("goal")
         .leftJoinAndSelect("goal.programaRelation", "program")
+        .leftJoinAndSelect("goal.headquartersRelation", "sede")
         .where("goal.activo = true")
         .andWhere("goal.año = :year", { year: yearNow })
         .andWhere("goal.mes = :month", { month: monthNow })
         .orderBy("program.name", "ASC")
-        .getMany();
-        
-        const programsFormatted = programs.map(g => ({
+
+        if (rolCurrentUser == "19" || rolCurrentUser == "21") {
+            programs.andWhere("goal.headquartersId = :headquartersId", { headquartersId: headquartersCurrentUser?.headquarters });
+        }
+
+        const programsList = await programs.getMany();
+
+        const programsFormatted = programsList.map(g => ({
             id: g.id,
-            program: g.programaRelation?.name || "N/A",
+            program: g.programaRelation?.name,
             goal: g.meta,
             year: g.año,
             month: g.mes,
             professional: g.professional,
+            headquarters: g.headquartersRelation?.name,
         }))
 
         return res.status(200).json(programsFormatted);
@@ -36,7 +52,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
 export const createGoal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const {program, goal, professional } = req.body;
+        const {program, goal, professional, headquarters } = req.body;
 
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
@@ -66,10 +82,31 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
             goal,
             targetYear,
             targetMonth,
-            professional
+            professional,
+            headquarters
         );
         
         return res.status(201).json(savedGoal);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteGoal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+        const { id } = req.params;
+
+        const goalExists = await ProgramaMetaHistorico.findOneBy({ id: Number(id) });
+
+        if (!goalExists) {
+            return res.status(404).json({ message: "Goal not found." });
+        }
+
+        await goalExists.remove();
+
+        return res.status(200).json({ message: "Goal deleted successfully." });
 
     } catch (error) {
         next(error);

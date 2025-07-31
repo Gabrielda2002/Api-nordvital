@@ -74,6 +74,6 @@ router.get("/resultado/demanda-inducida", authenticate, authorizeRoles(['1']), g
  *       404:
  *         description: No se encontraron resultados de llamada
  */
-router.post("/resultado/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20']), getResultCallByName);
+router.post("/resultado/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getResultCallByName);
 
 export default router;

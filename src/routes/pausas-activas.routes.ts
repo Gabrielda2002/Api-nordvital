@@ -26,7 +26,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), getAllActiveBrakes)
+router.get("/active-brakes", authenticate, authorizeRoles(['1']), getAllActiveBrakes)
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ router.get("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.get("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), validarId, getActiveBrakeById)
+router.get("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, getActiveBrakeById)
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.get("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4
  *       400:
  *         description: Error en la validación
  */
-router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), createActiveBrake)
+router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), createActiveBrake)
 
 /**
  * @swagger
@@ -123,7 +123,7 @@ router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', 
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.put("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), validarId, updateActiveBrake)
+router.put("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, updateActiveBrake)
 
 /**
  * @swagger
@@ -145,6 +145,6 @@ router.put("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.delete("/active-brakes/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), validarId, deleteActiveBrake)
+router.delete("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, deleteActiveBrake)
 
 export default router;

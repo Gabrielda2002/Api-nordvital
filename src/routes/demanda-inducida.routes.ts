@@ -90,7 +90,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron demandas inducidas
  */
-router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20']), getAllDemandInduded);
+router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21']), getAllDemandInduded);
 
 /**
  * @swagger
@@ -233,8 +233,8 @@ router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20']),
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20']), createDemandInduced);
+router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21']), createDemandInduced);
 
-router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20']), getEstadisticasDemandaInducida);
+router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20', '21']), getEstadisticasDemandaInducida);
 
 export default router;

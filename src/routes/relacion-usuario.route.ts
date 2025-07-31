@@ -74,6 +74,6 @@ router.get("/relacion/demanda-inducida", authenticate, authorizeRoles(['1']), ge
  *       404:
  *         description: No se encontraron relaciones de usuario
  */
-router.post("/relacion/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20']), getRelationUserByName);
+router.post("/relacion/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getRelationUserByName);
 
 export default router;

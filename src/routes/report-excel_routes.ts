@@ -329,7 +329,7 @@ router.post(
 router.post(
   "/reporte/demanda/inducida"
   , authenticate
-  , authorizeRoles(["1", "19", "20"])
+  , authorizeRoles(["1", "19", "20", "21"])
   , reportDemandInduced
 )
 

@@ -74,6 +74,6 @@ router.get('/area-persona/demanda-inducida', authenticate, authorizeRoles(['1'])
  *       404:
  *         description: Area Person not found
  */
-router.post('/area-persona/demanda-inducida/buscar', authenticate, authorizeRoles(['1', '19', '20']), getAreaPersonByName);
+router.post('/area-persona/demanda-inducida/buscar', authenticate, authorizeRoles(['1', '19', '20', '21']), getAreaPersonByName);
 
 export default router;

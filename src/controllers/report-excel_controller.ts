@@ -1191,7 +1191,9 @@ export async function reportDemandInduced(
 ) {
   try {
     
-    const { dateStart, dateEnd } = req.body;
+    const { dateStart, dateEnd, headquarter } = req.body;
+
+    const rolUser = req.user?.rol;
 
     const query = await DemandaInducida.createQueryBuilder("demandas_inducidas")
       .leftJoinAndSelect("demandas_inducidas.pacienteRelation", "paciente")
@@ -1209,12 +1211,25 @@ export async function reportDemandInduced(
       .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
       .orderBy("demandas_inducidas.createdAt", "ASC"); // <-- Aquí, ASC para más viejo a más reciente
 
+    if (rolUser == 19)  {
+      query.andWhere("demandas_inducidas.personaSeguimientoRelation = :userId", {
+        userId: req.user?.id
+      })
+    }
+    
     if (dateStart && dateEnd) {
       query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
       start: dateStart,
       end: dateEnd
       });
     }
+
+    if (headquarter) {
+      query.andWhere("usuario_seguimiento.headquarters = :headquarter", {
+        headquarter
+      });
+    }
+
     const data = await query.getMany();
 
     const workbook = new ExcelJS.Workbook();

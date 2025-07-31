@@ -74,6 +74,6 @@ router.get("/programas", authenticate, authorizeRoles(['1']), getAllPrograms);
  *       404:
  *         description: No se encontraron programas
  */
-router.post("/programas/buscar", authenticate, authorizeRoles(['1', '19', '20']), getProgramByName);
+router.post("/programas/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getProgramByName);
 
 export default router;
