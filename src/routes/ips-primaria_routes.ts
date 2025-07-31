@@ -34,7 +34,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get('/ips-primaria',authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getAllIpsPrimaria);
+router.get('/ips-primaria',authenticate, authorizeRoles(['1', '3', '10', '15', '6', '19', '20', '21']), getAllIpsPrimaria);
 
 /**
  * @swagger
