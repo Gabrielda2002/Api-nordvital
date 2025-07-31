@@ -3,6 +3,8 @@ import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/ProgramaMetaService";
 import { Usuarios } from "../entities/usuarios";
+import { LugarRadicacion } from "../entities/lugar-radicacion";
+import { Programa } from "../entities/programa";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -54,6 +56,14 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         
         const {program, goal, professional, headquarters } = req.body;
 
+        const headquartersExist = await LugarRadicacion.findOneBy({ name: headquarters });
+
+        const headquartersId = headquartersExist?.id;
+
+        const programExists = await Programa.findOneBy({ name: program });
+
+        const programId = programExists?.id;
+
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
@@ -73,17 +83,17 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
             }
         }
 
-        if (!program || !goal) {
+        if (!programId || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
         }
 
         const savedGoal = await ProgramaMetaService.setGoalMonth(
-            program,
+            programId,
             goal,
             targetYear,
             targetMonth,
             professional,
-            headquarters
+            headquartersId
         );
         
         return res.status(201).json(savedGoal);

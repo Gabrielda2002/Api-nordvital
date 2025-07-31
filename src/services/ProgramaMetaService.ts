@@ -10,7 +10,7 @@ export class ProgramaMetaService {
     year: number,
     month: number,
     professional: string,
-    headquarter: number
+    headquarter?: number
   ): Promise<ProgramaMetaHistorico> {
 
     const currentDate = new Date();
@@ -47,7 +47,7 @@ export class ProgramaMetaService {
     if (!isCurrentMonth && !(isCreatingNextMonthGoal && isLastDayOfMonth)) {
       throw new Error("Goals can only be created for the current month or the next month on the last day of the current month.");
     }
-
+    console.log(headquarter, "sede del usuario");
     const newGoal = new ProgramaMetaHistorico();
     newGoal.programaId = programId;
     newGoal.meta = Number(goal);
@@ -55,7 +55,7 @@ export class ProgramaMetaService {
     newGoal.mes = month;
     newGoal.activo = true;
     newGoal.professional = professional as "Medicina General" | "Enfermería";
-    newGoal.headquartersId = headquarter;
+    newGoal.headquartersId = Number(headquarter);
 
     const errors = await validate(newGoal);
 
