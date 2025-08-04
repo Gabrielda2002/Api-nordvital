@@ -14,6 +14,9 @@ export const getAllDemandInduded = async (
     const idCurrentUser = req.user?.id;
     const idRoLCurrentUser = req.user?.rol;
 
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
     const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
       .where("usuario.id = :id", { id: idCurrentUser })
       .getOne();
@@ -37,6 +40,12 @@ export const getAllDemandInduded = async (
         "demandInduced.personaSeguimientoRelation",
         "personaSeguimiento"
       )
+      .where("MONTH(demandInduced.createdAt) = :currentMonth", {
+        currentMonth: currentMonth,
+      })
+      .andWhere("YEAR(demandInduced.createdAt) = :currentYear", {
+        currentYear: currentYear,
+      })
       .orderBy("demandInduced.createdAt", "DESC");
 
     if (idRoLCurrentUser == "19") {
