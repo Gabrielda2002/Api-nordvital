@@ -1209,7 +1209,7 @@ export async function reportDemandInduced(
       .leftJoinAndSelect("demandas_inducidas.areaPersonaRelation", "area_persona")
       .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
       .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
-      .orderBy("demandas_inducidas.createdAt", "ASC"); // <-- Aquí, ASC para más viejo a más reciente
+      .orderBy("demandas_inducidas.createdAt", "ASC");
 
     if (rolUser == 19)  {
       query.andWhere("demandas_inducidas.personaSeguimientoRelation = :userId", {
