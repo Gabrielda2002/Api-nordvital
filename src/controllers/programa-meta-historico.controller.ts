@@ -56,14 +56,25 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         
         const {program, goal, professional, headquarters } = req.body;
 
-        const headquartersExist = await LugarRadicacion.findOneBy({ name: headquarters });
+            
+        let programId: number | undefined;
 
-        const headquartersId = headquartersExist?.id;
+        if (typeof program === "string") {
+            const programExists = await Programa.findOneBy({ name: program });
+            programId = programExists?.id;
+        } else if (typeof program === "number") {
+            programId = program;
+        }
 
-        const programExists = await Programa.findOneBy({ name: program });
+        let headquartersId: number | undefined;
 
-        const programId = programExists?.id;
-
+        if (typeof headquarters === "string") {
+            const headquartersExists = await LugarRadicacion.findOneBy({ name: headquarters });
+            headquartersId = headquartersExists?.id;
+        } else if (typeof headquarters === "number") {
+            headquartersId = headquarters;
+        }
+        
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
@@ -86,6 +97,8 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         if (!programId || !goal) {
             return res.status(400).json({ message: "Program and goal not found." });
         }
+
+        console.log(headquartersId, "headquartersId");
 
         const savedGoal = await ProgramaMetaService.setGoalMonth(
             programId,
