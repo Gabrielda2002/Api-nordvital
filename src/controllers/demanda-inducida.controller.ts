@@ -374,8 +374,14 @@ async function getStatisticsResultCallsNotEffective(
       "demanda.personaSeguimientoRelation",
       "personaSeguimiento"
     )
-    .select(["resultado.name as resultadoLlamada", "COUNT(*) as cantidad"])
+    .select([
+      "resultado.name as resultadoLlamada",
+       "COUNT(DISTINCT demanda.id) as cantidad",
+      "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
+      ])
     .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("demanda.clasificacion = :clasificacion", {
       clasificacion: false,
     })
@@ -419,13 +425,21 @@ async function getQuantityDemandInducedByProgram(
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
     .leftJoinAndSelect("demanda.personaSeguimientoRelation", "personaSeguimiento")
-    .select(["programa.name as programa", "COUNT(*) as cantidad"])
+    .select([
+      "programa.id as programa",
+      "programa.name as programaNombre",
+      "COUNT(DISTINCT demanda.id) as cantidad", // ? Usar DISTINCT para evitar duplicados
+      "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
+      "GROUP_CONCAT(DISTINCT DATE(demanda.createdAt)) as fechas"
+    ])
     .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("metaHistorico.año = :year", { year: año })
     .andWhere("metaHistorico.mes = :month", { month: mes })
     .andWhere("demanda.profesional = :profesional", { profesional })
     .andWhere("demanda.programaId = :programaId", { programaId })
-    .groupBy("programa.name");
+    .groupBy("programa.id, programa.name");
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
@@ -437,7 +451,6 @@ async function getQuantityDemandInducedByProgram(
       headquartersId: currentUserHeadquartersId,
     });
   }
-
   const queryResults = await query.getRawMany();
 
   return queryResults.map((resultado) => ({
@@ -503,9 +516,11 @@ async function getStatisticsCalls(
     .select([
       "demanda.clasificacion as esEfectiva",
       "demanda.profesional as profesional",
-      "COUNT(*) as cantidad",
+      "COUNT(DISTINCT demanda.id) as cantidad",
     ])
-    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 }) // ID 2 para llamadas telefónicas
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 })
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("metaHistorico.año = :year", { year: año })
     .andWhere("metaHistorico.mes = :month", { month: mes })
     .andWhere("demanda.programaId = :programaId", { programaId })
