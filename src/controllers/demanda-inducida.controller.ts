@@ -104,10 +104,11 @@ export const getAllDemandInduded = async (
         "N/A",
       areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
       programPerson: d.programaRelation?.name || "N/A",
-      assignmentDate: d.fechaCita ? formatInTimeZone(
-        d.fechaCita
-        , "America/Bogota", "dd/MM/yyyy"
-      ) : "N/A",
+      assignmentDate: d.fechaCita ? (() => {
+    const dateStr = d.fechaCita.toString(); // "yyyy-MM-dd"
+    const [year, month, day] = dateStr.split('-');
+    return `${day}-${month}-${year}`;
+})() : "N/A",
       profetional: d.profesional || "N/A",
     }));
 
