@@ -4,6 +4,7 @@ import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/ProgramaMetaService";
 import { Usuarios } from "../entities/usuarios";
+import { formatInTimeZone } from "date-fns-tz";
 
 export const getAllDemandInduded = async (
   req: Request,
@@ -67,7 +68,11 @@ export const getAllDemandInduded = async (
       id: d.id || "N/A",
       typeDocument: d.pacienteRelation?.documentRelation?.name || "N/A",
       document: d.pacienteRelation?.documentNumber || "N/A",
-      dateCreated: d.createdAt || "N/A",
+      dateCreated: d.createdAt ? formatInTimeZone(
+                  new Date(d.createdAt),
+                  "America/Bogota",
+                  "dd/MM/yyyy HH:mm:ss"
+                ) : "",
       elementDI: d.elementoRelation?.name || "N/A",
       typeElementDI: d.tipoRelation?.name || "N/A",
       objetive: d.objetivoRelation?.name || "N/A",
@@ -99,7 +104,10 @@ export const getAllDemandInduded = async (
         "N/A",
       areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
       programPerson: d.programaRelation?.name || "N/A",
-      assignmentDate: d.fechaCita || "N/A",
+      assignmentDate: d.fechaCita ? formatInTimeZone(
+        d.fechaCita
+        , "America/Bogota", "dd/MM/yyyy"
+      ) : "N/A",
       profetional: d.profesional || "N/A",
     }));
 
