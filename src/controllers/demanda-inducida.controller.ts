@@ -68,11 +68,7 @@ export const getAllDemandInduded = async (
       id: d.id || "N/A",
       typeDocument: d.pacienteRelation?.documentRelation?.name || "N/A",
       document: d.pacienteRelation?.documentNumber || "N/A",
-      dateCreated: d.createdAt ? formatInTimeZone(
-                  new Date(d.createdAt),
-                  "America/Bogota",
-                  "dd/MM/yyyy HH:mm:ss"
-                ) : "",
+      dateCreated: d.createdAt || "N/A",
       elementDI: d.elementoRelation?.name || "N/A",
       typeElementDI: d.tipoRelation?.name || "N/A",
       objetive: d.objetivoRelation?.name || "N/A",
@@ -104,11 +100,7 @@ export const getAllDemandInduded = async (
         "N/A",
       areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
       programPerson: d.programaRelation?.name || "N/A",
-      assignmentDate: d.fechaCita ? (() => {
-    const dateStr = d.fechaCita.toString(); // "yyyy-MM-dd"
-    const [year, month, day] = dateStr.split('-');
-    return `${day}-${month}-${year}`;
-})() : "N/A",
+      assignmentDate: d.fechaCita || "N/A",
       profetional: d.profesional || "N/A",
     }));
 
