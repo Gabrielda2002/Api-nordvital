@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createRadicador, deleteRadicador, getAllRadicador, getRadicador, updateRadicador, updateStatusRadicador } from "../controllers/radicador_controller";
+import { createRadicador, deleteRadicador, getAllRadicador, getRadicador, updateRadicador, updateStatusRadicador } from "../controllers/radicador.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

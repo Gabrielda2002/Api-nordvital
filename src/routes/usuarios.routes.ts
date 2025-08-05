@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, searchUsuarios, updatePassword, updatePasswordGeneric, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario_controller";
+import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, searchUsuarios, updatePassword, updatePasswordGeneric, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

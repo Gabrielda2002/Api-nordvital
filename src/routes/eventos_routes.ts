@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createEvent, deleteEvent, getAllEvents, getEventById, updateEvent } from "../controllers/eventos_controller";
+import { createEvent, deleteEvent, getAllEvents, getEventById, updateEvent } from "../controllers/eventos.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();

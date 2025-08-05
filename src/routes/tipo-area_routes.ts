@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllAreaTypes } from "../controllers/tipo-area_controller";
+import { getAllAreaTypes } from "../controllers/tipo-area.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 

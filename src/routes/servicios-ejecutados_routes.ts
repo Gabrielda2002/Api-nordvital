@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createServiciosEjecutados, deleteServiciosEjecutados, getAllServiciosEjecutados, updateServiciosEjecutados } from "../controllers/servicios-ejecutados_controller";
+import { createServiciosEjecutados, deleteServiciosEjecutados, getAllServiciosEjecutados, updateServiciosEjecutados } from "../controllers/servicios-ejecutados.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();

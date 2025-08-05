@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { getRegisterEntriesByDocument } from "../controllers/registro-entrada_controllers";
+import { getRegisterEntriesByDocument } from "../controllers/registro-entrada.controller";
 
 const router = Router();
 

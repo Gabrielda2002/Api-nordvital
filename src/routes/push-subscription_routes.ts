@@ -1,6 +1,6 @@
 // src/routes/push_routes.ts
 import { Router } from "express";
-import { getVapidPublicKey, subscribe, unsubscribe, sendTestPush } from "../controllers/push-subscription_controller";
+import { getVapidPublicKey, subscribe, unsubscribe, sendTestPush } from "../controllers/push-subscription.controller";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 

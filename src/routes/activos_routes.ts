@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 import { validarId } from "../middlewares/validar-id";
-import { getAllByAssetId } from "../controllers/activos_controller";
+import { getAllByAssetId } from "../controllers/activos.controller";
 
 const router = Router();
 

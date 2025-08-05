@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../controllers/categorias_controller";
+import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../controllers/categorias.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes_controller";
+import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes.controller";
 import { validarId } from "../middlewares/validar-id";
 import { upload } from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";

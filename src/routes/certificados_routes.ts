@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCertificate, downloadCertificate, getCertificateByDni } from "../controllers/certificados_controller";
+import { createCertificate, downloadCertificate, getCertificateByDni } from "../controllers/certificados.controller";
 import { uploadCertificate } from "../middlewares/multer-config-certificate";
 
 const router = Router();

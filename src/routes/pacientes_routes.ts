@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPaciente, deletePaciente, getAllPacientes, getPaciente, getPacientesByDocument, updatePaciente, updatePacienteTable } from "../controllers/pacientes_controller";
+import { createPaciente, deletePaciente, getAllPacientes, getPaciente, getPacientesByDocument, updatePaciente, updatePacienteTable } from "../controllers/pacientes.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";

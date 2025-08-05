@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createSurgery, deleteSurgery, getAllSurgery, getSurgery, updateSurgery } from "../controllers/cirugias_controller";
+import { createSurgery, deleteSurgery, getAllSurgery, getSurgery, updateSurgery } from "../controllers/cirugias.controller";
 import { validarId } from "../middlewares/validar-id";
 
 /**

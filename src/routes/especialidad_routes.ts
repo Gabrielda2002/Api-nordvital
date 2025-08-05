@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, getEspecialidadesByName, updateEspecialidad, updateStatusEspecialidad } from "../controllers/especialidad_controller";
+import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, getEspecialidadesByName, updateEspecialidad, updateStatusEspecialidad } from "../controllers/especialidad.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

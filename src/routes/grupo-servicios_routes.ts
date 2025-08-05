@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, getGrupoServiciosByName, updateGrupoServicios } from "../controllers/grupo-servicios_controller";
+import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, getGrupoServiciosByName, updateGrupoServicios } from "../controllers/grupo-servicios.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

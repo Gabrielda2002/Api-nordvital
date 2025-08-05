@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { validarId } from "../middlewares/validar-id";
-import { createSoftware, deleteSoftware, getAllSoftware, getSoftware, updateSoftware } from "../controllers/software_controller";
+import { createSoftware, deleteSoftware, getAllSoftware, getSoftware, updateSoftware } from "../controllers/software.controller";
 
 const router = Router();
 

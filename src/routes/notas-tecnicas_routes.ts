@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica, updateNotaTecnicaStatusFromExcel } from "../controllers/notas-tecnicas_controller";
+import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica, updateNotaTecnicaStatusFromExcel } from "../controllers/notas-tecnicas.controller";
 import { validarId } from "../middlewares/validar-id";
 import { uploadXlsx } from "../middlewares/upload-xlsx-PS";
 
