@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createParticipant, getAllParticipants } from "../controllers/participantes_controller";
+import { createParticipant, getAllParticipants } from "../controllers/participantes.controller";
 
 const router = Router();
 

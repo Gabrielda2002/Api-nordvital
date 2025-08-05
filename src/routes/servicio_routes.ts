@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createServicio, deleteServicio, getAllServicios, getServicioById, getServiciosByName, updateServicio, updateStatusServicio } from "../controllers/servicio_controller";
+import { createServicio, deleteServicio, getAllServicios, getServicioById, getServiciosByName, updateServicio, updateStatusServicio } from "../controllers/servicio.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

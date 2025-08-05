@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { getUserNotifications, markNotificationAsRead } from "../controllers/notificaciones_controller";
+import { getUserNotifications, markNotificationAsRead } from "../controllers/notificaciones.controller";
 
 const router = Router();
 

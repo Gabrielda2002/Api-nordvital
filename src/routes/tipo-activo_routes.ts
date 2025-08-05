@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllAssetTypes } from "../controllers/tipo-activo_controller";
+import { getAllAssetTypes } from "../controllers/tipo-activo.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 

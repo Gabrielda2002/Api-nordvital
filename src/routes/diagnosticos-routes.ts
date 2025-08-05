@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createDiagnostico, deleteDiagnostico, getAllDiagnosticos, getDiagnosticoById, getDiagnosticosByName, updateDiagnostico } from "../controllers/diagnostico-controller";
+import { createDiagnostico, deleteDiagnostico, getAllDiagnosticos, getDiagnosticoById, getDiagnosticosByName, updateDiagnostico } from "../controllers/diagnostico.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

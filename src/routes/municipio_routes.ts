@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio, updateStatusMunicipio } from "../controllers/municipio_controller";
+import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio, updateStatusMunicipio } from "../controllers/municipio.controller";
 import { validarId } from "../middlewares/validar-id";
 import { Municipio } from "../entities/municipio";
 import { authorizeRoles } from "../middlewares/authorize-roles";

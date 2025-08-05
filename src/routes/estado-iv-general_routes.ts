@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllStatusIVGeneral } from "../controllers/estado-iv-general_controller";
+import { getAllStatusIVGeneral } from "../controllers/estado-iv-general.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 

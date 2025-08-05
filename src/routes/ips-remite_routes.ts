@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createIpsRemite, deleteIpsRemite, getAllIpsRemite, getIpsRemite, getIpsRemiteByName, updateIpsRemite, updateStatusIpsRemite } from "../controllers/ips-remite_controller";
+import { createIpsRemite, deleteIpsRemite, getAllIpsRemite, getIpsRemite, getIpsRemiteByName, updateIpsRemite, updateStatusIpsRemite } from "../controllers/ips-remite.controller";
 import { validarId } from "../middlewares/validar-id";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";

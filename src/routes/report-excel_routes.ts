@@ -12,7 +12,7 @@ import {
   reportExcelCirugias,
   reportExcelCirugiasFiltros,
   reportExcelRadicacion,
-} from "../controllers/report-excel_controller";
+} from "../controllers/report-excel.controller";
 
 const router = Router();
 

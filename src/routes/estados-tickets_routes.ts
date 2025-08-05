@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createStatusTicket, deleteStatusTicket, getAllStatusTickets, getStatusTicketById, updateStatusTicket } from "../controllers/estados-tickets_controller";
+import { createStatusTicket, deleteStatusTicket, getAllStatusTickets, getStatusTicketById, updateStatusTicket } from "../controllers/estados-tickets.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router()

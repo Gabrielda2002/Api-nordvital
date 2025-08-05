@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllAreaDependency } from "../controllers/area-dependencia_controller";
+import { getAllAreaDependency } from "../controllers/area-dependencia.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 

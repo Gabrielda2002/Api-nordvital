@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createProcessTelevisor } from "../controllers/seguimiento-televisores_controller";
+import { createProcessTelevisor } from "../controllers/seguimiento-televisores.controller";
 
 /**
  * @swagger

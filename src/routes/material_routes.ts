@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllMaterials } from "../controllers/materiales_controller";
+import { getAllMaterials } from "../controllers/materiales.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 

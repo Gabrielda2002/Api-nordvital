@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { uploadSggc } from "../middlewares/multer-config-ssgc";
-import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile } from "../controllers/archivo_controller";
+import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile } from "../controllers/archivo.controller";
 import { validarId } from "../middlewares/validar-id";
 import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
 

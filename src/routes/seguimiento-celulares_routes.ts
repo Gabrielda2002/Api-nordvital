@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createProcessPhone } from "../controllers/seguimiento-celulares_controller";
+import { createProcessPhone } from "../controllers/seguimiento-celulares.controller";
 
 
 const router = Router();

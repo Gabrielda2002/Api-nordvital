@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createDepartment, deleteDepartment, getAllDepartments, getDepartment, updateDepartment } from "../controllers/departamentos_controller";
+import { createDepartment, deleteDepartment, getAllDepartments, getDepartment, updateDepartment } from "../controllers/departamentos.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();

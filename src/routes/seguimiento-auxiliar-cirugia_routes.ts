@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
-import { createAuxiliarySurgery, deleteAuxiliarySurgery, getAllAuxiliarySurgeries, getAuxiliarySurgery, updateAuxiliarySurgery } from "../controllers/seguimiento-auxiliar-cirugias_controller";
+import { createAuxiliarySurgery, deleteAuxiliarySurgery, getAllAuxiliarySurgeries, getAuxiliarySurgery, updateAuxiliarySurgery } from "../controllers/seguimiento-auxiliar-cirugias.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();

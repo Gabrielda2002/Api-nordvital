@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
-import { createFollowEquipment, deleteFollowEquipment, getAllFollowEquipment, getFollowEquipment, updateFollowEquipment } from "../controllers/seguimiento-equipos_controller";
+import { createFollowEquipment, deleteFollowEquipment, getAllFollowEquipment, getFollowEquipment, updateFollowEquipment } from "../controllers/seguimiento-equipos.controller";
 import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
