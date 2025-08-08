@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import radicacionRoutes from './radicacion_routes';
+import radicacionRoutes from './radicacion.routes';
 import tipoDocumentoRoutes from './tipo-documento_routes';
 import convenioRoutes from './convenio_routes';
 import ipsPrimariaRoutes from './ips-primaria_routes';

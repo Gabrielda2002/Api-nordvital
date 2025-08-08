@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, createRequestService, deleteRadicado, getAllRadicacion, getCupsEstadisticasPorMes, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateGroupServices, updateRadicado } from "../controllers/radicacion.controller";
 import { validarId } from "../middlewares/validar-id";
-import {upload} from "../middlewares/multer-config";
+import {upload} from "../middlewares/multer-config-radicacion";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 import { getDepartmentUser } from "../middlewares/get-department-user_middleware";
