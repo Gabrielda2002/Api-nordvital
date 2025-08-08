@@ -1,10 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, query, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
 import { Between, IsNull } from "typeorm";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { UnidadFuncional } from "../entities/unidad-funcional";
 import { CupsRadicados } from "../entities/cups-radicados";
+import { Pacientes } from "../entities/pacientes";
+import { Soportes } from "../entities/soportes";
+import path from "path";
 
 export async function getAllRadicacion(
   req: Request,
@@ -89,7 +92,10 @@ export async function getRadicacionById(
       auditDate: radicacion.auditDate,
       createdAt: radicacion.createdAt,
       orderDate: radicacion.orderDate,
-      profetional: radicacion.idProfesional === null ? radicacion.profetional : radicacion.profesionalesRelation?.name,
+      profetional:
+        radicacion.idProfesional === null
+          ? radicacion.profetional
+          : radicacion.profesionalesRelation?.name,
       groupServices: radicacion.groupServices,
       typeServices: radicacion.typeServices,
       justify: radicacion.justify,
@@ -290,13 +296,15 @@ export async function tablaPorAuditar(
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where(
         "cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9"
-      )
+      );
 
-      if (req.departmentUserId) {
-        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
-      }
-      query.orderBy('radicacion.createdAt', 'ASC')
-      const radicaciones = await query.getMany();
+    if (req.departmentUserId) {
+      query.andWhere("place.departamento = :departmentId", {
+        departmentId: req.departmentUserId,
+      });
+    }
+    query.orderBy("radicacion.createdAt", "ASC");
+    const radicaciones = await query.getMany();
 
     const formatedRadicaciones = await radicaciones.map((r) => ({
       id: r.id,
@@ -309,7 +317,10 @@ export async function tablaPorAuditar(
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
-      profetional: r.idProfesional === null ? r.profetional : r.profesionalesRelation?.name || "N/A",
+      profetional:
+        r.idProfesional === null
+          ? r.profetional
+          : r.profesionalesRelation?.name || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
       radicador: r.usuarioRelation?.name || "N/A",
@@ -339,7 +350,7 @@ export async function auditorRadicados(
 ) {
   try {
     const query = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect('radicacion.placeRelation', 'place')
+      .leftJoinAndSelect("radicacion.placeRelation", "place")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
@@ -348,13 +359,15 @@ export async function auditorRadicados(
       .orderBy("radicacion.id", "DESC")
       .where(
         "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
-      )
+      );
 
-      if (req.departmentUserId) {
-        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
-      }
-      query.orderBy('radicacion.id', 'ASC')
-      const radicaciones = await query.getMany();
+    if (req.departmentUserId) {
+      query.andWhere("place.departamento = :departmentId", {
+        departmentId: req.departmentUserId,
+      });
+    }
+    query.orderBy("radicacion.id", "ASC");
+    const radicaciones = await query.getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
@@ -439,30 +452,45 @@ export async function cirugiasTable(
       .leftJoinAndSelect("patient.documentRelation", "document")
       .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-      .leftJoinAndSelect('cupsRadicados.seguimientoAuxiliarRelation', 'seguimientoCups')
-      .leftJoinAndSelect('seguimientoCups.usuarioRelation', 'usuarioSeguimientoCups')
-      .leftJoinAndSelect('seguimientoCups.estadoSeguimientoRelation', 'statusSeguimientoCups')
+      .leftJoinAndSelect(
+        "cupsRadicados.seguimientoAuxiliarRelation",
+        "seguimientoCups"
+      )
+      .leftJoinAndSelect(
+        "seguimientoCups.usuarioRelation",
+        "usuarioSeguimientoCups"
+      )
+      .leftJoinAndSelect(
+        "seguimientoCups.estadoSeguimientoRelation",
+        "statusSeguimientoCups"
+      )
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect(
-      "cupsRadicados.functionalUnitRelation",
-      "unidadFuncional"
+        "cupsRadicados.functionalUnitRelation",
+        "unidadFuncional"
       )
       .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
       .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
       .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
       .leftJoinAndSelect(
-      "cirugias.gestionCirugiasRelation",
-      "gestionAuxiliarCirugia"
+        "cirugias.gestionCirugiasRelation",
+        "gestionAuxiliarCirugia"
       )
-      .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento')
       .leftJoinAndSelect(
-      "gestionAuxiliarCirugia.estadoSeguimientoRelation",
-      "statusGestionAuxiliarCirugia"
+        "gestionAuxiliarCirugia.userRelation",
+        "usuario-seguimiento"
+      )
+      .leftJoinAndSelect(
+        "gestionAuxiliarCirugia.estadoSeguimientoRelation",
+        "statusGestionAuxiliarCirugia"
       )
       .andWhere("convenio.id <> :convenioId", { convenioId: 1 })
       .andWhere("servicesGroup.id IN (:...groupIds)", { groupIds: [6, 9] })
-      .andWhere("(gestionAuxiliarCirugia.id IS NULL OR statusGestionAuxiliarCirugia.id NOT IN (:...statusIds))", { statusIds: [3, 4] }) 
+      .andWhere(
+        "(gestionAuxiliarCirugia.id IS NULL OR statusGestionAuxiliarCirugia.id NOT IN (:...statusIds))",
+        { statusIds: [3, 4] }
+      )
       .orderBy("radicacion.id", "DESC")
       .getMany();
 
@@ -483,14 +511,14 @@ export async function cirugiasTable(
         id: c.id,
         code: c.code,
         description: c.DescriptionCode,
-        seguimiento: c.seguimientoAuxiliarRelation?.map(s => ({
+        seguimiento: c.seguimientoAuxiliarRelation?.map((s) => ({
           id: s.id,
           estado: s.estadoSeguimientoRelation?.name || "N/A",
           observacion: s.observation,
           fechaCreacion: s.createdAt,
           Nombre: s.usuarioRelation?.name || "N/A",
           Apellido: s.usuarioRelation?.lastName || "N/A",
-        }))
+        })),
       })),
       grupoServicios: r.servicesGroupRelation?.name || "N/A",
       idGrupoServicios: r.servicesGroupRelation?.id || "N/A",
@@ -511,8 +539,8 @@ export async function cirugiasTable(
           fechaCreacion: g.createdAt,
           Nombre: g.userRelation?.name || "N/A",
           Apellido: g.userRelation?.lastName || "N/A",
-        }))
-      }))
+        })),
+      })),
     }));
 
     return res.json(cirugiasFormat);
@@ -609,22 +637,33 @@ export async function buscarRadicadoPorDocumento(
         "seguimientoAuxiliar.estadoSeguimientoRelation",
         "estadoSeguimiento"
       )
-      .leftJoinAndSelect("seguimientoAuxiliar.usuarioRelation", "usuario-seguimiento")
+      .leftJoinAndSelect(
+        "seguimientoAuxiliar.usuarioRelation",
+        "usuario-seguimiento"
+      )
       .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
-      .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionAuxiliarCirugia")
+      .leftJoinAndSelect(
+        "cirugias.gestionCirugiasRelation",
+        "gestionAuxiliarCirugia"
+      )
       .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemiteCirugia")
-      .leftJoinAndSelect('gestionAuxiliarCirugia.userRelation', 'usuario-seguimiento-cirugia')
+      .leftJoinAndSelect(
+        "gestionAuxiliarCirugia.userRelation",
+        "usuario-seguimiento-cirugia"
+      )
       .leftJoinAndSelect(
         "gestionAuxiliarCirugia.estadoSeguimientoRelation",
         "estadoSeguimientoCirugia"
       )
-      .where("patient.documentNumber = :documento", { documento })
+      .where("patient.documentNumber = :documento", { documento });
 
-      if (req.departmentUserId) {
-        query.andWhere('place.departamento = :departmentId', { departmentId: req.departmentUserId })
-      }
-      query.orderBy('radicacion.id', 'DESC')
-      const radicacion = await query.getMany();
+    if (req.departmentUserId) {
+      query.andWhere("place.departamento = :departmentId", {
+        departmentId: req.departmentUserId,
+      });
+    }
+    query.orderBy("radicacion.id", "DESC");
+    const radicacion = await query.getMany();
 
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });
@@ -647,7 +686,10 @@ export async function buscarRadicadoPorDocumento(
       auditDate: r.auditDate || "N/A",
       suportName: r.soportesRelation?.nameSaved || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
-      profetional: r.idProfesional === null ? r.profetional : r.profesionalesRelation?.name || "N/A",
+      profetional:
+        r.idProfesional === null
+          ? r.profetional
+          : r.profesionalesRelation?.name || "N/A",
       specialty: r.specialtyRelation?.name || "N/A",
       orderDate: r.orderDate || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
@@ -670,7 +712,7 @@ export async function buscarRadicadoPorDocumento(
           fechaCreacion: s.createdAt || "N/A",
           Nombre: s.userRelation?.name || "N/A",
           Apellido: s.userRelation?.lastName || "N/A",
-        }))
+        })),
       })),
       cups: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id || "N/A",
@@ -686,9 +728,9 @@ export async function buscarRadicadoPorDocumento(
           fechaCreacion: s.createdAt || "N/A",
           Nombre: s.usuarioRelation?.name || "N/A",
           Apellido: s.usuarioRelation?.lastName || "N/A",
-        }))
-      }))
-    }))
+        })),
+      })),
+    }));
 
     return res.json(radicacionFormated);
   } catch (error) {
@@ -705,12 +747,11 @@ export async function getCupsEstadisticasPorMes(
     const now = new Date();
     const firstDayOfMonth = startOfMonth(now);
 
-    const cupsRadicados = await CupsRadicados.createQueryBuilder("cupsRadicados")
+    const cupsRadicados = await CupsRadicados.createQueryBuilder(
+      "cupsRadicados"
+    )
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .select([
-        "status.name as estado",
-        "COUNT(*) as cantidad"
-      ])
+      .select(["status.name as estado", "COUNT(*) as cantidad"])
       .where("cupsRadicados.createdAt BETWEEN :start AND :end", {
         start: firstDayOfMonth,
         end: now,
@@ -719,9 +760,9 @@ export async function getCupsEstadisticasPorMes(
       .getRawMany();
 
     // Formatear los resultados en una estructura más simple
-    const resultado = cupsRadicados.map(record => ({
+    const resultado = cupsRadicados.map((record) => ({
       estado: record.estado,
-      cantidad: parseInt(record.cantidad)
+      cantidad: parseInt(record.cantidad),
     }));
 
     return res.json(resultado);
@@ -730,9 +771,12 @@ export async function getCupsEstadisticasPorMes(
   }
 }
 
-export async function updateGroupServices(req: Request, res: Response, next: NextFunction) {
+export async function updateGroupServices(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    
     const { id } = req.params;
 
     const { groupServices } = req.body;
@@ -752,17 +796,211 @@ export async function updateGroupServices(req: Request, res: Response, next: Nex
     if (errors.length > 0) {
       const message = errors.map((err) => ({
         property: err.property,
-        constraints: err.constraints
-      }))
-      return res.status(400).json({message: "Error updating radicacion", errors: message})
+        constraints: err.constraints,
+      }));
+      return res
+        .status(400)
+        .json({ message: "Error updating radicacion", errors: message });
     }
 
     await radicacion.save();
 
     return res.json({ message: "Radicacion updated" });
-
   } catch (error) {
-    next(error) 
-    
+    next(error);
   }
 }
+
+interface CupsRequest{
+  code: string;
+  description: string;
+  quantity: number;
+}
+
+export const createRequestService = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const queryRunner =
+    Radicacion.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    const {
+      // data request service
+      orderDate,
+      place,
+      ipsRemitente,
+      profetional,
+      specialty,
+      groupServices,
+      radicador,
+      typeServices,
+      idSoporte,
+      idPatient,
+      idDiagnostico,
+      // data patient
+      landline,
+      phoneNumber,
+      phoneNumber2,
+      address,
+      email,
+      // data CUPS
+    } = req.body;
+
+
+
+    const file  = req.file;
+
+    console.log(file)
+
+    const cupsRequestService: CupsRequest[] = JSON.parse(req.body.items);
+
+    // update data patient
+    const patientExist = await Pacientes.findOneBy({ id: parseInt(idPatient) });
+
+    if (!patientExist) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    patientExist.landline = landline;
+    patientExist.phoneNumber = phoneNumber;
+    patientExist.phoneNumber2 = phoneNumber2 == "" ? null : phoneNumber2;
+    patientExist.address = address;
+    patientExist.email = email;
+
+    const errorsPatient = await validate(patientExist);
+    if (errorsPatient.length > 0) {
+      const messages = errorsPatient.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      await queryRunner.rollbackTransaction();
+
+      return res
+        .status(400)
+        .json({ message: "Error updating patient", messages });
+    }
+
+
+
+    // upload file soport
+    if (!file) {
+      await queryRunner.rollbackTransaction();
+      return res.status(400).json({ message: "File support is required" });
+    }
+
+  const fileNameWithoutExt = file ? path.basename(file.originalname, path.extname(file.originalname)) : "";
+
+    const newSupportRequest = new Soportes();
+    newSupportRequest.name = fileNameWithoutExt?.normalize("NFD");
+    newSupportRequest.url = file?.path;
+    newSupportRequest.type = file?.mimetype;
+    newSupportRequest.size = file?.size;
+    newSupportRequest.nameSaved = path.basename(file?.filename);
+
+    console.log("soporte creado:", newSupportRequest);
+
+    const errorsSupport = await validate(newSupportRequest);
+    if (errorsSupport.length > 0) {
+      const messages = errorsSupport.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      await queryRunner.rollbackTransaction();
+
+      return res
+        .status(400)
+        .json({ message: "Error creating support", messages });
+    }
+
+    await queryRunner.manager.save(newSupportRequest);
+    
+    let supportId = newSupportRequest.id;
+
+    // create request service
+    const requestService = new Radicacion();
+    requestService.orderDate = orderDate;
+    requestService.place = parseInt(place);
+    requestService.ipsRemitente = parseInt(ipsRemitente);
+    requestService.idProfesional = Number(profetional);
+    requestService.specialty = parseInt(specialty);
+    requestService.groupServices = parseInt(groupServices);
+    requestService.typeServices = parseInt(typeServices);
+    requestService.radicador = parseInt(radicador);
+    requestService.auditora = "Pendiente";
+    requestService.justify = "Pendiente";
+    requestService.auditConcept = 6;
+    requestService.idPatient = parseInt(idPatient);
+    requestService.idSoporte = supportId;
+    requestService.idDiagnostico = parseInt(idDiagnostico);
+
+    const errorsRequestService = await validate(requestService);
+    if (errorsRequestService.length > 0) {
+      const messages = errorsRequestService.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+
+      await queryRunner.rollbackTransaction();
+
+      return res
+        .status(400)
+        .json({ message: "Error creating request service", messages });
+    }
+
+    await queryRunner.manager.save(requestService);
+    const requestServiceId = requestService.id;
+    
+    // create cups to request service
+
+    let cupsToInsert = [];
+
+    for (const item of cupsRequestService) {
+      const createCups = new CupsRadicados();
+
+      createCups.code = Number(item.code);
+      createCups.DescriptionCode = item.description;
+      createCups.status = 6;
+      createCups.observation = "Pendiente";
+      createCups.functionalUnit = 12;
+      createCups.idRadicacion = Number(requestServiceId);
+      createCups.quantity = Number(item.quantity);
+
+      const errorsCups = await validate(createCups);
+
+      if (errorsCups.length > 0) {
+        const messages = errorsCups.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+
+        await queryRunner.rollbackTransaction();
+
+        return res
+          .status(400)
+          .json({ message: "Error creating cups", messages });
+      }
+
+      await queryRunner.manager.save(createCups);
+
+      cupsToInsert.push(createCups);
+
+    }
+
+    await queryRunner.manager.save(patientExist);
+    await queryRunner.commitTransaction();
+
+    return res.status(200).json({ requestService, cupsToInsert });
+
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    next(error);
+  }finally{
+    await queryRunner.release();
+  }
+};
