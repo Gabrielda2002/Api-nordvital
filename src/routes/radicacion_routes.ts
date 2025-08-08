@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, deleteRadicado, getAllRadicacion, getCupsEstadisticasPorMes, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateGroupServices, updateRadicado } from "../controllers/radicacion.controller";
+import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, createRequestService, deleteRadicado, getAllRadicacion, getCupsEstadisticasPorMes, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateGroupServices, updateRadicado } from "../controllers/radicacion.controller";
 import { validarId } from "../middlewares/validar-id";
 import {upload} from "../middlewares/multer-config";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -352,5 +352,7 @@ router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3'
 router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', '3','6', '15']), getCupsEstadisticasPorMes);
 
 router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15']), validarId, updateGroupServices);
+
+router.post('/request/service', authenticate, authorizeRoles(['1', '15']), upload.single('file'), createRequestService);
 
 export default router;
