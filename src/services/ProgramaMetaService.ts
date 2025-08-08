@@ -54,7 +54,7 @@ export class ProgramaMetaService {
     newGoal.año = year;
     newGoal.mes = month;
     newGoal.activo = true;
-    newGoal.professional = professional as "Medicina General" | "Enfermería";
+    newGoal.professional = professional as "Medicina General" | "Enfermería" | "Nutrición" | "Ginecobstetricia" | "Psicología";
     newGoal.headquartersId = Number(headquarter);
 
     const errors = await validate(newGoal);
