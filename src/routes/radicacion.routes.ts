@@ -353,6 +353,6 @@ router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', 
 
 router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15']), validarId, updateGroupServices);
 
-router.post('/request/service', authenticate, authorizeRoles(['1', '15']), upload.single('file'), createRequestService);
+router.post('/request/service', authenticate, authorizeRoles(['1', '10', '3', '15', '6']), upload.single('file'), createRequestService);
 
 export default router;
