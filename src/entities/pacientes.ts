@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min } from "class-validator";
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min, ValidateIf } from "class-validator";
 import { Radicacion } from "./radicacion";
 import { Cirugias } from "./cirugias";
 import { DemandaInducida } from "./demanda-inducida";
@@ -36,14 +36,14 @@ export class Pacientes extends BaseEntity {
     @Length(1, 10, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber: string;
 
-    @Column({name: "TelefonoFijo"})
+    @Column({name: "TelefonoFijo", nullable: true})
+    @ValidateIf((o) => o.landline !== null && o.landline !== undefined && o.landline !== '')
     @IsString()
-    @IsOptional()
     @Length(1, 10, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
     landline?: string;
 
     @Column({name: "numeroCelular2", nullable: true})
-    @IsOptional()
+    @ValidateIf((o) => o.phoneNumber2 !== null && o.phoneNumber2 !== undefined && o.phoneNumber2 !== '')
     @IsString()
     @Length(1, 10, {message: "El campo numeroCelular2 debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber2: string

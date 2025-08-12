@@ -74,8 +74,8 @@ export async function createPaciente(
     paciente.documentNumber = parseInt(documentNumber);
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
-    paciente.phoneNumber2 = phoneNumber2 || null;
-    paciente.landline = landline;
+    paciente.phoneNumber2 = phoneNumber2 && phoneNumber2.trim() !== '' ? phoneNumber2 : null;
+    paciente.landline = landline && landline.trim() !== '' ? landline : null;
     paciente.email = email;
     paciente.address = address;
     paciente.convenio = parseInt(convenio);
@@ -138,10 +138,10 @@ export async function updatePaciente(
     // paciente.documentNumber = documentNumber;
     // paciente.name = name;
     paciente.phoneNumber = phoneNumber;
-    paciente.landline = landline;
+    paciente.landline = landline && landline.trim() !== '' ? landline : null;
     paciente.email = email;
     paciente.address = address;
-    paciente.phoneNumber2 = phoneNumber2 || null;
+    paciente.phoneNumber2 = phoneNumber2 && phoneNumber2.trim() !== '' ? phoneNumber2 : null;
     // paciente.convenio = convenio;
     // paciente.ipsPrimaria = ipsPrimaria;
     // paciente.status = status;
@@ -245,8 +245,8 @@ export async function updatePacienteTable(
     paciente.documentNumber = parseInt(documentNumber);
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
-    paciente.phoneNumber2 = phoneNumber2 || null;
-    paciente.landline = landline;
+    paciente.phoneNumber2 = phoneNumber2 && phoneNumber2.trim() !== '' ? phoneNumber2 : null;
+    paciente.landline = landline && landline.trim() !== '' ? landline : null;
     paciente.email = email;
     paciente.address = address;
     paciente.convenio = parseInt(convenio);
