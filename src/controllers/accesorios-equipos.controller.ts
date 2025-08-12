@@ -118,11 +118,11 @@ export async function updateAccessory(
       .andWhere("id != :id", { id: parseInt(id) })
       .getOne();
 
-    if (existSerial) {
-      return res.status(409).json({
-        message: "El número de serie ya existe para este accesorio",
-      });
-    }
+    // if (existSerial) {
+    //   return res.status(409).json({
+    //     message: "El número de serie ya existe para este accesorio",
+    //   });
+    // }
 
     const accessory = await AccesoriosEquipos.findOne({
       where: { id: parseInt(id) },
