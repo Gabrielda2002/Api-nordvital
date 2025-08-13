@@ -20,6 +20,7 @@ import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
 import { Programa } from "./programa";
+import { Professional } from "../types/Professional.type";
 
 enum AreaDificultad {
   IPS = "IPS",
@@ -179,11 +180,29 @@ export class DemandaInducida extends BaseEntity {
       "Nutrición",
       "Ginecobstetricia",
       "Psicología",
+      "Odontología",
+      "Toma de muestras de laboratorio",
+      "Trabajo social",
+      "Pediatría",
+      "Otras especialidades",
     ],
     default: "Medicina General",
+    nullable: true
   })
-  @IsEnum(["Medicina General", "Enfermería", "Nutrición", "Ginecobstetricia", "Psicología"])
-  profesional: "Medicina General" | "Enfermería" | "Nutrición" | "Ginecobstetricia" | "Psicología";
+  @IsOptional()
+  @IsEnum([
+    "Medicina General",
+    "Enfermería",
+    "Nutrición",
+    "Ginecobstetricia",
+    "Psicología",
+    "Odontología",
+    "Toma de muestras de laboratorio",
+    "Trabajo social",
+    "Pediatría",
+    "Otras especialidades",
+  ])
+  profesional: Professional;
 
   @Column({ name: "numeros_contacto", type: "text", nullable: true })
   @IsString()
