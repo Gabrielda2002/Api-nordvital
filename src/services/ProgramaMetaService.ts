@@ -2,6 +2,7 @@ import { Between } from "typeorm";
 import { DemandaInducida } from "../entities/demanda-inducida";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
+import { Professional } from "../types/Professional.type";
 
 export class ProgramaMetaService {
   static async setGoalMonth(
@@ -54,7 +55,7 @@ export class ProgramaMetaService {
     newGoal.año = year;
     newGoal.mes = month;
     newGoal.activo = true;
-    newGoal.professional = professional as "Medicina General" | "Enfermería" | "Nutrición" | "Ginecobstetricia" | "Psicología";
+    newGoal.professional = professional as Professional;
     newGoal.headquartersId = Number(headquarter);
 
     const errors = await validate(newGoal);

@@ -213,7 +213,7 @@ export const createDemandInduced = async (
       elementDemand == 1 || elementDemand == 3 ? true : classification;
     demandInduced.contactNumbers = contactNumbers;
     demandInduced.personaRecibe = acceptCall || null;
-    demandInduced.profesional = profetional;
+    demandInduced.profesional = profetional && profetional.trim() !== "" ? profetional : null;
     demandInduced.fechaLlamada = dateCall || null;
     demandInduced.horaLlamada = hourCall || null;
     demandInduced.textoLlamada = textCall || null;
