@@ -310,6 +310,7 @@ export async function getEstadisticasDemandaInducida(
 
     // 2. Llamadas telefónicas efectivas vs no efectivas
     const estadisticasLlamadasTelefonicas = await getStatisticsCalls(
+      elementoId,
       programaId,
       profesional,
       año,
@@ -335,7 +336,6 @@ export async function getEstadisticasDemandaInducida(
       programaId,
       año,
       mes,
-      elementoId,
       idCurrentUser,
       idHeadquartersCurrentUser,
       rolCurrentUser
@@ -426,7 +426,6 @@ async function getQuantityDemandInducedByProgram(
   programaId: string,
   año: string,
   mes: string,
-  elementoId: string,
   currentUserId: string,
   currentUserHeadquartersId?: number,
   rolCurrentUser?: string | number
@@ -442,7 +441,6 @@ async function getQuantityDemandInducedByProgram(
       "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
       "GROUP_CONCAT(DISTINCT DATE(demanda.createdAt)) as fechas"
     ])
-    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
     .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("metaHistorico.año = :year", { year: año })
@@ -510,6 +508,7 @@ async function getStatisticsByProgram(
 
 // ? Función auxiliar: Llamadas telefónicas efectivas vs no efectivas
 async function getStatisticsCalls(
+  elementId: number,
   programaId: string,
   profesional: string,
   año: string,
@@ -528,7 +527,7 @@ async function getStatisticsCalls(
       "demanda.profesional as profesional",
       "COUNT(DISTINCT demanda.id) as cantidad",
     ])
-    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: 2 })
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId: elementId })
     .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("metaHistorico.año = :year", { year: año })
