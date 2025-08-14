@@ -275,7 +275,7 @@ router.post(
 router.post(
   "/report/excel/biometric",
   authenticate,
-  authorizeRoles(["1", "2", "6", "18"]),
+  authorizeRoles(["1", "2", "6", "18", "20"]),
   getReportBiometric
 );
 
