@@ -2,9 +2,10 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { uploadSggc } from "../middlewares/multer-config-ssgc";
-import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile } from "../controllers/archivo.controller";
+import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile, generateFileAccessToken, serveSecureFile } from "../controllers/archivo.controller";
 import { validarId } from "../middlewares/validar-id";
 import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
+import { fileAccessRateLimit } from "../middlewares/file-rate-limit";
 
 const router = Router();
 
@@ -265,5 +266,90 @@ router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4
  *         description: Operación parcialmente exitosa (algunos archivos movidos, otros con errores)
  */
 router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), validarId, moveFile);
+
+/**
+ * @swagger
+ * /files/{id}/access-token:
+ *   post:
+ *     summary: Genera un token temporal para acceso seguro a un archivo
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Archivos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del archivo
+ *       - in: query
+ *         name: action
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [VIEW, DOWNLOAD]
+ *         description: Acción a realizar (VIEW para visualizar, DOWNLOAD para descargar)
+ *     responses:
+ *       200:
+ *         description: Token generado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT temporal
+ *                 expiresIn:
+ *                   type: integer
+ *                   description: Tiempo de expiración en segundos
+ *                 url:
+ *                   type: string
+ *                   description: URL completa para acceder al archivo
+ *                 action:
+ *                   type: string
+ *                   description: Acción autorizada
+ *       400:
+ *         description: Parámetros inválidos
+ *       404:
+ *         description: Archivo no encontrado
+ *       403:
+ *         description: Sin permisos para acceder al archivo
+ */
+router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), validarId, generateFileAccessToken);
+
+/**
+ * @swagger
+ * /secure-file/{token}:
+ *   get:
+ *     summary: Accede a un archivo de forma segura usando un token temporal
+ *     tags: [Archivos]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token JWT temporal generado previamente
+ *     responses:
+ *       200:
+ *         description: Archivo servido exitosamente
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Token requerido
+ *       403:
+ *         description: Token inválido o expirado
+ *       404:
+ *         description: Archivo no encontrado
+ */
+router.get("/secure-file/:token", serveSecureFile);
 
 export default router;
