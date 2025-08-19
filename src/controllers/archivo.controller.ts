@@ -5,6 +5,7 @@ import { validate } from "class-validator";
 import fs from "fs";
 import { promises as fsPromises } from "fs";
 import { Carpeta } from "../entities/carpeta";
+import { FileTokenService } from "../services/file-token.service";
 
 
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
@@ -328,6 +329,133 @@ export async function moveFile(req: Request, res: Response, next: NextFunction){
         return moveFiles(req, res, next);
 
     } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * Genera un token temporal para acceder a un archivo de forma segura
+ */
+export async function generateFileAccessToken(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+        const { action } = req.query;
+        const user = (req as any).user; // Usuario del middleware de auth
+        const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+        // Validar parámetros
+        const fileId = parseInt(id);
+        const actionType = (action as string)?.toUpperCase() as 'VIEW' | 'DOWNLOAD';
         
+        if (!fileId || !actionType || !['VIEW', 'DOWNLOAD'].includes(actionType)) {
+            return res.status(400).json({ 
+                message: "ID de archivo y acción requeridos. Acción debe ser VIEW o DOWNLOAD" 
+            });
+        }
+
+        // Verificar que el archivo existe
+        const file = await Archivos.findOne({ where: { id: fileId } });
+        if (!file) {
+            return res.status(404).json({ message: "Archivo no encontrado" });
+        }
+
+        // TODO: Aquí validarías permisos específicos del archivo basado en roles
+        // Por ahora asumo que si pasó el middleware de auth, tiene acceso
+
+        // Generar token temporal (15 minutos)
+        const token = FileTokenService.generateFileAccessToken(
+            fileId,
+            user.id,
+            user.rol, // Asumo que tienes el rol en el usuario
+            actionType,
+            clientIP,
+            15 // 15 minutos de expiración
+        );
+
+        return res.status(200).json({
+            token,
+            expiresIn: 900, // 15 minutos en segundos
+            url: `/api/v1/secure-file/${token}`,
+            action: actionType
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * Sirve un archivo de forma segura validando el token temporal
+ */
+export async function serveSecureFile(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { token } = req.params;
+        const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+        if (!token) {
+            return res.status(400).json({ message: "Token requerido" });
+        }
+
+        // Validar token
+        const validation = FileTokenService.validateFileAccessToken(token, clientIP);
+        
+        if (!validation.valid) {
+            return res.status(403).json({ 
+                message: "Token inválido o expirado",
+                error: validation.error 
+            });
+        }
+
+        const { fileId, action } = validation.payload!;
+
+        // Buscar el archivo
+        const file = await Archivos.findOne({ where: { id: fileId } });
+        if (!file) {
+            return res.status(404).json({ message: "Archivo no encontrado" });
+        }
+
+        // Construir ruta del archivo
+        const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
+        const filePath = path.resolve(__dirname, "..", 'uploads', cleanPath);
+        
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ message: "Archivo no encontrado en el servidor" });
+        }
+
+        // TODO: Aquí registrarías el acceso para auditoría
+        console.log(`Archivo accedido: ${file.name} por usuario: ${validation.payload!.userId} - Acción: ${action}`);
+
+        // Determinar cómo servir el archivo
+        if (action === 'DOWNLOAD') {
+            // Forzar descarga
+            res.download(filePath, file.nameSaved, (err) => {
+                if (err) {
+                    res.status(500).json({ message: "Error al descargar el archivo" });
+                }
+            });
+        } else {
+            // VIEW - Mostrar en el navegador
+            const stat = fs.statSync(filePath);
+            
+            res.setHeader('Content-Length', stat.size);
+            res.setHeader('Content-Type', file.mimeType);
+            res.setHeader('Content-Disposition', 'inline');
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+            
+            fileStream.on('error', (err) => {
+                console.error('Error streaming file:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({ message: "Error al cargar el archivo" });
+                }
+            });
+        }
+
+    } catch (error) {
+        next(error);
     }
 }
