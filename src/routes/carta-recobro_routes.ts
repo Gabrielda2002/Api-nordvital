@@ -288,15 +288,15 @@ router.put("/recover-letter/:id", authenticate, authorizeRoles(["1"]), updateRec
 
 router.delete("/recover-letter/:id", authenticate, authorizeRoles(["1"]), deleteRecoveryLetter)
 
-router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1"]), getDepartmentUser, getRequestLetter)
+router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1", "10", "6"]), getDepartmentUser, getRequestLetter)
 
-router.get("/table-response-letter", authenticate, authorizeRoles(["1"]),getDepartmentUser , getResponseLetter)
+router.get("/table-response-letter", authenticate, authorizeRoles(["1", "6"]),getDepartmentUser , getResponseLetter)
 
-router.post("/create-request-letter", authenticate, authorizeRoles(["1"]), createRequestLetter)
+router.post("/create-request-letter", authenticate, authorizeRoles(["1","10","6"]), createRequestLetter)
 
 router.put("/create-audit-letter/:id", authenticate, authorizeRoles(["1"]), creatAuditRequestLetter)
 
-router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles(["1"]), generatePdf)
+router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles(["1", "10", "6"]), generatePdf)
 
 router.put('/save-date-print/:id', authenticate, authorizeRoles(["1"]), saveDateImpress);
 
