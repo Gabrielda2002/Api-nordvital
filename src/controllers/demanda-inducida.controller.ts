@@ -41,6 +41,7 @@ export const getAllDemandInduded = async (
         "demandInduced.personaSeguimientoRelation",
         "personaSeguimiento"
       )
+      .leftJoinAndSelect("personaSeguimiento.sedeRelation", "sedePersonaSeguimiento")
       .where("MONTH(demandInduced.createdAt) = :currentMonth", {
         currentMonth: currentMonth,
       })
@@ -99,6 +100,7 @@ export const getAllDemandInduded = async (
         `${d.personaSeguimientoRelation?.name} ${d.personaSeguimientoRelation?.lastName}` ||
         "N/A",
       areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
+      headquartersPersonProcess: d.personaSeguimientoRelation?.sedeRelation?.name || "N/A",
       programPerson: d.programaRelation?.name || "N/A",
       assignmentDate: d.fechaCita || "N/A",
       profetional: d.profesional || "N/A",
