@@ -8,6 +8,7 @@ import path from "path";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { format } from "date-fns";
 import fs from "fs";
+import { es } from "date-fns/locale";
 
 export async function getAllRecoveryLetter (req: Request, res: Response, next: NextFunction){
     try {
@@ -350,6 +351,9 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         // Obtener la información del radicado y sus CUPS autorizados
         const radicado = await Radicacion.createQueryBuilder("radicacion")
             .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+            .leftJoinAndSelect("radicacion.usuarioRelation", "usuario_radica")
+            .leftJoinAndSelect("usuario_radica.sedeRelation", "sede_usuario")
+            .leftJoinAndSelect("sede_usuario.municipioRelation", "municipio_sede")
             .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
             .leftJoinAndSelect("carta_recobro.userRequestRelation", "userRequest")
             .leftJoinAndSelect("carta_recobro.userAuditRelation", "userAudit")
@@ -368,9 +372,9 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         var pdfPath = "";
 
         if (radicado.cartaRelation[0].dateImpression != null) {
-            pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA_MARCA_AGUA.pdf');
+            pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO_COPIA.pdf');
         }else{
-            pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA (3).pdf');
+            pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO.pdf');
         }
 
         console.log(pdfPath);
@@ -411,37 +415,45 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         // Agregar la información del pacientee
 
-        const dateNow = format(new Date(), 'dd/MM/yyyy');
+        const dateNow = format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es });
 
-        page.drawText(`${dateNow}`, { x: 184, y: 744, size: 10, color: rgb(0, 0, 0) });
+        // Calcular el ancho del texto del municipio para posicionar la fecha justo al lado
+        const municipioName = radicado.usuarioRelation?.sedeRelation?.municipioRelation?.name || "";
+        const fontSize = 11;
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const municipioWidth = font.widthOfTextAtSize(municipioName + ", ", fontSize);
 
-        page.drawText(`${radicado.cartaRelation[0].id}`, { x: 500, y: 743, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${municipioName}, `, { x: 85, y: 677, size: fontSize, color: rgb(0, 0, 0), font });
+
+        page.drawText(`${dateNow}`, { x: 85 + municipioWidth, y: 677, size: fontSize, color: rgb(0, 0, 0), font });
+
+        page.drawText(`${radicado.cartaRelation[0].id}`, { x: 505 , y: 681, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.name}`, { x: 80, y: 542, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.name}`, { x: 215, y: 534, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 90, y: 523,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 180, y: 520,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 175, y: 523, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 250, y: 520, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 80, y: 115, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 84, y: 160, size: 8, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 80, y: 105, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 84, y: 150, size: 8, color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 240, y: 115, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 262, y: 160, size: 8, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 240, y: 105, size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 262, y: 150, size: 8, color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}` , { x: 175, y:220, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        // page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}` , { x: 175, y:220, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}` , { x: 76, y: 220, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
+        // page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}` , { x: 76, y: 220, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.position}` , { x: 76, y: 210, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
+        // page.drawText(`${radicado.cartaRelation[0].userAuditRelation.position}` , { x: 76, y: 210, size: 10,font: helveticaBold , color: rgb(0, 0, 0) });
 
         
 
-        const xCode = 90;
-        const xDescription = 170;
-        let yPosition = 455;
+        const xCode = 84;
+        const xDescription = 160;
+        let yPosition = 480;
 
         // Agregar la información de los CUPS autorizados al PDF
         radicado.cupsRadicadosRelation.forEach(cup => {
@@ -472,6 +484,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
             thickness: 0.5,
             color: rgb(0, 0, 0)
         })
+        console.log(yPosition - 1)
 
         page.drawText(`Observacion: ${radicado.cartaRelation[0].observation}`, {x: xCode, y: yPosition - 10, size: 8, color: rgb(0, 0, 0)});
 
@@ -492,7 +505,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
 export async function drawGridOnPdf() {
     // Cargar el formato del PDF
-    const pdfPath = path.resolve(__dirname, '../templates/CARTA_DE_RECOBRO_CARTA.pdf');
+    const pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO.pdf');
     const pdfBytes = fs.readFileSync(pdfPath);
     const pdfDoc = await PDFDocument.load(pdfBytes);
 
