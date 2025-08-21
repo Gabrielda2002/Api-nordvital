@@ -1,9 +1,11 @@
 import { Router } from "express";
 import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes.controller";
+import { generateSoporteAccessToken, serveSecureSoporte } from "../controllers/soportes-secure.controller";
 import { validarId } from "../middlewares/validar-id";
 import { upload } from "../middlewares/multer-config-radicacion";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
+import { fileAccessRateLimit } from "../middlewares/file-rate-limit";
 
 const router = Router();
 
@@ -144,5 +146,60 @@ router.put("/soportes/:id", authenticate, authorizeRoles(['1', '2','3']), upload
  *         description: Soporte no encontrado
  */
 router.delete("/soportes/:id", authenticate, authorizeRoles(['1']), validarId, deleteSoporte);
+
+/**
+ * @swagger
+ * /soportes/{id}/access-token:
+ *   post:
+ *     summary: Genera un token temporal para acceso seguro a un soporte
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Soportes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del soporte
+ *       - in: query
+ *         name: action
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [VIEW, DOWNLOAD]
+ *         description: Acción a realizar (VIEW para visualizar, DOWNLOAD para descargar)
+ *     responses:
+ *       200:
+ *         description: Token generado exitosamente
+ *       400:
+ *         description: Parámetros inválidos
+ *       404:
+ *         description: Soporte no encontrado
+ */
+router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), validarId, generateSoporteAccessToken);
+
+/**
+ * @swagger
+ * /secure-soporte/{token}:
+ *   get:
+ *     summary: Accede a un soporte de forma segura usando un token temporal
+ *     tags: [Soportes]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token JWT temporal generado previamente
+ *     responses:
+ *       200:
+ *         description: Soporte servido exitosamente
+ *       403:
+ *         description: Token inválido o expirado
+ *       404:
+ *         description: Soporte no encontrado
+ */
+router.get("/secure-soporte/:token", serveSecureSoporte);
 
 export default router;

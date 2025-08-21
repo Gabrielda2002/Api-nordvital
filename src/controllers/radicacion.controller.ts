@@ -684,7 +684,8 @@ export async function buscarRadicadoPorDocumento(
       ipsPrimaria: r.patientRelation?.ipsPrimariaRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
       auditDate: r.auditDate || "N/A",
-      suportName: r.soportesRelation?.nameSaved || "N/A",
+      supportName: r.soportesRelation?.nameSaved || "N/A",
+      supportId: r.soportesRelation?.id || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
       profetional:
         r.idProfesional === null
