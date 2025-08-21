@@ -334,7 +334,8 @@ export async function tablaPorAuditar(
           unidadFuncional: c.functionalUnitRelation.name,
           idRadicado: c.idRadicacion,
         })) || "N/A",
-      soportes: r.soportesRelation?.nameSaved || "N/A",
+      supportName: r.soportesRelation?.nameSaved || "N/A",
+      supportId: r.soportesRelation?.id || "N/A",
     }));
 
     return res.json(formatedRadicaciones);
@@ -507,6 +508,7 @@ export async function cirugiasTable(
       fechaOrden: r.orderDate,
       especialidad: r.specialtyRelation?.name || "N/A",
       nombreSoporte: r.soportesRelation?.nameSaved || "N/A",
+      sopportId: r.soportesRelation?.id || "N/A",
       cups: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
         code: c.code,

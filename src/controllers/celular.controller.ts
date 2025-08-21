@@ -65,6 +65,7 @@ export async function getPhoneBySedeId(
       updatedAt: p.updatedAt,
       sedeId: p.sedeId,
       nameSaved: p.actaRelation?.nameSaved,
+      documentId: p.actaRelation?.id || "N/A",
       inventoryNumber: p.inventoryNumber,
       seguimientoRelation: p.seguimientoRelation?.map((s) => ({
         id: s.id,

@@ -517,6 +517,7 @@ export async function getEquipmentBySede(
         status: s.status || "N/A",
       })),
       nameDocument: e.soportRelacion?.nameSaved || "N/A",
+      documentId: e.soportRelacion?.id || "N/A",
     }));
 
     return res.json(equipmentFormatted);
