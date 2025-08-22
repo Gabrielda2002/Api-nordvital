@@ -357,6 +357,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
             .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
             .leftJoinAndSelect("carta_recobro.userRequestRelation", "userRequest")
             .leftJoinAndSelect("carta_recobro.userAuditRelation", "userAudit")
+            .leftJoinAndSelect("userRequest.sedeRelation", "sede_usuario_solicita")
             .leftJoinAndSelect("radicacion.patientRelation", 'paciente_radicado')
             .leftJoinAndSelect("paciente_radicado.documentRelation", 'documento_paciente')
             .where("radicacion.id = :idRadicado", { idRadicado })
@@ -372,7 +373,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         var pdfPath = "";
 
         if (radicado.cartaRelation[0].dateImpression != null) {
-            pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO_COPIA.pdf');
+            pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO.pdf');
         }else{
             pdfPath = path.resolve(__dirname, '../templates/PLANTILLA_CARTA_RECOBRO.pdf');
         }
@@ -423,25 +424,27 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const municipioWidth = font.widthOfTextAtSize(municipioName + ", ", fontSize);
 
+        page.drawText(`${radicado.cartaRelation[0]?.userRequestRelation?.sedeRelation?.name}`, { x: 110, y: 593, size: fontSize, color: rgb(0, 0, 0), font: helveticaBold });
+
         page.drawText(`${municipioName}, `, { x: 85, y: 677, size: fontSize, color: rgb(0, 0, 0), font });
 
         page.drawText(`${dateNow}`, { x: 85 + municipioWidth, y: 677, size: fontSize, color: rgb(0, 0, 0), font });
 
         page.drawText(`${radicado.cartaRelation[0].id}`, { x: 505 , y: 681, size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.name}`, { x: 215, y: 534, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.name}`, { x: 84, y: 490, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 180, y: 520,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentRelation.name}`, { x: 464, y: 490,font: helveticaBold , size: 10, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 250, y: 520, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.patientRelation.documentNumber}`, { x: 125, y: 475, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 84, y: 160, size: 8, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.name}` , { x: 84, y: 150, size: 8, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 84, y: 150, size: 8, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userRequestRelation.lastName}` , { x: 84, y: 140, size: 8, color: rgb(0, 0, 0) });
 
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 262, y: 160, size: 8, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.name}`, { x: 262, y: 150, size: 8, color: rgb(0, 0, 0) });
         
-        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 262, y: 150, size: 8, color: rgb(0, 0, 0) });
+        page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}`, { x: 262, y: 140, size: 8, color: rgb(0, 0, 0) });
 
         // page.drawText(`${radicado.cartaRelation[0].userAuditRelation.lastName}` , { x: 175, y:220, size: 10,font: helveticaBold ,color: rgb(0, 0, 0) });
 
@@ -453,7 +456,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
 
         const xCode = 84;
         const xDescription = 160;
-        let yPosition = 480;
+        let yPosition = 430;
 
         // Agregar la información de los CUPS autorizados al PDF
         radicado.cupsRadicadosRelation.forEach(cup => {
