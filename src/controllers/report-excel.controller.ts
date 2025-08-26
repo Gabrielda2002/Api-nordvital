@@ -9,6 +9,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { RegistroEntrada } from "../entities/registro-entrada";
 import { Tickets } from "../entities/tickets";
 import { DemandaInducida } from "../entities/demanda-inducida";
+import { Equipos } from "../entities/equipos";
 
 export async function downloadReportExcel(
   req: Request,
@@ -1467,6 +1468,297 @@ export async function reportDemandInduced(
       await workbook.xlsx.write(res);
 
       res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? report excel inventory equipments
+export async function reportInventoryEquipments(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await Equipos.createQueryBuilder("equipment")
+    .leftJoinAndSelect("equipment.accessoriesRelation", "accessories")
+    .leftJoinAndSelect("equipment.seguimientoEquipos", "monitoring")
+    .leftJoinAndSelect("equipment.componentRelation", "component")
+    .leftJoinAndSelect("equipment.softwareRelation", "software")
+    .leftJoinAndSelect("equipment.userRelation", "user")
+    .leftJoinAndSelect("equipment.soportRelacion", "support")
+    .leftJoinAndSelect("equipment.placeRelation", "place")
+
+    if (dateStart && dateEnd) {
+      query.andWhere("equipment.createAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
+    }
+
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Inventario Equipos");
+
+    worksheet.columns = [
+      { header: "", key: "headquarters", width: 20 },
+      {header: "", key: "name", width: 30 },
+      {header: "", key: "typeEquipment", width: 20 },
+      { header: "", key: "brand", width: 20 },
+      { header: "", key: "model", width: 20 },
+      { header: "", key: "serial", width: 30 },
+      { header: "", key: "systemOperating", width: 30 },
+      { header: "", key: "mac", width: 30 },
+      { header: "", key: "purchaseDate", width: 30 },
+      { header: "", key: "warrantyTime", width: 30 },
+      { header: "", key: "warranty", width: 30 },
+      { header: "", key: "deliveryDate", width: 30 },
+      { header: "", key: "inventoryNumber", width: 30 },
+      { header: "", key: "dateCreated", width: 30 },
+      { header: "", key: "dateUpdate", width: 30 },
+      { header: "", key: "dhcp", width: 20 },
+      { header: "", key: "ipAddress", width: 30 },
+      { header: "", key: "userResponsable", width: 30 },
+      { header: "", key: "lock", width: 20 },
+      { header: "", key: "lockPassword", width: 30 },
+      { header: "", key: "peripheralsName", width: 30 },
+      { header: "", key: "peripheralsBrand", width: 30},
+      { header: "", key: "peripheralsModel", width: 30},
+      { header: "", key: "peripheralsSerial", width: 30},
+      { header: "", key: "peripheralsOtherData", width: 30},
+      { header: "", key: "peripheralsStatus", width: 30},
+      { header: "", key: "peripheralsInventoryNumber", width: 30},
+      { header: "", key: "peripheralsDateCreated", width: 30},
+      { header: "", key: "peripheralsDateUpdate", width: 30},
+      { header: "", key: "softwareName", width: 30 },
+      { header: "", key: "softwareVersion", width: 30 },
+      { header: "", key: "softwareLicense", width: 30 },
+      { header: "", key: "softwareOtherData", width: 30 },
+      { header: "", key: "softwareInstallationDate", width: 30 },
+      { header: "", key: "softwareStatus", width: 30 },
+      { header: "", key: "softwareDateCreated", width: 30 },
+      { header: "", key: "softwareDateUpdated", width: 30 },
+      { header: "", key: "componentName", width: 30 },
+      { header: "", key: "componentBrand", width: 30 },
+      { header: "", key: "componentCapacity", width: 30 },
+      { header: "", key: "componentSpeed", width: 30 },
+      { header: "", key: "componentOtherData", width: 30 },
+      { header: "", key: "componentModel", width: 30 },
+      { header: "", key: "componentDateCreated", width: 30 },
+      { header: "", key: "componentDateUpdated", width: 30 }
+    ]
+
+    worksheet.mergeCells('A1:T2');
+    worksheet.getCell('A1').value = 'DATOS DEL EQUIPO';
+    worksheet.getCell("A1").alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.getCell('A1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };  
+
+    // Merge cells for peripherals columns (T1:AC2)
+    worksheet.mergeCells('U1:AC2');
+    worksheet.getCell('U1').value = 'DATOS DE PERIFÉRICOS';
+    worksheet.getCell('U1').alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.getCell('U1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getCell('U1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+    // merge cells for software columns (AD1:AK2)
+    worksheet.mergeCells('AD1:AK2');
+    worksheet.getCell('AD1').value = 'DATOS DE SOFTWARE';
+    worksheet.getCell('AD1').alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.getCell('AD1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getCell('AD1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+    // merge cells for components (AL1:AS2)
+    worksheet.mergeCells('AL  1:AS2');
+    worksheet.getCell('AL1').value = 'DATOS DE COMPONENTES';
+    worksheet.getCell('AL1').alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.getCell('AL1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getCell('AL1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+
+    const headers = [
+      "SEDE",
+      "NOMBRE EQUIPO",
+      "TIPO EQUIPO",
+      "MARCA",
+      "MODELO",
+      "SERIAL",
+      "SISTEMA OPERATIVO",
+      "MAC",
+      "FECHA DE COMPRA",
+      "TIEMPO DE GARANTIA",
+      "GARANTIA",
+      "FECHA DE ENTREGA",
+      "NUMERO DE INVENTARIO",
+      "FECHA DE CREACION",
+      "FECHA DE ACTUALIZACION",
+      "DHCP",
+      "DIRECCION IP",
+      "USUARIO RESPONSABLE",
+      "BLOQUEO",
+      "CONTRASENA DE BLOQUEO",
+      "NOMBRE PERIFERICO",
+      "MARCA PERIFERICO",
+      "MODELO PERIFERICO",
+      "SERIAL PERIFERICO",
+      "OTROS DATOS PERIFERICO",
+      "ESTADO PERIFERICO",
+      "NUMERO INVENTARIO PERIFERICO",
+      "FECHA DE REGISTRO PERIFERICO",
+      "FECHA DE ULTIMA ACTUALIZACION PERIFERICO",
+      "NOMBRE SOFTWARE",
+      "VERSION SOFTWARE",
+      "LICENCIA SOFTWARE",
+      "OTROS DATOS SOFTWARE",
+      "FECHA DE INSTALACION SOFTWARE",
+      "ESTADO SOFTWARE",
+      "FECHA DE REGISTRO SOFTWARE",
+      "FECHA DE ULTIMA ACTUALIZACION SOFTWARE",
+      "NOMBRE COMPONENTE",
+      "MARCA COMPONENTE",
+      "CAPACIDAD COMPONENTE",
+      "VELOCIDAD COMPONENTE",
+      "OTROS DATOS COMPONENTE",
+      "MODELO COMPONENTE",
+      "FECHA DE REGISTRO COMPONENTE",
+      "FECHA DE ULTIMA ACTUALIZACION COMPONENTE",
+    ]
+    
+    headers.forEach((header, index) => {
+      const cell = worksheet.getCell(3, index + 1);
+      cell.value = header;
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+    })
+    
+        worksheet.getRow(1).height = 25;
+        worksheet.getRow(2).height = 25;
+    
+        if (!data || data.length === 0) {
+          return res.status(404).json({
+            message: "Inventory Equipments Not Found.",
+          });
+        }
+
+    data.forEach((d) => {
+      const baseEquipment = {
+        headquarters: d.placeRelation?.name || "",
+        name: d.name || "",
+        typeEquipment: d.typeEquipment || "",
+        brand: d.brand || "",
+        model: d.model || "",
+        serial: d.serial || "",
+        systemOperating: d.operationalSystem || "",
+        mac: d.mac || "",
+        purchaseDate: d.purchaseDate || "",
+        warrantyTime: d.warrantyTime || "",
+        warranty: d.warranty || "",
+        deliveryDate: d.deliveryDate || "",
+        inventoryNumber: d.inventoryNumber || "",
+        dateCreated: d.createAt || "",
+        dateUpdate: d.updateAt || "",
+        dhcp: d.dhcp ? "Si" : "No",
+        ipAddress: d.addressIp || "",
+        userResponsable: d.userRelation?.name || "",
+        lock: d.lock ? "Si" : "No",
+        lockPassword: d.lockKey || "",
+      };
+
+      // Si no hay periféricos, software o componentes, crear una fila básica
+      if ((!d.accessoriesRelation || d.accessoriesRelation.length === 0) &&
+          (!d.softwareRelation || d.softwareRelation.length === 0) &&
+          (!d.componentRelation || d.componentRelation.length === 0)) {
+        worksheet.addRow({
+          ...baseEquipment,
+          peripheralsName: "",
+          peripheralsBrand: "",
+          peripheralsModel: "",
+          peripheralsSerial: "",
+          peripheralsOtherData: "",
+          peripheralsStatus: "",
+          peripheralsInventoryNumber: "",
+          peripheralsDateCreated: "",
+          peripheralsDateUpdate: "",
+          softwareName: "",
+          softwareVersion: "",
+          softwareLicense: "",
+          softwareOtherData: "",
+          softwareInstallationDate: "",
+          softwareStatus: "",
+          softwareDateCreated: "",
+          softwareDateUpdated: "",
+          componentName: "",
+          componentBrand: "",
+          componentCapacity: "",
+          componentSpeed: "",
+          componentOtherData: "",
+          componentModel: "",
+          componentDateCreated: "",
+          componentDateUpdated: "",
+        });
+        return;
+      }
+
+      // Crear filas para cada combinación de periféricos, software y componentes
+      const maxLength = Math.max(
+        d.accessoriesRelation?.length || 0,
+        d.softwareRelation?.length || 0,
+        d.componentRelation?.length || 0
+      );
+
+      for (let i = 0; i < maxLength; i++) {
+        const peripheral = d.accessoriesRelation?.[i];
+        const software = d.softwareRelation?.[i];
+        const component = d.componentRelation?.[i];
+
+        worksheet.addRow({
+          ...baseEquipment,
+          // Datos de periféricos
+          peripheralsName: peripheral?.name || "",
+          peripheralsBrand: peripheral?.brand || "",
+          peripheralsModel: peripheral?.model || "",
+          peripheralsSerial: peripheral?.serial || "",
+          peripheralsOtherData: peripheral?.otherData || "",
+          peripheralsStatus: peripheral?.status || "",
+          peripheralsInventoryNumber: peripheral?.inventoryNumber || "",
+          peripheralsDateCreated: peripheral?.createdAt || "",
+          peripheralsDateUpdate: peripheral?.updatedAt || "",
+          // Datos de software
+          softwareName: software?.name || "",
+          softwareVersion: software?.versions || "",
+          softwareLicense: software?.license || "",
+          softwareOtherData: software?.otherData || "",
+          softwareInstallationDate: software?.installDate || "",
+          softwareStatus: software?.status || "",
+          softwareDateCreated: software?.createdAt || "",
+          softwareDateUpdated: software?.updatedAt || "",
+          // Datos de componentes
+          componentName: component?.name || "",
+          componentBrand: component?.brand || "",
+          componentCapacity: component?.capacity || "",
+          componentSpeed: component?.speed || "",
+          componentOtherData: component?.otherData || "",
+          componentModel: component?.model || "",
+          componentDateCreated: component?.createdAt || "",
+          componentDateUpdated: component?.updatedAt || "",
+        });
+      }
+    });
+
+    const fileName = `inventory_report_${Date.now()}.xlsx`;
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
   } catch (error) {
     next(error);
   }

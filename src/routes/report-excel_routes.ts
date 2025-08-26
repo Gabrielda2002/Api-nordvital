@@ -12,6 +12,7 @@ import {
   reportExcelCirugias,
   reportExcelCirugiasFiltros,
   reportExcelRadicacion,
+  reportInventoryEquipments,
 } from "../controllers/report-excel.controller";
 
 const router = Router();
@@ -332,5 +333,7 @@ router.post(
   , authorizeRoles(["1", "19", "20", "21"])
   , reportDemandInduced
 )
+
+router.post("/report/equipments", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportInventoryEquipments);
 
 export default router;
