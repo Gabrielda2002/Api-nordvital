@@ -10,6 +10,7 @@ import { RegistroEntrada } from "../entities/registro-entrada";
 import { Tickets } from "../entities/tickets";
 import { DemandaInducida } from "../entities/demanda-inducida";
 import { Equipos } from "../entities/equipos";
+import { dispositivosRed } from "../entities/dispositivos-red";
 
 export async function downloadReportExcel(
   req: Request,
@@ -1573,7 +1574,7 @@ export async function reportInventoryEquipments(
     worksheet.getCell('AD1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
 
     // merge cells for components (AL1:AS2)
-    worksheet.mergeCells('AL  1:AS2');
+    worksheet.mergeCells('AL1:AS2');
     worksheet.getCell('AL1').value = 'DATOS DE COMPONENTES';
     worksheet.getCell('AL1').alignment = { horizontal: 'center', vertical: 'middle' };
     worksheet.getCell('AL1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -1754,6 +1755,108 @@ export async function reportInventoryEquipments(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+// report dispositivos red 
+export async function reportRedDevice (req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await dispositivosRed.createQueryBuilder("red_devices")
+    .leftJoinAndSelect("red_devices.placeRelation", "place")
+
+
+    if (dateStart && dateEnd) {
+      query.andWhere("red_devices.createAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
+    }
+
+    query.orderBy("red_devices.createAt", "DESC");
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Dispositivos de Red");
+
+    // Agregar encabezados
+    worksheet.columns = [
+      { header: "", key: "createdAt", width: 20 },
+      { header: "", key: "name", width: 30 },
+      { header: "", key: "brand", width: 20 },
+      { header: "", key: "model", width: 20 },
+      { header: "", key: "serial", width: 20 },
+      { header: "", key: "addressIp", width: 20 },
+      { header: "", key: "mac", width: 20 },
+      { header: " ", key: "otherData", width: 30 },
+      { header: "", key: "status", width: 15 },
+      { header: "", key: "inventoryNumber", width: 20 },
+      { header: "", key: "updatedAt", width: 20 },
+    ];
+
+    const headers = [
+      "Fecha de Creación",
+      "Nombre",
+      "Marca",
+      "Modelo",
+      "Serial",
+      "Dirección IP",
+      "MAC",
+      "Otros Datos",
+      "Estado",
+      "Número de Inventario",
+      "Fecha de Actualización",
+    ];
+
+    headers.forEach((header, index) => {
+      const cell = worksheet.getCell(3, index + 1);
+      cell.value = header;
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+    });
+
+    if (data.length === 0) {
+      worksheet.getCell("A4").value = "No hay datos disponibles";
+      worksheet.getCell("A4").style = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "middle" },
+      };
+    }
+
+    // Agregar datos
+    data.forEach((d) => {
+      worksheet.addRow({
+        name: d.name,
+        brand: d.brand,
+        model: d.model,
+        addressIp: d.addressIp,
+        mac: d.mac,
+        serial: d.serial,
+        otherData: d.otherData,
+        status: d.status,
+        inventoryNumber: d.inventoryNumber,
+        createdAt: d.createAt,
+        updatedAt: d.updateAt,
+      });
+    });
+
+    const fileName = `report_dispositivos_red_${Date.now()}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
 
     await workbook.xlsx.write(res);
