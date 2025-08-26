@@ -429,7 +429,8 @@ export async function searchInventoryGeneral(
         `(
           LOWER(inventario.name) LIKE :searchTerm OR
           LOWER(inventario.serialNumber) LIKE :searchTerm OR
-          LOWER(responsable.name) LIKE :searchTerm
+          LOWER(responsable.name) LIKE :searchTerm OR
+          LOWER(inventario.inventoryNumber) LIKE :searchTerm
         )`, 
         { searchTerm }
       )
