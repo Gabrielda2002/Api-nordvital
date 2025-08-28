@@ -11,6 +11,7 @@ import { Tickets } from "../entities/tickets";
 import { DemandaInducida } from "../entities/demanda-inducida";
 import { Equipos } from "../entities/equipos";
 import { dispositivosRed } from "../entities/dispositivos-red";
+import { InventarioGeneral } from "../entities/inventario-general";
 
 export async function downloadReportExcel(
   req: Request,
@@ -1862,6 +1863,146 @@ export async function reportRedDevice (req: Request, res: Response, next: NextFu
     await workbook.xlsx.write(res);
     res.end();
 
+  } catch (error) {
+    next(error);
+  }
+}
+
+// report general inventory
+export async function reportGeneralInventory(req: Request, res: Response, next: NextFunction){
+  try {
+    
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await InventarioGeneral.createQueryBuilder("inventory")
+    .leftJoinAndSelect("inventory.classificationRelation", "classification")
+    .leftJoinAndSelect("inventory.assetRelation", "asset")
+    .leftJoinAndSelect("inventory.materialRelation", "material")
+    .leftJoinAndSelect("inventory.statusRelation", "status")
+    .leftJoinAndSelect("inventory.responsibleRelation", "responsible")
+    .leftJoinAndSelect("inventory.areaTypeRelation", "areaType")
+    .leftJoinAndSelect("inventory.dependencyAreaRelation", "dependencyArea")
+    .leftJoinAndSelect("inventory.assetTypeRelation", "assetType")
+    .leftJoinAndSelect("inventory.headquartersRelation", "headquarters")
+
+    if (dateStart && dateEnd) {
+      query.andWhere("inventory.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
+    }
+
+    query.orderBy("inventory.createdAt", "DESC");
+
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const workSheet = workbook.addWorksheet("Inventario General");
+
+    workSheet.columns = [
+      { header: "", key: "createdAt", width: 20 },
+      { header: "", key: "name", width: 30 },
+      { header: "", key: "classification", width: 30 },
+      { header: "", key: "asset", width: 30 },
+      { header: "", key: "material", width: 30 },
+      { header: "", key: "status", width: 20 },
+      { header: "", key: "responsible", width: 30 },
+      { header: "", key: "areaType", width: 30 },
+      { header: "", key: "dependencyArea", width: 30 },
+      { header: "", key: "assetType", width: 30 },
+      { header: "", key: "headquarters", width: 30 },
+      { header: "", key: "brand", width: 20 },
+      { header: "", key: "model", width: 20 },
+      { header: "", key: "serial", width: 30 },
+      { header: "", key: "location", width: 30 },
+      { header: "", key: "inventoryNumber", width: 30 },
+      { header: "", key: "quantity", width: 30 },
+      { header: "", key: "otherData", width: 50 },
+      { header: "", key: "acquisitionDate", width: 50 },
+      { header: "", key: "purchaseValue", width: 50 },
+      { header: "", key: "warranty", width: 50 },
+      { header: "", key: "warrantyPeriod", width: 50 },
+      { header: "", key: "dateUpdate", width: 20 },
+    ];
+
+    const headers = [
+      "Fecha de creación",
+      "Clasificación",
+      "Activo",
+      "Material",
+      "Estado",
+      "Responsable",
+      "Tipo de área",
+      "Área de dependencia",
+      "Tipo de activo",
+      "Sede",
+      "Nombre",
+      "Marca",
+      "Modelo",
+      "Número de serie",
+      "Ubicación",
+      "Número de inventario",
+      "Cantidad",
+      "Otros datos",
+      "Fecha de adquisición",
+      "Valor de compra",
+      "Garantía",
+      "Período de garantía",
+      "Fecha de actualización",
+    ];
+
+    headers.forEach((header, index) => {
+      const cell = workSheet.getCell(`${String.fromCharCode(65 + index)}1`);
+      cell.value = header;
+      cell.font = { bold: true };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+    });
+
+    if (!data || data.length === 0) {
+      workSheet.getCell("A2").value = "No hay datos disponibles";
+      workSheet.getCell("A2").style = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "middle" },
+      };
+    }
+    data.forEach((d) => {
+      workSheet.addRow({
+        createdAt: d.createdAt,
+        classification: d.classificationRelation?.name || "",
+        asset: d.assetRelation?.name || "",
+        material: d.materialRelation?.name || "",
+        status: d.statusRelation?.name || "",
+        responsible: d.responsibleRelation?.name || "",
+        areaType: d.areaTypeRelation?.name || "",
+        dependencyArea: d.dependencyAreaRelation?.name || "",
+        assetType: d.assetTypeRelation?.name || "",
+        headquarters: d.headquartersRelation?.name || "",
+        name: d.name || "",
+        brand: d.brand || "",
+        model: d.model || "",
+        serial: d.serialNumber || "",
+        location: d.location || "",
+        inventoryNumber: d.inventoryNumber || "",
+        quantity: d.quantity || "",
+        otherData: d.otherDetails || "",
+        acquisitionDate: d.acquisitionDate || "",
+        purchaseValue: d.purchaseValue || "",
+        warranty: d.warranty || "",
+        warrantyPeriod: d.warrantyPeriod || "",
+        dateUpdate: d.updatedAt || "",
+      });
+    });
+
+    const fileName = `report_dispositivos_red_${Date.now()}.xlsx`;
+
+  res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
     next(error);
   }
