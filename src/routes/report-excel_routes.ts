@@ -338,14 +338,14 @@ router.post(
   , reportDemandInduced
 )
 
-router.post("/report/equipments", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportInventoryEquipments);
+router.post("/report/equipments", authenticate, authorizeRoles(["1"]), reportInventoryEquipments);
 
-router.post("/report/device-red", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportRedDevice);
+router.post("/report/device-red", authenticate, authorizeRoles(["1"]), reportRedDevice);
 
-router.post("/report/general-inventory", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportGeneralInventory);
+router.post("/report/general-inventory", authenticate, authorizeRoles(["1"]), reportGeneralInventory);
 
-router.post("/report/tv", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportTV);
+router.post("/report/tv", authenticate, authorizeRoles(["1"]), reportTV);
 
-router.post("/report/phones", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportPhones);
+router.post("/report/phones", authenticate, authorizeRoles(["1"]), reportPhones);
 
 export default router;
