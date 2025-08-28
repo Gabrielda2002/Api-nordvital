@@ -13,6 +13,7 @@ import { Equipos } from "../entities/equipos";
 import { dispositivosRed } from "../entities/dispositivos-red";
 import { InventarioGeneral } from "../entities/inventario-general";
 import { Televisor } from "../entities/televisor";
+import { Celular } from "../entities/celular";
 
 export async function downloadReportExcel(
   req: Request,
@@ -2156,5 +2157,150 @@ export async function reportTV(req: Request, res: Response, next: NextFunction) 
 
   } catch (error) {
     next(error);
+  }
+}
+
+// report excel phones
+
+export async function reportPhones(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+      const { dateStart, dateEnd } = req.body;
+
+      const query = await Celular.createQueryBuilder("phone")
+      .leftJoinAndSelect('phone.sedeRelation', 'headquarters')
+      .leftJoinAndSelect('phone.usuarioRelation', "user")
+
+      if (dateStart && dateEnd) {
+        query.andWhere("phone.createdAt BETWEEN :dateStart AND :dateEnd", { dateStart, dateEnd });
+      }
+
+      query.orderBy('phone.createdAt', 'DESC');
+      const data = await query.getMany();
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Teléfonos");
+
+      worksheet.columns = [
+        { header: "", key: "createdAt", width: 20 },
+        { header: "", key: "name", width: 20},
+        { header: "", key: "brand", width: 20},
+        { header: "", key: "model", width: 20},
+        { header: "", key:  "serial", width: 20},
+        { header: "", key: "imei", width: 20},
+        { header: "", key: "operativeSystem", width: 20},
+        { header: "", key: "version", width: 20},
+        { header: "", key: "storage", width: 20},
+        { header: "", key: "storageRam", width: 20},
+        { header: "", key: "phoneNumber", width: 20},
+        { header: "operator", key: "operator", width: 20},
+        { header: "", key: "typePlan", width: 20},
+        { header: "", key: "dueDataPlan", width: 20},
+        { header: "", key: "macWifi", width: 20},
+        { header: "", key: "addressBluetooth", width: 20},
+        { header: "", key: "purchaseDate", width: 20},
+        { header: "", key: "warrantyTime", width: 20},
+        { header: "", key: "warranty", width: 20},
+        { header: "", key: "deliveryDate", width: 20},
+        { header: "", key: "inventoryNumber", width: 20},
+        { header: "", key: "responsable", width: 20},
+        { header: "", key: "caseProtector", width: 20},
+        { header: "", key: "temperedGlass", width: 20},
+        { header: "", key: "observarion", width: 20},
+        { header: "", key: "status", width: 20},
+        { header: "", key: "acquisitionValue", width: 20},
+        { header: "", key: "updatedAt", width: 20},
+      ];
+
+      const headers = [
+        "Fecha de creación",
+        "Nombre",
+        "Marca",
+        "Modelo",
+        "Número de serie",
+        "Emei",
+        "Sistema operativo",
+        "Versión",
+        "Almacenamiento",
+        "RAM",
+        "Número de teléfono",
+        "Operador",
+        "Tipo de plan",
+        "Fecha de vencimiento del plan",
+        "MAC WiFi",
+        "Dirección Bluetooth",
+        "Fecha de compra",
+        "Tiempo de garantía",
+        "Garantía",
+        "Fecha de entrega",
+        "Número de inventario",
+        "Responsable",
+        "Protector de carcasa",
+        "Vidrio templado",
+        "Observaciones",
+        "Estado",
+        "Valor de adquisición",
+        "Fecha de actualización"
+      ];
+
+      headers.forEach((header, index) => {
+        const cell = worksheet.getCell(1, index + 1);
+        cell.value = header;
+        cell.font = { bold: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+      });
+
+      if (!data ||  data.length === 0) {
+        worksheet.getCell("A2").value = "No hay datos disponibles";
+        worksheet.getCell("A2").style = {
+          font: { bold: true },
+          alignment: { horizontal: "center", vertical: "middle" },
+        };
+      }
+
+      data.forEach((c) => {
+        worksheet.addRow({
+          createdAt: c.createdAt || "",
+          name: c.name || "",
+          brand: c.brand || "",
+          model: c.model || "",
+          serial: c.serial || "",
+          imei: c.imei || "",
+          operativeSystem: c.operativeSystem || "",
+          version: c.versionSO || "",
+          storage: c.storage || "",
+          storageRam: c.storageRam || "",
+          phoneNumber: c.phoneNumber || "",
+          operator: c.operador || "",
+          typePlan: c.typePlan || "",
+          dueDataPlan: c.dueDatePlan || "",
+          macWifi: c.macWifi || "",
+          addressBluetooth: c.addressBluetooth || "",
+          purchaseDate: c.purchaseDate || "",
+          warrantyTime: c.warrantyTime || "",
+          warranty: c.warranty ? "Si" : "No",
+          deliveryDate: c.deliveryDate || "",
+          inventoryNumber: c.inventoryNumber || "",
+          responsable: c.responsable || "",
+          caseProtector: c.caseProtector ? "Si" : "No",
+          temperedGlass: c.temperedGlass ? "Si" : "No",
+          observation: c.observation || "",
+          status: c.status || "",
+          acquisitionValue: c.acquisitionValue || "",
+          updatedAt: c.updatedAt || "",
+        })
+      });
+
+      const fileName = `report_phones_${Date.now()}.xlsx`;
+
+      res.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.header("Content-Disposition", `attachment; filename=${fileName}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+
+  } catch (error) {
+    next(error)
   }
 }
