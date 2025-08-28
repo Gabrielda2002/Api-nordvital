@@ -12,6 +12,7 @@ import { DemandaInducida } from "../entities/demanda-inducida";
 import { Equipos } from "../entities/equipos";
 import { dispositivosRed } from "../entities/dispositivos-red";
 import { InventarioGeneral } from "../entities/inventario-general";
+import { Televisor } from "../entities/televisor";
 
 export async function downloadReportExcel(
   req: Request,
@@ -2003,6 +2004,156 @@ export async function reportGeneralInventory(req: Request, res: Response, next: 
 
     await workbook.xlsx.write(res);
     res.end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// report tv excel
+export async function reportTV(req: Request, res: Response, next: NextFunction) {
+  try {
+   
+    const { dateStart, dateEnd } = req.body;
+
+    const query = await Televisor.createQueryBuilder("tv")
+    .leftJoinAndSelect("tv.sedeRelation", "headquarters")
+    .leftJoinAndSelect("tv.responsableRelation", "responsible")
+
+    if (dateStart && dateEnd) {
+      query.andWhere("tv.createdAt BETWEEN :dateStart AND :dateEnd", {
+        dateStart,
+        dateEnd,
+      });
+    }
+
+    query.orderBy("tv.createdAt", "DESC");
+
+    const data = await query.getMany();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Televisores");
+
+    worksheet.columns = [
+      { header: "", key: "createdAt", width: 20 },
+      { header: "", key: "name", width: 20 },
+      { header: "", key: "location", width: 20 },
+      { header: "", key: "headquarters", width: 30 },
+      { header: "", key: "responsible", width: 30 },
+      { header: "", key: "brand", width: 20 },
+      { header: "", key: "model", width: 20 },
+      { header: "", key: "serial", width: 30 },
+      { header: "", key: "screenSize", width: 20 },
+      { header: "", key: "screenType", width: 20 },
+      { header: "", key: "resolution", width: 20 },
+      { header: "", key: "smartTv", width: 15 },
+      { header: "", key: "operativeSystem", width: 15 },
+      { header: "", key: "addressIp", width: 15 },
+      { header: "", key: "mac", width: 15 },
+      { header: "", key: "numHdmi", width: 15 },
+      { header: "", key: "numUSB", width: 15 },
+      { header: "", key: "connectivity", width: 15 },
+      { header: "", key: "purchaseDate", width: 15 },
+      { header: "", key: "warrantyTime", width: 15 },
+      { header: "", key: "warranty", width: 15 },
+      { header: "", key: "deliveryDate", width: 15 },
+      { header: "", key: "otherData", width: 30 },
+      { header: "", key: "status", width: 15 },
+      { header: "", key: "inventoryNumber", width: 20 },
+      { header: "", key: "acquisitionValue", width: 20 },
+      { header: "", key: "controlRemote", width: 20 },
+      { header: "", key: "utility", width: 20 },
+      { header: "", key: "updatedAt", width: 20 }
+    ]
+
+    const headers = [
+      "Fecha de creación",
+      "Nombre",
+      "Ubicación",
+      "Sede",
+      "Responsable",
+      "Marca",
+      "Modelo",
+      "Número de serie",
+      "Tamaño de pantalla",
+      "Tipo de pantalla",
+      "Resolución",
+      "Smart TV",
+      "Sistema operativo",
+      "Dirección IP",
+      "MAC",
+      "Número de HDMI",
+      "Número de USB",
+      "Conectividad",
+      "Fecha de compra",
+      "Tiempo de garantía",
+      "Garantía",
+      "Fecha de entrega",
+      "Otros datos",
+      "Estado",
+      "Número de inventario",
+      "Valor de adquisición",
+      "Control remoto",
+      "Utilidad",
+      "Fecha de actualización"
+    ]
+
+    headers.forEach((header, index) => {
+      const cell = worksheet.getCell(1, index + 1);
+      cell.value = header;
+      cell.font = { bold: true };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '335C81' } };
+    });
+
+    if (!data || data.length === 0) {
+      worksheet.getCell("A2").value = "No hay datos disponibles";
+      worksheet.getCell("A2").style = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "middle" },
+      };
+    }
+
+    data.forEach((d) => {
+      worksheet.addRow({
+        createdAt: d.createdAt || "",
+        name: d.name || "",
+        location: d.location || "",
+        headquarters: d.sedeRelation?.name || "",
+        responsible: d.responsableRelation?.name || "",
+        brand: d.brand || "",
+        model: d.model || "",
+        serial: d.serial || "",
+        screenSize: d.pulgadas || "",
+        screenType: d.screenType || "",
+        resolution: d.resolution || "",
+        smartTv: d.smartTv ? "Si" : "No",
+        operativeSystem: d.operativeSystem || "",
+        addressIp: d.addressIp || "",
+        mac: d.mac || "",
+        numHdmi: d.numPuertosHdmi || "",
+        numUSB: d.numPuertosUsb || "",
+        connectivity: d.connectivity || "",
+        purchaseDate: d.purchaseDate || "",
+        warrantyTime: d.warrantyTime || "",
+        warranty: d.warranty ? "Si" : "No",
+        deliveryDate: d.deliveryDate || "",
+        otherData: d.observation || "",
+        status: d.status || "",
+        inventoryNumber: d.inventoryNumber || "",
+        acquisitionValue: d.acquisitionValue || "",
+        controlRemote: d.controlRemote ? "Si" : "No",
+        utility: d.utility || "",
+        updatedAt: d.updatedAt || ""
+      });
+    })
+
+    const nameFile = `report_tv_${Date.now()}.xlsx`;
+    
+    res.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.header("Content-Disposition", `attachment; filename=${nameFile}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+
   } catch (error) {
     next(error);
   }

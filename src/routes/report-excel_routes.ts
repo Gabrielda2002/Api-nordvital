@@ -15,6 +15,7 @@ import {
   reportGeneralInventory,
   reportInventoryEquipments,
   reportRedDevice,
+  reportTV,
 } from "../controllers/report-excel.controller";
 
 const router = Router();
@@ -341,5 +342,7 @@ router.post("/report/equipments", authenticate, authorizeRoles(["1", "19", "20",
 router.post("/report/device-red", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportRedDevice);
 
 router.post("/report/general-inventory", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportGeneralInventory);
+
+router.post("/report/tv", authenticate, authorizeRoles(["1", "19", "20", "21"]), reportTV);
 
 export default router;
