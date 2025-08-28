@@ -1033,6 +1033,7 @@ export async function getReportBiometric(
       { header: "Fecha Registro", key: "fecha_registro", width: 20 },
       { header: "Hora Registro", key: "hora_registro", width: 20 },
       { header: "Sede", key: "sede", width: 20 },
+      { header: "Area", key: "area", width: 20 },
     ];
 
     data.forEach((r) => {
@@ -1051,6 +1052,7 @@ export async function getReportBiometric(
         fecha_registro: fechaRegistro,
         hora_registro: r.hourRegister || "N/A",
         sede: r.sedeRelation?.name || "N/A",
+        area: r.userRelation?.area || "N/A",
       });
     });
 
@@ -1995,7 +1997,7 @@ export async function reportGeneralInventory(req: Request, res: Response, next: 
       });
     });
 
-    const fileName = `report_dispositivos_red_${Date.now()}.xlsx`;
+    const fileName = `report_inventario_general_${Date.now()}.xlsx`;
 
   res.setHeader(
       "Content-Type",
