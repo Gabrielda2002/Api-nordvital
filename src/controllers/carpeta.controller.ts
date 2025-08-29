@@ -14,7 +14,7 @@ export async function getAllFolders(
   next: NextFunction
 ) {
   try {
-    const folders = await Carpeta.find();
+    const folders = await Carpeta.find({ order: { name: "ASC" } });
     res.json(folders);
   } catch (error) {
     next(error);
@@ -336,6 +336,7 @@ export async function getSgcFoldersFiles(
       const folder = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.id = :id", { id: parseInt(id) })
         .andWhere("carpeta.seccion = :section", { section: section })
+        .orderBy("carpeta.name", "ASC")
         .getOne();
 
       if (!folder) {
@@ -347,14 +348,16 @@ export async function getSgcFoldersFiles(
         .where("carpeta.parentFolderId = :id", { id: folder.id })
         .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
         .andWhere("carpeta.seccion = :section", { section: section })
+        .orderBy("carpeta.name", "ASC")
         .getMany();
-      files = await Archivos.find({ where: { folderId: folder.id } });
+      files = await Archivos.find({ where: { folderId: folder.id }, order: { name: "ASC" } });
     } else {
       // * mostrar carpeta raiz
       folders = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.parentFolderId IS NULL")
         .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
         .andWhere("carpeta.seccion = :section", { section: section })
+        .orderBy("carpeta.name", "ASC")
         .getMany();
     }
 

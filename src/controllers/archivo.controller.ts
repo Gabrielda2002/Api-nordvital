@@ -11,7 +11,7 @@ import { FileTokenService } from "../services/file-token.service";
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
     try {
 
-        const files = await Archivos.find();
+        const files = await Archivos.find({ order: { name: "ASC" } });
 
         if (!files) {
             return res.status(404).json({message: "No hay archivos registrados"});
@@ -30,7 +30,8 @@ export async function getFileById(req: Request, res: Response, next: NextFunctio
         const { id } = req.params;
 
         const file = await Archivos.findOne({
-            where: {id: parseInt(id)}
+            where: {id: parseInt(id)},
+            order: { name: "ASC" }
         });
 
         if (!file) {
