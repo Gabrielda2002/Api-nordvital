@@ -42,18 +42,18 @@ export const uploadSggc = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
-      ![  "application/pdf",
+      ![
+        "application/pdf",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
         "application/msword", // DOC
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].includes(
-        file.mimetype
-      )
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ].includes(file.mimetype)
     ) {
       return cb(new Error("Only PDFs, DOCX, or DOC files are allowed"));
     }
     cb(null, true);
   },
   limits: {
-    fileSize: 8 * 1024 * 1024,
-  }, // ? limite de 5 megas por arquivo
+    fileSize: 15 * 1024 * 1024,
+  }, // limit of 15 megabytes per file
 }).array("files", 10);
