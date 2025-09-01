@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
 import { PushService } from "./services/pushService";
 import { TokenCleanupJob } from "./services/tokenCleanupJob";
+import { CVCleanupService } from "./services/cv-cleanup.service";
 
 
     const start = async () => {
@@ -16,6 +17,10 @@ import { TokenCleanupJob } from "./services/tokenCleanupJob";
 
             // jop cleanup de tokens revokes
             TokenCleanupJob.start();
+            
+            // Inicializar servicio de limpieza de CVs (elimina CVs > 60 días)
+            CVCleanupService.startCleanupService(60);
+            
             console.log('Conexión a la base de datos establecida');
         
             const PUERTO = process.env.PORT;

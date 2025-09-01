@@ -45,6 +45,7 @@ import notaTencicaRoutes from './notas-tecnicas_routes';
 import cartaRecobroRoutes from './carta-recobro_routes';
 import pacientesCoosalud from './pacientes-coosalud_routes'
 import enviarEmail from './send-emails_routes';
+import cvPublicRoutes from './cv-public_routes';
 import ticketsRoutes from './tickets.routes';
 import statusTicketsRoutes from './estados-tickets_routes';
 import prioridadRoutes from './prioridad.routes';
@@ -130,6 +131,7 @@ router.use(notaTencicaRoutes);
 router.use(cartaRecobroRoutes); 
 router.use(pacientesCoosalud);
 router.use(enviarEmail);
+router.use(cvPublicRoutes); // Rutas públicas para CVs - NO requieren autenticación
 router.use(ticketsRoutes);
 router.use(statusTicketsRoutes);
 router.use(prioridadRoutes);
