@@ -108,7 +108,14 @@ const apiPrefix = process.env.API_PREFIX || "/api/v1";
 const spects = swaggerJsDoc(options)
 
 app.use(apiPrefix, routes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
+
+// * Swagger UI - Solo disponible en desarrollo y testing
+if (process.env.NODE_ENV !== 'production') {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
+  console.log('📚 Swagger UI disponible en: /api-docs');
+} else {
+  console.log('🔒 Swagger UI deshabilitado en producción');
+}
 
 // * middleware para manejar los errores en los logs
 app.use(errorLoggerMiddleware);
