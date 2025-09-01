@@ -235,6 +235,118 @@ router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '
  */
 router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21']), createDemandInduced);
 
+/**
+ * @swagger
+ * /demanda/inducida/estadistica:
+ *   post:
+ *     summary: Obtiene estadísticas de demanda inducida filtradas por parámetros
+ *     tags: [Demanda Inducida]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - element
+ *               - program
+ *               - professional
+ *               - year
+ *               - month
+ *             properties:
+ *               element:
+ *                 type: string
+ *                 description: ID del elemento de demanda inducida
+ *                 example: "1"
+ *               program:
+ *                 type: string
+ *                 description: ID del programa
+ *                 example: "2"
+ *               professional:
+ *                 type: string
+ *                 description: Nombre del profesional
+ *                 example: "Dr. Juan Pérez"
+ *               year:
+ *                 type: string
+ *                 description: Año para el filtro de estadísticas
+ *                 example: "2025"
+ *               month:
+ *                 type: string
+ *                 description: Mes para el filtro de estadísticas (1-12)
+ *                 example: "9"
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 meta:
+ *                   type: number
+ *                   description: Meta del programa para el mes especificado
+ *                   example: 100
+ *                 estadisticasLlamadasTelefonicas:
+ *                   type: object
+ *                   description: Estadísticas de llamadas efectivas vs no efectivas
+ *                   properties:
+ *                     efectivas:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           profesional:
+ *                             type: string
+ *                           cantidad:
+ *                             type: integer
+ *                           porcentaje:
+ *                             type: integer
+ *                     noEfectivas:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           profesional:
+ *                             type: string
+ *                           cantidad:
+ *                             type: integer
+ *                           porcentaje:
+ *                             type: integer
+ *                 cantidadDemandInduced:
+ *                   type: array
+ *                   description: Cantidad de registros de demanda inducida por programa
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       programa:
+ *                         type: integer
+ *                         description: ID del programa
+ *                       cantidad:
+ *                         type: integer
+ *                         description: Cantidad de registros
+ *                 estResultadoLlamadasNoEfectivas:
+ *                   type: array
+ *                   description: Estadísticas de resultados de llamadas no efectivas
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       resultadoLlamada:
+ *                         type: string
+ *                         description: Tipo de resultado de llamada
+ *                       cantidad:
+ *                         type: integer
+ *                         description: Cantidad de llamadas con este resultado
+ *       400:
+ *         description: Error en la validación de parámetros
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Roles insuficientes
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20', '21']), getEstadisticasDemandaInducida);
 
 export default router;

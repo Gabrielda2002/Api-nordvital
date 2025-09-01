@@ -351,8 +351,164 @@ router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3'
  */
 router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', '3','6', '15']), getCupsEstadisticasPorMes);
 
+/**
+ * @swagger
+ * /update-group-services/{id}:
+ *   put:
+ *     tags:
+ *       - Radicación
+ *     summary: Actualiza el grupo de servicios de una radicación
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la radicación a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - groupServices
+ *             properties:
+ *               groupServices:
+ *                 type: integer
+ *                 description: ID del nuevo grupo de servicios
+ *     responses:
+ *       200:
+ *         description: Grupo de servicios actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Radicacion updated"
+ *       400:
+ *         description: Error en la validación de datos
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado
+ *       404:
+ *         description: Radicación no encontrada
+ */
 router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15']), validarId, updateGroupServices);
 
+/**
+ * @swagger
+ * /request/service:
+ *   post:
+ *     tags:
+ *       - Radicación
+ *     summary: Crea una nueva solicitud de servicio con datos del paciente, CUPS y archivo de soporte
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderDate
+ *               - place
+ *               - ipsRemitente
+ *               - profetional
+ *               - specialty
+ *               - groupServices
+ *               - radicador
+ *               - typeServices
+ *               - idPatient
+ *               - idDiagnostico
+ *               - items
+ *               - file
+ *             properties:
+ *               orderDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de la orden
+ *               place:
+ *                 type: integer
+ *                 description: ID del lugar de radicación
+ *               ipsRemitente:
+ *                 type: integer
+ *                 description: ID de la IPS remitente
+ *               profetional:
+ *                 type: integer
+ *                 description: ID del profesional
+ *               specialty:
+ *                 type: integer
+ *                 description: ID de la especialidad
+ *               groupServices:
+ *                 type: integer
+ *                 description: ID del grupo de servicios
+ *               radicador:
+ *                 type: integer
+ *                 description: ID del usuario radicador
+ *               typeServices:
+ *                 type: integer
+ *                 description: ID del tipo de servicio
+ *               idPatient:
+ *                 type: integer
+ *                 description: ID del paciente
+ *               idDiagnostico:
+ *                 type: integer
+ *                 description: ID del diagnóstico
+ *               landline:
+ *                 type: string
+ *                 description: Teléfono fijo del paciente
+ *               phoneNumber:
+ *                 type: string
+ *                 description: Número de teléfono celular del paciente
+ *               phoneNumber2:
+ *                 type: string
+ *                 description: Segundo número de teléfono del paciente
+ *               address:
+ *                 type: string
+ *                 description: Dirección del paciente
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Correo electrónico del paciente
+ *               items:
+ *                 type: string
+ *                 description: JSON string con array de CUPS (code, description, quantity)
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo de soporte para la solicitud
+ *     responses:
+ *       200:
+ *         description: Solicitud de servicio creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 requestService:
+ *                   type: object
+ *                   description: Datos de la radicación creada
+ *                 cupsToInsert:
+ *                   type: array
+ *                   description: Lista de CUPS creados
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Error en la validación de datos o archivo requerido
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Paciente no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post('/request/service', authenticate, authorizeRoles(['1', '10', '3', '15', '6']), upload.single('file'), createRequestService);
 
 export default router;
