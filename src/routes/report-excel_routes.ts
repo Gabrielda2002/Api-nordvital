@@ -331,6 +331,49 @@ router.post(
   , getReportTickets
 )
 
+/**
+ * @swagger
+ * /api/v1/reporte/demanda/inducida:
+ *   post:
+ *     summary: Descarga reporte de demanda inducida en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *               headquarter:
+ *                 type: string
+ *                 description: Sede para filtrar los resultados
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Parámetros inválidos
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post(
   "/reporte/demanda/inducida"
   , authenticate
@@ -338,14 +381,204 @@ router.post(
   , reportDemandInduced
 )
 
+/**
+ * @swagger
+ * /api/v1/report/equipments:
+ *   post:
+ *     summary: Descarga reporte de inventario de equipos en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Solo administradores
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/report/equipments", authenticate, authorizeRoles(["1"]), reportInventoryEquipments);
 
+/**
+ * @swagger
+ * /api/v1/report/device-red:
+ *   post:
+ *     summary: Descarga reporte de dispositivos de red en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Solo administradores
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/report/device-red", authenticate, authorizeRoles(["1"]), reportRedDevice);
 
+/**
+ * @swagger
+ * /api/v1/report/general-inventory:
+ *   post:
+ *     summary: Descarga reporte de inventario general en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Solo administradores
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/report/general-inventory", authenticate, authorizeRoles(["1"]), reportGeneralInventory);
 
+/**
+ * @swagger
+ * /api/v1/report/tv:
+ *   post:
+ *     summary: Descarga reporte de televisores en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Solo administradores
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/report/tv", authenticate, authorizeRoles(["1"]), reportTV);
 
+/**
+ * @swagger
+ * /api/v1/report/phones:
+ *   post:
+ *     summary: Descarga reporte de teléfonos en Excel
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - Solo administradores
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/report/phones", authenticate, authorizeRoles(["1"]), reportPhones);
 
 export default router;
