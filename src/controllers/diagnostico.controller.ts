@@ -38,7 +38,7 @@ export async function getDiagnosticoById(req: Request, res: Response, next: Next
 
 export async function createDiagnostico(req: Request, res: Response, next: NextFunction) {
     try {
-        const { code, name } = req.body;
+        const { code, description } = req.body;
 
         const diagnosticoExists = await Diagnostico.findOneBy({ code });
 
@@ -48,17 +48,16 @@ export async function createDiagnostico(req: Request, res: Response, next: NextF
 
         const diagnostico = new  Diagnostico()
         diagnostico.code = code;
-        diagnostico.description = name
+        diagnostico.description = description.trim().toUpperCase();
 
         const errors = await validate(diagnostico);
 
         if (errors.length > 0) {
-            const errorsMessage = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints,
-            }));
+            const errorsMessage = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
 
-            return res.status(400).json({ message: "Error al crear el diagnóstico", errors: errorsMessage });
+            return res.status(400).json({ message: errorsMessage });
         }
 
         await diagnostico.save();
@@ -75,7 +74,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
         
         const { id } = req.params;
 
-        const {  name } = req.body;
+        const { description } = req.body;
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
 
@@ -83,16 +82,15 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
             return res.status(404).json({message: "Diagnostico not found"});
         }
 
-        diagnostico.description = name;
+        diagnostico.description = description.trim().toUpperCase();
 
         const errors = await validate(diagnostico);
         if (errors.length > 0) {
-            const errorsMessage = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }));
+            const errorsMessage = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
 
-            return res.status(400).json({message: "Error updating diagnostico", errors: errorsMessage});
+            return res.status(400).json({message: errorsMessage});
             
         }
         await diagnostico.save();

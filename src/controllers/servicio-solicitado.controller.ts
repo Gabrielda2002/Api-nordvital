@@ -40,23 +40,18 @@ export async function createServicioSolicitado(req: Request, res: Response, next
 
     try {
         
-        const { code, name } = req.body;
-
-        if (!code || !name) {
-            return res.status(400).json({message: "Código y nombre son requeridos"});
-            
-        }
+        const { code, description } = req.body;
 
         const codeExists = await ServiciosSolicitados.findOneBy({code});
 
         if (codeExists) {
-            return res.status(400).json({message: "El código ya existe"});   
+            return res.status(409).json({message: "El CUPS ya existe"});   
         }
 
         const servicioSolicitado =  new ServiciosSolicitados();
 
         servicioSolicitado.code = code;
-        servicioSolicitado.name = name;
+        servicioSolicitado.name = description.trim().toUpperCase();
         servicioSolicitado.status = true;
 
         const errors = await validate(servicioSolicitado);
@@ -166,37 +161,28 @@ export async function getServiciosSolicitadosByCode(req: Request, res: Response,
 export async function updateServicioSolicitadoTable(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { name, status } = req.body;
+      const { description, status } = req.body;
   
       const servicioSolicitado = await ServiciosSolicitados.findOneBy({ id: parseInt(id) });
   
       if (!servicioSolicitado) {
         return res.status(404).json({ message: "Servicio solicitado not found" });
       }
-  
-      // Actualizar solo si se recibe "name"
-      if (name) {
-        servicioSolicitado.name = name;
-      }
-  
-      // Actualizar solo si se recibe "status"
-      if (status !== undefined && status !== "") {
-        servicioSolicitado.status = status == "1";
-      }
-  
+
+      servicioSolicitado.name =  description.trim().toUpperCase();
+      servicioSolicitado.status = status === "1" ? true : false;
+
       const errors = await validate(servicioSolicitado);
       if (errors.length > 0) {
-        const message = errors.map(err => ({
-          constraint: err.constraints,
-          property: err.property
-        }));
-  
-        return res.status(400).json({ "messages": "Ocurrio un error: ", message });
+        const message = errors.map(err => (
+            Object.values(err.constraints || {}).join(", ")
+        ));
+        return res.status(400).json({ message: message });
       }
   
       await servicioSolicitado.save();
   
-      return res.json({ message: "Servicio solicitado actualizado" });
+      return res.status(200).json({ message: "Servicio solicitado actualizado" });
     } catch (error) {
       next(error);
     }
