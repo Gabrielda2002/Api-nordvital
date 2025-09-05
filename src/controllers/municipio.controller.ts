@@ -34,11 +34,7 @@ export async function getMunicipioById(req: Request, res: Response, next: NextFu
 export async function createMunicipio(req: Request, res: Response, next: NextFunction) {
     try {
         
-        const { name, code } = req.body;
-
-        if (!name || !code) {
-            return res.status(400).json({ message: "Name and nitMunicipio are required" });
-        }
+        const { name, municipioCode, department } = req.body;
 
         const municipioExist = await Municipio.findOneBy({ name });
 
@@ -49,17 +45,17 @@ export async function createMunicipio(req: Request, res: Response, next: NextFun
         const municipio = new Municipio();
         municipio.name = name;
         municipio.status = true;
-        municipio.municipioCode = code;
+        municipio.municipioCode = municipioCode;
+        municipio.idDepartment = Number(department);
 
         const errors = await validate(municipio);
 
         if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
+            const errorsMessage = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
 
-            return res.status(400).json({ message: "Error creating municipio", messages });
+            return res.status(400).json({ message: errorsMessage });
 
         }
 
@@ -76,7 +72,7 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
     try {
         
         const { id } = req.params;
-        const { name, code, status } = req.body;
+        const { name, municipioCode, idDepartment, status } = req.body;
 
         const municipio = await Municipio.findOneBy({ id: parseInt(id) });
 
@@ -85,24 +81,24 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
         }
 
         municipio.name = name;
-        municipio.municipioCode = code;
+        municipio.municipioCode = municipioCode;
         municipio.status = status;
+        municipio.idDepartment = idDepartment;
 
         const errors = await validate(municipio);
 
         if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
+            const messages = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
 
-            return res.status(400).json({ message: "Error updating municipio", messages });
+            return res.status(400).json({ message: messages });
         }
 
         await municipio.save();
 
-        return res.json(municipio);
-
+        return res.status(200).json(municipio);
+ 
     } catch (error) {
         next(error);
     }
