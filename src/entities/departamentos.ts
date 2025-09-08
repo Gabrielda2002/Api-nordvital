@@ -1,5 +1,4 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { LugarRadicacion } from "./lugar-radicacion";
 import { IsInt, IsString, Length } from "class-validator";
 import { Municipio } from "./municipio";
 
@@ -23,10 +22,6 @@ export class departamentos extends BaseEntity{
 
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
-
-    // relacion con sedes
-    @OneToMany(() => LugarRadicacion, (lugar) => lugar.departmentRelation)
-    placeRelation: LugarRadicacion[];
 
     // ? relacion con municipios
     @OneToMany(() => Municipio, (municipio) => municipio.departmentRelation)

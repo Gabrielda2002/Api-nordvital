@@ -4,7 +4,6 @@ import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "./dispositivos-red";
 import { Municipio } from "./municipio";
 import { Usuarios } from "./usuarios";
-import { departamentos } from "./departamentos";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 import { RegistroEntrada } from "./registro-entrada";
@@ -37,10 +36,7 @@ export class LugarRadicacion extends BaseEntity{
     @Column({name: "direccion"})
     address: string
 
-    @Column({name: "departamento"})
-    departamento: number
-
-    @Column({name: "ciudad"})
+    @Column({name: "yciudad"})
     city: number
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
@@ -61,11 +57,6 @@ export class LugarRadicacion extends BaseEntity{
     // relacion con usuarios
     @OneToMany(() => Usuarios, (usuario) => usuario.sedeRelation)
     userRelation: Usuarios[]
-
-    // relacion con departamento
-    @ManyToOne(() => departamentos, (departamento) => departamento.placeRelation)
-    @JoinColumn({name: "departamento"})
-    departmentRelation: departamentos;
 
     // relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)

@@ -690,8 +690,8 @@ export async function searchPhone(
         responsableName: p.usuarioRelation?.name || "N/A",
         responsableLastName: p.usuarioRelation?.lastName || "N/A",
       }, 
-      departmentId: p.sedeRelation?.departmentRelation?.id || 0,
-      departmentRelationName: p.sedeRelation?.departmentRelation?.name || "N/A",
+      departmentId: p.sedeRelation?.municipioRelation?.departmentRelation?.id || 0,
+      departmentRelationName: p.sedeRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: p.sedeRelation?.name || "N/A",
       sedeId: p.sedeRelation?.id || 0
     }));

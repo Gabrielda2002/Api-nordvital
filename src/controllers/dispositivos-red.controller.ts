@@ -345,8 +345,8 @@ export async function searchDevices(
           responsableLastName: s.userRelation?.lastName,
         }))
       },
-      departmentId: d.placeRelation?.departmentRelation?.id || 0,
-      departmentRelationName: d.placeRelation?.departmentRelation?.name || "N/A",
+      departmentId: d.placeRelation?.municipioRelation?.departmentRelation?.id || 0,
+      departmentRelationName: d.placeRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: d.placeRelation?.name || "N/A",
       sedeId: d.placeRelation.id || 0
     }));

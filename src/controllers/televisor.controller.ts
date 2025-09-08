@@ -469,8 +469,8 @@ export async function searchTv(
           responsableLastName: s.usuarioRelation?.lastName || "N/A",
         })),
       },
-      departmentId: t.sedeRelation?.departmentRelation?.id || 0,
-      departmentRelationName: t.sedeRelation?.departmentRelation?.name || "N/A",
+      departmentId: t.sedeRelation?.municipioRelation?.departmentRelation?.id || 0,
+      departmentRelationName: t.sedeRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: t.sedeRelation?.name || "N/A",
       sedeId: t.sedeRelation.id || 0,
     }));

@@ -33,7 +33,7 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
 
 export async function createLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
-        const { name, address, departamento, city } = req.body;
+        const { name, address, city } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "Name is required" });
@@ -49,7 +49,6 @@ export async function createLugarRadicacion(req: Request, res: Response, next: N
         lugarRadicacion.name = name;
         lugarRadicacion.status = true;
         lugarRadicacion.address = address;
-        lugarRadicacion.departamento = departamento;
         lugarRadicacion.city = city;
 
         const errors = await validate(lugarRadicacion);

@@ -484,8 +484,8 @@ export async function searchInventoryGeneral(
           responsableLastName: s.usuario?.lastName,
         })),
       },
-      departmentId: i.headquartersRelation?.departmentRelation?.id || 0,
-      departmentRelationName: i.headquartersRelation?.departmentRelation?.name || "N/A",
+      departmentId: i.headquartersRelation?.municipioRelation?.departmentRelation?.id || 0,
+      departmentRelationName: i.headquartersRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: i.headquartersRelation?.name || "N/A",
       sedeId: i.headquartersRelation.id || 0
     }));

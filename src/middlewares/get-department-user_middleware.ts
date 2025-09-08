@@ -21,7 +21,7 @@ export const getDepartmentUser = async (req: Request, res: Response, next: NextF
             return next()
         }
 
-        req.departmentUserId = user.sedeRelation?.departmentRelation?.id;
+    req.departmentUserId = user.sedeRelation?.municipioRelation.departmentRelation?.id;
 
         console.log("Departamento del usuario: ", req.departmentUserId);
 

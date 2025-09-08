@@ -817,8 +817,8 @@ export async function searchEquipmentGlobal(
         })),
         nameDocument: e.soportRelacion?.nameSaved || "N/A",
       },
-      departmentId: e.placeRelation?.departmentRelation?.id || 0,
-      departmentRelationName: e.placeRelation?.departmentRelation?.name || "N/A",
+      departmentId: e.placeRelation?.municipioRelation?.departmentRelation?.id || 0,
+      departmentRelationName: e.placeRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeId: e.placeRelation?.id || 0,
       sedeName: e.placeRelation?.name || "N/A"
     }));
