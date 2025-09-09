@@ -4,6 +4,7 @@ import { UnidadFuncional } from "./unidad-funcional";
 import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Estados } from "./estados";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
+import { ServiciosSolicitados } from "./servicios-solicitados";
 
 @Entity("cupspaciente")
 export class CupsRadicados extends BaseEntity {
@@ -54,6 +55,11 @@ export class CupsRadicados extends BaseEntity {
     @IsNotEmpty({message: "La cantidad es requerida"})
     quantity: number;
 
+    @Column({name: "servicio_id", nullable: true})
+    @IsOptional()
+    @IsInt()
+    servicioId: number | null;
+
     @UpdateDateColumn({ name: "UltimaModificacion" })
     updatedAt: Date
 
@@ -77,6 +83,11 @@ export class CupsRadicados extends BaseEntity {
 
     @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.cupsRadicadosRelation)
     seguimientoAuxiliarRelation: SeguimietoAuxiliar[]
+
+    // * relación con servicios solicitados
+    @ManyToOne(() => ServiciosSolicitados, (servicio) => servicio.cupsRadicadosRelation)
+    @JoinColumn({ name: "servicio_id" })
+    servicioRelation: ServiciosSolicitados
 
 }
 

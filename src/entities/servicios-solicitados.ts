@@ -1,6 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
+import { CupsRadicados } from "./cups-radicados";
 
 @Entity({name: "serviciosolicitado"})
 export class ServiciosSolicitados extends BaseEntity {
@@ -34,4 +35,8 @@ export class ServiciosSolicitados extends BaseEntity {
     // * relacion con gestion auxiliar cirugias
     @OneToMany(() => SeguimientoAuxiliarCirugias, (seguimientoAuxiliarCirugias) => seguimientoAuxiliarCirugias.cupsRelation )
     statusRelation: SeguimientoAuxiliarCirugias[]
+
+    // * relacion con cups radicados
+    @OneToMany(() => CupsRadicados, (cups) => cups.servicioRelation)
+    cupsRadicadosRelation: CupsRadicados[]
 }
