@@ -19,9 +19,9 @@ export async function getAllLugaresRadicacion(req: Request, res: Response, next:
             name: lugar.name,
             address: lugar.address,
             status: lugar.status,
-            departmentId: lugar.departmentRelation.id,
+            departmentId: lugar.municipioRelation?.departmentRelation?.id,
             cityId: lugar.municipioRelation.id,
-            department: lugar.departmentRelation.name,
+            department: lugar.municipioRelation?.departmentRelation?.name,
             city: lugar.municipioRelation.name,
             headquartersNumber: lugar.numeroSede,
         }));
@@ -50,7 +50,7 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
 
 export async function createLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
-        const { name, address, city } = req.body;
+        const { name, address, city, headquartersNumber } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "Name is required" });
@@ -92,7 +92,7 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
     try {
         
         const { id } = req.params;
-        const { name, status, address, department, city, headquartersNumber } = req.body;
+        const { name, status, address, city, headquartersNumber } = req.body;
 
         const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
@@ -103,7 +103,6 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
         lugarRadicacion.name = name;
         lugarRadicacion.status = status;
         lugarRadicacion.address = address;
-        lugarRadicacion.departamento = department;
         lugarRadicacion.city = city;
         lugarRadicacion.numeroSede = headquartersNumber;
 
@@ -181,7 +180,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
     try {
         
         const { id } = req.params;
-        const { status, name, address, department, city, headquartersNumber } = req.body;
+        const { status, name, address, city, headquartersNumber } = req.body;
 
         const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
@@ -192,7 +191,6 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         lugarRadicacion.name = name;
         lugarRadicacion.status = status === "1";
         lugarRadicacion.address = address;
-        lugarRadicacion.departamento = department;
         lugarRadicacion.city = city;
         lugarRadicacion.numeroSede = headquartersNumber;
 
