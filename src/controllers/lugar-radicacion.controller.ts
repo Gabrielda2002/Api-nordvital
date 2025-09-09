@@ -9,7 +9,24 @@ export async function getAllLugaresRadicacion(req: Request, res: Response, next:
         .leftJoinAndSelect("lugar_radicacion.departmentRelation", "departamento")
         .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
         .getMany();
-        return res.json(lugaresRadicacion);
+
+        if (!lugaresRadicacion) {
+            return res.status(404).json({ message: "LugarRadicacion not found" });
+        }
+
+        const lugaresFormat = lugaresRadicacion.map(lugar => ({
+            id: lugar.id,
+            name: lugar.name,
+            address: lugar.address,
+            status: lugar.status,
+            departmentId: lugar.departmentRelation.id,
+            cityId: lugar.municipioRelation.id,
+            department: lugar.departmentRelation.name,
+            city: lugar.municipioRelation.name,
+            headquartersNumber: lugar.numeroSede,
+        }));
+
+        return res.json(lugaresFormat);
     } catch (error) {
         next(error);
     }
@@ -50,6 +67,7 @@ export async function createLugarRadicacion(req: Request, res: Response, next: N
         lugarRadicacion.status = true;
         lugarRadicacion.address = address;
         lugarRadicacion.city = city;
+        lugarRadicacion.numeroSede = headquartersNumber;
 
         const errors = await validate(lugarRadicacion);
 
@@ -74,7 +92,7 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
     try {
         
         const { id } = req.params;
-        const { name, status } = req.body;
+        const { name, status, address, department, city, headquartersNumber } = req.body;
 
         const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
@@ -84,6 +102,10 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
 
         lugarRadicacion.name = name;
         lugarRadicacion.status = status;
+        lugarRadicacion.address = address;
+        lugarRadicacion.departamento = department;
+        lugarRadicacion.city = city;
+        lugarRadicacion.numeroSede = headquartersNumber;
 
         const errors = await validate(lugarRadicacion);
 
@@ -159,7 +181,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
     try {
         
         const { id } = req.params;
-        const { status, name } = req.body;
+        const { status, name, address, department, city, headquartersNumber } = req.body;
 
         const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
 
@@ -167,23 +189,23 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
             return res.status(404).json({ message: "LugarRadicacion not found" });
         }
 
-        if (name) {
-            lugarRadicacion.name = name;
-        }
+        lugarRadicacion.name = name;
+        lugarRadicacion.status = status === "1";
+        lugarRadicacion.address = address;
+        lugarRadicacion.departamento = department;
+        lugarRadicacion.city = city;
+        lugarRadicacion.numeroSede = headquartersNumber;
 
-        if (status !== undefined && status !== "") {
-            lugarRadicacion.status = status == "1";
-        }
+        console.log(lugarRadicacion)
 
         const errors = await validate(lugarRadicacion);
 
         if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
+            const errorsMessage = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
 
-            return res.status(400).json({ message: "Error updating lugar radicador", messages });
+            return res.status(400).json({ message: errorsMessage });
 
         }
 
