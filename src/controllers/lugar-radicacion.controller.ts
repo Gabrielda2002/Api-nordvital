@@ -6,8 +6,8 @@ import { parse } from "path";
 export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
         const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
-        .leftJoinAndSelect("lugar_radicacion.departmentRelation", "departamento")
         .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
+        .leftJoinAndSelect("municipio.departmentRelation", "department")
         .getMany();
 
         if (!lugaresRadicacion) {
@@ -189,7 +189,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         }
 
         lugarRadicacion.name = name;
-        lugarRadicacion.status = status === "1";
+        lugarRadicacion.status = status == "1";
         lugarRadicacion.address = address;
         lugarRadicacion.city = city;
         lugarRadicacion.numeroSede = headquartersNumber;
@@ -222,7 +222,9 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
         const { id } = req.params;
 
         const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
-        .where("lugar_radicacion.departamento = :id", { id: parseInt(id) })
+        .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
+        .leftJoinAndSelect("municipio.departmentRelation", "department")
+        .where("department.id = :id", { id: parseInt(id) })
         .getMany();
 
         if (!lugaresRadicacion) {

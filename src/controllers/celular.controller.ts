@@ -628,7 +628,8 @@ export async function searchPhone(
         "responsableSeguimiento"
       )
       .leftJoinAndSelect('celular.sedeRelation', 'sede')
-      .leftJoinAndSelect('sede.departmentRelation', 'department')
+      .leftJoinAndSelect('sede.municipioRelation', 'municipio')
+      .leftJoinAndSelect('municipio.departmentRelation', 'department')
       .where(
         `(
           LOWER(celular.name) LIKE :searchTerm OR

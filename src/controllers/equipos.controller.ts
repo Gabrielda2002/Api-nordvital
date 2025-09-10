@@ -730,7 +730,8 @@ export async function searchEquipmentGlobal(
       .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
       .leftJoinAndSelect("equipos.soportRelacion", "document")
       .leftJoinAndSelect("equipos.placeRelation", "sede_equipo")
-      .leftJoinAndSelect("sede_equipo.departmentRelation", "departamento_sede")
+      .leftJoinAndSelect("sede_equipo.municipioRelation", "municipio_sede")
+      .leftJoinAndSelect("municipio_sede.departmentRelation", "departamento_sede")
       .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
       // Aquí está la clave: usamos CONCAT y LOWER para buscar en múltiples campos
       .where(

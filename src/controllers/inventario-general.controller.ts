@@ -423,7 +423,8 @@ export async function searchInventoryGeneral(
       .leftJoinAndSelect('inventario.assetTypeRelation', 'tipoActivo')
       .leftJoinAndSelect('inventario.seguimiento', 'seguimiento')
       .leftJoinAndSelect('inventario.headquartersRelation', 'sedeInventario')
-      .leftJoinAndSelect('sedeInventario.departmentRelation', 'departamento')
+      .leftJoinAndSelect('sedeInventario.municipioRelation', 'municipio')
+      .leftJoinAndSelect('municipio.departmentRelation', 'departamento')
       .leftJoinAndSelect('seguimiento.usuario', 'usuario')
       .where(
         `(

@@ -403,7 +403,8 @@ export async function searchTv(
 
     const televisor = await Televisor.createQueryBuilder("televisor")
       .leftJoinAndSelect("televisor.sedeRelation", "sede")
-      .leftJoinAndSelect("sede.departmentRelation", "department")
+      .leftJoinAndSelect("sede.municipioRelation", "municipio")
+      .leftJoinAndSelect("municipio.departmentRelation", "department")
       .leftJoinAndSelect("televisor.responsableRelation", "responsable")
       .leftJoinAndSelect("televisor.seguimientoRelation", "seguimiento")
       .leftJoinAndSelect(

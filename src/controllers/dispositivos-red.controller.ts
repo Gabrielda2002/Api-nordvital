@@ -305,7 +305,8 @@ export async function searchDevices(
       )
       .leftJoinAndSelect("seguimiento.userRelation", "user")
       .leftJoinAndSelect("dispositivosRed.placeRelation",'sede')
-      .leftJoinAndSelect("sede.departmentRelation", "department")
+      .leftJoinAndSelect("sede.municipioRelation", "municipio")
+      .leftJoinAndSelect("municipio.departmentRelation", "department")
       .where(
         `(
           LOWER(dispositivosRed.name) LIKE :searchTerm OR
