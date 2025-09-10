@@ -141,7 +141,7 @@ export class Usuarios extends BaseEntity {
   phoneNumber: number;
 
   @Column({ name: "cargo_id", nullable: true })
-  @IsInt()
+  // @IsInt()
   @IsOptional()
   positionId: number;
 

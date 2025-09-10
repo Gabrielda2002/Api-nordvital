@@ -319,6 +319,9 @@ export async function getUsuariosTable(
       cargo: usuario.position || "N/A",
       sedeId: usuario.headquarters || "N/A",
       celular: usuario.phoneNumber || "N/A",
+      contractType: usuario.contractType || "N/A",
+      dateStartContract: usuario.dateStartContract || "N/A",
+      positionId: usuario.positionId || "N/A",
     }));
 
     return res.json(usuarios);
@@ -384,6 +387,9 @@ export async function updateUsuarioTable(
       position,
       headquarters,
       phoneNumber,
+      contractType,
+      dateStartContract,
+      // positionId
     } = request.body;
     console.log(request.body);
 
@@ -407,16 +413,18 @@ export async function updateUsuarioTable(
     usuario.position = position.toUpperCase();
     usuario.headquarters = parseInt(headquarters);
     usuario.phoneNumber = parseInt(phoneNumber);
+    usuario.contractType = contractType;
+    usuario.dateStartContract = dateStartContract;
+    // usuario.positionId = parseInt(positionId);
 
     const errors = await validate(usuario);
     if (errors.length > 0) {
-      const messageError = errors.map((error) => ({
-        property: error.property,
-        constraints: error.constraints,
-      }));
+      const messageError = errors.map(err => (
+        Object.values(err.constraints || {}).join(", ")
+      ));
       return response
         .status(400)
-        .json({ message: "Ocurrio un error", messageError });
+        .json({ message: messageError });
     }
 
     await usuario.save();
