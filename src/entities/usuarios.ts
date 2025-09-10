@@ -16,6 +16,7 @@ import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -48,6 +49,8 @@ import { SeguimientoCelular } from "./seguimiento-celular";
 import { Comentarios } from "./comentarios";
 import { RefreshToken } from "./refresh-tokens";
 import { DemandaInducida } from "./demanda-inducida";
+import { Area } from "./area";
+import { Cargo } from "./cargo";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -136,6 +139,20 @@ export class Usuarios extends BaseEntity {
   @IsInt()
   @IsNotEmpty({ message: "El número de celular es requerido" })
   phoneNumber: number;
+
+  @Column({ name: "cargo_id", nullable: true })
+  @IsInt()
+  @IsOptional()
+  positionId: number;
+
+  @Column({ name: "tipo_contrato", nullable: true })
+  @IsEnum(["FIJO", "INDEFINIDO", "POR OBRA O LABOR", "PRESTACION DE SERVICIOS"])
+  @IsNotEmpty({ message: "El tipo de contrato es requerido" })
+  contractType: string;
+
+  @Column({ name: "fecha_inicio_contrato", type: "date", nullable: true })
+  @IsOptional()
+  dateStartContract: Date;
 
   @UpdateDateColumn({ name: "fecha-actualizacion" })
   updatedAt: Date;
@@ -246,4 +263,9 @@ export class Usuarios extends BaseEntity {
   // * Relación con demanda inducida (persona seguimiento)
   @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.personaSeguimientoRelation)
   demandaInducidaSeguimientoRelation: DemandaInducida[];
+
+  // * Relación con cargo
+  @ManyToOne(() => Cargo, (cargo) => cargo.usersRelation, { nullable: true })
+  @JoinColumn({ name: "cargo_id" })
+  cargoRelation: Cargo;
 }

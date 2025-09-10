@@ -36,7 +36,7 @@ export class LugarRadicacion extends BaseEntity{
     @Column({name: "direccion"})
     address: string
 
-    @Column({name: "yciudad"})
+    @Column({name: "ciudad"})
     city: number
 
     @UpdateDateColumn({ name: "fecha-actualizacion" })
