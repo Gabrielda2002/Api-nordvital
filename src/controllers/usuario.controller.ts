@@ -57,10 +57,11 @@ export async function createUsuario(
       email,
       password,
       rol,
-      area,
-      cargo,
-      sedeId,
+      headquarters,
       phoneNumber,
+      position,
+      contractType,
+      dateStartContract
     } = req.body;
 
     const userExist = await Usuarios.createQueryBuilder("usuarios")
@@ -81,22 +82,22 @@ export async function createUsuario(
     usuario.password = await bcrypt.hash(password, saltRounds);
     usuario.status = true;
     usuario.rol = parseInt(rol);
-    usuario.area = area.toUpperCase();
-    usuario.position = cargo.toUpperCase();
-    usuario.headquarters = parseInt(sedeId);
+    usuario.headquarters = parseInt(headquarters);
     usuario.phoneNumber = parseInt(phoneNumber);
+    usuario.positionId = position;
+    usuario.contractType = contractType;
+    usuario.dateStartContract = dateStartContract;
 
     const errors = await validate(usuario);
 
     if (errors.length > 0) {
-      const messageError = errors.map((error) => ({
-        property: error.property,
-        constraints: error.constraints,
-      }));
+      const messageError = errors.map(err => (
+        Object.values(err.constraints || {}).join(", ")
+      ));
 
       return res
         .status(400)
-        .json({ message: "Ocurrio un error: ", messageError });
+        .json({ message: messageError });
     }
 
     await usuario.save();
@@ -297,6 +298,7 @@ export async function getUsuariosTable(
       .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
       .leftJoinAndSelect("usuarios.rolesRelation", "roles")
       .leftJoinAndSelect("usuarios.sedeRelation", "sede")
+      .leftJoinAndSelect("usuarios.cargoRelation", "cargo")
       .leftJoinAndSelect("sede.municipioRelation", "municipio")
       .getMany();
 
@@ -315,13 +317,12 @@ export async function getUsuariosTable(
       idRol: usuario.rolesRelation?.id || "N/A",
       municipio: usuario.sedeRelation?.municipioRelation?.name || "N/A",
       idMunicipio: usuario.sedeRelation?.municipioRelation?.id || "N/A",
-      area: usuario.area || "N/A",
-      cargo: usuario.position || "N/A",
       sedeId: usuario.headquarters || "N/A",
       celular: usuario.phoneNumber || "N/A",
       contractType: usuario.contractType || "N/A",
       dateStartContract: usuario.dateStartContract || "N/A",
       positionId: usuario.positionId || "N/A",
+      positionName: usuario.cargoRelation?.name || "N/A",
     }));
 
     return res.json(usuarios);
@@ -383,13 +384,11 @@ export async function updateUsuarioTable(
       password,
       status,
       rol,
-      area,
-      position,
       headquarters,
       phoneNumber,
       contractType,
       dateStartContract,
-      // positionId
+      positionId
     } = request.body;
     console.log(request.body);
 
@@ -409,13 +408,11 @@ export async function updateUsuarioTable(
       usuario.password = await bcrypt.hash(password, saltRounds);
     }
     usuario.rol = parseInt(rol);
-    usuario.area = area.toUpperCase();
-    usuario.position = position.toUpperCase();
     usuario.headquarters = parseInt(headquarters);
     usuario.phoneNumber = parseInt(phoneNumber);
     usuario.contractType = contractType;
     usuario.dateStartContract = dateStartContract;
-    // usuario.positionId = parseInt(positionId);
+    usuario.positionId = parseInt(positionId);
 
     const errors = await validate(usuario);
     if (errors.length > 0) {

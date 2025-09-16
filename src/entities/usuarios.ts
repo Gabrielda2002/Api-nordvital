@@ -119,15 +119,9 @@ export class Usuarios extends BaseEntity {
   photo: string;
 
   @Column({ name: "area" })
-  @IsString()
-  @IsNotEmpty({ message: "El área es requerida" })
-  @Length(2, 100, { message: "El área debe tener entre 2 y 100 caracteres" })
   area: string;
 
   @Column({ name: "cargo" })
-  @IsString()
-  @Length(2, 200, { message: "El cargo debe tener entre 2 y 200 caracteres" })
-  @IsNotEmpty({ message: "El cargo es requerido" })
   position: string;
 
   @Column({ name: "sede_id" })

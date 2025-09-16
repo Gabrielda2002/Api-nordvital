@@ -19,6 +19,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const user = await Usuarios.createQueryBuilder("usuario")
       .leftJoinAndSelect("usuario.sedeRelation", "sede")
       .leftJoinAndSelect("sede.municipioRelation", "municipio")
+      .leftJoinAndSelect("usuario.cargoRelation", "cargo")
+      .leftJoinAndSelect("cargo.areaRelation", "area")
+      .leftJoinAndSelect("usuario.rolesRelation", "contractType")
       .where("usuario.dniNumber = :dniNumber", { dniNumber })
       .getOne();
 
@@ -63,13 +66,13 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         email: user.email,
         name: user.name,
         lastname: user.lastName,
-        rol: user.rol,
+        rol: user.rolesRelation?.name,
         status: user.status,
         photo: user.photo,
         phone: user.phoneNumber,
         municipality: user.sedeRelation?.municipioRelation?.name,
-        area: user.area,
-        position: user.position,
+        area: user.cargoRelation.areaId,
+        position: user.cargoRelation?.name,
         headquarters: user.sedeRelation?.name,
         headquartersId: user?.sedeRelation?.id
       },
