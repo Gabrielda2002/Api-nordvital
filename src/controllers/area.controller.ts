@@ -8,12 +8,27 @@ export async function getAllAreas(
   next: NextFunction
 ) {
   try {
-    const areas = await Area.find({ where: { status: true } });
+    const areas = await Area.find({
+      join: {
+        alias: "area",
+        leftJoinAndSelect: { manager: "area.managerRelation" },
+      },
+    });
 
     if (areas.length === 0) {
       return res.status(404).json({ message: "No hay áreas registradas" });
     }
-    return res.status(200).json(areas);
+
+    const areasFormatted = areas.map((a) => ({
+      id: a.id || "N/A",
+      name: a.name || "N/A",
+      description: a.description || "N/A",
+      managerId: a.managerId || "N/A",
+      managerName: a.managerRelation?.name || "N/A",
+      status: a.status || "N/A",
+    }));
+
+    return res.status(200).json(areasFormatted);
   } catch (error) {
     next(error);
   }
@@ -64,11 +79,11 @@ export async function createArea(
       });
     }
 
-    const newArea = Area.create({
-      name,
-      description,
-      managerId,
-    });
+    const newArea = new Area();
+    newArea.name = name;
+    newArea.description = description;
+    newArea.managerId = managerId;
+    newArea.status = true;
 
     const errors = await validate(newArea);
     if (errors.length > 0) {

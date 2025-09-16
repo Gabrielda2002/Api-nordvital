@@ -9,12 +9,27 @@ export async function getAllPosition(
 ) {
     try {
         
-        const areas = await Cargo.find();
+        const cargos = await Cargo.find({
+            join: {
+                alias: "cargo",
+                leftJoinAndSelect: { area: "cargo.areaRelation" },
+            }
+        });
 
-        if (areas.length === 0) {
+        if (cargos.length === 0) {
             return res.status(404).json({ message: "No hay áreas registradas" });
         }
-        return res.status(200).json(areas);
+
+        const cargosFormatted = cargos.map(c => ({
+            id: c.id || "N/A",
+            name: c.name || "N/A",
+            description: c.description || "N/A",
+            areaId: c.areaId || "N/A",
+            areaName: c.areaRelation?.name || "N/A",
+            status: c.status || "N/A",
+        }))
+
+        return res.status(200).json(cargosFormatted);
     } catch (error) {
         next(error);
     }
@@ -76,6 +91,7 @@ try {
     newPosition.name = name;
     newPosition.description = description;
     newPosition.areaId = areaId;
+    newPosition.status = true;
 
     const errors = await validate(newPosition);
 

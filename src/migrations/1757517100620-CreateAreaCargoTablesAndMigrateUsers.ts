@@ -177,7 +177,7 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
 
     // PASO 7: Insertar datos (solo si no existen)
     const areaCount = await queryRunner.query(`SELECT COUNT(*) as count FROM \`area\``);
-    if (areaCount[0].count === 0) {
+    if (areaCount[0].count > 0) {
       await queryRunner.query(`
           INSERT INTO \`area\` (\`nombre\`, \`estado\`) VALUES
           ('LABORATORIO CLINICO', 1),
@@ -207,7 +207,7 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
     }
 
     const cargoCount = await queryRunner.query(`SELECT COUNT(*) as count FROM \`cargo\``);
-    if (cargoCount[0].count === 0) {
+    if (cargoCount[0].count > 0) {
       await queryRunner.query(`
           INSERT INTO \`cargo\` (\`nombre\`, \`estado\`) VALUES
           ('AUXILIAR LABORATORIO', 1),
