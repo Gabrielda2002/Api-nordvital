@@ -277,6 +277,7 @@ export async function getEstadisticasDemandaInducida(
       professional: profesional,
       year: año,
       month: mes,
+      responsable
     } = req.body;
 
     const rolCurrentUser = req.user?.rol;
@@ -299,6 +300,7 @@ export async function getEstadisticasDemandaInducida(
     );
 
     const metaValue = metaPrograma?.meta || 0;
+    console.log("Meta del programa:", metaValue);
 
     // 1. Estadísticas por programa, elemento y profesional
     // const estadisticasPorPrograma = await getStatisticsByProgram(
@@ -320,7 +322,8 @@ export async function getEstadisticasDemandaInducida(
       metaValue,
       idCurrentUser,
       idHeadquartersCurrentUser,
-      rolCurrentUser
+      rolCurrentUser,
+      responsable
     );
 
     // 3. Resultados de llamadas no efectivas
@@ -340,7 +343,8 @@ export async function getEstadisticasDemandaInducida(
       mes,
       idCurrentUser,
       idHeadquartersCurrentUser,
-      rolCurrentUser
+      rolCurrentUser,
+      responsable
     );
 
     // 5. Estadísticas resultados de llamadas no efectivas
@@ -353,7 +357,8 @@ export async function getEstadisticasDemandaInducida(
         mes,
         idCurrentUser,
         rolCurrentUser,
-        idHeadquartersCurrentUser
+        idHeadquartersCurrentUser,
+        responsable
       );
 
     return res.status(200).json({
@@ -377,7 +382,8 @@ async function getStatisticsResultCallsNotEffective(
   mes: string,
   currentUserId: string,
   rolCurrentUser?: number | string,
-  currentUserHeadquartersId?: number
+  currentUserHeadquartersId?: number,
+  responsable?: string
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
@@ -402,6 +408,10 @@ async function getStatisticsResultCallsNotEffective(
     .andWhere("demanda.programaId = :programaId", { programaId })
     .andWhere("demanda.profesional = :profesional", { profesional })
     .groupBy("resultado.name");
+
+    if (responsable) {
+      query.andWhere("personaSeguimiento.id = :responsableId", { responsableId: responsable });
+    }
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
@@ -430,7 +440,8 @@ async function getQuantityDemandInducedByProgram(
   mes: string,
   currentUserId: string,
   currentUserHeadquartersId?: number,
-  rolCurrentUser?: string | number
+  rolCurrentUser?: string | number,
+  responsable?: string
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
@@ -450,6 +461,10 @@ async function getQuantityDemandInducedByProgram(
     .andWhere("demanda.profesional = :profesional", { profesional })
     .andWhere("demanda.programaId = :programaId", { programaId })
     .groupBy("programa.id, programa.name");
+
+    if (responsable) {
+      query.andWhere("personaSeguimiento.id = :responsableId", { responsableId: responsable });
+    }
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
@@ -518,7 +533,8 @@ async function getStatisticsCalls(
   metaValue: number,
   currentUserId: string,
   currentUserHeadquartersId?: number,
-  rolCurrentUser?: string | number
+  rolCurrentUser?: string | number,
+  responsable?: string
 ) {
   const query = await DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
@@ -537,6 +553,10 @@ async function getStatisticsCalls(
     .andWhere("demanda.programaId = :programaId", { programaId })
     .andWhere("demanda.profesional = :profesional", { profesional })
     .groupBy("demanda.clasificacion, demanda.profesional");
+
+    if (responsable) {
+      query.andWhere("personaSeguimiento.id = :responsableId", { responsableId: responsable });
+    }
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
