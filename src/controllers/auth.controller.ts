@@ -21,7 +21,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       .leftJoinAndSelect("sede.municipioRelation", "municipio")
       .leftJoinAndSelect("usuario.cargoRelation", "cargo")
       .leftJoinAndSelect("cargo.areaRelation", "area")
-      .leftJoinAndSelect("usuario.rolesRelation", "contractType")
+      .leftJoinAndSelect("usuario.rolesRelation", "rol")
       .where("usuario.dniNumber = :dniNumber", { dniNumber })
       .getOne();
 
@@ -71,10 +71,14 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         photo: user.photo,
         phone: user.phoneNumber,
         municipality: user.sedeRelation?.municipioRelation?.name,
-        area: user.cargoRelation.areaId,
+        area: user.cargoRelation?.areaRelation?.name || "No asignada",
         position: user.cargoRelation?.name,
         headquarters: user.sedeRelation?.name,
-        headquartersId: user?.sedeRelation?.id
+        headquartersId: user?.sedeRelation?.id,
+        contractType: user.contractType,
+        dateStartContract: user.dateStartContract,
+        managerName: user.cargoRelation?.areaRelation?.managerRelation?.name || "No asignado",
+        managerLastName: user.cargoRelation?.areaRelation?.managerRelation?.lastName || "No asignado",
       },
       message: "Inicio de sesión exitoso",
     });
