@@ -155,33 +155,35 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
         
         const query = await Radicacion.createQueryBuilder("radicacion")
         .leftJoinAndSelect("radicacion.placeRelation", "place")
+        .leftJoinAndSelect("place.municipioRelation", "municipality")
         .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
         .leftJoinAndSelect("radicacion.patientRelation", "patient")
         .leftJoinAndSelect("patient.documentRelation", "document")
         .leftJoinAndSelect("patient.convenioRelation", "convenio")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
+        .leftJoinAndSelect("cups_radicados.servicioRelation", "services")
         .where("cups_radicados.status = 1")
         .andWhere("patient.documentNumber = :documentPatient", {documentPatient})
 
         if (req.departmentUserId) {
-            query.andWhere('place.departamento = :department', { department: req.departmentUserId });
+            query.andWhere('municipality.idDepartment = :department', { department: req.departmentUserId });
         }
 
         const requestLatter = await query.getMany();    
 
         const responseFormated = requestLatter.map(r => ({
-            id: r.id,
-            profetional: r.profetional,
-            creatAt: r.createdAt,
-            dniNumber: r.patientRelation.documentNumber,
-            dniType: r.patientRelation.documentRelation.name,
-            patientName: r.patientRelation.name,
-            agreement: r.patientRelation.convenioRelation.name,
+            id: r.id || "N/A",
+            profetional: r.profetional || "N/A",
+            creatAt: r.createdAt || "N/A",
+            dniNumber: r.patientRelation.documentNumber || "N/A",
+            dniType: r.patientRelation.documentRelation.name || "N/A",
+            patientName: r.patientRelation.name || "N/A",
+            agreement: r.patientRelation.convenioRelation.name || "N/A",
             cupsAuthorized: r.cupsRadicadosRelation.map(c => ({
-                id: c.id,
-                code: c.code,
-                DescriptionCode: c.DescriptionCode,
+                id: c.servicioRelation?.id || "N/A",
+                code: c.servicioRelation?.code || "N/A",
+                DescriptionCode: c.servicioRelation?.name || "N/A",
                 status: c.statusRelation.name,
                 statusLetter: c.statusRecoveryLatter || "N/A",
             })),
@@ -205,35 +207,38 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         const query = await CartaRecobro.createQueryBuilder("carta_recobro")
         .leftJoinAndSelect("carta_recobro.radicacionRelation", "radicacion")
         .leftJoinAndSelect("radicacion.placeRelation", "place")
+        .leftJoinAndSelect("place.municipioRelation", "municipality")
         .leftJoinAndSelect("radicacion.patientRelation", "patient")
         .leftJoinAndSelect("patient.documentRelation", "document")
         .leftJoinAndSelect("patient.convenioRelation", "convenio")
         .leftJoinAndSelect("carta_recobro.userRequestRelation", "usuario_solicita")
         .leftJoinAndSelect("carta_recobro.userAuditRelation", "usuario_audita")
         .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+        .leftJoinAndSelect("cups_radicados.servicioRelation", "services")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .andWhere('carta_recobro.idUserAudit IS NULL')
         .andWhere('cups_radicados.status = 1')
 
         if (req.departmentUserId) {
-            query.andWhere('place.departamento = :department', { department: req.departmentUserId });
+            query.andWhere('municipality.idDepartment= :department', { department: req.departmentUserId });
         }
 
         const responseLetter = await query.getMany();
 
         const responseLetterFormated = responseLetter.map(r => ({
-            id: r.id,
-            profetional: r.radicacionRelation.profetional,
-            creatAt: r.radicacionRelation.createdAt,
-            dniNumber: r.radicacionRelation.patientRelation.documentNumber,
-            dniType: r.radicacionRelation.patientRelation.documentRelation.name,
-            agreement: r.radicacionRelation.patientRelation.convenioRelation.name,
-            idRadicado: r.radicacionRelation.id,
+            id: r.id || "N/A",
+            profetional: r.radicacionRelation.profetional || "N/A",
+            creatAt: r.radicacionRelation.createdAt || "N/A",
+            patientName: r.radicacionRelation.patientRelation.name || "N/A",
+            dniNumber: r.radicacionRelation.patientRelation.documentNumber || "N/A",
+            dniType: r.radicacionRelation.patientRelation.documentRelation.name || "N/A",
+            agreement: r.radicacionRelation.patientRelation.convenioRelation.name || "N/A",
+            idRadicado: r.radicacionRelation.id || "N/A",
             cupsAuthorized: r.radicacionRelation.cupsRadicadosRelation.map(c => ({
-                id: c.id,
-                code: c.code,
-                DescriptionCode: c.DescriptionCode,
-                status: c.statusRelation.name
+                id: c.servicioRelation?.id || "N/A",
+                code: c.servicioRelation?.code || "N/A",
+                DescriptionCode: c.servicioRelation?.name || "N/A",
+                status: c.statusRelation.name || "N/A"
             })),
         }))
         

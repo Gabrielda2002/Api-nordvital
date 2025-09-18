@@ -293,13 +293,17 @@ export async function tablaPorAuditar(
         "cupsRadicados.functionalUnitRelation",
         "unidadFuncional"
       )
+      .leftJoinAndSelect(
+        "cupsRadicados.servicioRelation",
+        "servicios"
+      )
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where(
         "cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9"
       );
 
     if (req.departmentUserId) {
-      query.andWhere("place.departamento = :departmentId", {
+      query.andWhere("municipio.idDepartment = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
@@ -326,9 +330,9 @@ export async function tablaPorAuditar(
       radicador: r.usuarioRelation?.name || "N/A",
       statusCups:
         r.cupsRadicadosRelation?.map((c) => ({
-          id: c.id,
-          code: c.code,
-          description: c.DescriptionCode,
+          id: c.servicioRelation?.id || "N/A",
+          code: c.servicioRelation?.code || "N/A",
+          description: c.servicioRelation?.name || "N/A",
           observation: c.observation,
           status: c.statusRelation.name,
           unidadFuncional: c.functionalUnitRelation.name,
@@ -352,18 +356,20 @@ export async function auditorRadicados(
   try {
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("place.municipioRelation", "municipality")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
       .leftJoinAndSelect("pacientes.documentRelation", "document")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
+      .leftJoinAndSelect("cupsRadicados.servicioRelation", "services")
       .orderBy("radicacion.id", "DESC")
       .where(
         "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
       );
 
     if (req.departmentUserId) {
-      query.andWhere("place.departamento = :departmentId", {
+      query.andWhere("municipality.idDepartment = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
@@ -376,9 +382,9 @@ export async function auditorRadicados(
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
       CUPS: r.cupsRadicadosRelation?.map((c) => ({
-        id: c.id,
-        code: c.code,
-        description: c.DescriptionCode,
+        id: c.servicioRelation?.id,
+        code: c.servicioRelation?.code,
+        description: c.servicioRelation?.name,
         status: c.statusRelation.id,
         observation: c.observation,
         modifyDate: c.updatedAt,
@@ -458,6 +464,10 @@ export async function cirugiasTable(
         "seguimientoCups"
       )
       .leftJoinAndSelect(
+        "cupsRadicados.servicioRelation",
+        "servicesCups"
+      )
+      .leftJoinAndSelect(
         "seguimientoCups.usuarioRelation",
         "usuarioSeguimientoCups"
       )
@@ -510,9 +520,9 @@ export async function cirugiasTable(
       nombreSoporte: r.soportesRelation?.nameSaved || "N/A",
       sopportId: r.soportesRelation?.id || "N/A",
       cups: r.cupsRadicadosRelation?.map((c) => ({
-        id: c.id,
-        code: c.code,
-        description: c.DescriptionCode,
+        id: c.servicioRelation?.id || "N/A",
+        code: c.servicioRelation?.code || "N/A",
+        description: c.servicioRelation?.name || "N/A",
         seguimiento: c.seguimientoAuxiliarRelation?.map((s) => ({
           id: s.id,
           estado: s.estadoSeguimientoRelation?.name || "N/A",
@@ -637,6 +647,10 @@ export async function buscarRadicadoPorDocumento(
         "seguimientoAuxiliar"
       )
       .leftJoinAndSelect(
+        "cupsRadicados.servicioRelation",
+        "servicios"
+      )
+      .leftJoinAndSelect(
         "seguimientoAuxiliar.estadoSeguimientoRelation",
         "estadoSeguimiento"
       )
@@ -719,9 +733,9 @@ export async function buscarRadicadoPorDocumento(
         })),
       })),
       cups: r.cupsRadicadosRelation?.map((c) => ({
-        id: c.id || "N/A",
-        code: c.code || "N/A",
-        description: c.DescriptionCode || "N/A",
+        id: c.servicioRelation?.id || "N/A",
+        code: c.servicioRelation?.code || "N/A",
+        description: c.servicioRelation?.name || "N/A",
         status: c.statusRelation?.name || "N/A",
         observation: c.observation || "N/A",
         functionalUnit: c.functionalUnitRelation?.name || "N/A",
