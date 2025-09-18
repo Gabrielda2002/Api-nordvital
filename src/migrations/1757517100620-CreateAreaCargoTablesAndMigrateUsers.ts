@@ -177,7 +177,7 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
 
     // PASO 7: Insertar datos (solo si no existen)
     const areaCount = await queryRunner.query(`SELECT COUNT(*) as count FROM \`area\``);
-    if (areaCount[0].count > 0) {
+    if (areaCount[0].count == 0) {
       await queryRunner.query(`
           INSERT INTO \`area\` (\`nombre\`, \`estado\`) VALUES
           ('LABORATORIO CLINICO', 1),
@@ -207,7 +207,7 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
     }
 
     const cargoCount = await queryRunner.query(`SELECT COUNT(*) as count FROM \`cargo\``);
-    if (cargoCount[0].count > 0) {
+    if (cargoCount[0].count == 0) {
       await queryRunner.query(`
           INSERT INTO \`cargo\` (\`nombre\`, \`estado\`) VALUES
           ('AUXILIAR LABORATORIO', 1),
@@ -274,19 +274,8 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
       `);
     }
 
-    // PASO 8: Crear foreign keys AL FINAL con validaciones
     
-    // FK 1: area.jefe_area_id -> usuario.id
-    const areaFKExists = await queryRunner.query(`
-      SELECT COUNT(*) as count 
-      FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
-      WHERE CONSTRAINT_SCHEMA = DATABASE() 
-        AND TABLE_NAME = 'area' 
-        AND REFERENCED_TABLE_NAME = 'usuario'
-        AND CONSTRAINT_NAME LIKE '%jefe_area_id%'
-    `);
     
-    if (areaFKExists[0].count === 0) {
       await queryRunner.createForeignKey(
         "area",
         new TableForeignKey({
@@ -297,19 +286,8 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
           onUpdate: "NO ACTION",
         })
       );
-    }
 
-    // FK 2: cargo.area_id -> area.id
-    const cargoAreaFKExists = await queryRunner.query(`
-      SELECT COUNT(*) as count 
-      FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
-      WHERE CONSTRAINT_SCHEMA = DATABASE() 
-        AND TABLE_NAME = 'cargo' 
-        AND REFERENCED_TABLE_NAME = 'area'
-        AND CONSTRAINT_NAME LIKE '%area_id%'
-    `);
     
-    if (cargoAreaFKExists[0].count === 0) {
       await queryRunner.createForeignKey(
         "cargo",
         new TableForeignKey({
@@ -320,19 +298,7 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
           onUpdate: "NO ACTION",
         })
       );
-    }
-
-    // FK 3: usuario.cargo_id -> cargo.id
-    const usuarioCargoFKExists = await queryRunner.query(`
-      SELECT COUNT(*) as count 
-      FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
-      WHERE CONSTRAINT_SCHEMA = DATABASE() 
-        AND TABLE_NAME = 'usuario' 
-        AND REFERENCED_TABLE_NAME = 'cargo'
-        AND CONSTRAINT_NAME LIKE '%cargo_id%'
-    `);
     
-    if (usuarioCargoFKExists[0].count === 0) {
       await queryRunner.createForeignKey(
         "usuario",
         new TableForeignKey({
@@ -343,20 +309,29 @@ export class CreateAreaCargoTablesAndMigrateUsers1757517100620
           onUpdate: "NO ACTION",
         })
       );
-    }
+    
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Eliminar foreign keys usando dropForeignKey con los nombres exactos
-    await queryRunner.query(
-      `ALTER TABLE \`usuario\` DROP FOREIGN KEY IF EXISTS \`FK_usuario_cargo_id\``
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`cargo\` DROP FOREIGN KEY IF EXISTS \`FK_cargo_area_id\``
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`area\` DROP FOREIGN KEY IF EXISTS \`FK_area_jefe_area_id\``
-    );
+    const usuarioTable = await queryRunner.getTable("usuario");
+    const cargoTable = await queryRunner.getTable("cargo");
+    const areaTable = await queryRunner.getTable("area");
+
+    const foreignKayUsuarioCargo = usuarioTable?.foreignKeys.find(fk => fk.columnNames.indexOf("cargo_id") !== -1);
+
+    if (foreignKayUsuarioCargo) {
+      await queryRunner.dropForeignKey("usuario", foreignKayUsuarioCargo);
+    }
+
+    const foreignKeyCargoArea = cargoTable?.foreignKeys.find(fk => fk.columnNames.indexOf("area_id") !== -1);
+    if (foreignKeyCargoArea) {
+      await queryRunner.dropForeignKey("cargo", foreignKeyCargoArea);
+    }
+    const foreignKeyAreaJefe = areaTable?.foreignKeys.find(fk => fk.columnNames.indexOf("jefe_area_id") !== -1);
+    if (foreignKeyAreaJefe) {
+      await queryRunner.dropForeignKey("area", foreignKeyAreaJefe);
+    }
 
     // Eliminar columnas de usuario
     await queryRunner.dropColumn("usuario", "tipo_contrato");
