@@ -615,6 +615,7 @@ export async function buscarRadicadoPorDocumento(
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
+      .leftJoinAndSelect("place.municipioRelation", "municipio")
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
@@ -660,7 +661,7 @@ export async function buscarRadicadoPorDocumento(
       .where("patient.documentNumber = :documento", { documento });
 
     if (req.departmentUserId) {
-      query.andWhere("place.departamento = :departmentId", {
+      query.andWhere("municipio.idDepartment = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
