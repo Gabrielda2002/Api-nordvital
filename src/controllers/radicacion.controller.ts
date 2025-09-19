@@ -830,6 +830,7 @@ export async function updateGroupServices(
 }
 
 interface CupsRequest{
+  id: string;
   code: string;
   description: string;
   quantity: number;
@@ -872,9 +873,9 @@ export const createRequestService = async (
 
     const file  = req.file;
 
-    console.log(file)
-
     const cupsRequestService: CupsRequest[] = JSON.parse(req.body.items);
+
+    console.log("cupsRequestService:", cupsRequestService);
 
     // update data patient
     const patientExist = await Pacientes.findOneBy({ id: parseInt(idPatient) });
@@ -988,6 +989,7 @@ export const createRequestService = async (
       createCups.functionalUnit = 12;
       createCups.idRadicacion = Number(requestServiceId);
       createCups.quantity = Number(item.quantity);
+      createCups.servicioId = Number(item.id);
 
       const errorsCups = await validate(createCups);
 
