@@ -533,11 +533,15 @@ export async function getEquipmentTypeDistribution(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const equipment = await Equipos.createQueryBuilder("equipos")
       .select("equipos.typeEquipment", "typeEquipment")
       .addSelect("COUNT(equipos.id)", "count")
       .groupBy("equipos.typeEquipment")
       .orderBy("count", "DESC")
+      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
       .getRawMany();
 
     if (!equipment) {
@@ -559,12 +563,16 @@ export async function getEquipmentHeadquartersDistribution(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const equipment = await Equipos.createQueryBuilder("equipos")
       .leftJoinAndSelect("equipos.placeRelation", "sede")
       .select("sede.name", "sedeName")
       .addSelect("COUNT(equipos.id)", "count")
       .groupBy("sede.name")
       .orderBy("count", "DESC")
+      .where("sede.id = :sedeId", { sedeId: parseInt(id) })
       .getRawMany();
 
     if (!equipment) {
@@ -585,32 +593,36 @@ export async function getEquipmentAgeBySede(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const now = new Date();
     const oneYearAgo = subYears(now, 1);
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
     const lessThanOneYear = await Equipos.count({
-      where: { purchaseDate: MoreThan(oneYearAgo) },
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
     });
     const betweenOneAndTwoYears = await Equipos.count({
       where: {
         purchaseDate: Between(twoYearsAgo, oneYearAgo),
+        sedeId: parseInt(id),
       },
     });
     const betweenTwoAndThreeYears = await Equipos.count({
       where: {
-        purchaseDate: Between(threeYearsAgo, twoYearsAgo),
+        purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id)
       },
     });
     const moreThanThreeYears = await Equipos.count({
       where: {
-        purchaseDate: LessThan(threeYearsAgo),
+        purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(id)
       },
     });
 
     // Cálculo de la edad promedio en días
-    const equipments = await Equipos.find({ select: ["purchaseDate"] });
+    const equipments = await Equipos.find({ select: ["purchaseDate"], where: { sedeId: parseInt(id) } });
     let totalAge = 0;
     equipments.forEach((equipment) => {
       if (equipment.purchaseDate) {
@@ -647,14 +659,17 @@ export async function getEquipmentWarrantyStatistics(
   next: NextFunction
 ) {
   try {
-    const totalEquipments = await Equipos.count();
+
+    const { id } = req.params;
+
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
     const equipmentsInWarranty = await Equipos.count({
-      where: { warranty: true },
+      where: { warranty: true, sedeId: parseInt(id) },
     });
 
     // obtener equipos con garantia para calcular fecha de vencimiento
     const equipmentWithWarranty = await Equipos.find({
-      where: { warranty: true },
+      where: { warranty: true, sedeId: parseInt(id) },
       select: ["id", "purchaseDate", "warrantyTime"],
     });
 
@@ -694,8 +709,11 @@ export async function getEquipmentLockStatistics(
   next: NextFunction
 ) {
   try {
-    const totalEquipments = await Equipos.count();
-    const equipmentsWithLock = await Equipos.count({ where: { lock: true } });
+
+    const { id } = req.params;
+
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
+    const equipmentsWithLock = await Equipos.count({ where: { lock: true, sedeId: parseInt(id) } });
 
     return res.json({
       total: totalEquipments,
