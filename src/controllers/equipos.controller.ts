@@ -601,6 +601,8 @@ export async function getEquipmentAgeBySede(
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
+
     const lessThanOneYear = await Equipos.count({
       where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
     });
@@ -646,6 +648,7 @@ export async function getEquipmentAgeBySede(
         months: Math.round(averageAgeInMonths),
         years: averageAgeInYears.toFixed(1),
       },
+      total: totalEquipments
     });
   } catch (error) {
     next(error);
