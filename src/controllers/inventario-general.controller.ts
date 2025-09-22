@@ -328,6 +328,8 @@ export async function getInventoryGeneralAgeStatistics(
       const twoYearsAgo = subYears(now, 2);
       const threeYearsAgo = subYears(now, 3);
       
+      const totalIvGeneral = await InventarioGeneral.count({ where: { headquartersId: Number(id) }});
+
       const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo), headquartersId: parseInt(id) } });
       const betweenOneAndTwoYears = await InventarioGeneral.count({ 
         where: { 
@@ -369,7 +371,8 @@ export async function getInventoryGeneralAgeStatistics(
           days: Math.round(averageAgeInDays),
           months: Math.round(averageAgeInMonths),
           years: averageAgeInYears.toFixed(1)
-        }
+        },
+        total: totalIvGeneral
       });
     } catch (error) {
       next(error);
