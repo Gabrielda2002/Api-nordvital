@@ -480,10 +480,13 @@ export async function updatePhone(
 export async function getCountPhonesByHeadquartersId(req: Request, res: Response, next: NextFunction){
   try {
     
+    const { id } = req.params;
+
     const phoneCount = await Celular.createQueryBuilder("celular")
     .leftJoinAndSelect('celular.sedeRelation', 'sede')
     .select('sede.name', 'sedeName')
     .addSelect('COUNT(celular.id)', 'count')
+    .where('sede.id = :id', { id: parseInt(id) })
     .groupBy('sede.name')
     .orderBy('count', 'DESC')
     .getRawMany();
@@ -502,29 +505,36 @@ export async function getCountPhonesByHeadquartersId(req: Request, res: Response
 export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, next: NextFunction){
   try {
     
+    const { id } = req.params;
+
     const now = new Date();
     const oneYearAgo = subYears(now, 1);
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
+    const totalPhones = await Celular.count({
+      where: { sedeId: parseInt(id) }
+    })
+
     const lessThanOneYear = await Celular.count({
-      where: { purchaseDate: MoreThan(oneYearAgo)}
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) }
     })
 
     const betweenOneAndTwoYears = await Celular.count({
-      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo)}
+      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(id) }
     })
 
     const betweenTwoAndThreeYears = await Celular.count({
-      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo)}
+      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id) }
     })
 
     const moreThanThreeYears = await Celular.count({
-      where: { purchaseDate: MoreThan(threeYearsAgo)}
+      where: { purchaseDate: MoreThan(threeYearsAgo), sedeId: parseInt(id) }
     })
 
     const phoneAge = await Celular.find({
-      select: ['purchaseDate']
+      select: ['purchaseDate'],
+      where: { sedeId: parseInt(id) }
     });
     let totalAge = 0;
     
@@ -551,6 +561,7 @@ export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, n
         months: Math.round(averageAgeInMoths),
         years: averageAgeInYears.toFixed(1)
       },
+      total: totalPhones
     })
 
 
@@ -563,13 +574,16 @@ export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, n
 export async function getPhoneWarrantyStatistics(req: Request, res: Response, next: NextFunction){
   try {
 
-      const totalPhones = await Celular.count()
+    const { id } = req.params;
+
+      const totalPhones = await Celular.count({ where: { sedeId: parseInt(id) } });
+      
       const phonesInWarranty = await Celular.count({
-        where: { warranty:  true }
+        where: { warranty:  true, sedeId: parseInt(id) }
       })
 
     const phonesWithWarranty = await Celular.find({
-      where: { warranty: true },
+      where: { warranty: true, sedeId: parseInt(id) },
       select: ['id', 'purchaseDate', 'warrantyTime']
     });
 
