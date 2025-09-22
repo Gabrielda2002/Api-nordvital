@@ -298,6 +298,8 @@ export async function getTvAgeByHeadquarter(
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
+    const totalTvs = await Televisor.count({ where: { sedeId: parseInt(id) } });
+
     const lessThanOneYear = await Televisor.count({
       where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
     });
@@ -337,6 +339,7 @@ export async function getTvAgeByHeadquarter(
         months: averageAgeInMonths,
         years: averageAgeInYears.toFixed(1),
       },
+      total: totalTvs,
     });
   } catch (error) {
     next(error);
@@ -353,7 +356,7 @@ export async function getTvWarrantyStatistics(
     const { id } = req.params;
 
     const tvs = await Televisor.count({
-      where: { warranty: true, sedeId: parseInt(id) },
+      where: { sedeId: parseInt(id) },
     });
 
     const tvWithWarranty = await Televisor.find({
