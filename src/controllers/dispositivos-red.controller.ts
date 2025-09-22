@@ -253,11 +253,15 @@ export async function getDevicesCountByHeadquarters(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const devices = await dispositivosRed
       .createQueryBuilder("dispositivosRed")
       .leftJoin("dispositivosRed.placeRelation", "place")
       .select("place.name", "name")
       .addSelect("COUNT(dispositivosRed.id)", "count")
+      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
       .groupBy("place.name")
       .getRawMany();
 
