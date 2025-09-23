@@ -252,7 +252,7 @@ router.put('/televisores/:id', authenticate, authorizeRoles(['1']), validarId, u
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/headquarters', authenticate, authorizeRoles(['1']), getTvHeadquartersDistribution);
+router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getTvHeadquartersDistribution);
 
 /**
  * @swagger
@@ -296,7 +296,7 @@ router.get('/tv/statics/headquarters', authenticate, authorizeRoles(['1']), getT
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/age', authenticate, authorizeRoles(['1']), getTvAgeByHeadquarter);
+router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1']),validarId, getTvAgeByHeadquarter);
 
 /**
  * @swagger
@@ -326,7 +326,7 @@ router.get('/tv/statics/age', authenticate, authorizeRoles(['1']), getTvAgeByHea
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getTvWarrantyStatistics);
+router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1']), validarId, getTvWarrantyStatistics);
 
 /**
  * @swagger

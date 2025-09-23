@@ -277,12 +277,14 @@ export async function getInvetoryGeneralWarrantyStatitics(
 ) {
   try {
     
-     const totalIvGeneral =  await InventarioGeneral.count();
-        const generalInWarranty = await InventarioGeneral.count({ where: { warranty: true }});
+    const { id } = req.params;
+
+     const totalIvGeneral =  await InventarioGeneral.count({ where: { headquartersId: Number(id) }});
+        const generalInWarranty = await InventarioGeneral.count({ where: { warranty: true, headquartersId: Number(id) }});
     
         // obtener InventarioGeneral con garantia para calcular fecha de vencimiento
         const generalWithWarranty =  await InventarioGeneral.find({
-          where: { warranty: true },
+          where: { warranty: true, headquartersId: Number(id) },
           select: ["id" ,'acquisitionDate', 'warrantyPeriod']
         });
     
@@ -318,30 +320,35 @@ export async function getInventoryGeneralAgeStatistics(
   next: NextFunction
 ) {
   try {
+
+      const { id } = req.params;
+
       const now = new Date();
       const oneYearAgo = subYears(now, 1);
       const twoYearsAgo = subYears(now, 2);
       const threeYearsAgo = subYears(now, 3);
       
-      const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo) } });
+      const totalIvGeneral = await InventarioGeneral.count({ where: { headquartersId: Number(id) }});
+
+      const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo), headquartersId: parseInt(id) } });
       const betweenOneAndTwoYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: Between(twoYearsAgo, oneYearAgo) 
+          acquisitionDate: Between(twoYearsAgo, oneYearAgo), headquartersId: parseInt(id)
         } 
       });
       const betweenTwoAndThreeYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: Between(threeYearsAgo, twoYearsAgo) 
+          acquisitionDate: Between(threeYearsAgo, twoYearsAgo), headquartersId: parseInt(id)
         } 
       });
       const moreThanThreeYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: LessThan(threeYearsAgo) 
+          acquisitionDate: LessThan(threeYearsAgo), headquartersId: parseInt(id)
         } 
       });
       
       // Cálculo de la edad promedio en días
-      const inventoryGeneral = await InventarioGeneral.find({ select: ["acquisitionDate"] });
+      const inventoryGeneral = await InventarioGeneral.find({ select: ["acquisitionDate"], where: { headquartersId: parseInt(id) } });
       let totalAge = 0;
       inventoryGeneral.forEach(equipment => {
         if (equipment.acquisitionDate) {
@@ -364,7 +371,8 @@ export async function getInventoryGeneralAgeStatistics(
           days: Math.round(averageAgeInDays),
           months: Math.round(averageAgeInMonths),
           years: averageAgeInYears.toFixed(1)
-        }
+        },
+        total: totalIvGeneral
       });
     } catch (error) {
       next(error);
@@ -375,10 +383,13 @@ export async function getInventoryGeneralAgeStatistics(
 export async function getInventoryGeneralByHeadquartersStatistics(req: Request, res: Response, next: NextFunction){
   try {
     
+    const { id } = req.params;
+
     const headquarters = await InventarioGeneral.createQueryBuilder("inventario")
       .select("sede.name", "sedeName")
       .addSelect("COUNT(inventario.id)", "count")
       .leftJoin("inventario.headquartersRelation", "sede")
+      .where("inventario.headquartersId = :id", { id: Number(id) })
       .groupBy("sede.name")
       .getRawMany();
 

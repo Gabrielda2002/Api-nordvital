@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, searchInventoryGeneral, updateInventoryGeneral } from "../controllers/inventario-general.controller";
+import { validarId } from "../middlewares/validar-id";
 
 const router = Router();
 
@@ -143,7 +144,7 @@ router.put('/inventario/general/:id', authenticate, authorizeRoles(['1', '6']), 
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/inventario/general/statistics/warrantyExpiration', authenticate, authorizeRoles(['1', '6']), getInvetoryGeneralWarrantyStatitics);
+router.get('/inventario/general/statistics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '6']), validarId, getInvetoryGeneralWarrantyStatitics);
 
 /**
  * @swagger
@@ -163,7 +164,7 @@ router.get('/inventario/general/statistics/warrantyExpiration', authenticate, au
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/inventario/general/statistics/age', authenticate, authorizeRoles(['1', '6']), getInventoryGeneralAgeStatistics);
+router.get('/inventario/general/statistics/age/:id', authenticate, authorizeRoles(['1', '6']),validarId, getInventoryGeneralAgeStatistics);
 
 /**
  * @swagger
@@ -192,7 +193,7 @@ router.get('/inventario/general/statistics/age', authenticate, authorizeRoles(['
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/inventario/general/statistics/headquarters', authenticate, authorizeRoles(['1', '6']), getInventoryGeneralByHeadquartersStatistics);
+router.get('/inventario/general/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '6']), validarId, getInventoryGeneralByHeadquartersStatistics);
 
 /**
  * @swagger

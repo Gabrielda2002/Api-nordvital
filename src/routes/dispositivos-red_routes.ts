@@ -231,7 +231,7 @@ router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4']
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get('/dispositivos-red/statistics/headquarters', authenticate, authorizeRoles(['1']), getDevicesCountByHeadquarters);
+router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getDevicesCountByHeadquarters);
 
 /**
  * @swagger

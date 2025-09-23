@@ -261,12 +261,13 @@ export async function getTvHeadquartersDistribution(
   next: NextFunction
 ) {
   try {
-    const { sedeId } = req.params;
+    const { id } = req.params;
 
     const tvDistribution = await Televisor.createQueryBuilder("televisor")
       .leftJoinAndSelect("televisor.sedeRelation", "sede")
       .select("sede.name", "sedeName")
       .addSelect("COUNT(televisor.id)", "count")
+      .where("televisor.sedeId = :id", { id: parseInt(id) })
       .groupBy("sede.name")
       .orderBy("count", "DESC")
       .getRawMany();
@@ -289,25 +290,30 @@ export async function getTvAgeByHeadquarter(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const now = new Date();
     const oneYearAgo = subYears(now, 1);
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
+    const totalTvs = await Televisor.count({ where: { sedeId: parseInt(id) } });
+
     const lessThanOneYear = await Televisor.count({
-      where: { purchaseDate: MoreThan(oneYearAgo) },
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
     });
     const betweenOneAndTwoYears = await Televisor.count({
-      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo) },
+      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(id) },
     });
     const betweenTwoAndThreeYears = await Televisor.count({
-      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo) },
+      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id) },
     });
     const moreThanThreeYears = await Televisor.count({
-      where: { purchaseDate: LessThan(threeYearsAgo) },
+      where: { purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(id) },
     });
 
-    const tv = await Televisor.find({ select: ["purchaseDate"] });
+    const tv = await Televisor.find({ select: ["purchaseDate"], where: { sedeId: parseInt(id) } });
     let totalAge = 0;
 
     tv.forEach((t) => {
@@ -333,6 +339,7 @@ export async function getTvAgeByHeadquarter(
         months: averageAgeInMonths,
         years: averageAgeInYears.toFixed(1),
       },
+      total: totalTvs,
     });
   } catch (error) {
     next(error);
@@ -345,12 +352,15 @@ export async function getTvWarrantyStatistics(
   next: NextFunction
 ) {
   try {
+
+    const { id } = req.params;
+
     const tvs = await Televisor.count({
-      where: { warranty: true },
+      where: { sedeId: parseInt(id) },
     });
 
     const tvWithWarranty = await Televisor.find({
-      where: { warranty: true },
+      where: { warranty: true, sedeId: parseInt(id) },
       select: ["id", "purchaseDate", "warrantyTime"],
     });
 

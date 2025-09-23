@@ -235,7 +235,7 @@ router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4']), valida
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/typeEquipment', authenticate, authorizeRoles(['1']), getEquipmentTypeDistribution);
+router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentTypeDistribution);
 
 /**
  * @swagger
@@ -264,7 +264,7 @@ router.get('/equipments/statics/typeEquipment', authenticate, authorizeRoles(['1
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/headquarters', authenticate, authorizeRoles(['1']), getEquipmentHeadquartersDistribution);
+router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentHeadquartersDistribution);
 
 /**
  * @swagger
@@ -308,7 +308,7 @@ router.get('/equipments/statics/headquarters', authenticate, authorizeRoles(['1'
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/age', authenticate, authorizeRoles(['1']), getEquipmentAgeBySede);
+router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentAgeBySede);
 
 /**
  * @swagger
@@ -348,7 +348,7 @@ router.get('/equipments/statics/age', authenticate, authorizeRoles(['1']), getEq
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/warrantyExpiration', authenticate, authorizeRoles(['1']), getEquipmentWarrantyStatistics);
+router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentWarrantyStatistics);
 
 /**
  * @swagger
@@ -378,7 +378,7 @@ router.get('/equipments/statics/warrantyExpiration', authenticate, authorizeRole
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/withLock', authenticate, authorizeRoles(['1']), getEquipmentLockStatistics);
+router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1']),validarId, getEquipmentLockStatistics);
 
 /**
  * @swagger
