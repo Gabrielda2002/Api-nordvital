@@ -24,12 +24,16 @@ import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
 
 export type PermissionRequestType = "HOURLY" | "DAILY" | "MULTI_DAY";
-export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type ApprovalStatus = "PENDIENTE" | "APROVADO" | "RECHAZADO";
 
 @Entity({ name: "permisos" })
 export class Permisos extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
+
+  @Column({ name: "solicitante_id", type: "int" })
+  @IsInt()
+  applicantId: number;
 
   @Column({ name: "dias_solicitados", type: "decimal", precision: 5, scale: 2 })
   @IsNumber()
@@ -71,13 +75,13 @@ export class Permisos extends BaseEntity {
   @Length(1, 1000)
   notes?: string;
 
-  @Column({ name: "tipo_solicitud", type: "enum", enum: ["HOURLY", "DAILY", "MULTI_DAY"], default: "DAILY" })
-  @IsEnum(["HOURLY", "DAILY", "MULTI_DAY"] as const)
-  requestType: PermissionRequestType;
+  @Column({ name: "jefe_id", type: "int" })
+  @IsInt()
+  bossId: number;
 
   // approvals
-  @Column({ name: "estado_jefe", type: "enum", enum: ["PENDING", "APPROVED", "REJECTED"], default: "PENDING" })
-  @IsEnum(["PENDING", "APPROVED", "REJECTED"] as const)
+  @Column({ name: "estado_jefe", type: "enum", enum: ["PENDIENTE", "APROVADO", "RECHAZADO"], default: "PENDIENTE" })
+  @IsEnum(["PENDIENTE", "APROVADO", "RECHAZADO"] as const)
   bossStatus: ApprovalStatus;
 
   @Column({ name: "fecha_aprob_jefe", type: "datetime", nullable: true })
@@ -91,8 +95,13 @@ export class Permisos extends BaseEntity {
   @Length(1, 500)
   bossComment?: string;
 
-  @Column({ name: "estado_gerencia", type: "enum", enum: ["PENDING", "APPROVED", "REJECTED"], default: "PENDING" })
-  @IsEnum(["PENDING", "APPROVED", "REJECTED"] as const)
+  @Column({ name: "gerencia_id", type: "int", nullable: true })
+  @IsInt()
+  @IsOptional()
+  managementId?: number;
+
+  @Column({ name: "estado_gerencia", type: "enum", enum: ["PENDIENTE", "APROVADO", "RECHAZADO"], default: "PENDIENTE" })
+  @IsEnum(["PENDIENTE", "APROVADO", "RECHAZADO"] as const)
   managementStatus: ApprovalStatus;
 
   @Column({ name: "fecha_aprob_gerencia", type: "datetime", nullable: true })
