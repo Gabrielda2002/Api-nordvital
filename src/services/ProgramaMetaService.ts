@@ -112,16 +112,13 @@ export class ProgramaMetaService {
     rolCurrentUser?: string | number
   ): Promise<ProgramaMetaHistorico | null> {
 
-    console.log("id de la sede del usuario", headquartersId);
-    console.log("rol del usuario", rolCurrentUser);
-
     const query =  await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
       .andWhere("goal.activo = true")
 
-      if (rolCurrentUser == "19" || rolCurrentUser == "21") {
+      if (rolCurrentUser == "19" || rolCurrentUser == "21" || rolCurrentUser == "1") {
           query.andWhere("goal.headquartersId = :headquartersId", { headquartersId })
       }
 
