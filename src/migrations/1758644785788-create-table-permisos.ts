@@ -208,19 +208,6 @@ export class CreateTablePermisos1758644785788 implements MigrationInterface {
     // 1) Drop indexes from permisos
     const permisosTable = await queryRunner.getTable("permisos");
     if (permisosTable) {
-      const indexNames = [
-        "IDX_permisos_solicitante",
-        "IDX_permisos_jefe",
-        "IDX_permisos_gerencia",
-        "IDX_permisos_fechas",
-        "IDX_permisos_id_soportes",
-      ];
-      for (const name of indexNames) {
-        const idx = permisosTable.indices.find((i) => i.name === name);
-        if (idx) {
-          await queryRunner.dropIndex("permisos", name);
-        }
-      }
 
       // 2) Drop foreign keys from permisos
       const fkCols = [
@@ -235,6 +222,20 @@ export class CreateTablePermisos1758644785788 implements MigrationInterface {
         );
         if (fk) {
           await queryRunner.dropForeignKey("permisos", fk);
+        }
+      }
+
+      const indexNames = [
+        "IDX_permisos_solicitante",
+        "IDX_permisos_jefe",
+        "IDX_permisos_gerencia",
+        "IDX_permisos_fechas",
+        "IDX_permisos_id_soportes",
+      ];
+      for (const name of indexNames) {
+        const idx = permisosTable.indices.find((i) => i.name === name);
+        if (idx) {
+          await queryRunner.dropIndex("permisos", name);
         }
       }
     }
