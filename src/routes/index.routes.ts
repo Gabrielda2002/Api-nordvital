@@ -83,6 +83,7 @@ import demandInducedRoutes from './demanda-inducida.routes';
 import goalsRoutes from './programa-meta-historico.routes';
 import areaRoutes from './area.routes';
 import cargoRoutes from './cargo.routes';
+import permisosRoutes from './permisos.routes';
 
 const router = Router();
 
@@ -170,5 +171,6 @@ router.use(demandInducedRoutes);
 router.use(goalsRoutes);
 router.use(areaRoutes);
 router.use(cargoRoutes);
+router.use(permisosRoutes);
 
 export default router;
