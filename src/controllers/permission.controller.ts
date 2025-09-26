@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { validate } from "class-validator";
 import { PermissionService } from "../services/permission.service";
+import fs from "fs";
+import path from "path";
+import { Soportes } from "../entities/soportes";
+import { AppDataSource } from "../db/conexion";
+import { PermissionAttachment } from "../entities/permission-attachment";
 
 // POST /permisos/requests
 // Crea una solicitud según la categoría y políticas. Valida:
@@ -22,27 +26,77 @@ export async function createPermissionRequest(req: Request, res: Response, next:
       nonRemunerated,
       compensationTime,
       notes,
-      attachments,
       requesterId 
     } = req.body;
     const requesterIdDInamic = req.user ? (req.user as any).id : requesterId; // fallback
 
+    // Archivo cargado en memoria por multer
+    const file = (req as any).file as Express.Multer.File | undefined;
+
+    // 1) Creamos la solicitud (sin escribir archivo aún). El servicio valida políticas y solapamientos
     const created = await service.createRequest({
-      category: category,
-      granularity: granularity,
+      category,
+      granularity,
       requesterId: requesterIdDInamic,
-      startDate: startDate,
-      endDate: endDate,
-      startTime: startTime,
-      endTime: endTime,
-      nonRemunerated: nonRemunerated,
-      compensationTime: compensationTime,
-      notes: notes,
-      attachments: attachments,
-    });
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      nonRemunerated,
+      compensationTime,
+      notes,
+      deferredAttachment: !!file,
+      // attachments los manejaremos abajo tras guardar a disco
+    } as any);
+
+    // 2) Si hay archivo, persistirlo ahora que la solicitud fue creada con éxito
+    if (file && created) {
+      const uploadsDir = path.join(__dirname, "../uploads/AttachmentsPermissions");
+      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const ext = path.extname(file.originalname) || ".pdf";
+      const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+      const fullPath = path.join(uploadsDir, filename);
+
+      // Escribir a disco
+      fs.writeFileSync(fullPath, file.buffer);
+
+      const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
+
+      // Crear registro en Soportes y PermissionAttachment en una pequeña transacción separada
+      await AppDataSource.transaction(async (manager) => {
+        const soporte = manager.create(Soportes, {
+          name: fileNameWithoutExt.normalize('NFC'),
+          url: fullPath,
+          size: file.size,
+          type: file.mimetype,
+          nameSaved: filename,
+        });
+        await manager.save(soporte);
+
+        const attachment = manager.create(PermissionAttachment, {
+          requestRelation: created,
+          requestId: created.id,
+          supportId: soporte.id,
+          label: category, // etiqueta básica por categoría, puedes ajustar desde el front
+          uploadedBy: requesterIdDInamic,
+        } as any);
+        await manager.save(attachment);
+      });
+    }
 
     return res.json(created);
   } catch (error) {
+    // Si algo falla luego de haber escrito el archivo, intentamos limpiar (best-effort)
+    try {
+      const file = (req as any).file as Express.Multer.File | undefined;
+      if (file) {
+        const uploadsDir = path.join(__dirname, "../uploads/AttachmentsPermissions");
+        const pattern = `${file.fieldname}-`; // no sabemos el nombre final si falló antes, omitimos delete agresivo
+        // Best-effort: no eliminamos por patrón para evitar borrar otros archivos; si necesitas cleanup exacto, mueve escritura dentro de la misma transacción con una tabla staging
+      }
+    } catch (_) { /* ignore */ }
     next(error);
   }
 }

@@ -26,6 +26,8 @@ export type CreatePermissionRequestDto = {
   compensationTime?: string;
   notes?: string;
   attachments?: CreateAttachmentDto[];
+  // If true, the controller guarantees there is a pending file upload to satisfy required-document policies
+  deferredAttachment?: boolean;
 };
 
 const HOURS_PER_DAY = 8; // Ajustable si tu jornada laboral es diferente
@@ -239,7 +241,9 @@ export class PermissionService {
 
       // Required attachments
       if (policy.requiresDocument) {
-        if (!input.attachments || input.attachments.length === 0) {
+        const hasProvidedAttachments = !!(input.attachments && input.attachments.length > 0);
+        const hasDeferred = !!input.deferredAttachment;
+        if (!hasProvidedAttachments && !hasDeferred) {
           throw new Error("This category requires at least one attachment");
         }
       }
