@@ -41,7 +41,7 @@ export class Carpeta extends BaseEntity {
     seccion: string;
 
     @Column({ name: 'id_departamento', nullable: false, default: 1 })
-    idDepartamento: number;
+    idDepartment: number;
 
     // * relacion con usuarios
     @ManyToOne(() => Usuarios, (usuario) => usuario.folderRelation )

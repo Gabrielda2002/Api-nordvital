@@ -44,16 +44,14 @@ export async function createFolder(
   next: NextFunction
 ) {
   try {
-    const { folderName, municipio, parentFolderId, user_id, section } =
+    const { folderName, parentFolderId, user_id, section } =
       req.body;
 
-    console.log(req.body);
-    console.log("id carpeta padre", parentFolderId);
+    const departmentUserId = req?.departmentUserId;
 
     let folderPath: string;
 
-    // * comprobar si la carpeta padre existe
-
+    // ? comprobar si la carpeta padre existe
     if (parentFolderId) {
       const parentFolder = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.id = :id", { id: parentFolderId })
@@ -76,8 +74,6 @@ export async function createFolder(
       "uploads",
       folderPath
     );
-    console.log("ruta absoluta de la carpeta:", absoluteFolderPath);
-    console.log("ruta de la carpeta:", folderPath);
 
     const folderExists = await fsPromises
       .access(absoluteFolderPath)
@@ -98,7 +94,7 @@ export async function createFolder(
 
     const folder = new Carpeta();
     folder.name = folderName.trim();
-    folder.idMunicipio = municipio;
+    folder.idDepartment = departmentUserId || 1;
     folder.parentFolderId = parentFolderId;
     folder.path = folderPath;
     folder.userId = user_id;
@@ -125,15 +121,6 @@ export async function createFolder(
   }
 }
 
-/**
- * Updates a folder in the system.
- *
- * @param req - The request object.
- * @param res - The response object.
- * @param next - The next function.
- * @returns The updated folder.
- * @throws If an error occurs during the update process.
- */
 export async function updateFolder(
   req: Request,
   res: Response,
@@ -161,12 +148,8 @@ export async function updateFolder(
       newPath = path.join("SistemaGestionCalidad", name).replace(/\\/g, "/");
     }
 
-    console.log("New path:", newPath);
-
     const newPathAbsolute = path.join(__dirname, "..", "uploads", newPath);
-    console.log("New path absolute:", newPathAbsolute);
     const oldPathAbsolute = path.join(__dirname, "..", "uploads", folder.path);
-    console.log("Old path absolute:", oldPathAbsolute);
 
     // Verificar si la nueva ruta ya existe con el nuevo nombre
     try {
@@ -326,7 +309,9 @@ export async function getSgcFoldersFiles(
   try {
     const { id } = req.params;
 
-    const { Municipio, section } = req.query;
+    const departmentUserId = req.departmentUserId;
+
+    const { section } = req.query;
 
     let folders: {} = {},
       files: {} = {};
@@ -346,7 +331,7 @@ export async function getSgcFoldersFiles(
       // * mostrar archivos y carpetas de la carpeta seleccionada
       folders = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.parentFolderId = :id", { id: folder.id })
-        .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+        .andWhere("carpeta.idDepartment = :idDepartment", { idDepartment: departmentUserId })
         .andWhere("carpeta.seccion = :section", { section: section })
         .orderBy("carpeta.name", "ASC")
         .getMany();
@@ -355,7 +340,7 @@ export async function getSgcFoldersFiles(
       // * mostrar carpeta raiz
       folders = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.parentFolderId IS NULL")
-        .andWhere("carpeta.idMunicipio = :municipio", { municipio: Municipio })
+        .andWhere("carpeta.idDepartment = :idDepartment", { idDepartment: departmentUserId })
         .andWhere("carpeta.seccion = :section", { section: section })
         .orderBy("carpeta.name", "ASC")
         .getMany();
@@ -376,7 +361,9 @@ export async function moveFolder(
   try {
     const { id } = req.params;
 
-    const { newParentId, municipio, section } = req.body;
+    const { newParentId, section } = req.body;
+
+
 
     const folderToMove = await Carpeta.findOneBy({ id: parseInt(id) });
     // ? validar carpeta a mover
@@ -428,7 +415,6 @@ export async function moveFolder(
       where: {
         name: folderToMove.name,
         parentFolderId: newParentId || IsNull(),
-        idMunicipio: municipio, 
         seccion: section,
       },
     });
@@ -458,7 +444,6 @@ export async function moveFolder(
     // actualizar carpeta en la base de datos
     folderToMove.parentFolderId = newParentId || null;
     folderToMove.path = newRelativePath;
-    folderToMove.idMunicipio = municipio;
     folderToMove.seccion = section;
 
     const errors = await validate(folderToMove);
