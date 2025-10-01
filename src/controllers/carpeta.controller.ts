@@ -103,14 +103,13 @@ export async function createFolder(
     const errors = await validate(folder);
 
     if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const message = errors.map((err) => (
+        Object.values(err.constraints || {}).join(", ")
+      ));
 
       return res
         .status(400)
-        .json({ messages: "Error validating data", message });
+        .json({ message: message });
     }
 
     await folder.save();
@@ -182,13 +181,12 @@ export async function updateFolder(
 
     const errors = await validate(folder);
     if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const message = errors.map((err) => (
+        Object.values(err.constraints || {}).join(", ")
+      ))
       return res
         .status(400)
-        .json({ messages: "Error validating data", message });
+        .json({ message: message });
     }
 
     await folder.save();
@@ -448,13 +446,12 @@ export async function moveFolder(
 
     const errors = await validate(folderToMove);
     if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const message = errors.map((err) => (
+        Object.values(err.constraints || {}).join(", ")
+      ))
       return res
         .status(400)
-        .json({ messages: "Error validating data", message });
+        .json({ message: message });
     }
 
     await folderToMove.save();
