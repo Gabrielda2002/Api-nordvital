@@ -12,7 +12,7 @@ export class Archivos extends BaseEntity {
     @IsNotEmpty({message: "El nombre del archivo no puede estar vacío"})
     name: string;
 
-    @Column({name: "ruta"})
+    @Column({name: "ruta", type: 'text'})
     @IsNotEmpty({message: "La ruta del archivo no puede estar vacía"})
     path: string;
 
