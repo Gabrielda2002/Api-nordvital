@@ -48,7 +48,7 @@ export async function createDiagnostico(req: Request, res: Response, next: NextF
 
         const diagnostico = new  Diagnostico()
         diagnostico.code = code;
-        diagnostico.description = description.trim().toUpperCase();
+        diagnostico.description = description.toUpperCase();
 
         const errors = await validate(diagnostico);
 
@@ -82,7 +82,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
             return res.status(404).json({message: "Diagnostico not found"});
         }
 
-        diagnostico.description = description.trim().toUpperCase();
+        diagnostico.description = description.toUpperCase();
 
         const errors = await validate(diagnostico);
         if (errors.length > 0) {

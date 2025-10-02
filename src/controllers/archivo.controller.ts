@@ -115,7 +115,7 @@ export async function updateFile(req: Request, res: Response, next: NextFunction
             return res.status(404).json({message: "Archivo no encontrado"});
         }
 
-        file.name = name.trim();
+        file.name = name;
         file.folderId = parentFolderId;
 
         const errors = await validate(file);

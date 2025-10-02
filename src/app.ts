@@ -9,6 +9,7 @@ import { limiter } from "./middlewares/rate-limit";
 import helmet from "helmet";
 import path from "path";
 import { errorLoggerMiddleware } from "./middlewares/error-logger-middleware";
+import { sanitizeBody } from "./middlewares/sanitize-body";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
@@ -88,6 +89,10 @@ app.use(cookieParser());
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// * Middleware para sanitizar (trim) los strings del body
+app.use(sanitizeBody);
+
 // * Middleware para proteger la aplicación
 app.use(
   helmet({

@@ -51,7 +51,7 @@ export async function createServicioSolicitado(req: Request, res: Response, next
         const servicioSolicitado =  new ServiciosSolicitados();
 
         servicioSolicitado.code = code;
-        servicioSolicitado.name = description.trim().toUpperCase();
+        servicioSolicitado.name = description.toUpperCase();
         servicioSolicitado.status = true;
 
         const errors = await validate(servicioSolicitado);
@@ -169,7 +169,7 @@ export async function updateServicioSolicitadoTable(req: Request, res: Response,
         return res.status(404).json({ message: "Servicio solicitado not found" });
       }
 
-      servicioSolicitado.name =  description.trim().toUpperCase();
+      servicioSolicitado.name =  description.toUpperCase();
       servicioSolicitado.status = status === "1" ? true : false;
 
       const errors = await validate(servicioSolicitado);
