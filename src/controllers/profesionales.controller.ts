@@ -42,7 +42,7 @@ export const createProfesionales = async (
   try {
     const { name } = req.body;
 
-    const nombreNormalizado = name.trim().toUpperCase();
+    const nombreNormalizado = name.toUpperCase();
 
     const existingProfesional = await Profesionales.findOne({
       where: { name: nombreNormalizado },

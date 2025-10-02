@@ -94,7 +94,7 @@ export async function createFolder(
       });
 
     const folder = new Carpeta();
-    folder.name = folderName.trim();
+    folder.name = folderName;
     folder.idDepartment = departmentUserId || 1;
     folder.parentFolderId = parentFolderId;
     folder.path = folderPath;
@@ -183,7 +183,7 @@ export async function updateFolder(
 
     try {
       // Actualizar la entidad Carpeta en la base de datos
-      folder.name = name.trim();
+      folder.name = name;
       folder.parentFolderId = parentFolderId;
       folder.path = newPath;
 

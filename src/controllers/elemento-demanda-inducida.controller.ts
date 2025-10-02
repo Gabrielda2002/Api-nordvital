@@ -14,7 +14,7 @@ export const getAllElementDemandInduced = async (
         message: "Elements demand induced not found",
       });
     }
-
+    
     res.status(200).json({
       message: "Elements demand induced found",
       data: elementDemandInduced,
@@ -32,7 +32,7 @@ export const getElementDemandInducedByName = async (
   try {
     const { name } = req.body;
 
-    if (!name || name.trim() === "") {
+    if (!name || name === "") {
       return res.status(400).json({
         message: "Name is required",
       });
