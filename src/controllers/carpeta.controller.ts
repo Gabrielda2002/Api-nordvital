@@ -6,7 +6,8 @@ import * as fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
 import { Archivos } from "../entities/archivos";
-import { IsNull } from "typeorm";
+import { IsNull, QueryRunner } from "typeorm";
+import { AppDataSource } from "../db/conexion";
 
 export async function getAllFolders(
   req: Request,
@@ -125,6 +126,9 @@ export async function updateFolder(
   res: Response,
   next: NextFunction
 ) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  
   try {
     const { id } = req.params;
     const { name, parentFolderId } = req.body;
@@ -150,10 +154,6 @@ export async function updateFolder(
     const newPathAbsolute = path.join(__dirname, "..", "uploads", newPath);
     const oldPathAbsolute = path.join(__dirname, "..", "uploads", folder.path);
 
-    console.log("New Path:", newPath);
-    console.log("Old Path Absolute:", oldPathAbsolute);
-    console.log("New Path Absolute:", newPathAbsolute);
-
     // Verificar si la nueva ruta ya existe con el nuevo nombre
     try {
       await fsPromises.access(newPathAbsolute);
@@ -178,88 +178,90 @@ export async function updateFolder(
     // Renombrar la carpeta en el sistema de archivos
     await fsPromises.rename(oldPathAbsolute, newPathAbsolute);
 
-    // Actualizar la entidad Carpeta en la base de datos
-    folder.name = name.trim();
-    folder.parentFolderId = parentFolderId;
-    folder.path = newPath;
+    // Iniciar transacción
+    await queryRunner.startTransaction();
 
-    const errors = await validate(folder);
-    if (errors.length > 0) {
-      const message = errors.map((err) => (
-        Object.values(err.constraints || {}).join(", ")
-      ))
-      return res
-        .status(400)
-        .json({ message: message });
+    try {
+      // Actualizar la entidad Carpeta en la base de datos
+      folder.name = name.trim();
+      folder.parentFolderId = parentFolderId;
+      folder.path = newPath;
+
+      const errors = await validate(folder);
+      if (errors.length > 0) {
+        const message = errors.map((err) => (
+          Object.values(err.constraints || {}).join(", ")
+        ));
+        throw new Error(`Validation error: ${message.join(", ")}`);
+      }
+
+      await queryRunner.manager.save(folder);
+
+      // Actualizar las rutas de los archivos y subcarpetas usando QueryRunner
+      await updateSubFilesWithTransaction(queryRunner, folder.id, newPath);
+      await updateSubFoldersWithTransaction(queryRunner, folder.id, newPath);
+
+      // Commit de la transacción
+      await queryRunner.commitTransaction();
+
+      return res.status(200).json(folder);
+    } catch (dbError) {
+      // Rollback en caso de error
+      await queryRunner.rollbackTransaction();
+      
+      // Revertir el cambio físico de la carpeta
+      try {
+        await fsPromises.rename(newPathAbsolute, oldPathAbsolute);
+      } catch (revertError) {
+        console.error("Error reverting folder rename:", revertError);
+      }
+      
+      throw dbError;
     }
-
-    await folder.save();
-
-    // Actualizar las rutas de los archivos y subcarpetas
-    await updateSubFiles(folder.id, newPath);
-    await updateSubFolders(folder.id, newPath);
-
-    return res.status(200).json(folder);
   } catch (error) {
     next(error);
+  } finally {
+    await queryRunner.release();
   }
 }
 
-// Función para actualizar rutas de archivos
-async function updateSubFiles(folderId: number, newPath: string) {
-  const subFiles = await Archivos.find({ where: { folderId } });
-  console.log("subfiles para actualizar la ruta", subFiles);
+// Función para actualizar rutas de archivos CON TRANSACCIÓN
+async function updateSubFilesWithTransaction(
+  queryRunner: QueryRunner,
+  folderId: number,
+  newPath: string
+) {
+  const subFiles = await queryRunner.manager.find(Archivos, {
+    where: { folderId },
+  });
+
   for (const subfile of subFiles) {
-    const oldSubPathFile = subfile.path;
-
-    // * reemplazar espacios por guiones bajos
-    const sanitazedfileName =
-      path
-        .basename(subfile.name, path.extname(subfile.name))
-        .replace(/ /g, "_") + path.extname(subfile.name);
-
-    const newSubPathFile = path.join(newPath, path.basename(subfile.path));
-    console.log("oldSubPathFile", oldSubPathFile);
-    console.log("newSubPathFile", newSubPathFile);
-
-    try {
-      // await fsPromises.rename(oldSubPathFile, newSubPathFile);
-      subfile.path = newSubPathFile;
-      await subfile.save();
-    } catch (error) {
-      throw new Error(
-        `File with the same name already exists: ${subfile.name}`
-      );
-    }
+    const newSubPathFile = path.join(newPath, path.basename(subfile.path)).replace(/\\/g, "/");
+    
+    subfile.path = newSubPathFile;
+    await queryRunner.manager.save(subfile);
   }
 }
 
-// Función para actualizar rutas de subcarpetas
-async function updateSubFolders(parentFolderId: number, newPath: string) {
-  const subFolders = await Carpeta.find({ where: { parentFolderId } });
-
-  console.log("subfolders para actualizar la ruta", subFolders);
+// Función para actualizar rutas de subcarpetas CON TRANSACCIÓN
+async function updateSubFoldersWithTransaction(
+  queryRunner: QueryRunner,
+  parentFolderId: number,
+  newPath: string
+) {
+  const subFolders = await queryRunner.manager.find(Carpeta, {
+    where: { parentFolderId },
+  });
 
   for (const subFolder of subFolders) {
-    const oldSubPathFolder = subFolder.path;
-    const newSubPathFolder = path.join(newPath, subFolder.name);
-    console.log("oldSubPathFolder", oldSubPathFolder);
-    console.log("newSubPathFolder", newSubPathFolder);
+    const newSubPathFolder = path.join(newPath, subFolder.name).replace(/\\/g, "/");
+    
+    subFolder.path = newSubPathFolder;
+    await queryRunner.manager.save(subFolder);
 
-
-    try {
-      // await fsPromises.rename(oldSubPathFolder, newSubPathFolder);
-      subFolder.path = newSubPathFolder;
-      await subFolder.save();
-
-      // Actualizar las rutas de subcarpetas y archivos dentro de esta subcarpeta
-      await updateSubFiles(subFolder.id, newSubPathFolder);
-      await updateSubFolders(subFolder.id, newSubPathFolder);
-    } catch (error) {
-      throw new Error(
-        `Folder with the same name already exists: ${subFolder.name}`
-      );
-    }
+    // Actualizar recursivamente las rutas de subcarpetas y archivos
+    await updateSubFilesWithTransaction(queryRunner, subFolder.id, newSubPathFolder);
+    await updateSubFoldersWithTransaction(queryRunner, subFolder.id, newSubPathFolder);
   }
 }
 
@@ -367,12 +369,12 @@ export async function moveFolder(
   res: Response,
   next: NextFunction
 ) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+
   try {
     const { id } = req.params;
-
     const { newParentId, section } = req.body;
-
-
 
     const folderToMove = await Carpeta.findOneBy({ id: parseInt(id) });
     // ? validar carpeta a mover
@@ -447,31 +449,58 @@ export async function moveFolder(
         .status(409)
         .json({ message: "Folder already exists at the new location" });
     }
+
     // mover carpeta fisicamente
     await fsPromises.rename(oldAbsolutePath, newAbsolutePath);
 
-    // actualizar carpeta en la base de datos
-    folderToMove.parentFolderId = newParentId || null;
-    folderToMove.path = newRelativePath;
-    folderToMove.seccion = section;
+    // Iniciar transacción
+    await queryRunner.startTransaction();
 
-    const errors = await validate(folderToMove);
-    if (errors.length > 0) {
-      const message = errors.map((err) => (
-        Object.values(err.constraints || {}).join(", ")
-      ))
-      return res
-        .status(400)
-        .json({ message: message });
+    try {
+      // actualizar carpeta en la base de datos
+      folderToMove.parentFolderId = newParentId || null;
+      folderToMove.path = newRelativePath;
+      folderToMove.seccion = section;
+
+      const errors = await validate(folderToMove);
+      if (errors.length > 0) {
+        const message = errors.map((err) => (
+          Object.values(err.constraints || {}).join(", ")
+        ));
+        throw new Error(`Validation error: ${message.join(", ")}`);
+      }
+
+      await queryRunner.manager.save(folderToMove);
+
+      // actualizar rutas de archivos y subcarpetas con transacción
+      await updatteAllSubItemsPathsWithTransaction(
+        queryRunner,
+        folderToMove.id,
+        newRelativePath,
+        section
+      );
+
+      // Commit de la transacción
+      await queryRunner.commitTransaction();
+
+      return res.status(200).json(folderToMove);
+    } catch (dbError) {
+      // Rollback en caso de error
+      await queryRunner.rollbackTransaction();
+
+      // Revertir el movimiento físico de la carpeta
+      try {
+        await fsPromises.rename(newAbsolutePath, oldAbsolutePath);
+      } catch (revertError) {
+        console.error("Error reverting folder move:", revertError);
+      }
+
+      throw dbError;
     }
-
-    await folderToMove.save();
-    // actualizar rutas de archivos y subcarpetas
-    await updatteAllSubItemsPaths(folderToMove.id, newRelativePath, section);
-
-    return res.status(200).json(folderToMove);
   } catch (error) {
     next(error);
+  } finally {
+    await queryRunner.release();
   }
 }
 
@@ -499,24 +528,30 @@ async function isDescendentFolder(
   return false;
 }
 
-// funcion auxiliar para actualizar todas las rutas de subcarpetas y archivos
-async function updatteAllSubItemsPaths(
+// funcion auxiliar para actualizar todas las rutas de subcarpetas y archivos CON TRANSACCIÓN
+async function updatteAllSubItemsPathsWithTransaction(
+  queryRunner: QueryRunner,
   folderId: number,
   newBasePath: string,
   section: string
 ) {
-  await updateSubFiles(folderId, newBasePath);
+  await updateSubFilesWithTransaction(queryRunner, folderId, newBasePath);
 
-  const subFolders = await Carpeta.find({
+  const subFolders = await queryRunner.manager.find(Carpeta, {
     where: { parentFolderId: folderId },
   });
 
   for (const subFolder of subFolders) {
-    const newSubPath = path.join(newBasePath, subFolder.name);
-    subFolder.path = path.join(newBasePath, subFolder.name).replace(/\\/g, "/");
+    const newSubPath = path.join(newBasePath, subFolder.name).replace(/\\/g, "/");
+    subFolder.path = newSubPath;
     subFolder.seccion = section;
-    await subFolder.save();
+    await queryRunner.manager.save(subFolder);
 
-    await updatteAllSubItemsPaths(subFolder.id, newSubPath, section);
+    await updatteAllSubItemsPathsWithTransaction(
+      queryRunner,
+      subFolder.id,
+      newSubPath,
+      section
+    );
   }
 }
