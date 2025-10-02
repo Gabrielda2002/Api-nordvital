@@ -415,6 +415,9 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
         // Construir ruta del archivo
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
         const filePath = path.resolve(__dirname, "..", 'uploads', cleanPath);
+
+        console.log("Serving file from path:", filePath);
+        console.log("clean path:", cleanPath);
         
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ message: "Archivo no encontrado en el servidor" });

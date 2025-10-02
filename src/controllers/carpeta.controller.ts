@@ -150,9 +150,13 @@ export async function updateFolder(
     const newPathAbsolute = path.join(__dirname, "..", "uploads", newPath);
     const oldPathAbsolute = path.join(__dirname, "..", "uploads", folder.path);
 
+    console.log("New Path:", newPath);
+    console.log("Old Path Absolute:", oldPathAbsolute);
+    console.log("New Path Absolute:", newPathAbsolute);
+
     // Verificar si la nueva ruta ya existe con el nuevo nombre
     try {
-      await fsPromises.access(newPath);
+      await fsPromises.access(newPathAbsolute);
       return res
         .status(409)
         .json({ message: "Folder with the same name already exists" });
@@ -204,7 +208,7 @@ export async function updateFolder(
 // Función para actualizar rutas de archivos
 async function updateSubFiles(folderId: number, newPath: string) {
   const subFiles = await Archivos.find({ where: { folderId } });
-
+  console.log("subfiles para actualizar la ruta", subFiles);
   for (const subfile of subFiles) {
     const oldSubPathFile = subfile.path;
 
@@ -215,6 +219,8 @@ async function updateSubFiles(folderId: number, newPath: string) {
         .replace(/ /g, "_") + path.extname(subfile.name);
 
     const newSubPathFile = path.join(newPath, path.basename(subfile.path));
+    console.log("oldSubPathFile", oldSubPathFile);
+    console.log("newSubPathFile", newSubPathFile);
 
     try {
       // await fsPromises.rename(oldSubPathFile, newSubPathFile);
@@ -232,9 +238,14 @@ async function updateSubFiles(folderId: number, newPath: string) {
 async function updateSubFolders(parentFolderId: number, newPath: string) {
   const subFolders = await Carpeta.find({ where: { parentFolderId } });
 
+  console.log("subfolders para actualizar la ruta", subFolders);
+
   for (const subFolder of subFolders) {
     const oldSubPathFolder = subFolder.path;
     const newSubPathFolder = path.join(newPath, subFolder.name);
+    console.log("oldSubPathFolder", oldSubPathFolder);
+    console.log("newSubPathFolder", newSubPathFolder);
+
 
     try {
       // await fsPromises.rename(oldSubPathFolder, newSubPathFolder);
