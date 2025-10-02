@@ -81,10 +81,9 @@ export async function createFile(req: Request, res: Response, next: NextFunction
 
             const errors = await validate(newFile);
             if (errors.length > 0) {
-                const message = errors.map(err => ({
-                    property: err.property,
-                    constraints: err.constraints,
-                }));
+                const message = errors.map(err => (
+                    Object.values(err.constraints || {}).join(", ")
+                ))
                 return { status: 400, message };
             }
 
@@ -122,10 +121,9 @@ export async function updateFile(req: Request, res: Response, next: NextFunction
         const errors = await validate(file);
 
         if (errors.length > 0) {
-            const message = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
+            const message = errors.map(err => (
+                Object.values(err.constraints || {}).join(", ")
+            ));
             return res.status(400).json({message});
         }
 
@@ -272,10 +270,9 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
 
                 const validationErrors =  await validate(file);
                 if (validationErrors.length > 0) {
-                    const message = validationErrors.map(err => ({
-                        property: err.property,
-                        constraints: err.constraints
-                    }));
+                    const message = validationErrors.map(err => (
+                        Object.values(err.constraints || {}).join(", ")
+                    ));
                     errors.push({fileId, fileName: file.name, error: message});
                     continue;
                 }
@@ -418,6 +415,9 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
         // Construir ruta del archivo
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
         const filePath = path.resolve(__dirname, "..", 'uploads', cleanPath);
+
+        console.log("Serving file from path:", filePath);
+        console.log("clean path:", cleanPath);
         
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ message: "Archivo no encontrado en el servidor" });

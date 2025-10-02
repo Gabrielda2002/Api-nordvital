@@ -27,4 +27,8 @@ export class departamentos extends BaseEntity{
     @OneToMany(() => Municipio, (municipio) => municipio.departmentRelation)
     municipioRelation: Municipio[];
 
+    // ? relacion con carpetas
+    @OneToMany(() => Municipio, (carpeta) => carpeta.departmentRelation)
+    folderRelation: Municipio[];
+
 }

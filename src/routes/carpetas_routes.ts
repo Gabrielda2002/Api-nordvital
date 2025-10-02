@@ -3,6 +3,7 @@ import { authorizeRoles } from "../middlewares/authorize-roles";
 import { authenticate } from "../middlewares/auth";
 import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta.controller";
 import { validarId } from "../middlewares/validar-id";
+import { getDepartmentUser } from "../middlewares/get-department-user_middleware";
 
 const router = Router();
 
@@ -113,7 +114,7 @@ router.get('/carpetas/:id',authenticate , authorizeRoles(['1', '2', '3', '4', '5
  *       404:
  *         description: Carpeta padre no encontrada
  */
-router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), createFolder);
+router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), getDepartmentUser, createFolder);
 
 /**
  * @swagger
@@ -200,7 +201,7 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  *       404:
  *         description: Carpeta no encontrada
  */
-router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), getSgcFoldersFiles);
+router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), getDepartmentUser, getSgcFoldersFiles);
 
 /**
  * @swagger

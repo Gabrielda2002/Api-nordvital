@@ -285,11 +285,10 @@ export async function getEstadisticasDemandaInducida(
     const idCurrentUser = req.user?.id;
 
     const headquartersCurrentUser = await Usuarios.createQueryBuilder("usuario")
-      .where("usuario.id = :id", { id: idCurrentUser })
+      .where("usuario.id = :id", { id: responsable != "" ? responsable : idCurrentUser }) //? si viene el filtro de responsable, se usa ese id para sacar la sede
       .getOne();
 
     const idHeadquartersCurrentUser = headquartersCurrentUser?.headquarters;
-
     // Obtener meta del programa para el mes
     const metaPrograma = await ProgramaMetaService.getGoalMonth(
       parseInt(programaId),

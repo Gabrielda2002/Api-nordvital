@@ -4,6 +4,7 @@ import { Usuarios } from "./usuarios";
 import { Archivos } from "./archivos";
 import { arch } from "os";
 import { Municipio } from "./municipio";
+import { departamentos } from "./departamentos";
 
 @Entity({name: "carpetas"})
 export class Carpeta extends BaseEntity {
@@ -39,6 +40,9 @@ export class Carpeta extends BaseEntity {
     @Column({name: "seccion", default: "ssg"})
     seccion: string;
 
+    @Column({ name: 'id_departamento', nullable: false, default: 1 })
+    idDepartment: number;
+
     // * relacion con usuarios
     @ManyToOne(() => Usuarios, (usuario) => usuario.folderRelation )
     @JoinColumn({name:'user_id'})
@@ -60,5 +64,8 @@ export class Carpeta extends BaseEntity {
     @OneToMany(() => Archivos, (archivo) => archivo.folderRelation)
     fileRelation: Archivos[];
 
+    @ManyToOne(() => departamentos, (departamento) => departamento.folderRelation)
+    @JoinColumn({ name: 'id_departamento' })
+    departamentoRelation: departamentos;
 
 }
