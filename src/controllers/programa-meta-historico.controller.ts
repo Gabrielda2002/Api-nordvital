@@ -24,14 +24,14 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
         .leftJoinAndSelect("goal.programaRelation", "program")
         .leftJoinAndSelect("goal.headquartersRelation", "sede")
         .where("goal.activo = true")
-        .andWhere("goal.año = :year", { year: yearNow })
-        .andWhere("goal.mes = :month", { month: monthNow })
-        .orderBy("program.name", "ASC")
-
+        
         if (rolCurrentUser == "19" || rolCurrentUser == "21") {
+            programs.andWhere("goal.año = :year", { year: yearNow })
+            programs.andWhere("goal.mes = :month", { month: monthNow })
             programs.andWhere("goal.headquartersId = :headquartersId", { headquartersId: headquartersCurrentUser?.headquarters });
         }
-
+        
+        programs.orderBy("goal.createdAt", "DESC");
         const programsList = await programs.getMany();
 
         const programsFormatted = programsList.map(g => ({
@@ -42,6 +42,7 @@ export const getGoalsByPrograms = async (req: Request, res: Response, next: Next
             month: g.mes,
             professional: g.professional,
             headquarters: g.headquartersRelation?.name,
+            createdAt: g.createdAt,
         }))
 
         return res.status(200).json(programsFormatted);
