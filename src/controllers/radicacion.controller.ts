@@ -405,11 +405,8 @@ export async function autorizarRadicado(
 ) {
   try {
     const { id } = req.params;
-    console.log(id);
 
     const { auditora, fechaAuditoria, justificacion } = req.body;
-
-    console.log(req.body);
 
     const existRadicado = await Radicacion.findOneBy({ id: parseInt(id) });
 
@@ -685,7 +682,6 @@ export async function buscarRadicadoPorDocumento(
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });
     }
-
     const radicacionFormated = radicacion.map((r) => ({
       id: r.id || "N/A",
       createdAt: r.createdAt || "N/A",
@@ -733,19 +729,19 @@ export async function buscarRadicadoPorDocumento(
         })),
       })),
       cups: r.cupsRadicadosRelation?.map((c) => ({
-        id: c.servicioRelation?.id || "N/A",
+        id: c.id || "N/A",
         code: c.servicioRelation?.code || "N/A",
         description: c.servicioRelation?.name || "N/A",
         status: c.statusRelation?.name || "N/A",
         observation: c.observation || "N/A",
         functionalUnit: c.functionalUnitRelation?.name || "N/A",
-        seguimiento: c.seguimientoAuxiliarRelation.map((s) => ({
-          id: s.id || "N/A",
-          estado: s.estadoSeguimientoRelation?.name || "N/A",
-          observation: s.observation || "N/A",
-          fechaCreacion: s.createdAt || "N/A",
-          Nombre: s.usuarioRelation?.name || "N/A",
-          Apellido: s.usuarioRelation?.lastName || "N/A",
+        seguimiento: c.seguimientoAuxiliarRelation?.map((s) =>  ({
+            id: s.id || "N/A",
+            estado: s.estadoSeguimientoRelation?.name || "N/A",
+            observation: s.observation || "N/A",
+            fechaCreacion: s.createdAt || "N/A",
+            Nombre: s.usuarioRelation?.name || "N/A",
+            Apellido: s.usuarioRelation?.lastName || "N/A",
         })),
       })),
     }));
@@ -798,8 +794,6 @@ export async function updateGroupServices(
     const { id } = req.params;
 
     const { groupServices } = req.body;
-
-    console.log(req.body);
 
     const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
 
@@ -875,8 +869,6 @@ export const createRequestService = async (
 
     const cupsRequestService: CupsRequest[] = JSON.parse(req.body.items);
 
-    console.log("cupsRequestService:", cupsRequestService);
-
     // update data patient
     const patientExist = await Pacientes.findOneBy({ id: parseInt(idPatient) });
 
@@ -920,8 +912,6 @@ export const createRequestService = async (
     newSupportRequest.type = file?.mimetype;
     newSupportRequest.size = file?.size;
     newSupportRequest.nameSaved = path.basename(file?.filename);
-
-    console.log("soporte creado:", newSupportRequest);
 
     const errorsSupport = await validate(newSupportRequest);
     if (errorsSupport.length > 0) {
