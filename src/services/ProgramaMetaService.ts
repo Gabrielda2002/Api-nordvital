@@ -108,14 +108,16 @@ export class ProgramaMetaService {
     programId: number,
     year: number,
     month: number,
+    professional: string,
     headquartersId?: number,
-    rolCurrentUser?: string | number
+    rolCurrentUser?: string | number,
   ): Promise<ProgramaMetaHistorico | null> {
 
     const query =  await ProgramaMetaHistorico.createQueryBuilder("goal")
       .where("goal.programaId = :programId", { programId })
       .andWhere("goal.año = :year", { year })
       .andWhere("goal.mes = :month", { month })
+      .andWhere("goal.professional = :professional", {professional})
       .andWhere("goal.activo = true")
 
       if (rolCurrentUser == "19" || rolCurrentUser == "21" || rolCurrentUser == "1") {
@@ -159,14 +161,15 @@ export class ProgramaMetaService {
   static async getCompleteGoals(
     programaId: number,
     year: number,
-    month: number
+    month: number,
+    professional: string
   ): Promise<{
     goal: number;
     register: number;
     achieved: number;
     percentage: number;
   } | null> {
-    const goal = await this.getGoalMonth(programaId, year, month);
+    const goal = await this.getGoalMonth(programaId, year, month, professional);
 
     if (!goal) return null;
 

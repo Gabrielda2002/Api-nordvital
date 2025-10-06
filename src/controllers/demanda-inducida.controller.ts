@@ -294,12 +294,12 @@ export async function getEstadisticasDemandaInducida(
       parseInt(programaId),
       parseInt(año),
       parseInt(mes),
+      profesional,
       idHeadquartersCurrentUser,
-      rolCurrentUser
+      rolCurrentUser,
     );
 
     const metaValue = metaPrograma?.meta || 0;
-    console.log("Meta del programa:", metaValue);
 
     // 1. Estadísticas por programa, elemento y profesional
     // const estadisticasPorPrograma = await getStatisticsByProgram(
