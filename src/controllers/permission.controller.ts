@@ -86,7 +86,7 @@ export async function createPermissionRequest(req: Request, res: Response, next:
       });
     }
 
-    return res.json(created);
+    return res.status(201).json(created);
   } catch (error) {
     // Si algo falla luego de haber escrito el archivo, intentamos limpiar (best-effort)
     try {

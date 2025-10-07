@@ -3,7 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, EntityMetadata, JoinColum
 import { Radicacion } from "./radicacion";
 import { Equipos } from "./equipos";
 import { Celular } from "./celular";
-import { Permisos } from "./permisos";
+import { PermissionAttachment } from "./permission-attachment";
 
 @Entity("soportes")
 export class Soportes extends BaseEntity {
@@ -56,6 +56,6 @@ export class Soportes extends BaseEntity {
     celularesRelation: Celular[];
 
     // Relation with permisos (a support can be linked to one or more permissions)
-    @OneToMany(() => Permisos, permiso => permiso.soporteRelation)
-    permissionsRelation: Permisos[];
+    @OneToMany(() => PermissionAttachment, permiso => permiso.supportRelation)
+    permissionsRelation: PermissionAttachment[];
 }
