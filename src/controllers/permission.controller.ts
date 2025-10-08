@@ -139,4 +139,22 @@ export async function actOnPermissionStep(req: Request, res: Response, next: Nex
   }
 }
 
+// GET /list/requests
+// listar solicitudes por jefe o si el rol del usuario es rrhh
+export async function listPermissionRequests(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const userId = req.user?.id as number; 
+    const userRol = req.user?.rol;
+
+    const service = new PermissionService();
+    const request = await service.listRequestsForUser(userId, userRol == '18' ? true : false);
+
+    return res.status(200).json(request);
+
+  } catch (error) {
+    next(error);
+  }
+}
+
 

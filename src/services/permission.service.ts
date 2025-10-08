@@ -317,13 +317,57 @@ export class PermissionService {
       });
     });
   }
-
+// ? Obtener solicitud por ID
   async getRequestById(id: number) {
     return await this.ds.getRepository(PermissionRequest).findOne({
       where: { id },
       relations: { stepsRelation: true, attachmentsRelation: true, requesterRelation: true },
     });
   }
+
+// ? Listar solicitudes por jefe o RRHH
+// ? la idea es que RRHH vea todas, y jefes solo las de su área
+async listRequestsForUser(userId: number, isHR: boolean) {
+
+  const user = await this.ds.getRepository(Usuarios).findOne({ where: { id: userId }, relations: { cargoRelation: { areaRelation: true } } });
+  if (!user) throw new Error("User not found");
+
+  let requests: PermissionRequest[] = [];
+
+  if (isHR) {
+    requests = await this.ds.getRepository(PermissionRequest).find({
+      relations: { stepsRelation: true, attachmentsRelation: true, requesterRelation: true },
+    });
+  } else {
+    requests = await this.ds.getRepository(PermissionRequest).createQueryBuilder("r")
+      .leftJoinAndSelect("r.stepsRelation", "steps")
+      .leftJoinAndSelect("r.attachmentsRelation", "attachments")
+      .leftJoinAndSelect("r.requesterRelation", "requester")
+      .where("steps.approverUserId = :userId", { userId })
+      .getMany();
+  }
+
+  const resultFormatted = requests.map(r => ({
+    id: r.id,
+    category: r.category,
+    granularity: r.granularity,
+    requesterId: r.requesterId,
+    requesterName: r.requesterRelation ? `${r.requesterRelation.name} ${r.requesterRelation.lastName}` : "N/A",
+    startDate: r.startDate,
+    endDate: r.endDate,
+    startTime: r.startTime,
+    endTime: r.endTime,
+    requestedDays: r.requestedDays,
+    nonRemunerated: r.nonRemunerated,
+    compensationTime: r.compensationTime,
+    notes: r.notes,
+    overallStatus: r.overallStatus,
+    createdAt: r.createdAt,
+  }))
+
+  return resultFormatted;
+}
+
 // ? Actuar sobre un paso (aprobar, rechazar, visto)
   async actOnStep(requestId: number, stepId: number, actorUserId: number, action: "approve" | "reject" | "ack", comment?: string) {
 
