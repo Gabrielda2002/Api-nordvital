@@ -341,6 +341,7 @@ async listRequestsForUser(userId: number, isHR: boolean) {
   } else {
     requests = await this.ds.getRepository(PermissionRequest).createQueryBuilder("r")
       .leftJoinAndSelect("r.stepsRelation", "steps")
+      .leftJoinAndSelect("steps.approverUserRelation", "approver")
       .leftJoinAndSelect("r.attachmentsRelation", "attachments")
       .leftJoinAndSelect("r.requesterRelation", "requester")
       .where("steps.approverUserId = :userId", { userId })
@@ -348,21 +349,32 @@ async listRequestsForUser(userId: number, isHR: boolean) {
   }
 
   const resultFormatted = requests.map(r => ({
-    id: r.id,
-    category: r.category,
-    granularity: r.granularity,
-    requesterId: r.requesterId,
+    id: r.id || 'N/A',
+    category: r.category || 'N/A',
+    granularity: r.granularity || 'N/A',
+    requesterId: r.requesterId || 'N/A',
     requesterName: r.requesterRelation ? `${r.requesterRelation.name} ${r.requesterRelation.lastName}` : "N/A",
-    startDate: r.startDate,
-    endDate: r.endDate,
-    startTime: r.startTime,
-    endTime: r.endTime,
-    requestedDays: r.requestedDays,
+    startDate: r.startDate || 'N/A',
+    endDate: r.endDate || 'N/A',
+    startTime: r.startTime || 'N/A',
+    endTime: r.endTime || 'N/A',
+    requestedDays: r.requestedDays || 'N/A',
     nonRemunerated: r.nonRemunerated,
-    compensationTime: r.compensationTime,
-    notes: r.notes,
-    overallStatus: r.overallStatus,
+    compensationTime: r.compensationTime || 'N/A',
+    notes: r.notes || 'N/A',
+    overallStatus: r.overallStatus || 'N/A',
     createdAt: r.createdAt,
+    steps: r.stepsRelation.map(s => ({
+      id: s.id || 'N/A',
+      order: s.order || 'N/A',
+      stepType: s.stepType || 'N/A',
+      approverRole: s.approverRole || 'N/A',
+      approverUserId: s.approverUserId || 'N/A',
+      approverName: s.approverUserRelation ? `${s.approverUserRelation.name} ${s.approverUserRelation.lastName}` : "N/A",
+      status: s.status || 'N/A',
+      comment: s.comment || 'N/A',
+      createdAt: s.createdAt || 'N/A',
+    }))
   }))
 
   return resultFormatted;
