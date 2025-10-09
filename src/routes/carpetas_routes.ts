@@ -201,7 +201,7 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  *       404:
  *         description: Carpeta no encontrada
  */
-router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), getDepartmentUser, getSgcFoldersFiles);
+router.get('/sistema-calidad/:id?' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), getDepartmentUser, getSgcFoldersFiles);
 
 /**
  * @swagger
