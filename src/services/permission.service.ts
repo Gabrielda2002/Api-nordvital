@@ -380,6 +380,13 @@ async listRequestsForUser(userId: number, isHR: boolean) {
   return resultFormatted;
 }
 
+async listAllRequestsByUser(userId: number) {
+  return await this.ds.getRepository(PermissionRequest).find({
+    where: { requesterId: userId },
+    relations: { stepsRelation: true, attachmentsRelation: true, requesterRelation: true},
+  });
+}
+
 // ? Actuar sobre un paso (aprobar, rechazar, visto)
   async actOnStep(requestId: number, stepId: number, actorUserId: number, action: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "VISTO", comment?: string) {
 

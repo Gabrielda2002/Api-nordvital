@@ -157,4 +157,15 @@ export async function listPermissionRequests(req: Request, res: Response, next: 
   }
 }
 
-
+// GET /list/requests/user
+// listar todas las solicitudes del usuario autenticado
+export async function listAllRequestsByUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.id as number;
+    const service = new PermissionService();
+    const requests = await service.listAllRequestsByUser(userId);
+    return res.status(200).json(requests);
+  } catch (error) {
+    next(error);
+  }
+}
