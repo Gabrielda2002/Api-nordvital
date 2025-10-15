@@ -123,8 +123,8 @@ export async function getPermissionRequestById(req: Request, res: Response, next
 export async function actOnPermissionStep(req: Request, res: Response, next: NextFunction) {
   try {
     const { id, stepId } = req.params;
-    const { action, comment } = req.body as { action: "approve" | "reject" | "ack"; comment?: string };
-    if (!action || !["approve", "reject", "ack"].includes(action)) {
+    const { action, comment } = req.body as { action: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "VISTO"; comment?: string };
+    if (!action || !["PENDIENTE", "APROBADO", "RECHAZADO", "VISTO"].includes(action)) {
       return res.status(400).json({ message: "Invalid action" });
     }
 

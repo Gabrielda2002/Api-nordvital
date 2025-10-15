@@ -366,7 +366,7 @@ async listRequestsForUser(userId: number, isHR: boolean) {
     createdAt: r.createdAt,
     steps: r.stepsRelation.map(s => ({
       id: s.id || 'N/A',
-      order: s.order || 'N/A',
+      order: s.order ||  'N/A',
       stepType: s.stepType || 'N/A',
       approverRole: s.approverRole || 'N/A',
       approverUserId: s.approverUserId || 'N/A',
@@ -381,7 +381,7 @@ async listRequestsForUser(userId: number, isHR: boolean) {
 }
 
 // ? Actuar sobre un paso (aprobar, rechazar, visto)
-  async actOnStep(requestId: number, stepId: number, actorUserId: number, action: "approve" | "reject" | "ack", comment?: string) {
+  async actOnStep(requestId: number, stepId: number, actorUserId: number, action: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "VISTO", comment?: string) {
 
     return await this.ds.transaction(async (manager) => {
       const reqRepo = manager.getRepository(PermissionRequest);
@@ -413,11 +413,11 @@ async listRequestsForUser(userId: number, isHR: boolean) {
         // TODO: validate actor has RRHH role using Usuarios->Roles
       }
 
-      if (action === "approve") {
+      if (action === "APROBADO") {
         step.status = "APROBADO";
-      } else if (action === "reject") {
+      } else if (action === "RECHAZADO") {
         step.status = "RECHAZADO";
-      } else if (action === "ack") {
+      } else if (action === "VISTO") {
         step.status = "VISTO";
       }
       step.comment = comment ?? null as any;

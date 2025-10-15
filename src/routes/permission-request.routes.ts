@@ -9,7 +9,7 @@ const router = Router();
 // Base: /permisos
 router.post("/permisos/requests", authenticate, uploadAttachmentsPermissions.single("file"), createPermissionRequest);
 router.get("/permisos/requests/:id", authenticate, getPermissionRequestById);
-router.post("/permisos/requests/:id/steps/:stepId/actions", authenticate, actOnPermissionStep);
+router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate, actOnPermissionStep);
 router.get('/list/requests', authenticate, listPermissionRequests)
 
 export default router;
