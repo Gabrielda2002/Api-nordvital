@@ -214,24 +214,26 @@ function buildStepsForCategory(category: PermissionCategory, bossUserId: number 
   return steps;
 }
 
+type Result<T> = | { success: true; data: T } | { success: false; error: string; statusCode: number };
+
 export class PermissionService {
   constructor(private readonly ds: DataSource = AppDataSource) {}
 
-  async createRequest(input: CreatePermissionRequestDto) {
+  async createRequest(input: CreatePermissionRequestDto): Promise<Result<PermissionRequest>> {
     return await this.ds.transaction(async (manager) => {
       // Fetch policy
       const policy = await manager.getRepository(PermissionPolicy).findOne({ where: { category: input.category } });
 
-      if (!policy) throw new Error("Policy not found for category");
+      if (!policy) return { success: false,  error: "No policy defined for this category", statusCode: 400};
 
       // Validate requester
       const requester = await manager.getRepository(Usuarios).findOne({ where: { id: input.requesterId }, relations: { cargoRelation: { areaRelation: true } } });
 
-      if (!requester) throw new Error("Requester user not found");
+      if (!requester) return { success: false, error: "Requester user not found", statusCode: 404 };
 
       // Dates consistency
       if (dateOnly(input.startDate) > dateOnly(input.endDate)) {
-        throw new Error("startDate cannot be after endDate");
+        return { success: false, error: "startDate cannot be after endDate", statusCode: 400 };
       }
 
       // Compute requested days
@@ -242,7 +244,7 @@ export class PermissionService {
         const hasProvidedAttachments = !!(input.attachments && input.attachments.length > 0);
         const hasDeferred = !!input.deferredAttachment;
         if (!hasProvidedAttachments && !hasDeferred) {
-          throw new Error("This category requires at least one attachment");
+          return { success: false, error: "This request requires supporting documents", statusCode: 400 };
         }
       }
 
@@ -309,10 +311,12 @@ export class PermissionService {
         }
       }
 
-      return await reqRepo.findOne({
+      const createdRequest =await reqRepo.findOne({
         where: { id: req.id },
         relations: { stepsRelation: true, attachmentsRelation: true, requesterRelation: true },
       });
+
+      return { success: true, data: createdRequest! }
     });
   }
 // ? Obtener solicitud por ID

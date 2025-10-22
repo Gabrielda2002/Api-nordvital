@@ -39,7 +39,7 @@ export async function createPermissionRequest(
     const file = (req as any).file as Express.Multer.File | undefined;
 
     // 1) Creamos la solicitud (sin escribir archivo aún). El servicio valida políticas y solapamientos
-    const created = await service.createRequest({
+    const result = await service.createRequest({
       category,
       granularity,
       requesterId: requesterIdDInamic,
@@ -55,7 +55,7 @@ export async function createPermissionRequest(
     } as any);
 
     // 2) Si hay archivo, persistirlo ahora que la solicitud fue creada con éxito
-    if (file && created) {
+    if (file && result.success && result.data) {
       const uploadsDir = path.join(
         __dirname,
         "../uploads/AttachmentsPermissions"
@@ -88,17 +88,20 @@ export async function createPermissionRequest(
         await manager.save(soporte);
 
         const attachment = manager.create(PermissionAttachment, {
-          requestRelation: created,
-          requestId: created.id,
+          requestRelation: result.data,
+          requestId: result.data.id,
           supportId: soporte.id,
           label: category, // etiqueta básica por categoría, puedes ajustar desde el front
           uploadedBy: requesterIdDInamic,
         } as any);
+        
         await manager.save(attachment);
       });
+    } else if(!result.success) {
+      return res.status(result.statusCode).json({ message: result.error });
     }
 
-    return res.status(201).json(created);
+    return res.status(201).json(result.data);
   } catch (error) {
     // Si algo falla luego de haber escrito el archivo, intentamos limpiar (best-effort)
     try {
