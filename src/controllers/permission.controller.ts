@@ -301,7 +301,7 @@ export async function serveSecurePermissionAttachment(
         });
     }
 
-    const { fileId, action } = validation.payload!;
+    const { fileId, action }    = validation.payload!;
 
     const attachment = await Soportes.findOne({ where: { id: fileId } });
     console.log("adjuntos", attachment);

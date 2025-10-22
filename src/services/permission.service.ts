@@ -4,8 +4,6 @@ import { PermissionPolicy } from "../entities/permission-policy";
 import { PermissionApprovalStep } from "../entities/permission-approval-step";
 import { PermissionAttachment } from "../entities/permission-attachment";
 import { Usuarios } from "../entities/usuarios";
-import { Cargo } from "../entities/cargo";
-import { Area } from "../entities/area";
 import { PermissionCategory, PermissionGranularity, StepStatus } from "../types/permission";
 import { AppDataSource } from "../db/conexion";
 
@@ -374,6 +372,12 @@ async listRequestsForUser(userId: number, isHR: boolean) {
       status: s.status || 'N/A',
       comment: s.comment || 'N/A',
       createdAt: s.createdAt || 'N/A',
+    })),
+    attachments: r.attachmentsRelation?.map(a => ({
+      id: a.id || 'N/A',
+      supportId: a.supportId || 'N/A',
+      label: a.label || 'N/A',
+      createdAt: a.createdAt || 'N/A',  
     }))
   }))
 
