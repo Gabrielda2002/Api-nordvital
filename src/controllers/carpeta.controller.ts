@@ -341,6 +341,7 @@ export async function getSgcFoldersFiles(
 
       // * Construir query para carpetas según acceso global
       const folderQuery = Carpeta.createQueryBuilder("carpeta")
+        .leftJoinAndSelect("carpeta.departamentoRelation", "departamento")
         .where("carpeta.parentFolderId = :id", { id: folder.id })
         .andWhere("carpeta.seccion = :section", { section: section });
 
@@ -359,6 +360,7 @@ export async function getSgcFoldersFiles(
     } else {
       // * Construir query para carpetas raíz según acceso global
       const folderQuery = Carpeta.createQueryBuilder("carpeta")
+        .leftJoinAndSelect("carpeta.departamentoRelation", "departamento")
         .where("carpeta.parentFolderId IS NULL")
         .andWhere("carpeta.seccion = :section", { section: section });
 
@@ -373,7 +375,7 @@ export async function getSgcFoldersFiles(
         .orderBy("carpeta.name", "ASC")
         .getMany();
     }
-
+    
     return res.json({ folders, files });
   } catch (error) {
     next(error);
