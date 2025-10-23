@@ -6,6 +6,7 @@ declare global {
             user?: JwtPayload & { rol: (string | number )},
             parentFolderId?: number
             departmentUserId?: number
+            hasGlobalFolderAccess?: boolean
         }
     }
 }

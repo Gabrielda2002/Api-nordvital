@@ -321,11 +321,11 @@ export async function getSgcFoldersFiles(
     const { id } = req.params;
 
     const departmentUserId = req.departmentUserId;
+    const hasGlobalAccess = req.hasGlobalFolderAccess;
 
     const { section } = req.query;
 
-    let folders: {} = {},
-      files: {} = {};
+    let folders: {} = {}, files: {} = {};
 
     if (id) {
       // * mostrar archivos y carpetas de la carpeta seleccionada
@@ -339,20 +339,37 @@ export async function getSgcFoldersFiles(
         return res.status(404).json({ message: "Folder not found" });
       }
 
-      // * mostrar archivos y carpetas de la carpeta seleccionada
-      folders = await Carpeta.createQueryBuilder("carpeta")
+      // * Construir query para carpetas según acceso global
+      const folderQuery = Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.parentFolderId = :id", { id: folder.id })
-        .andWhere("carpeta.idDepartment = :idDepartment", { idDepartment: departmentUserId })
-        .andWhere("carpeta.seccion = :section", { section: section })
+        .andWhere("carpeta.seccion = :section", { section: section });
+
+      // * Si no tiene acceso global, filtrar por departamento
+      if (!hasGlobalAccess && departmentUserId) {
+        folderQuery.andWhere("carpeta.idDepartment = :idDepartment", { 
+          idDepartment: departmentUserId 
+        });
+      }
+
+      folders = await folderQuery
         .orderBy("carpeta.name", "ASC")
         .getMany();
+
       files = await Archivos.find({ where: { folderId: folder.id }, order: { name: "ASC" } });
     } else {
-      // * mostrar carpeta raiz
-      folders = await Carpeta.createQueryBuilder("carpeta")
+      // * Construir query para carpetas raíz según acceso global
+      const folderQuery = Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.parentFolderId IS NULL")
-        .andWhere("carpeta.idDepartment = :idDepartment", { idDepartment: departmentUserId })
-        .andWhere("carpeta.seccion = :section", { section: section })
+        .andWhere("carpeta.seccion = :section", { section: section });
+
+      // * Si no tiene acceso global, filtrar por departamento
+      if (!hasGlobalAccess && departmentUserId) {
+        folderQuery.andWhere("carpeta.idDepartment = :idDepartment", { 
+          idDepartment: departmentUserId 
+        });
+      }
+
+      folders = await folderQuery
         .orderBy("carpeta.name", "ASC")
         .getMany();
     }
