@@ -1279,6 +1279,7 @@ export async function reportDemandInduced(
         { header: "", key: "area_persona", width: 30 },
         { header: "", key: "programa", width: 30 },
         { header: "", key: "fecha_asignacion_cita", width: 30 },
+        { header: "", key: "Profesional", width: 30 },
       ];
 
       // Crear encabezados agrupados que abarcan 2 filas (filas 1 y 2)
@@ -1325,7 +1326,7 @@ export async function reportDemandInduced(
       worksheet.getCell('AC1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '46B1C9' } };
 
       // Grupo 7: Persona que realiza el seguimiento (AE1:AI2)
-      worksheet.mergeCells('AE1:AI2');
+      worksheet.mergeCells('AE1:AJ2');
       worksheet.getCell('AE1').value = 'PERSONA QUE REALIZA EL SEGUIMIENTO';
       worksheet.getCell('AE1').alignment = { horizontal: 'center', vertical: 'middle' };
       worksheet.getCell('AE1').font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -1367,7 +1368,8 @@ export async function reportDemandInduced(
         'Persona que realiza el seguimiento',
         'Área',
         'Programa',
-        'Fecha de asignacion de cita'
+        'Fecha de asignacion de cita',
+        'Profesional'
       ];
 
       headers.forEach((header, index) => {
@@ -1457,6 +1459,7 @@ export async function reportDemandInduced(
             "America/Bogota",
             "dd/MM/yyyy"
           ) : "",
+          Profesional: d.profesional || "",
         }
         worksheet.addRow(row);
       });
