@@ -334,8 +334,9 @@ export async function getEstadisticasDemandaInducida(
     //   metaValue
     // );
 
-    // 4. Cantidad de registros demanda inducida por programa por mes y por año
+    // 4. Cantidad de registros demanda inducida por programa, elemento, mes y año
     const cantidadDemandInduced = await getQuantityDemandInducedByProgram(
+      elementoId,
       profesional,
       programaId,
       año,
@@ -384,7 +385,7 @@ async function getStatisticsResultCallsNotEffective(
   currentUserHeadquartersId?: number,
   responsable?: string
 ) {
-  const query = await DemandaInducida.createQueryBuilder("demanda")
+  const query = DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("demanda.resultadoRelation", "resultado")
     .leftJoinAndSelect(
@@ -392,25 +393,25 @@ async function getStatisticsResultCallsNotEffective(
       "personaSeguimiento"
     )
     .select([
-      "resultado.name as resultadoLlamada",
-       "COUNT(DISTINCT demanda.id) as cantidad",
+      "COALESCE(resultado.name, 'Sin resultado asignado') as resultadoLlamada",
+      "COUNT(DISTINCT demanda.id) as cantidad",
       "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
-      ])
+    ])
     .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
-    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("demanda.clasificacion = :clasificacion", {
       clasificacion: false,
     })
-    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
-    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("demanda.programaId = :programaId", { programaId })
     .andWhere("demanda.profesional = :profesional", { profesional })
     .groupBy("resultado.name");
 
-    if (responsable) {
-      query.andWhere("personaSeguimiento.id = :responsableId", { responsableId: responsable });
-    }
+  if (responsable) {
+    query.andWhere("personaSeguimiento.id = :responsableId", { 
+      responsableId: responsable 
+    });
+  }
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
@@ -428,11 +429,14 @@ async function getStatisticsResultCallsNotEffective(
   return results.map((resultado) => ({
     resultadoLlamada: resultado.resultadoLlamada,
     cantidad: parseInt(resultado.cantidad),
+    registrosIds: resultado.registrosIds ? resultado.registrosIds.split(',') : []
   }));
 }
 
-// funcion auxiliar para arrojar la cantidad de registros demanda inducida por programa por mes y por ano
+// Función auxiliar para arrojar la cantidad de registros demanda inducida por programa, elemento, mes y año
+// Filtra por elementoDemandaInducidaId para mantener consistencia con las demás estadísticas
 async function getQuantityDemandInducedByProgram(
+  elementoId: string,
   profesional: string,
   programaId: string,
   año: string,
@@ -442,17 +446,17 @@ async function getQuantityDemandInducedByProgram(
   rolCurrentUser?: string | number,
   responsable?: string
 ) {
-  const query = await DemandaInducida.createQueryBuilder("demanda")
+  const query = DemandaInducida.createQueryBuilder("demanda")
     .leftJoinAndSelect("demanda.programaRelation", "programa")
     .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
     .leftJoinAndSelect("demanda.personaSeguimientoRelation", "personaSeguimiento")
     .select([
       "programa.id as programa",
       "programa.name as programaNombre",
-      "COUNT(DISTINCT demanda.id) as cantidad", // ? Usar DISTINCT para evitar duplicados
+      "COUNT(DISTINCT demanda.id) as cantidad",
       "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
-      "GROUP_CONCAT(DISTINCT DATE(demanda.createdAt)) as fechas"
     ])
+    .where("demanda.elementoDemandaInducidaId = :elementoId", { elementoId })
     .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
     .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
     .andWhere("metaHistorico.año = :year", { year: año })
@@ -461,9 +465,11 @@ async function getQuantityDemandInducedByProgram(
     .andWhere("demanda.programaId = :programaId", { programaId })
     .groupBy("programa.id, programa.name");
 
-    if (responsable) {
-      query.andWhere("personaSeguimiento.id = :responsableId", { responsableId: responsable });
-    }
+  if (responsable) {
+    query.andWhere("personaSeguimiento.id = :responsableId", { 
+      responsableId: responsable 
+    });
+  }
 
   // si el rol es 19 mostrar solo las DI de ese usuario
   if (rolCurrentUser == "19") {
@@ -475,6 +481,7 @@ async function getQuantityDemandInducedByProgram(
       headquartersId: currentUserHeadquartersId,
     });
   }
+
   const queryResults = await query.getRawMany();
 
   return queryResults.map((resultado) => ({
