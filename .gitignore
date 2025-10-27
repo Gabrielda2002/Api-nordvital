@@ -8,3 +8,6 @@ logs/*.json
 .idea/
 .vscode
 dist/
+# TypeScript incremental build
+.tsbuildinfo
+*.tsbuildinfo
