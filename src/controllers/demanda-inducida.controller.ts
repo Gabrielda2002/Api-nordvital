@@ -312,7 +312,7 @@ export async function getEstadisticasDemandaInducida(
     // );
 
     // 2. Llamadas telefónicas efectivas vs no efectivas
-    const estadisticasLlamadasTelefonicas = await getStatisticsCalls(
+    const phoneCallStatistics = await getPhoneCallStatistics(
       elementoId,
       programaId,
       profesional,
@@ -335,7 +335,7 @@ export async function getEstadisticasDemandaInducida(
     // );
 
     // 4. Cantidad de registros demanda inducida por programa, elemento, mes y año
-    const cantidadDemandInduced = await getQuantityDemandInducedByProgram(
+    const quantityDemandByElement = await getQuantityDemandInducedByElement(
       elementoId,
       profesional,
       programaId,
@@ -348,7 +348,7 @@ export async function getEstadisticasDemandaInducida(
     );
 
     // 5. Estadísticas resultados de llamadas no efectivas
-    const estResultadoLlamadasNoEfectivas =
+    const statisticsIneffectiveCalls =
       await getStatisticsResultCallsNotEffective(
         programaId,
         profesional,
@@ -361,17 +361,84 @@ export async function getEstadisticasDemandaInducida(
         responsable
       );
 
+    const totalRecordsInducedDemand = await getTotalDemandInducedRecords(
+      programaId,
+      profesional,
+      año,
+      mes,
+      idCurrentUser,
+      rolCurrentUser,
+      idHeadquartersCurrentUser,
+      responsable
+    );
+
     return res.status(200).json({
-      meta: metaValue,
+      goal: metaValue,
       // estadisticasPorPrograma,
-      estadisticasLlamadasTelefonicas,
+      phoneCallStatistics,
       // estadisticasLlamadasNoEfectivas,
-      cantidadDemandInduced,
-      estResultadoLlamadasNoEfectivas,
+      quantityDemandByElement,
+      totalRecordsInducedDemand,
+      statisticsIneffectiveCalls,
     });
   } catch (error) {
     next(error);
   }
+}
+
+// ? obtener la cantidad de registros sin tener el cuenta el elemento enviado por el usuario
+export async function getTotalDemandInducedRecords(
+  programaId: string,
+  profesional: string,
+  año: string,
+  mes: string,
+  currentUserId: string,
+  rolCurrentUser?: number | string,
+  currentUserHeadquartersId?: number,
+  responsable?: string,
+  next?: NextFunction
+) {
+    
+    const query = DemandaInducida.createQueryBuilder("demanda")
+    .leftJoinAndSelect("demanda.programaRelation", "programa")
+    .leftJoinAndSelect("programa.metaHistoricoRelation", "metaHistorico")
+    .leftJoinAndSelect("demanda.personaSeguimientoRelation", "personaSeguimiento")
+    .select([
+      "programa.id as programa",
+      "programa.name as programaNombre",
+      "COUNT(DISTINCT demanda.id) as cantidad",
+      "GROUP_CONCAT(DISTINCT demanda.id) as registrosIds",
+    ])
+    .andWhere("MONTH(demanda.createdAt) = :month", { month: mes })
+    .andWhere("YEAR(demanda.createdAt) = :year", { year: año })
+    .andWhere("metaHistorico.año = :year", { year: año })
+    .andWhere("metaHistorico.mes = :month", { month: mes })
+    .andWhere("demanda.profesional = :profesional", { profesional })
+    .andWhere("demanda.programaId = :programaId", { programaId })
+    .groupBy("programa.id, programa.name");
+
+  if (responsable) {
+    query.andWhere("personaSeguimiento.id = :responsableId", { 
+      responsableId: responsable 
+    });
+  }
+
+  // si el rol es 19 mostrar solo las DI de ese usuario
+  if (rolCurrentUser == "19") {
+    query.andWhere("demanda.personaSeguimientoId = :userId", {
+      userId: currentUserId,
+    });
+  } else if (rolCurrentUser == "21") {
+    query.andWhere("personaSeguimiento.headquarters = :headquartersId", {
+      headquartersId: currentUserHeadquartersId,
+    });
+  } 
+
+  const queryResults = await query.getRawMany();
+
+  return queryResults.map((resultado) => ({
+    cantidad: parseInt(resultado.cantidad),
+  }));
 }
 
 async function getStatisticsResultCallsNotEffective(
@@ -435,7 +502,7 @@ async function getStatisticsResultCallsNotEffective(
 
 // Función auxiliar para arrojar la cantidad de registros demanda inducida por programa, elemento, mes y año
 // Filtra por elementoDemandaInducidaId para mantener consistencia con las demás estadísticas
-async function getQuantityDemandInducedByProgram(
+async function getQuantityDemandInducedByElement(
   elementoId: string,
   profesional: string,
   programaId: string,
@@ -530,7 +597,7 @@ async function getStatisticsByProgram(
 }
 
 // ? Función auxiliar: Llamadas telefónicas efectivas vs no efectivas
-async function getStatisticsCalls(
+async function getPhoneCallStatistics(
   elementId: number,
   programaId: string,
   profesional: string,
