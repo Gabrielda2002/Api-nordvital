@@ -6,6 +6,7 @@ import { Soportes } from "../entities/soportes";
 import { AppDataSource } from "../db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
 import { FileTokenService } from "../services/file-token.service";
+import { NotificationService } from "../services/notificationService";
 
 // POST /permisos/requests
 // Crea una solicitud según la categoría y políticas. Valida:
@@ -101,6 +102,25 @@ export async function createPermissionRequest(
       return res.status(result.statusCode).json({ message: result.error });
     }
 
+    if (result.data.category != "VACACIONES") {
+      await NotificationService.createNotification(
+        result.data.stepsRelation[0].approverUserId || 0,
+        "Solicitud de permiso creada",
+        `Tienes una nueva solicitud de permiso de ${result.data.requesterRelation.name}`,
+        result.data.id,
+        "PERMISSION_REQUEST"
+      )
+    }else {
+      await NotificationService.createNotificationForRole(
+        [18],
+        "Solicitud de permiso creada",
+        `Tienes una nueva solicitud de permiso de ${result.data.requesterRelation.name}`,
+        result.data.id,
+        "PERMISSION_REQUEST"
+      )
+    }
+
+
     return res.status(201).json(result.data);
   } catch (error) {
     // Si algo falla luego de haber escrito el archivo, intentamos limpiar (best-effort)
@@ -174,6 +194,15 @@ export async function actOnPermissionStep(
       action,
       comment
     );
+
+    await NotificationService.createNotification(
+      result.request.requesterId,
+      "Actualización de solicitud de permiso",
+      `Tu solicitud de permiso ha sido ${action.toLowerCase()} por ${result.step.approverUserRelation?.name}`,
+      result.request.id,
+      "PERMISSION_REQUEST"
+    )
+
     return res.json(result);
   } catch (error) {
     next(error);

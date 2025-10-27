@@ -413,6 +413,7 @@ async listAllRequestsByUser(userId: number) {
       const step = await stepRepo
         .createQueryBuilder("s")
         .leftJoin("s.requestRelation", "r")
+        .leftJoinAndSelect("s.approverUserRelation", "approver")
         .where("s.id = :stepId", { stepId })
         .andWhere("r.id = :requestId", { requestId })
         .getOne();

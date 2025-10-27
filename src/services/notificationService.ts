@@ -51,6 +51,47 @@ export class NotificationService {
     return notification;
   }
 
+  // ? crear notificacion para cualquier uso
+  static async createNotification(
+    userId: number,
+    title: string,
+    message: string,
+    referenceId: number,
+    referenceType: string
+  ): Promise<Notification> {
+    const notification = new Notification();
+    notification.userId = userId;
+    notification.title = title;
+    notification.message = message;
+    notification.referenceId = referenceId;
+    notification.referenceType = referenceType;
+    notification.isRead = false;
+
+    await notification.save();
+
+    console.log("emitiendo notificacion ");
+    console.log(
+      `[Socket.io] Emitiendo notificación a sala user_${userId}:`,
+      notification
+    );
+    io.to(`user_${userId}`).emit(`newNotification`, notification);
+
+    // Enviar notificación push
+    try {
+      await PushService.sendPushNotification(
+        userId,
+        title,
+        message,
+        {}
+      );
+      console.log("[push] Notificación push enviada");
+    } catch (error) {
+      console.log("[Error] enviando notificación push", error);
+    }
+
+    return notification;
+  }
+
   /**
    * Obtiene todas las notificaciones de un usuario
    */
