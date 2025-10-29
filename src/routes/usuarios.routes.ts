@@ -12,6 +12,12 @@ const router = Router();
  * /usuarios:
  *   get:
  *     summary: Obtener todos los usuarios
+ *     description: |
+ *       Lista todos los usuarios del sistema.
+ *       
+ *       **Roles permitidos:**
+ *       - Administrador (ID: 1)
+ *       - Gerente (ID: 2)
  *     tags: [Usuarios]
  *     security:
  *       - bearerAuth: []
@@ -24,6 +30,10 @@ const router = Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Usuario'
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Sin permisos (rol no permitido)
  */
 router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios);
 
@@ -32,6 +42,12 @@ router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios
  * /usuarios/{id}:
  *   get:
  *     summary: Obtener un usuario por ID
+ *     description: |
+ *       Consulta la información detallada de un usuario específico.
+ *       
+ *       **Roles permitidos:**
+ *       - Administrador (ID: 1)
+ *       - Gerente (ID: 2)
  *     tags: [Usuarios]
  *     security:
  *       - bearerAuth: []
@@ -41,9 +57,14 @@ router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID del usuario
  *     responses:
  *       200:
  *         description: Usuario encontrado
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Sin permisos
  *       404:
  *         description: Usuario no encontrado
  */
@@ -54,6 +75,12 @@ router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  * /usuarios:
  *   post:
  *     summary: Crear un nuevo usuario
+ *     description: |
+ *       Crea un nuevo usuario en el sistema y asigna su rol correspondiente.
+ *       
+ *       **Roles permitidos:**
+ *       - Administrador (ID: 1)
+ *       - Gerente (ID: 2)
  *     tags: [Usuarios]
  *     security:
  *       - bearerAuth: []
@@ -66,6 +93,12 @@ router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *     responses:
  *       200:
  *         description: Usuario creado exitosamente
+ *       400:
+ *         description: Error de validación
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Sin permisos
  */
 router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario);
 
@@ -74,6 +107,12 @@ router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario
  * /usuarios/{id}:
  *   put:
  *     summary: Actualizar un usuario
+ *     description: |
+ *       Actualiza la información de un usuario existente.
+ *       
+ *       **Roles permitidos:**
+ *       - Administrador (ID: 1)
+ *       - Gerente (ID: 2)
  *     tags: [Usuarios]
  *     security:
  *       - bearerAuth: []
@@ -83,6 +122,7 @@ router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID del usuario a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -92,6 +132,14 @@ router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario
  *     responses:
  *       200:
  *         description: Usuario actualizado exitosamente
+ *       400:
+ *         description: Error de validación
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Usuario no encontrado
  */
 router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateUsuario);
 
@@ -100,6 +148,10 @@ router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  * /usuarios/{id}:
  *   delete:
  *     summary: Eliminar un usuario
+ *     description: |
+ *       🔴 **ACCIÓN CRÍTICA:** Elimina permanentemente un usuario del sistema.
+ *       
+ *       **Roles permitidos:** Solo Administrador (ID: 1)
  *     tags: [Usuarios]
  *     security:
  *       - bearerAuth: []
@@ -109,9 +161,16 @@ router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID del usuario a eliminar
  *     responses:
  *       200:
  *         description: Usuario eliminado exitosamente
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Sin permisos (solo Administrador)
+ *       404:
+ *         description: Usuario no encontrado
  */
 router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteUsuario);
 
