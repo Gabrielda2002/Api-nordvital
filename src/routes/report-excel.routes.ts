@@ -21,7 +21,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/v1/report-excel-filtro:
+ * /api/v1/report/excel/radicacion:
  *   post:
  *     summary: Descarga reporte de radicaciones filtrado en Excel
  *     tags: [Reportes Excel]
@@ -57,7 +57,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report-excel-cirugias-filtro:
+ * /api/v1/report/excel/surgerys:
  *   post:
  *     summary: Descarga reporte de cirugías filtrado en Excel
  *     tags: [Reportes Excel]
@@ -93,7 +93,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report-excel-gestion-auxiliar:
+ * /api/v1/report/excel/assistants:
  *   post:
  *     summary: Descarga reporte de gestión auxiliar en Excel
  *     tags: [Reportes Excel]
@@ -138,7 +138,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report-breakes-active:
+ * /api/v1/report/excel/breakes:
  *   post:
  *     summary: Descarga reporte de pausas activas en Excel
  *     tags: [Reportes Excel]
@@ -228,7 +228,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report/tickets:
+ * /api/v1/report/excel/tickets:
  *   post:
  *     summary: Descarga reporte de tickets de mesa de ayuda en Excel
  *     tags: [Reportes Excel]
@@ -275,7 +275,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/reporte/demanda/inducida:
+ * /api/v1/report/excel/demand-induced:
  *   post:
  *     summary: Descarga reporte de demanda inducida en Excel
  *     tags: [Reportes Excel]
@@ -325,7 +325,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report/equipments:
+ * /api/v1/report/excel/equipments:
  *   post:
  *     summary: Descarga reporte de inventario de equipos en Excel
  *     tags: [Reportes Excel]
@@ -365,7 +365,7 @@ router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), get
 
 /**
  * @swagger
- * /api/v1/report/device-red:
+ * /api/v1/report/excel/device-red:
  *   post:
  *     summary: Descarga reporte de dispositivos de red en Excel
  *     tags: [Reportes Excel]
@@ -405,7 +405,7 @@ router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), get
 
 /**
  * @swagger
- * /api/v1/report/general-inventory:
+ * /api/v1/report/excel/general-inventory:
  *   post:
  *     summary: Descarga reporte de inventario general en Excel
  *     tags: [Reportes Excel]
@@ -445,7 +445,7 @@ router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"
 
 /**
  * @swagger
- * /api/v1/report/tv:
+ * /api/v1/report/excel/tv:
  *   post:
  *     summary: Descarga reporte de televisores en Excel
  *     tags: [Reportes Excel]
@@ -485,7 +485,7 @@ router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV
 
 /**
  * @swagger
- * /api/v1/report/phones:
+ * /api/v1/report/excel/phones:
  *   post:
  *     summary: Descarga reporte de teléfonos en Excel
  *     tags: [Reportes Excel]
