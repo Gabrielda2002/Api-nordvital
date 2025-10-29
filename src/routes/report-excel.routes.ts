@@ -2,52 +2,22 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorizeRoles } from "../middlewares/authorize-roles";
 import {
-  downloadReportExcel,
-  downloadReportExcelFilter,
+  getReportAssistants,
   getReportBiometric,
   getReportBreakesActive,
+  getReportDemandInduced,
+  getReportEquipments,
+  getReportGeneralInventory,
+  getReportPhones,
+  getReportRedDevice,
+  getReportServices,
+  getReportSurgerys,
   getReportTickets,
-  reportDemandInduced,
-  reporteGestionAuxiliar,
-  reportExcelCirugias,
-  reportExcelCirugiasFiltros,
-  reportExcelRadicacion,
-  reportGeneralInventory,
-  reportInventoryEquipments,
-  reportPhones,
-  reportRedDevice,
-  reportTV,
+  getReportTV,
 } from "../controllers/report-excel.controller";
 
 const router = Router();
 
-/**
- * @swagger
- * /api/v1/report-excel:
- *   get:
- *     summary: Descarga reporte general de radicaciones en Excel
- *     tags: [Reportes Excel]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Archivo Excel generado exitosamente
- *         content:
- *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
- *             schema:
- *               type: string
- *               format: binary
- *       401:
- *         description: No autorizado
- *       500:
- *         description: Error del servidor
- */
-router.get(
-  "/report-excel",
-  authenticate,
-  authorizeRoles(["1", "3", "6", "2", "14", "3", "15"]),
-  downloadReportExcel
-);
 
 /**
  * @swagger
@@ -79,38 +49,10 @@ router.get(
  *         description: Error del servidor
  */
 router.post(
-  "/report-excel-filtro",
+  "/report/excel/radicacion",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
-  reportExcelRadicacion
-);
-
-/**
- * @swagger
- * /api/v1/report-excel-cirugias:
- *   get:
- *     summary: Descarga reporte general de cirugías en Excel
- *     tags: [Reportes Excel]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Archivo Excel generado exitosamente
- *         content:
- *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
- *             schema:
- *               type: string
- *               format: binary
- *       401:
- *         description: No autorizado
- *       500:
- *         description: Error del servidor
- */
-router.get(
-  "/report-excel-cirugias",
-  authenticate,
-  authorizeRoles(["1", "3", "6", "2", "14", "3", "15"]),
-  reportExcelCirugias
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  getReportServices
 );
 
 /**
@@ -143,10 +85,10 @@ router.get(
  *         description: Error del servidor
  */
 router.post(
-  "/report-excel-cirugias-filtro",
+  "/report/excel/surgerys",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
-  reportExcelCirugiasFiltros
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  getReportSurgerys
 );
 
 /**
@@ -188,10 +130,10 @@ router.post(
  *         description: Error del servidor
  */
 router.post(
-  "/report-excel-gestion-auxiliar",
+  "/report/excel/assistants",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "3", "15"]),
-  reporteGestionAuxiliar
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  getReportAssistants
 );
 
 /**
@@ -233,7 +175,7 @@ router.post(
  *         description: Error del servidor
  */
 router.post(
-  "/report-breakes-active",
+  "/report/excel/breakes",
   authenticate,
   authorizeRoles(["1", "2", "6"]),
   getReportBreakesActive
@@ -325,7 +267,7 @@ router.post(
  *         description: Error del servidor
  */
 router.post(
-  "/report/tickets"
+  "/report/excel/tickets"
   , authenticate
   , authorizeRoles(["1"])
   , getReportTickets
@@ -375,10 +317,10 @@ router.post(
  *         description: Error del servidor
  */
 router.post(
-  "/reporte/demanda/inducida"
+  "/report/excel/demand-induced"
   , authenticate
   , authorizeRoles(["1", "19", "20", "21"])
-  , reportDemandInduced
+  , getReportDemandInduced
 )
 
 /**
@@ -419,7 +361,7 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
-router.post("/report/equipments", authenticate, authorizeRoles(["1"]), reportInventoryEquipments);
+router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), getReportEquipments);
 
 /**
  * @swagger
@@ -459,7 +401,7 @@ router.post("/report/equipments", authenticate, authorizeRoles(["1"]), reportInv
  *       500:
  *         description: Error del servidor
  */
-router.post("/report/device-red", authenticate, authorizeRoles(["1"]), reportRedDevice);
+router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), getReportRedDevice);
 
 /**
  * @swagger
@@ -499,7 +441,7 @@ router.post("/report/device-red", authenticate, authorizeRoles(["1"]), reportRed
  *       500:
  *         description: Error del servidor
  */
-router.post("/report/general-inventory", authenticate, authorizeRoles(["1"]), reportGeneralInventory);
+router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"]), getReportGeneralInventory);
 
 /**
  * @swagger
@@ -539,7 +481,7 @@ router.post("/report/general-inventory", authenticate, authorizeRoles(["1"]), re
  *       500:
  *         description: Error del servidor
  */
-router.post("/report/tv", authenticate, authorizeRoles(["1"]), reportTV);
+router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV);
 
 /**
  * @swagger
@@ -579,6 +521,6 @@ router.post("/report/tv", authenticate, authorizeRoles(["1"]), reportTV);
  *       500:
  *         description: Error del servidor
  */
-router.post("/report/phones", authenticate, authorizeRoles(["1"]), reportPhones);
+router.post("/report/excel/phones", authenticate, authorizeRoles(["1"]), getReportPhones);
 
 export default router;

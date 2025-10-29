@@ -26,7 +26,7 @@ import carpetasRoutes from './carpetas_routes';
 import archivosRoutes from './archivos_routes';
 import cirugiasRoutes from './cirugias_routes';
 import seguimientoAuxiliarCirugiasRoutes from './seguimiento-auxiliar-cirugia_routes';
-import reportExcelRoutes from './report-excel_routes';
+import reportExcelRoutes from './report-excel.routes';
 import certificateRoutes from './certificados_routes';
 import accesoriosRoutes from './accesorios-equipos.routes';
 import equiposRoutes from './equipos.routes';
