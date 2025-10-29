@@ -7,10 +7,8 @@ API REST para el sistema de gestión médica/hospitalaria Nordvital construida c
 ### 🚀 Inicio Rápido (Para Coordinador/Asistente)
 1. **[⚡ Guía Rápida](./docs/QUICK_REFERENCE.md)** - Consulta de 5 minutos
 2. **[🌳 Árbol de Decisión](./docs/DECISION_TREE.md)** - ¿Qué rol asignar? (paso a paso)
-3. **[📖 Documentación Completa](./docs/ROLES_AND_PERMISSIONS.md)** - Matriz detallada de todos los permisos
 
 ### 📄 Recursos Adicionales
-- **[🖨️ Matriz Imprimible](./docs/PRINTABLE_MATRIX.md)** - Versión para imprimir o consulta offline
 - **[📋 Índice General](./docs/README.md)** - Guía completa del sistema de documentación
 
 ### 👨‍💻 Para Desarrolladores

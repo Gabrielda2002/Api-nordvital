@@ -2,6 +2,21 @@
 
 > **Referencia rápida para asignación de roles**
 
+## Permisos Genéricos
+**Estos permisos los tiene absolutamente todos los usuarios:**
+
+- **Actualizar datos en el perfil**
+- **Cargar/eliminar una foto de perfil**
+- **Ver eventos en calendario**
+- **Consultar el panel de consultas**
+- **Registrar Pausas Activas**
+- **Crear ticket soporte al área de Sistemas**
+- **Ver notificaciones**
+- **Encuestas de satisfacción**
+- **Ver comentarios del ticket**
+- **Ver Carpetas del Sistema de calidad del departamento del usuario**
+- **Crear/ver solicitudes de permiso**
+
 ## 🎯 Decisión Rápida: ¿Qué rol asignar?
 
 ### Por función principal:
@@ -10,44 +25,35 @@
 |----------------------|---------------|:--:|
 | Administrar TODO el sistema | Administrador | 1 |
 | Gestionar usuarios y ver reportes | Gerente | 2 |
-| Radicar, Auditar y y reporte radicados | Auditor | 3 |
-| Ver inventarios (solo consulta) | Calidad | 4 |
-| Usar el sistema básicamente (perfil) | Auxiliar | 5 |
-| Gestionar inventarios y radicados | Coordinador | 6 |
-| Crear y gestionar radicados | Radicador | 10 |
-| Atender consultas (SIAU) | Siau | 11 |
-| Gestión de contratación | Contratación | 12 |
-| Ver inventarios de su sede | Médico | 13 |
-| Aprobar permisos (primer nivel) | Jefe | 14 |
-| Gestionar cirugías y radicados | Cirugía | 15 |
-| Perfil básico | Paramédico | 16 |
+| Radicar, Auditar y reportes (radicado, cirugías y gestión auxiliar) | Auditor | 3 |
+| Control total Sistema Gestión de Calidad | Calidad | 4 |
+| (Por definir si es necesario) | Auxiliar | 5 |
+| Gestionar inventarios (Inventario General), radicador, cartas de recobro y reportes (radicado, cirugías, pausas activas y biométricos) | Coordinador | 6 |
+| Crear radicados y solicitudes cartas de recobro | Radicador | 10 |
+| (Por definir si es necesario) | Siau | 11 |
+| (Por definir si es necesario) | Contratación | 12 |
+| Accesos genéricos | Médico | 13 |
+| Reportes (radicado y cirugías) | Jefe | 14 |
+| Gestionar cirugías, radicar y reportes de cirugías | Cirugía | 15 |
+| (Definir si es necesario) | Paramédico | 16 |
 | Gestionar tickets técnicos | Soporte | 17 |
-| Aprobar permisos finales (vacaciones) | RRHH | 18 |
-| Gestionar demanda inducida | Enfermería | 19 |
-| Gestionar demanda inducida + metas | Coordinadora Enfermería | 20 |
-| Gestionar demanda inducida + crear metas | Líder Enfermería | 21 |
+| Solicitudes de permisos (chequear y autorizar vacaciones) y biométricos de entrada | RRHH | 18 |
+| Gestionar demanda inducida y limitado a sus propios datos | Enfermería | 19 |
+| Gestionar demanda inducida + crear metas + filtro responsable | Coordinadora Enfermería | 20 |
+| Gestionar demanda inducida + crear metas y limitado datos de su sede | Líder Enfermería | 21 |
 
 ---
 
 ## ⚡ Permisos Críticos
 
 ### 🔴 Solo Administrador (ID: 1)
-- ❌ **Eliminar** usuarios
-- ❌ **Eliminar** radicados
-- ❌ **Eliminar** lugares de radicación
+- ❌ Gestión completa de tablas de radicación
+- ❌ Gestión completa de Usuarios
 - ❌ Gestión completa de equipos
+- ❌ Gestión completa de Dispositivos Red
 - ❌ Gestión completa de celulares
-- ❌ Gestión completa de categorías
-- ❌ Gestión completa de prioridades
+- ❌ Gestión completa de Televisores
 - ❌ Gestión de cargos y áreas
-
-### 🟡 Administrador + Gerente (IDs: 1, 2)
-- Crear/editar/listar usuarios
-- Gestionar lugares de radicación
-
-### 🟢 Administrador + Auditor (IDs: 1, 3)
-- Auditar radicados
-- Autorizar servicios
 
 ---
 
@@ -58,26 +64,46 @@
 - **Autorizar:** Solo Admin y Auditor
 - **Eliminar:** Solo Admin
 
-### Inventarios
-- **General:** Admin y Coordinador (gestión)
-- **Consulta:** Calidad y Médico (solo ver)
+### Cartas de recobro
+- **Crear Solicitudes:** Admin, Radicador, Coordinador
+- **Autorizar:** Solo Admin y Coordinador
+- **Eliminar:** Solo Admin
 
-### Permisos/Vacaciones
+## Biométricos
+- **Consultar tabla de registros:** Admin y RRHH
+- **Eliminar y cargar:** Solo Admin
+
+### Inventarios
+- **Equipos:** Solo Admin
+- **Dispositivos Red:** Solo Admin
+- **Celulares:** Solo Admin
+- **Televisores:** Solo Admin
+- **General:** Admin y Coordinador (gestión completa)
+- **Consulta:** Calidad (solo ver)
+
+### Permisos
 - **Crear solicitud:** Todos los usuarios
 - **Aprobar (Jefe):** Jefe
-- **Aprobar (RRHH):** RRHH
-- **Ver adjuntos:** Admin, Gerente, Auditor, Jefe, RRHH
+- **Aprobar/visto (RRHH):** RRHH
+- **Ver adjuntos:** Todos los usuarios
+- **Ver "Mis Solicitudes":** Todos los usuarios
 
 ### Demanda Inducida y Metas
 - **Exclusivo:** Enfermería, Coordinadora Enfermería, Líder Enfermería
 - **Crear metas:** Solo Coordinadora y Líder
-- **Eliminar metas:** Solo Admin y Coordinadora
+- **Datos globales DI:** Solo Coordinadora 
+- **Datos sede actual:** Solo Lider Enfermeria
+- **Eliminar metas:** Solo Admin
 
 ### Tickets de Soporte
 - **Crear:** Todos
-- **Gestionar:** Solo Admin
-- **Ver tabla:** Admin y Soporte
+- **Gestionar:** Solo Admin y Soporte
 
+### Gestión de Calidad
+- **Ver:** Todos los usuarios
+- **Crear/cargar:** Calidad y Admin
+- **Eliminar:** Calidad y Admin
+- **Editar:** Calidad y Admin
 ---
 
 ## 🔑 Acceso Global a Carpetas
@@ -95,7 +121,6 @@ Estos roles tienen acceso a **todas las carpetas** independiente del departament
 ## ⚠️ Reglas de Oro
 
 1. **NUNCA** asignes Administrador sin autorización del Coordinador
-2. **SIEMPRE** consulta la documentación completa antes de crear roles personalizados
 3. **VERIFICA** que el rol asignado tenga sentido con las funciones del usuario
 4. **DOCUMENTA** si cambias un rol de un usuario (por qué y cuándo)
 
@@ -105,9 +130,6 @@ Estos roles tienen acceso a **todas las carpetas** independiente del departament
 
 ### "El usuario no puede crear radicados"
 **Verificar:** ¿Tiene rol Radicador (10), Cirugía (15), Coordinador (6), Auditor (3) o Admin (1)?
-
-### "No puedo eliminar un usuario"
-**Respuesta:** Solo Administrador puede eliminar. ¿Eres Admin?
 
 ### "No veo los inventarios"
 **Verificar:** ¿Tienes rol Admin (1), Coordinador (6), Calidad (4) o Médico (13)?
@@ -130,5 +152,5 @@ Estos roles tienen acceso a **todas las carpetas** independiente del departament
 
 ---
 
-**Versión:** 1.0  
-**Fecha:** 28 de octubre de 2025
+**Versión:** 1.0.1
+**Fecha:** 29 de octubre de 2025

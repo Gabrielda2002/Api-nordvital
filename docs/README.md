@@ -30,38 +30,7 @@ Este directorio contiene la documentación oficial sobre roles y permisos del si
 
 ---
 
-### 3. `ROLES_AND_PERMISSIONS.md` 📖 **DOCUMENTACIÓN COMPLETA**
-**Para:** Coordinador de Sistemas, Asistente Administrativa, Personal de RRHH
-
-**Contenido:**
-- Listado completo de roles del sistema con sus IDs
-- Matriz detallada de permisos por módulo
-- Tablas visuales de qué puede hacer cada rol
-- Notas importantes para asignación de roles
-- Guía de uso en lenguaje no técnico
-
-**Cuándo usar:**
-- Al crear un nuevo usuario
-- Al cambiar el rol de un usuario existente
-- Para consultar qué permisos tiene un rol específico
-- Para explicar a un usuario qué puede o no puede hacer
-
----
-
-### 4. `PRINTABLE_MATRIX.md` 🖨️
-**Para:** Consulta offline o impresión
-
-**Contenido:**
-- Matriz simplificada de roles y permisos
-- Formato optimizado para imprimir
-- Leyenda de roles
-- Decisión rápida
-
-**Cuándo usar:** Para tener referencia física o consultar sin computadora.
-
----
-
-### 5. `SWAGGER_ROLES_GUIDE.md` 🔧
+### 3. `SWAGGER_ROLES_GUIDE.md` 🔧
 **Para:** Desarrolladores
 
 **Contenido:**
@@ -84,11 +53,9 @@ Este directorio contiene la documentación oficial sobre roles y permisos del si
 **Flujo recomendado:**
 
 ```
-1. QUICK_REFERENCE.md (consulta rápida)
+1. QUICK_REFERENCE.md (consulta de roles detallada)
    └─► ¿No encontraste la respuesta?
        └─► 2. DECISION_TREE.md (guía paso a paso)
-           └─► ¿Necesitas más detalle?
-               └─► 3. ROLES_AND_PERMISSIONS.md (documentación completa)
 ```
 
 **Ejemplo de uso:**
@@ -97,7 +64,7 @@ Pregunta: "¿Puede un Radicador eliminar usuarios?"
 
 Paso 1: Abrir QUICK_REFERENCE.md
 Paso 2: Buscar "Permisos Críticos" → "Solo Administrador"
-Paso 3: Ver que "Eliminar usuarios" es 🔴 solo Admin
+Paso 3: Ver que "Gestion Usuarios" es 🔴 solo Admin
 Respuesta: ❌ NO, el Radicador NO puede eliminar usuarios
 ```
 
@@ -107,10 +74,6 @@ Respuesta: ❌ NO, el Radicador NO puede eliminar usuarios
 
 1. **Consultar `SWAGGER_ROLES_GUIDE.md`** para la convención
 2. **Usar los templates** al documentar nuevos endpoints
-3. **Actualizar `ROLES_AND_PERMISSIONS.md`** cuando:
-   - Agregues nuevos endpoints
-   - Modifiques permisos de roles
-   - Crees nuevos roles
 
 ---
 
@@ -122,7 +85,6 @@ Respuesta: ❌ NO, el Radicador NO puede eliminar usuarios
 - ✅ Consultar la documentación antes de asignar roles
 - ✅ Reportar si un rol necesita más o menos permisos
 - ✅ Validar que la documentación refleje la realidad del sistema
-- ✅ Usar `PRINTABLE_MATRIX.md` como referencia rápida
 
 **Asistente Administrativa:**
 - ✅ Usar `QUICK_REFERENCE.md` para asignaciones comunes
@@ -130,32 +92,9 @@ Respuesta: ❌ NO, el Radicador NO puede eliminar usuarios
 - ✅ Documentar razones de cambios de roles
 
 **Desarrolladores:**
-- ✅ Actualizar `ROLES_AND_PERMISSIONS.md` al hacer cambios en permisos
 - ✅ Seguir `SWAGGER_ROLES_GUIDE.md` al documentar endpoints
 - ✅ Revisar la documentación al menos una vez al mes
 - ✅ Notificar al equipo administrativo sobre cambios importantes
-
-### Proceso de actualización:
-
-```bash
-# 1. Hacer cambios en el código (agregar/modificar endpoints)
-git add src/routes/
-
-# 2. Actualizar la documentación correspondiente
-git add docs/ROLES_AND_PERMISSIONS.md
-git add docs/SWAGGER_ROLES_GUIDE.md  # si aplica
-
-# 3. Commit con descripción clara
-git commit -m "feat: agregar endpoint X con acceso para rol Y
-
-- Actualizada matriz de permisos
-- Documentado en Swagger"
-
-# 4. Push a develop
-git push origin develop
-
-# 5. Notificar al Coordinador de Sistemas
-```
 
 ---
 
@@ -184,7 +123,7 @@ git push origin develop
 1. Identificar QUÉ está intentando hacer
 2. Abrir QUICK_REFERENCE.md → "SOS - Problemas Comunes"
 3. ¿Está en la lista? → Aplicar solución
-4. ¿No está? → Consultar ROLES_AND_PERMISSIONS.md
+4. ¿No está? → Consultar al equipo de desarrollo
 5. Buscar la funcionalidad en la tabla correspondiente
 6. Verificar si su rol actual tiene acceso
 7. Tomar decisión:
@@ -201,15 +140,13 @@ Desarrollador debe:
 
 1. Implementar el código
 2. Definir qué roles tendrán acceso
-3. Actualizar ROLES_AND_PERMISSIONS.md:
+3. Actualizar QUICK_REFERENCE.md:
    - Agregar nueva sección de módulo
    - Crear tabla de permisos
    - Documentar cada funcionalidad
-4. Actualizar QUICK_REFERENCE.md si es un permiso crítico
-5. Documentar en Swagger siguiendo SWAGGER_ROLES_GUIDE.md
-6. Actualizar PRINTABLE_MATRIX.md
-7. Commit y push
-8. Notificar al Coordinador de Sistemas sobre los cambios
+4. Documentar en Swagger siguiendo SWAGGER_ROLES_GUIDE.md
+5. Commit y push
+6. Notificar al Coordinador de Sistemas sobre los cambios
 ```
 
 ---
@@ -229,30 +166,13 @@ Desarrollador debe:
 2. Consultar QUICK_REFERENCE.md
 3. Contactar Coordinador de Sistemas si el rol es incorrecto
 
----
-
-## 📝 Historial de Cambios
-
-| Fecha | Cambio | Responsable |
-|-------|--------|-------------|
-| 2025-10-28 | Creación de documentación inicial completa | Equipo de Desarrollo |
-| | - Matriz de roles y permisos | |
-| | - Guía rápida | |
-| | - Árbol de decisión | |
-| | - Matriz imprimible | |
-| | - Guía Swagger | |
-
----
-
 ## 🔗 Enlaces Rápidos
 
 - [⚡ Guía Rápida](./QUICK_REFERENCE.md) - Consulta de 5 minutos
 - [🌳 Árbol de Decisión](./DECISION_TREE.md) - ¿Qué rol asignar?
-- [📖 Documentación Completa](./ROLES_AND_PERMISSIONS.md) - Referencia total
-- [🖨️ Matriz Imprimible](./PRINTABLE_MATRIX.md) - Para imprimir
 - [🔧 Guía Swagger](./SWAGGER_ROLES_GUIDE.md) - Para desarrolladores
 
 ---
 
-**Última actualización:** 28 de octubre de 2025  
-**Versión:** 1.0
+**Última actualización:** 29 de octubre de 2025  
+**Versión:** 1.0.1
