@@ -379,3 +379,24 @@ export async function serveSecurePermissionAttachment(
     next(error);
   }
 }
+
+// PUT /permission/requests/:id/cancel
+export async function cancelPermissionRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    const service = new PermissionService();
+    const result = await service.cancelRequest(parseInt(id));
+    if (!result.success) {
+      return res.status(result.statusCode).json({ message: result.error });
+    }
+
+    return res.status(200).json({ message: "Request cancelled successfully" });
+  } catch (error) {
+    next(error);
+  }
+}

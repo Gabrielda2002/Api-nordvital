@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { actOnPermissionStep, createPermissionRequest, generatePermissionAttachmentAccessToken, getPermissionRequestById, listAllRequestsByUser, listPermissionRequests, serveSecurePermissionAttachment } from "../controllers/permission.controller";
+import { actOnPermissionStep, cancelPermissionRequest, createPermissionRequest, generatePermissionAttachmentAccessToken, getPermissionRequestById, listAllRequestsByUser, listPermissionRequests, serveSecurePermissionAttachment } from "../controllers/permission.controller";
 import { authenticate } from "../middlewares/auth";
 import { uploadAttachmentsPermissions } from "../middlewares/multer-attechments-permissions";
 import { authorizeRoles } from "../middlewares/authorize-roles";
@@ -296,5 +296,49 @@ router.post('/attachments/:id/access-token', fileAccessRateLimit, authenticate, 
  *         description: Archivo no encontrado
  */
 router.get('/secure-attachments/:token', serveSecurePermissionAttachment);
+
+/**
+ * @swagger
+ * /permission/requests/{id}/cancel:
+ *   put:
+ *     tags:
+ *       - Permisos
+ *     summary: Cancela una solicitud de permiso
+ *     description: |
+ *       Permite al usuario cancelar su propia solicitud de permiso.
+ *       Solo se pueden cancelar solicitudes que estén en estado PENDIENTE o EN_REVISION.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la solicitud de permiso a cancelar
+ *     responses:
+ *       200:
+ *         description: Solicitud cancelada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Solicitud cancelada exitosamente
+ *                 request:
+ *                   type: object
+ *                   description: Datos de la solicitud cancelada
+ *       400:
+ *         description: La solicitud no puede ser cancelada (estado inválido)
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: No tienes permisos para cancelar esta solicitud
+ *       404:
+ *         description: Solicitud no encontrada
+ */
+router.put("/permission/requests/:id/cancel", authenticate, validarId, cancelPermissionRequest);
 
 export default router;

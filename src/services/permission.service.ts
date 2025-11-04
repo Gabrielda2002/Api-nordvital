@@ -395,6 +395,25 @@ async listAllRequestsByUser(userId: number) {
   });
 }
 
+// ? Cancelar solicitud
+async cancelRequest(requestId: number): Promise<Result<PermissionRequest>> {
+  const reqRepo = this.ds.getRepository(PermissionRequest);
+
+  const req = await reqRepo.findOne({ where: { id: requestId } });
+
+  if (!req) {
+    return { success: false, error: "Request not found", statusCode: 404 };
+  }
+
+  if (["CANCELADO"].includes(req.overallStatus)) {
+    return { success: false, error: "Request is already cancelled", statusCode: 400 };
+  }
+
+  req.overallStatus = "CANCELADO";
+  await reqRepo.save(req);
+  return { success: true, data: req };
+}
+
 // ? Actuar sobre un paso (aprobar, rechazar, visto)
   async actOnStep(requestId: number, stepId: number, actorUserId: number, action: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "VISTO", comment?: string) {
 
