@@ -395,6 +395,15 @@ export async function cancelPermissionRequest(
       return res.status(result.statusCode).json({ message: result.error });
     }
 
+    // notificar al solicitante
+    await NotificationService.createNotification(
+      result.data.requesterId,
+      "Su solicitud de permiso ha sido cancelada",
+      'La solicitud de permiso que realizó ha sido cancelada, contacte a su jefe para conocer la razón.',
+      result.data.id,
+      "PERMISSION_REQUEST"
+    );
+
     return res.status(200).json({ message: "Request cancelled successfully" });
   } catch (error) {
     next(error);
