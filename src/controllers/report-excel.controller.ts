@@ -33,6 +33,7 @@ export async function getReportSurgerys(
         "estadoSeguimiento"
       )
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
+      .leftJoinAndSelect("cups.servicioRelation", "services")
       .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico");
 
     if (dateStart && dateEnd) {
@@ -133,8 +134,8 @@ export async function getReportSurgerys(
         data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
           worksheet.addRow({
             ...row,
-            Codigo_cups: cups.code || "N/A",
-            Descripcion_cups: cups.DescriptionCode || "N/A",
+            Codigo_cups: cups.servicioRelation?.code || "N/A",
+            Descripcion_cups: cups.servicioRelation?.name || "N/A",
             Observacionesgestion: cups.observation || "N/A",
             Estado: cups.statusRelation?.name || "N/A",
           });
@@ -202,7 +203,8 @@ export async function getReportServices(
       .leftJoinAndSelect(
         "cups.seguimientoAuxiliarRelation",
         "seguimiento_auxiliar"
-      );
+      )
+      .leftJoinAndSelect("cups.servicioRelation", "services")
 
     // Filtro por estado de CUPS
     if (statusCups) {
@@ -321,8 +323,8 @@ export async function getReportServices(
 
           worksheet.addRow({
             ...row,
-            Codigo_cups: cups.code || "N/A",
-            Descripcion_cups: cups.DescriptionCode || "N/A",
+            Codigo_cups: cups.servicioRelation?.code || "N/A",
+            Descripcion_cups: cups.servicioRelation?.name || "N/A",
             Estado_cups: cups.statusRelation?.name || "N/A",
             Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
             Fecha_actualizacion: cups.updatedAt || "N/A",
@@ -379,6 +381,7 @@ export async function getReportAssistants(
         "cups.seguimientoAuxiliarRelation",
         "seguimiento_auxiliar"
       )
+      .leftJoinAndSelect("cups.servicioRelation", "services")
       .leftJoinAndSelect(
         "seguimiento_auxiliar.estadoSeguimientoRelation",
         "estado_seguimiento"
@@ -426,8 +429,8 @@ export async function getReportAssistants(
                 numero_documento:
                   radicado.patientRelation?.documentNumber || "N/A",
                 nombre_paciente: radicado.patientRelation?.name || "N/A",
-                codigo_cups: cups.code || "N/A",
-                descripcion_cups: cups.DescriptionCode || "N/A",
+                codigo_cups: cups.servicioRelation?.code || "N/A",
+                descripcion_cups: cups.servicioRelation?.name || "N/A",
                 estado_gestion:
                   seguimiento.estadoSeguimientoRelation?.name || "N/A",
                 observacion: seguimiento.observation || "N/A",

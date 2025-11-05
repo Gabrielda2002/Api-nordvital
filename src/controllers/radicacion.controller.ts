@@ -102,8 +102,6 @@ export async function getRadicacionById(
       auditConcept: radicacion.auditConcept,
       cupsRadicados: radicacion.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
-        code: c.code,
-        DescriptionCode: c.DescriptionCode,
         status: c.status,
         observation: c.observation,
         functionalUnit: c.functionalUnit,
@@ -972,8 +970,6 @@ export const createRequestService = async (
     for (const item of cupsRequestService) {
       const createCups = new CupsRadicados();
 
-      createCups.code = Number(item.code);
-      createCups.DescriptionCode = item.description;
       createCups.status = 6;
       createCups.observation = "Pendiente";
       createCups.functionalUnit = 12;

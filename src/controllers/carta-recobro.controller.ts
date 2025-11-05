@@ -356,6 +356,7 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         // Obtener la información del radicado y sus CUPS autorizados
         const radicado = await Radicacion.createQueryBuilder("radicacion")
             .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups_radicados")
+            .leftJoinAndSelect("cups_radicados.servicioRelation", "services")
             .leftJoinAndSelect("radicacion.usuarioRelation", "usuario_radica")
             .leftJoinAndSelect("usuario_radica.sedeRelation", "sede_usuario")
             .leftJoinAndSelect("sede_usuario.municipioRelation", "municipio_sede")
@@ -467,10 +468,10 @@ export async function generatePdf(req: Request, res: Response, next: NextFunctio
         radicado.cupsRadicadosRelation.forEach(cup => {
             if (cup.statusRecoveryLatter === 'Autorizado') {
                 const yCode = yPosition;
-                const descriptionLines = splitTextIntoLines(cup.DescriptionCode, 70);
+                const descriptionLines = splitTextIntoLines(cup.servicioRelation?.name, 70);
 
                 // Dibujar el código del CUPS
-                page.drawText(`${cup.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
+                page.drawText(`${cup.servicioRelation?.code}`, { x: xCode, y: yCode, size: 10, color: rgb(0, 0, 0) });
 
                 page.drawText(`${cup.quantity}`, { x: xCode + 400, y: yCode, size: 10, color: rgb(0, 0, 0) });
 
