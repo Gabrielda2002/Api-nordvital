@@ -165,7 +165,7 @@ router.get("/permisos/requests/:id", authenticate, getPermissionRequestById);
  *       403:
  *         description: El usuario no tiene permisos para esta acción
  */
-router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate, actOnPermissionStep);
+router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate,authorizeRoles(['1', '6', '20', '18']) , actOnPermissionStep);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate, act
  *       401:
  *         description: No autorizado
  */
-router.get('/list/requests', authenticate, listPermissionRequests);
+router.get('/list/requests', authenticate, authorizeRoles(['1', '18', '6', '20']), listPermissionRequests);
 
 /**
  * @swagger
@@ -259,7 +259,7 @@ router.get('/list/requests/user', authenticate, listAllRequestsByUser);
  *       429:
  *         description: Demasiadas solicitudes (rate limit)
  */
-router.post('/attachments/:id/access-token', fileAccessRateLimit, authenticate, authorizeRoles(['1', '2', '3', '5', '18']), validarId, generatePermissionAttachmentAccessToken);
+router.post('/attachments/:id/access-token', fileAccessRateLimit, authenticate, validarId, generatePermissionAttachmentAccessToken);
 
 /**
  * @swagger
@@ -339,6 +339,6 @@ router.get('/secure-attachments/:token', serveSecurePermissionAttachment);
  *       404:
  *         description: Solicitud no encontrada
  */
-router.put("/permission/requests/:id/cancel", authenticate, validarId, cancelPermissionRequest);
+router.put("/permission/requests/:id/cancel", authenticate, authorizeRoles(['1', '6', '20', '18']), validarId, cancelPermissionRequest);
 
 export default router;
