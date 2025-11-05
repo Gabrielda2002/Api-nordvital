@@ -1,7 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Usuarios } from "./usuarios";
 import { IsBoolean, IsInt, IsNotEmpty, IsString, Length, Max, Min } from "class-validator";
-import { Carpeta } from "./carpeta";
 import { LugarRadicacion } from "./lugar-radicacion";
 import { departamentos } from "./departamentos";
 
@@ -37,9 +35,6 @@ export class Municipio extends BaseEntity {
 
   @CreateDateColumn({ name: "fecha-creacion" })
   createdAt: Date
-
-  @OneToMany(() => Carpeta, (carpeta) => carpeta.municipioRelation)
-  folderRelation: Carpeta[];
 
   // * relaciones
 

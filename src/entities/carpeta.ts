@@ -2,8 +2,6 @@ import { IsNotEmpty } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
 import { Archivos } from "./archivos";
-import { arch } from "os";
-import { Municipio } from "./municipio";
 import { departamentos } from "./departamentos";
 
 @Entity({name: "carpetas"})
@@ -34,9 +32,6 @@ export class Carpeta extends BaseEntity {
     @UpdateDateColumn({name:'updatedAt'})
     updateAt: Date;
 
-    @Column({name: "id_municipio", nullable: true})
-    idMunicipio: number;
-
     @Column({name: "seccion", default: "ssg"})
     seccion: string;
 
@@ -52,10 +47,6 @@ export class Carpeta extends BaseEntity {
     @ManyToOne(() => Carpeta, (carpeta) => carpeta.childRelation)
     @JoinColumn({name:'carpeta_padre_id'})
     parentFolderRelation: Carpeta;
-
-    @ManyToOne(() => Municipio, (municipio) => municipio.folderRelation)
-    @JoinColumn({name: "id_municipio"})
-    municipioRelation: Municipio;
 
     @OneToMany(() => Carpeta, (carpeta) => carpeta.parentFolderRelation)
     childRelation: Carpeta[];
