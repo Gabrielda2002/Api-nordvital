@@ -198,7 +198,7 @@ export async function actOnPermissionStep(
     await NotificationService.createNotification(
       result.request.requesterId,
       "Actualización de solicitud de permiso",
-      `Tu solicitud de permiso ha sido ${action.toLowerCase()} por ${result.step.approverUserRelation?.name}`,
+      `Tu solicitud de permiso ha sido ${action.toLowerCase()} por ${result.step.approverUserRelation?.name || 'Gestion Humana'}`,
       result.request.id,
       "PERMISSION_REQUEST"
     )

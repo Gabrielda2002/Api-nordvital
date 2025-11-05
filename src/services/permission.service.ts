@@ -191,13 +191,21 @@ function buildStepsForCategory(category: PermissionCategory, bossUserId: number 
 
   } else if (category === "INCAPACIDAD") {
 
-    // Solo RRHH (VISTO)
-    steps.push({ order: 1, stepType: "RRHH", approverRole: "RRHH", approverUserId: null as any, status: "PENDIENTE" });
+    if (!bossUserId) throw new Error("No manager assigned for requester's area");
 
-  } else if (category === "VACACIONES") {
+    steps.push({ order: 1, stepType: "JEFE", approverRole: null as any, approverUserId: bossUserId, status: "PENDIENTE" });
 
-    // Solo RRHH (APROBAR/RECHAZAR)
-    steps.push({ order: 1, stepType: "RRHH", approverRole: "RRHH", approverUserId: null as any, status: "PENDIENTE" });
+    steps.push({ order: 2, stepType: "RRHH", approverRole: "RRHH", approverUserId: null as any, status: "PENDIENTE" });
+
+} else if (category === "VACACIONES") {
+
+    if (!bossUserId) {
+      throw new Error("No manager assigned for requester's area");
+    }
+
+    steps.push({ order: 1, stepType: "JEFE", approverRole: null as any, approverUserId: bossUserId, status: "PENDIENTE" });
+
+    steps.push({ order: 2, stepType: "RRHH", approverRole: "RRHH", approverUserId: null as any, status: "PENDIENTE" });
 
   } else if (category === "CALAMIDAD") {
 
