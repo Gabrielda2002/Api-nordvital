@@ -12,15 +12,6 @@ export class CupsRadicados extends BaseEntity {
     @PrimaryGeneratedColumn({ name: "IdCups" })
     id: number
 
-    @Column({ name: "CodigoCupsPacientes" })
-    @IsNotEmpty({message: "El código del cups es requerido"})
-    @IsInt()
-    code: number
-
-    @Column({ name: "DescripcionCupsPacientes" })
-    @IsNotEmpty({message: "La descripción del cups es requerida"})
-    DescriptionCode: string
-
     @Column({name: "Estado"})
     @IsNumber()
     status: number
