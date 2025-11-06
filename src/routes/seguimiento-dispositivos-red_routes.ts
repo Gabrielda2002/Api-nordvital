@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createMonitoringDevicesNetwork, deleteMonitoringDevicesNetwork, getAllMonitoringDevicesNetwork, getMonitoringDevicesNetwork, updateMonitoringDevicesNetwork } from "../controllers/seguimiento-dispositivos-red.controller";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
-import { validarId } from "../middlewares/validar-id";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
 

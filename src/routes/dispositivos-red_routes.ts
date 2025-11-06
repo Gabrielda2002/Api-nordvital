@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
 import { createDevice, deleteDevice, getAllDevices, getDevice, getDevicesBySede, getDevicesCountByHeadquarters, searchDevices, updateDevice } from "../controllers/dispositivos-red.controller";
-import { validarId } from "../middlewares/validar-id";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
 

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createIpsPrimaria, deleteIpsPrimaria, getAllIpsPrimaria, getIpsPrimaria, getIpsPrimariaByName, updateIpsPrimaria, updateStatusIpsPrimaria } from "../controllers/ips-primaria.controller";
-import { validarId } from "../middlewares/validar-id";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
+import { validarId } from "../middlewares/validate-type-id.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
 
 
 const router = Router();

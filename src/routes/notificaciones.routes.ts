@@ -1,7 +1,7 @@
 // src/routes/notification_routes.ts
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { getUserNotifications, markNotificationAsRead } from "../controllers/notificaciones.controller";
 
 const router = Router();

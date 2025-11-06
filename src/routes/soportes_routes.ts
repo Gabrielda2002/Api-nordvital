@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes.controller";
 import { generateSoporteAccessToken, serveSecureSoporte } from "../controllers/soportes-secure.controller";
-import { validarId } from "../middlewares/validar-id";
-import { upload } from "../middlewares/multer-config-radicacion";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
-import { fileAccessRateLimit } from "../middlewares/file-rate-limit";
+import { validarId } from "../middlewares/validate-type-id.middleware";
+import { upload } from "../middlewares/multer-support.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { fileAccessRateLimit } from "../middlewares/file-rate-limit.middleware";
 
 const router = Router();
 

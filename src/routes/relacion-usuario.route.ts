@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { getAllRelationUser, getRelationUserByName } from "../controllers/relacion-usuario.controller";
 
 const router = Router();

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { createActiveBrake, deleteActiveBrake, getActiveBrakeById, getAllActiveBrakes, updateActiveBrake } from "../controllers/pausas-activas.controller";
-import { validarId } from "../middlewares/validar-id";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
 

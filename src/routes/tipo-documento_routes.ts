@@ -1,8 +1,8 @@
 import { Router  } from "express";
 import { createDocumentType, deleteDocumentType, getAllDocumentType, getDocumentTypeById, updateDocumentType, updateStatusDocumentType } from "../controllers/tipo-documento.controller";
-import { validarId } from "../middlewares/validar-id";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { validarId } from "../middlewares/validate-type-id.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 
 
 const router = Router();

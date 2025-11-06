@@ -1,8 +1,8 @@
 // src/routes/push_routes.ts
 import { Router } from "express";
 import { getVapidPublicKey, subscribe, unsubscribe, sendTestPush } from "../controllers/push-subscription.controller";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { validarId } from "../middlewares/validar-id";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 import { createTelevisor, getTelevisorBySedeId, getTvAgeByHeadquarter, getTvHeadquartersDistribution, getTvWarrantyStatistics, searchTv, updateTelevisor } from "../controllers/televisor.controller";
 
 const router = Router();

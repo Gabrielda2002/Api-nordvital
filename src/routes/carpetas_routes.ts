@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
 import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta.controller";
-import { validarId } from "../middlewares/validar-id";
-import { getDepartmentUser } from "../middlewares/get-department-user_middleware";
+import { validarId } from "../middlewares/validate-type-id.middleware";
+import { getDepartmentUser } from "../middlewares/get-department-user.middleware";
 
 const router = Router();
 

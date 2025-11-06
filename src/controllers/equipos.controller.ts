@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, LessThan, MoreThan } from "typeorm";
-import { saveFileToDisk } from "../middlewares/upload-doc-delivery_middleware";
+import { saveFileToDisk } from "../middlewares/multer-delivery.middleware";
 import { updateFileAndRecord } from "../utils/file-manager";
 
 export async function getAllEquipments(

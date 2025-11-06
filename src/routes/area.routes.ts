@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { createArea, getAllAreas, getAreaByName, updateArea } from "../controllers/area.controller";
 
 const router = Router();

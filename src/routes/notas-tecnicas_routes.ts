@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica, updateNotaTecnicaStatusFromExcel } from "../controllers/notas-tecnicas.controller";
-import { validarId } from "../middlewares/validar-id";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 import { uploadXlsx } from "../middlewares/upload-xlsx-PS";
 
 const router = Router();

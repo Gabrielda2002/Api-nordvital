@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { actOnPermissionStep, cancelPermissionRequest, createPermissionRequest, generatePermissionAttachmentAccessToken, getPermissionRequestById, listAllRequestsByUser, listPermissionRequests, serveSecurePermissionAttachment } from "../controllers/permission.controller";
-import { authenticate } from "../middlewares/auth";
-import { uploadAttachmentsPermissions } from "../middlewares/multer-attechments-permissions";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { fileAccessRateLimit } from "../middlewares/file-rate-limit";
-import { validarId } from "../middlewares/validar-id";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { uploadAttachmentsPermissions } from "../middlewares/multer-permissions.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { fileAccessRateLimit } from "../middlewares/file-rate-limit.middleware";
+import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
 

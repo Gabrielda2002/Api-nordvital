@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createPosition, getAllPosition, getPositionByName, updatePosition } from "../controllers/cargo.controller";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 
 const router = Router();
 

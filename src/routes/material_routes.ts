@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { getAllMaterials } from "../controllers/materiales.controller";
-import { authorizeRoles } from "../middlewares/authorize-roles";
-import { authenticate } from "../middlewares/auth";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "../middlewares/authenticate.middleware";
 
 const router = Router();
 

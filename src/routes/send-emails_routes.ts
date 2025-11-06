@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/authorize-roles";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { sendEmailWorkUs } from "../controllers/send-emails.controller";
-import { UploadFileEmail } from "../middlewares/save-file_middleware";
+import { UploadFileEmail } from "../middlewares/multer-email-files.middleware";
 
 const router = Router();
 
