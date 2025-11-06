@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Usuarios } from "../entities/usuarios";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { TokenService } from "../services/TokenService";
+import { TokenService } from "../services/token.service";
 import dotenv from "dotenv";
 import { time } from "console";
 

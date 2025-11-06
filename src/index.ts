@@ -2,8 +2,8 @@ import "reflect-metadata";
 import server from "./app";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db/conexion";
-import { PushService } from "./services/pushService";
-import { TokenCleanupJob } from "./services/tokenCleanupJob";
+import { PushService } from "./services/push.service";
+import { TokenCleanupJob } from "./services/token-cleanup-job.service";
 import { CVCleanupService } from "./services/cv-cleanup.service";
 
 

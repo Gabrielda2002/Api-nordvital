@@ -6,7 +6,7 @@ import { Soportes } from "../entities/soportes";
 import { AppDataSource } from "../db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
 import { FileTokenService } from "../services/file-token.service";
-import { NotificationService } from "../services/notificationService";
+import { NotificationService } from "../services/notification.service";
 
 // POST /permisos/requests
 // Crea una solicitud según la categoría y políticas. Valida:

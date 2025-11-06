@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { DemandaInducida } from "../entities/demanda-inducida";
 import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
-import { ProgramaMetaService } from "../services/ProgramaMetaService";
+import { ProgramaMetaService } from "../services/goal-program.service";
 import { Usuarios } from "../entities/usuarios";
 import { formatInTimeZone } from "date-fns-tz";
 

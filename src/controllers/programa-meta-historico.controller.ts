@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
-import { ProgramaMetaService } from "../services/ProgramaMetaService";
+import { ProgramaMetaService } from "../services/goal-program.service";
 import { Usuarios } from "../entities/usuarios";
 import { LugarRadicacion } from "../entities/lugar-radicacion";
 import { Programa } from "../entities/programa";

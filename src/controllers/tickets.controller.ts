@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Tickets } from "../entities/tickets";
-import { NotificationService } from "../services/notificationService";
+import { NotificationService } from "../services/notification.service";
 import { format, toZonedTime } from "date-fns-tz";
 
 export async function getAllTickets(req: Request, res: Response, next: NextFunction){

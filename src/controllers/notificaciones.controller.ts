@@ -1,6 +1,6 @@
 // src/controllers/notification_controller.ts
 import { NextFunction, Request, Response } from "express";
-import { NotificationService } from "../services/notificationService";
+import { NotificationService } from "../services/notification.service";
 import { format, toZonedTime } from "date-fns-tz";
 
 export async function getUserNotifications(req: Request, res: Response, next: NextFunction) {

@@ -4,7 +4,7 @@ import { EncuestasSatisfaccion } from "../entities/encuestas-satisfaccion";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../entities/tickets";
 import { Usuarios } from "../entities/usuarios";
-import { PushService } from "./pushService";
+import { PushService } from "./push.service";
 
 export class NotificationService {
   /**

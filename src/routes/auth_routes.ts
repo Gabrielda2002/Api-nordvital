@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getStatsTokens, login, logout, logoutAll, refreshToken } from "../controllers/auth.controller";
-import { TokenService } from "../services/TokenService";
+import { TokenService } from "../services/token.service";
 
 const router = Router();
 
