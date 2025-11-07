@@ -5,6 +5,7 @@ import { AppDataSource } from "./db/conexion";
 import { PushService } from "./services/push.service";
 import { TokenCleanupJob } from "./services/token-cleanup-job.service";
 import { CVCleanupService } from "./services/cv-cleanup.service";
+import { VacationCheckJob } from "./services/vacation-check-job.service";
 
 
     const start = async () => {
@@ -20,6 +21,9 @@ import { CVCleanupService } from "./services/cv-cleanup.service";
             
             // Inicializar servicio de limpieza de CVs (elimina CVs > 60 días)
             CVCleanupService.startCleanupService(60);
+            
+            // Inicializar job de verificación de vencimientos de vacaciones
+            VacationCheckJob.start();
             
             console.log('Conexión a la base de datos establecida');
         

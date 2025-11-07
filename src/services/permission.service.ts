@@ -6,6 +6,7 @@ import { PermissionAttachment } from "../entities/permission-attachment";
 import { Usuarios } from "../entities/usuarios";
 import { PermissionCategory, PermissionGranularity, StepStatus } from "../types/permission";
 import { AppDataSource } from "../db/conexion";
+import { VacationManagementService } from "./vacation-management.service";
 
 export type CreateAttachmentDto = {
   soporteId: number;
@@ -473,6 +474,20 @@ async cancelRequest(requestId: number): Promise<Result<PermissionRequest>> {
       const allDone = steps.every((s) => ["APROBADO", "VISTO"].includes(s.status));
       req.overallStatus = anyRejected ? "RECHAZADO" : allDone ? "APROBADO" : "EN_REVISION";
       await reqRepo.save(req);
+
+      // Si la solicitud fue totalmente aprobada y es de VACACIONES, descontar días del balance
+      if (req.overallStatus === "APROBADO" && req.category === "VACACIONES") {
+        const vacationService = new VacationManagementService(this.ds);
+        const deductResult = await vacationService.deductVacationDays(
+          req.requesterId,
+          req.requestedDays || 0,
+          req.startDate
+        );
+
+        if (!deductResult.success) {
+          throw new Error(`Error al descontar días de vacaciones: ${deductResult.error}`);
+        }
+      }
 
       return { request: req, step };
     });

@@ -84,6 +84,7 @@ import goalsRoutes from './programa-meta-historico.routes';
 import areaRoutes from './area.routes';
 import cargoRoutes from './cargo.routes';
 import permisosRoutes from './permission-request.routes';
+import vacationsRoutes from './vacation.routes';
 
 const router = Router();
 
@@ -172,5 +173,6 @@ router.use(goalsRoutes);
 router.use(areaRoutes);
 router.use(cargoRoutes);
 router.use(permisosRoutes);
+router.use(vacationsRoutes);
 
 export default router;
