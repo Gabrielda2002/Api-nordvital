@@ -70,8 +70,8 @@ export const configureUserVacationBalance = async (
   next: NextFunction
 ) => {
   try {
-    const userId = parseInt(req.params.userId);
-    const adminId = (req as any).user?.id; // Del middleware de autenticación
+    const { userId } = req.params;
+    // const adminId = (req as any).user?.id;
     const { configuration } = req.body;
 
     if (!configuration || !Array.isArray(configuration)) {
@@ -103,8 +103,7 @@ export const configureUserVacationBalance = async (
     }
 
     const result = await vacationService.configureUserVacationBalance(
-      userId,
-      adminId,
+      parseInt(userId),
       configuration
     );
 

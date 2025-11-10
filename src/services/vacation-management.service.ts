@@ -148,9 +148,9 @@ export class VacationManagementService {
         numeroPeriodo: i + 1,
         periodoInicio: periodStart,
         periodoFin: periodEnd,
-        diasAsignados: 15,
-        diasTomados: 0,
-        diasDisponibles: isExpired ? 0 : 15,
+        diasAsignados: 15.00,
+        diasTomados: 0.00,
+        diasDisponibles: isExpired ? 0.00 : 15.00,
         fechaVencimiento: expiryDate,
         vencido: isExpired,
         configuradoManualmente: false,
@@ -184,7 +184,6 @@ export class VacationManagementService {
    */
   async configureUserVacationBalance(
     userId: number,
-    adminId: number,
     configuration: ConfigureBalanceDto[]
   ): Promise<Result<VacationInitialSetup>> {
     return await this.ds.transaction(async (manager) => {
@@ -246,8 +245,8 @@ export class VacationManagementService {
           };
         }
 
-        balance.diasTomados = config.diasTomados;
-        balance.diasDisponibles = balance.diasAsignados - config.diasTomados;
+        balance.diasTomados = parseFloat(config.diasTomados.toString());
+        balance.diasDisponibles = parseFloat((balance.diasAsignados - config.diasTomados).toFixed(2));
         balance.configuradoManualmente = true;
         balance.notasAdmin = config.notas || "Configurado por RRHH";
 
@@ -255,14 +254,14 @@ export class VacationManagementService {
 
         // Solo contar días disponibles de períodos no vencidos
         if (!balance.vencido) {
-          totalDiasDisponibles += balance.diasDisponibles;
+          totalDiasDisponibles += parseFloat(balance.diasDisponibles.toString());
         }
       }
 
       // Actualizar setup
       setup.configuracionCompleta = true;
       setup.periodosConfigurados = configuration.length;
-      setup.diasTotalesDisponibles = totalDiasDisponibles;
+      setup.diasTotalesDisponibles = parseFloat(totalDiasDisponibles.toFixed(2));
 
       await manager.getRepository(VacationInitialSetup).save(setup);
 
@@ -414,6 +413,7 @@ export class VacationManagementService {
    * Se llama desde PermissionService cuando se aprueba una solicitud de VACACIONES
    */
   async deductVacationDays(userId: number, days: number, startDate: Date): Promise<Result<void>> {
+    
     return await this.ds.transaction(async (manager) => {
       // Obtener períodos activos (no vencidos) ordenados por antigüedad
       const activeBalances = await manager.getRepository(VacationBalance).find({
@@ -428,23 +428,29 @@ export class VacationManagementService {
           statusCode: 400,
         };
       }
-
       let remainingDays = days;
 
       for (const balance of activeBalances) {
         if (remainingDays <= 0) break;
 
-        const availableDays = balance.diasDisponibles;
+        const availableDays = parseFloat(balance.diasDisponibles.toString());
 
         if (availableDays > 0) {
-          const daysToDeduct = Math.min(remainingDays, availableDays);
 
-          balance.diasTomados += daysToDeduct;
-          balance.diasDisponibles -= daysToDeduct;
+          // Determinar cuántos días descontar de este balance
+          const daysToDeduct = Math.min(remainingDays, availableDays);
+          
+          // Parsear valores actuales antes de las operaciones
+          const currentDiasTomados = parseFloat(balance.diasTomados.toString());
+          const currentDiasDisponibles = parseFloat(balance.diasDisponibles.toString());
+
+          balance.diasTomados = parseFloat((currentDiasTomados + daysToDeduct).toFixed(2));
+          balance.diasDisponibles = parseFloat((currentDiasDisponibles - daysToDeduct).toFixed(2));
 
           await manager.getRepository(VacationBalance).save(balance);
 
-          remainingDays -= daysToDeduct;
+          // Actualizar los días restantes a descontar
+          remainingDays = parseFloat((remainingDays - daysToDeduct).toFixed(2));
         }
       }
 
@@ -466,10 +472,12 @@ export class VacationManagementService {
           where: { usuarioId: userId, vencido: false },
         });
 
-        setup.diasTotalesDisponibles = allBalances.reduce(
-          (sum, b) => sum + b.diasDisponibles,
+        const totalDisponible = allBalances.reduce(
+          (sum, b) => sum + parseFloat(b.diasDisponibles.toString()),
           0
         );
+
+        setup.diasTotalesDisponibles = parseFloat(totalDisponible.toFixed(2));
 
         await manager.getRepository(VacationInitialSetup).save(setup);
       }
@@ -498,16 +506,16 @@ export class VacationManagementService {
 
       // Verificar si ya venció
       if (daysUntilExpiry < 0) {
-        const diasPerdidos = balance.diasDisponibles;
+        const diasPerdidos = parseFloat(balance.diasDisponibles.toString());
         balance.vencido = true;
-        balance.diasDisponibles = 0;
+        balance.diasDisponibles = 0.00;
         await this.ds.getRepository(VacationBalance).save(balance);
 
         // Notificar vencimiento
         await NotificationService.createNotification(
           balance.usuarioId,
           "Período de vacaciones vencido",
-          `Tu período ${balance.numeroPeriodo} de vacaciones ha vencido. Se perdieron ${diasPerdidos} días.`,
+          `Tu período ${balance.numeroPeriodo} de vacaciones ha vencido. Se perdieron ${diasPerdidos.toFixed(2)} días.`,
           balance.id,
           VACATION_NOTIFICATION_TYPES.PERIODO_VENCIDO
         );
