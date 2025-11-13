@@ -7,7 +7,7 @@ const router = Router();
 
 router.get("/cargo", authenticate, authorizeRoles(["1"]), getAllPosition);
 
-router.post("/cargo/name", authenticate, authorizeRoles(["1"]), getPositionByName);
+router.post("/cargo/name", authenticate, authorizeRoles(["1","18"]), getPositionByName);
 
 router.post("/cargo", authenticate, authorizeRoles(["1"]), createPosition);
 

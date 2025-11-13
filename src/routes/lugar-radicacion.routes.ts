@@ -24,7 +24,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/LugarRadicacion'
  */
-router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2']), getAllLugaresRadicacion);
+router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2','18']), getAllLugaresRadicacion);
 
 /**
  * @swagger

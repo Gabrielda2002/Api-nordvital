@@ -235,7 +235,7 @@ router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1','2','3','4'
  *       200:
  *         description: Tabla de usuarios obtenida exitosamente
  */
-router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2']), getUsuariosTable);
+router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2', '18']), getUsuariosTable);
 
 /**
  * @swagger
@@ -329,7 +329,7 @@ router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1','2'
  *       200:
  *         description: Tabla de usuario actualizada exitosamente
  */
-router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1']), validarId, updateUsuarioTable);
+router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1','18']), validarId, updateUsuarioTable);
 
 /**
  * @swagger

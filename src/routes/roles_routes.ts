@@ -43,7 +43,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/roles",authenticate, authorizeRoles(['1', '2']), getAllRoles);
+router.get("/roles",authenticate, authorizeRoles(['1', '2','18']), getAllRoles);
 
 /**
  * @swagger

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { autorizarCups, createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateAuditados, updateCupsRadicados } from "../controllers/cups-radicados.controller";
+import { createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateAuditados, updateCupsRadicados } from "../controllers/cups-radicados.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
