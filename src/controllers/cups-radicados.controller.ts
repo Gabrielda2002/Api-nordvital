@@ -174,51 +174,6 @@ export async function deleteCupsRadicados(
   }
 }
 
-export async function autorizarCups(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const { cupsDetails } = req.body;
-
-    console.log(cupsDetails);
-
-    const cupsRadicados = await CupsRadicados.createQueryBuilder(
-      "cupsRadicados"
-    )
-      .where("cupsRadicados.idRadicado = :id", { id: id })
-      .getMany();
-
-    console.log("resultados busqueda" + cupsRadicados);
-
-    if (!cupsRadicados) {
-      return res.status(404).json({ message: "Cups Radicados not found" });
-    }
-
-    for (const cup of cupsRadicados) {
-      const updateCup = cupsDetails.find(
-        (detail: any) => detail.idCupsRadicado === cup.id
-      );
-      if (updateCup) {
-        console.log(updateCup);
-        cup.status = parseInt(updateCup.estadoCups, 10);
-        cup.observation = updateCup.observacionCups;
-        cup.functionalUnit = parseInt(updateCup.unidadFuncional, 10);
-        cup.quantity = Number(updateCup.cantidad);
-
-        await cup.save();
-      }
-    }
-
-    return res.json({ message: "Cups Radicados exitosamente!" });
-  } catch (error) {
-    next(error);
-  }
-}
-
 export async function updateAuditados(
   req: Request,
   res: Response,

@@ -401,15 +401,21 @@ export async function autorizarRadicado(
   res: Response,
   next: NextFunction
 ) {
+
+  const queryRunner = Radicacion.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
     const { id } = req.params;
 
-    const { auditora, fechaAuditoria, justificacion } = req.body;
+    const { auditora, fechaAuditoria, justificacion, cupsDetails } = req.body;
 
     const existRadicado = await Radicacion.findOneBy({ id: parseInt(id) });
 
     if (!existRadicado) {
-      return res.status(404).json({ message: "Cups not found" });
+      await queryRunner.rollbackTransaction();
+      return res.status(404).json({ message: "Radicado no existe" });
     }
 
     existRadicado.auditora = auditora;
@@ -422,17 +428,61 @@ export async function autorizarRadicado(
         property: err.property,
         constraints: err.constraints,
       }));
+      await queryRunner.rollbackTransaction();
 
       return res
         .status(400)
         .json({ message: "Error updating radicacion", messages });
     }
 
-    await existRadicado.save();
+    const cupsRadicados = await CupsRadicados.findBy({ idRadicacion: parseInt(id) });
 
-    res.json(existRadicado);
+    if (!cupsRadicados || cupsRadicados.length === 0) {
+      await queryRunner.rollbackTransaction();
+      return res.status(404).json({ message: "CUPS radicados no encontrados" });
+    }
+
+
+    for (const cups of cupsRadicados) {
+      const updateCups = cupsDetails.find((detail: any) => {
+        return detail.idRadicado === cups.idRadicacion; 
+      });
+
+      if (updateCups) {
+        cups.status = parseInt(updateCups.estadoCups);
+        cups.observation = updateCups.observacionCups;
+        cups.functionalUnit = parseInt(updateCups.unidadFuncional);
+        cups.quantity = Number(updateCups.cantidad);
+
+        const errorsCups = await validate(cups);
+
+        if (errorsCups.length > 0) {
+          const messagesCups = errorsCups.map((err) => ({
+            property: err.property,
+            constraints: err.constraints,
+          }));
+          await queryRunner.rollbackTransaction();
+
+          return res
+            .status(400)
+            .json({ message: "Error updating cupsRadicados", messagesCups });
+        }
+
+        
+        await queryRunner.manager.save(cups);
+      }
+      
+    }
+
+    await queryRunner.manager.save(existRadicado);
+    await queryRunner.commitTransaction();
+    res.status(200).json({ message: "Radicado autorizado exitosamente" });
+
   } catch (error) {
+    await queryRunner.rollbackTransaction();
     next(error);
+  }finally{
+    await queryRunner.release();
   }
 }
 

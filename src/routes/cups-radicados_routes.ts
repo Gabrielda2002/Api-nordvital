@@ -166,48 +166,6 @@ router.delete("/cups-radicados/:id", authenticate, authorizeRoles(['1']), valida
 
 /**
  * @swagger
- * /autorizar-cups/{id}:
- *   put:
- *     summary: Autoriza CUPS radicados
- *     tags: [CUPS Radicados]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               cupsDetails:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     idCupsRadicado:
- *                       type: integer
- *                     estadoCups:
- *                       type: string
- *                     observacionCups:
- *                       type: string
- *                     unidadFuncional:
- *                       type: string
- *     responses:
- *       200:
- *         description: CUPS autorizados exitosamente
- *       404:
- *         description: CUPS no encontrados
- */
-router.put("/autorizar-cups/:id", authenticate, authorizeRoles(['1', '2', '3']), validarId, autorizarCups);
-
-/**
- * @swagger
  * /actualizar-cups/{id}:
  *   put:
  *     summary: Actualiza el estado y observación de un CUPS radicado
