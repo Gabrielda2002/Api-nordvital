@@ -740,13 +740,14 @@ export async function getReportDemandInduced(
 ) {
   try {
 
-    const { dateStart, dateEnd, headquarter } = req.body;
+    const { dateStart, dateEnd, headquarter, convenio  } = req.body;
 
     const rolUser = req.user?.rol;
 
     const query = await DemandaInducida.createQueryBuilder("demandas_inducidas")
       .leftJoinAndSelect("demandas_inducidas.pacienteRelation", "paciente")
       .leftJoinAndSelect("paciente.documentRelation", "tipo_documento")
+      .leftJoinAndSelect("paciente.convenioRelation", "convenio")
       .leftJoinAndSelect("demandas_inducidas.elementoRelation", "elemento")
       .leftJoinAndSelect("demandas_inducidas.tipoRelation", "tipo_elemento")
       .leftJoinAndSelect("demandas_inducidas.objetivoRelation", "objetivo")
@@ -759,6 +760,10 @@ export async function getReportDemandInduced(
       .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
       .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
       .orderBy("demandas_inducidas.createdAt", "ASC");
+
+    if (convenio) {
+      query.andWhere("paciente.convenio = :convenio", { convenio });
+    }
 
     if (rolUser == 19) {
       query.andWhere("demandas_inducidas.personaSeguimientoRelation = :userId", {
@@ -780,6 +785,12 @@ export async function getReportDemandInduced(
     }
 
     const data = await query.getMany();
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        "message": "Demanda inducida no encontrada.",
+      });
+    }
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte Demandas Inducidas");
@@ -932,12 +943,6 @@ export async function getReportDemandInduced(
     worksheet.getRow(1).height = 25;
     worksheet.getRow(2).height = 25;
     worksheet.getRow(3).height = 40;
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        message: "Demand Induced Not Found.",
-      });
-    }
 
     data.forEach((d) => {
 
