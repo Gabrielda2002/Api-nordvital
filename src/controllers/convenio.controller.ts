@@ -150,29 +150,24 @@ export async function deleteConvenio(req: Request, res: Response, next: NextFunc
 
 
 // actualizar el estado de los convenios
-
 export async function updateStatusConvenio(req: Request, res: Response, next: NextFunction) {
     try {
         
         const { id } = req.params;
+
         const { status, name } = req.body;
 
-        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
+        const convenioExist = await Convenio.findOneBy({ id: parseInt(id) });
 
-        if (!convenio) {
-            return res.status(404).json({ message: "Convenio not found" });
+        if (!convenioExist) {
+            return res.status(404).json({ message: "Convenio no encontrado" });
         }
+        console.log(status, name);
+        console.log(`${status == "1"}`);
+        convenioExist.status = status == "1";
+        convenioExist.name = name;
 
-
-        if (name) {
-            convenio.name = name;
-        }
-
-        if (status !== undefined && status !== "") {
-            convenio.status = status == "1";
-        }
-
-        const errors = await validate(convenio);
+        const errors = await validate(convenioExist);
 
         if (errors.length > 0) {
             const messages = errors.map(err => ({
@@ -180,12 +175,12 @@ export async function updateStatusConvenio(req: Request, res: Response, next: Ne
                 constraints: err.constraints
             }))
 
-            return res.status(400).json({ message: "Error updating status convenio", messages });
+            return res.status(400).json({ message: messages });
         }
 
-        await convenio.save();
+        await convenioExist.save();
 
-        return res.json(convenio);
+        return res.json(convenioExist);
 
     } catch (error) {
         next(error);
