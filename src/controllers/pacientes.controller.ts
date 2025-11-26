@@ -42,7 +42,7 @@ export async function getPaciente(
   }
 }
 
-export async function createPaciente(
+export async function createPatient(
   req: Request,
   res: Response,
   next: NextFunction
@@ -61,12 +61,10 @@ export async function createPaciente(
       ipsPrimaria
     } = req.body;
 
-    console.log(req.body);
-
     const pacienteExist = await Pacientes.findOneBy({ documentNumber });
 
     if (pacienteExist) {
-      return res.status(400).json({ message: "Paciente already exists" });
+      return res.status(400).json({ message: "Paciente ya existe" });
     }
 
     const paciente = new Pacientes();
@@ -82,20 +80,16 @@ export async function createPaciente(
     paciente.ipsPrimaria = parseInt(ipsPrimaria);
     paciente.status = true;
 
-    console.log(parseInt(documentNumber));
-
-
     const errors = await validate(paciente);
 
     if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const messages = errors.map(err => 
+        Object.values(err.constraints || {}).join(", ")
+      );
 
       return res
         .status(400)
-        .json({ message: "Error creating paciente", messages });
+        .json({ message: messages });
     }
 
     await paciente.save();
@@ -229,11 +223,9 @@ export async function updatePacienteTable(
       landline,
       email,
       address,
-      convenio,
+      agreement,
       ipsPrimaria
     } = req.body;
-
-    console.log(req.body);
 
     const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
 
@@ -249,20 +241,19 @@ export async function updatePacienteTable(
     paciente.landline = landline && landline !== '' ? landline : null;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(convenio);
+    paciente.convenio = parseInt(agreement);
     paciente.ipsPrimaria = parseInt(ipsPrimaria);
 
     const errors = await validate(paciente);
 
     if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const messages = errors.map(err => (
+        Object.values(err.constraints || {}).join(", ")
+      ));
 
       return res
         .status(400)
-        .json({ message: "Error updating paciente", messages });
+        .json({ message: messages });
     }
 
     await paciente.save();
