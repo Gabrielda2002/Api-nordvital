@@ -163,7 +163,7 @@ router.get('/cirugias', authenticate, authorizeRoles(['1', '15']), getAllSurgery
 
 router.get('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, getSurgery);
 
-router.post('/cirugias', authenticate, authorizeRoles(['1', '15']), createSurgery);
+router.post('/cirugias', authenticate, authorizeRoles(['1', '15', '3']), createSurgery);
 
 router.put('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, updateSurgery);
 

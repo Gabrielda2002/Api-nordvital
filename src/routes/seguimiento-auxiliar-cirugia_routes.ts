@@ -81,7 +81,7 @@ router.get('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1
  *       400:
  *         description: Error en los datos enviados
  */
-router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '15']), createAuxiliarySurgery);
+router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '15', '3']), createAuxiliarySurgery);
 
 /**
  * @swagger

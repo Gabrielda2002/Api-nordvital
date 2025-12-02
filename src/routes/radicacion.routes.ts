@@ -399,7 +399,7 @@ router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', 
  *       404:
  *         description: Radicación no encontrada
  */
-router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15']), validarId, updateGroupServices);
+router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15', '3']), validarId, updateGroupServices);
 
 /**
  * @swagger
