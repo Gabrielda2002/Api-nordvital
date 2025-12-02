@@ -866,7 +866,7 @@ export async function updateGroupServices(
 
     await radicacion.save();
 
-    return res.json({ message: "Radicacion updated" });
+    return res.status(200).json({ message: "Grupo actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }
