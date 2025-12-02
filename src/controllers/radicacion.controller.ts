@@ -346,7 +346,7 @@ export async function tablaPorAuditar(
   }
 }
 
-export async function auditorRadicados(
+export async function  auditorRadicados(
   req: Request,
   res: Response,
   next: NextFunction
@@ -383,7 +383,8 @@ export async function auditorRadicados(
         id: c.servicioRelation?.id,
         code: c.servicioRelation?.code,
         description: c.servicioRelation?.name,
-        status: c.statusRelation.id,
+        status: c.statusRelation.name,
+        statusId: c.statusRelation.id,
         observation: c.observation,
         modifyDate: c.updatedAt,
         quantity: c.quantity,

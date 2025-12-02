@@ -198,19 +198,18 @@ export async function updateAuditados(
 
     const errors = await validate(cupExist);
     if (errors.length > 0) {
-      const errorMensage = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const errorMensage = errors.map((err) => (
+        Object.values(err.constraints || {}).join(", ")
+      ))
 
       return res
         .status(400)
-        .json({ message: "Error updating cups", errorMensage });
+        .json({ message: errorMensage });
     }
 
     await cupExist.save();
 
-    return res.json({ message: "Cups actualizado exitosamente!" });
+    return res.status(200).json({ message: "Cups actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }
