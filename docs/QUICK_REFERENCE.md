@@ -24,8 +24,8 @@
 | ¿Qué hará el usuario? | Rol a asignar | ID |
 |----------------------|---------------|:--:|
 | Administrar TODO el sistema | Administrador | 1 |
-| Gestionar usuarios y ver reportes | Gerente | 2 |
-| Radicar, Auditar y reportes (radicado, cirugías y gestión auxiliar) | Auditor | 3 |
+| Ver todos los modulos menos Usuarios | Gerente | 2 |
+| Radicar, Auditar servicios y cirugias y reportes (radicado, cirugías y gestión auxiliar) | Auditor | 3 |
 | Control total Sistema Gestión de Calidad | Calidad | 4 |
 | (Por definir si es necesario) | Auxiliar | 5 |
 | Gestionar inventarios (Inventario General), radicador, cartas de recobro y reportes (radicado, cirugías, pausas activas y biométricos) | Coordinador | 6 |
@@ -36,7 +36,7 @@
 | Reportes (radicado y cirugías) | Jefe | 14 |
 | Gestionar cirugías, radicar y reportes de cirugías | Cirugía | 15 |
 | (Definir si es necesario) | Paramédico | 16 |
-| Gestionar tickets técnicos | Soporte | 17 |
+| Gestionar tickets y de todo el inventario | Soporte | 17 |
 | Solicitudes de permisos (chequear y autorizar vacaciones) y biométricos de entrada | RRHH | 18 |
 | Gestionar demanda inducida y limitado a sus propios datos | Enfermería | 19 |
 | Gestionar demanda inducida + crear metas + filtro responsable | Coordinadora Enfermería | 20 |
@@ -74,12 +74,12 @@
 - **Eliminar y cargar:** Solo Admin
 
 ### Inventarios
-- **Equipos:** Solo Admin
-- **Dispositivos Red:** Solo Admin
-- **Celulares:** Solo Admin
-- **Televisores:** Solo Admin
-- **General:** Admin y Coordinador (gestión completa)
-- **Consulta:** Calidad (solo ver)
+- **Equipos:** Solo Admin y Soporte
+- **Dispositivos Red:** Solo Admin y Soporte
+- **Celulares:** Solo Admin y Soporte
+- **Televisores:** Solo Admin y Soporte
+- **General:** Admin, Soporte y Coordinador (gestión completa)
+- **Consulta:** Calidad y Gerente (solo ver)
 
 ### Permisos
 - **Crear solicitud:** Todos los usuarios
@@ -152,5 +152,5 @@ Estos roles tienen acceso a **todas las carpetas** independiente del departament
 
 ---
 
-**Versión:** 1.0.1
-**Fecha:** 29 de octubre de 2025
+**Versión:** 1.0.2
+**Fecha:** 3 de diciembre de 2025
