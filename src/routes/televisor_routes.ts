@@ -60,7 +60,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1', '4', '2']), validarId, getTelevisorBySedeId);
+router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1', '4', '2', '17']), validarId, getTelevisorBySedeId);
 
 /**
  * @swagger
@@ -252,7 +252,7 @@ router.put('/televisores/:id', authenticate, authorizeRoles(['1']), validarId, u
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2']), validarId, getTvHeadquartersDistribution);
+router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvHeadquartersDistribution);
 
 /**
  * @swagger
@@ -296,7 +296,7 @@ router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1', '2']),validarId, getTvAgeByHeadquarter);
+router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getTvAgeByHeadquarter);
 
 /**
  * @swagger
@@ -326,7 +326,7 @@ router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1', '2']),valid
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2']), validarId, getTvWarrantyStatistics);
+router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvWarrantyStatistics);
 
 /**
  * @swagger
@@ -374,6 +374,6 @@ router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search/inventario/televisores', authenticate, authorizeRoles(['1', '2']), searchTv);
+router.get('/search/inventario/televisores', authenticate, authorizeRoles(['1', '2', '17']), searchTv);
 
 export default router;

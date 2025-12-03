@@ -71,7 +71,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4', '2']), getAllDepartments)
+router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4', '2', '17']), getAllDepartments)
 
 /**
  * @swagger
@@ -143,7 +143,7 @@ router.get("/departamentos/:id", authenticate, authorizeRoles(['1']), validarId,
  *       403:
  *         description: Prohibido - No tiene permisos suficientes
  */
-router.post("/departamentos", authenticate, authorizeRoles(['1']), createDepartment)
+router.post("/departamentos", authenticate, authorizeRoles(['1', '17']), createDepartment)
 
 /**
  * @swagger
@@ -187,7 +187,7 @@ router.post("/departamentos", authenticate, authorizeRoles(['1']), createDepartm
  *       404:
  *         $ref: '#/components/responses/DepartamentoNotFound'
  */
-router.put("/departamentos/:id", authenticate, authorizeRoles(['1']), validarId, updateDepartment)
+router.put("/departamentos/:id", authenticate, authorizeRoles(['1', '17']), validarId, updateDepartment)
 
 /**
  * @swagger

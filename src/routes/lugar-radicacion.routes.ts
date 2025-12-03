@@ -212,6 +212,6 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),v
  *       404:
  *         description: No se encontraron lugares de radicación
  */
-router.get("/sede/departamento/:id",authenticate, authorizeRoles(['1', '6', '4','2']),validarId , getLugaresRadicacionByDepartment);
+router.get("/sede/departamento/:id",authenticate, authorizeRoles(['1', '6', '4','2', '17']),validarId , getLugaresRadicacionByDepartment);
 
 export default router;
