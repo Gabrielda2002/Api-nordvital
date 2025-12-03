@@ -76,6 +76,6 @@ const router = Router();
  *       404:
  *         description: No se encontraron registros de entrada
  */
-router.post('/registro-entrada', authenticate, authorizeRoles(['1', '18']), getRegisterEntriesByDocument);
+router.post('/registro-entrada', authenticate, authorizeRoles(['1', '18', '2']), getRegisterEntriesByDocument);
 
 export default router;

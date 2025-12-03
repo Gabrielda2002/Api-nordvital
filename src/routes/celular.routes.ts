@@ -56,7 +56,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1','4']), getPhoneBySedeId);
+router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1','4', '2']), getPhoneBySedeId);
 
 /**
  * @swagger
@@ -233,7 +233,7 @@ router.put('/celular/:id', authenticate, authorizeRoles(['1']), validarId, uploa
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getCountPhonesByHeadquartersId);
+router.get('/celular/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2']), validarId, getCountPhonesByHeadquartersId);
 
 /**
  * @swagger
@@ -277,7 +277,7 @@ router.get('/celular/statics/headquarters/:id', authenticate, authorizeRoles(['1
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/age/:id', authenticate, authorizeRoles(['1']), validarId, getPhoneAgeByHeadquartersId)
+router.get('/celular/statics/age/:id', authenticate, authorizeRoles(['1', '2']), validarId, getPhoneAgeByHeadquartersId)
 
 /**
  * @swagger
@@ -307,7 +307,7 @@ router.get('/celular/statics/age/:id', authenticate, authorizeRoles(['1']), vali
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1']), validarId, getPhoneWarrantyStatistics);
+router.get('/celular/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2']), validarId, getPhoneWarrantyStatistics);
 
 /**
  * @swagger
@@ -357,6 +357,6 @@ router.get('/celular/statics/warrantyExpiration/:id', authenticate, authorizeRol
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search/inventario/celulares', authenticate, authorizeRoles(['1']), searchPhone);
+router.get('/search/inventario/celulares', authenticate, authorizeRoles(['1', '2']), searchPhone);
 
 export default router;

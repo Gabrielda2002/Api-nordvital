@@ -215,7 +215,7 @@ router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, 
  *       404:
  *         description: No hay radicaciones por auditar
  */
-router.get('/auditoria-table', authenticate, authorizeRoles(['1','3']),getDepartmentUser, tablaPorAuditar);
+router.get('/auditoria-table', authenticate, authorizeRoles(['1','3', '2']),getDepartmentUser, tablaPorAuditar);
 
 /**
  * @swagger
@@ -288,7 +288,7 @@ router.put('/autorizar-radicado/:id',authenticate, authorizeRoles(['1','3']), va
  *       404:
  *        description: No hay radicaciones de cirugías
  */
-router.get('/tabla-cirugias',authenticate, authorizeRoles(['1', '10', '3', '15']), cirugiasTable);
+router.get('/tabla-cirugias',authenticate, authorizeRoles(['1', '10', '3', '15', '2']), cirugiasTable);
 
 /**
  * @swagger
@@ -334,7 +334,7 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  *       404:
  *         description: No se encontraron radicaciones para ese documento
  */
-router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), getDepartmentUser ,buscarRadicadoPorDocumento); 
+router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6', '2']), getDepartmentUser ,buscarRadicadoPorDocumento); 
 
 /**
  * @swagger

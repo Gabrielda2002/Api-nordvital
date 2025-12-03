@@ -10,6 +10,7 @@ import {
   checkVacationExpirations,
 } from "../controllers/vacation.controller";
 import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 
 const router = Router();
 
@@ -52,7 +53,7 @@ router.post("/initialize", authenticate, initializeVacationSystem);
  *       401:
  *         description: No autorizado
  */
-router.get("/pending-setup", authenticate, getUsersPendingSetup);
+router.get("/pending-setup",authenticate ,authorizeRoles(['1', '6', '20', '18', '2']), getUsersPendingSetup);
 
 /**
  * @swagger

@@ -186,7 +186,7 @@ router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate,auth
  *       401:
  *         description: No autorizado
  */
-router.get('/list/requests', authenticate, authorizeRoles(['1', '18', '6', '20']), listPermissionRequests);
+router.get('/list/requests', authenticate, authorizeRoles(['1', '18', '6', '20', '2']), listPermissionRequests);
 
 /**
  * @swagger

@@ -71,7 +71,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4']), getAllDepartments)
+router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4', '2']), getAllDepartments)
 
 /**
  * @swagger

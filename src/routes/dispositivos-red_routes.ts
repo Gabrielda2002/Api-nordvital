@@ -202,7 +202,7 @@ router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),valid
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4']),validarId, getDevicesBySede);
+router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4', '2']),validarId, getDevicesBySede);
 
 /**
  * @swagger
@@ -231,7 +231,7 @@ router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4']
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getDevicesCountByHeadquarters);
+router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '2']), validarId, getDevicesCountByHeadquarters);
 
 /**
  * @swagger
@@ -279,6 +279,6 @@ router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, author
  *       404:
  *         description: No se encontraron dispositivos que coincidan con la búsqueda
  */
-router.get('/search/dispositivos-red', authenticate, authorizeRoles(['1']), searchDevices);
+router.get('/search/dispositivos-red', authenticate, authorizeRoles(['1', '2']), searchDevices);
 
 export default router;

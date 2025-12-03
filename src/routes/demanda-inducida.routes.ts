@@ -90,7 +90,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron demandas inducidas
  */
-router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21']), getAllDemandInduded);
+router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21', '2']), getAllDemandInduded);
 
 /**
  * @swagger
@@ -347,6 +347,6 @@ router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', 
  *       500:
  *         description: Error del servidor
  */
-router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20', '21']), getEstadisticasDemandaInducida);
+router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20', '21', '2']), getEstadisticasDemandaInducida);
 
 export default router;

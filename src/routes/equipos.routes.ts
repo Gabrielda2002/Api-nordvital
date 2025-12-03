@@ -206,7 +206,7 @@ router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, de
  *       404:
  *         description: No se encontraron equipos
  */
-router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4']), validarId, getEquipmentBySede);
+router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4','2']), validarId, getEquipmentBySede);
 
 /**
  * @swagger
@@ -235,7 +235,7 @@ router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4']), valida
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentTypeDistribution);
+router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles(['1', '2']), validarId, getEquipmentTypeDistribution);
 
 /**
  * @swagger
@@ -264,7 +264,7 @@ router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentHeadquartersDistribution);
+router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2']), validarId, getEquipmentHeadquartersDistribution);
 
 /**
  * @swagger
@@ -308,7 +308,7 @@ router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentAgeBySede);
+router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1', '2']), validarId, getEquipmentAgeBySede);
 
 /**
  * @swagger
@@ -348,7 +348,7 @@ router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1']), v
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1']), validarId, getEquipmentWarrantyStatistics);
+router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2']), validarId, getEquipmentWarrantyStatistics);
 
 /**
  * @swagger
@@ -378,7 +378,7 @@ router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorize
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1']),validarId, getEquipmentLockStatistics);
+router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1', '2']),validarId, getEquipmentLockStatistics);
 
 /**
  * @swagger
@@ -426,6 +426,6 @@ router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1'
  *       404:
  *         description: No se encontraron equipos que coincidan con la búsqueda
  */
-router.get('/search/equipos', authenticate, authorizeRoles(['1']), searchEquipmentGlobal);
+router.get('/search/equipos', authenticate, authorizeRoles(['1', '2']), searchEquipmentGlobal);
 
 export default router;
