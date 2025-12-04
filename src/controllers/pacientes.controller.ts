@@ -67,6 +67,13 @@ export async function createPatient(
       return res.status(400).json({ message: "Paciente ya existe" });
     }
 
+    const contactNumbers = [phoneNumber, phoneNumber2, landline].filter(num => num && num !== '');
+    const uniqueNumbers = new Set(contactNumbers);
+    
+    if (contactNumbers.length > 0 && uniqueNumbers.size !== contactNumbers.length) {
+      return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
+    }
+
     const paciente = new Pacientes();
     paciente.documentType = parseInt(documentType);
     paciente.documentNumber = parseInt(documentNumber);
