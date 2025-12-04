@@ -57,7 +57,7 @@ export async function createPatient(
       landline,
       email,
       address,
-      convenio,
+      agreement,
       ipsPrimaria
     } = req.body;
 
@@ -73,10 +73,10 @@ export async function createPatient(
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
-    paciente.landline = landline && landline !== '' ? landline : null;
+    paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(convenio);
+    paciente.convenio = parseInt(agreement);
     paciente.ipsPrimaria = parseInt(ipsPrimaria);
     paciente.status = true;
 
