@@ -240,6 +240,13 @@ export async function updatePacienteTable(
       return res.status(404).json({ message: "Paciente not found" });
     }
 
+    const contactNumbers = [phoneNumber, phoneNumber2, landline].filter(num => num && num !== '');
+    const uniqueNumbers = new Set(contactNumbers);
+    
+    if (contactNumbers.length > 0 && uniqueNumbers.size !== contactNumbers.length) {
+      return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
+    }
+
     paciente.documentType = parseInt(documentType);
     paciente.documentNumber = parseInt(documentNumber);
     paciente.name = name.toUpperCase();

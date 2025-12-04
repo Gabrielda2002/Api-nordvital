@@ -922,7 +922,17 @@ export const createRequestService = async (
     const patientExist = await Pacientes.findOneBy({ id: parseInt(idPatient) });
 
     if (!patientExist) {
-      return res.status(404).json({ message: "Patient not found" });
+      await queryRunner.rollbackTransaction();
+      return res.status(404).json({ message: "Paciente no encontrado" });
+    }
+
+    const contactNumbers = [phoneNumber, phoneNumber2, landline].filter(num => num && num !== '');
+
+    const uniqueNumbers = new Set(contactNumbers);
+    
+    if (uniqueNumbers.size !== contactNumbers.length) {
+      await queryRunner.rollbackTransaction();
+      return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
     }
 
     patientExist.landline = landline;
@@ -933,24 +943,21 @@ export const createRequestService = async (
 
     const errorsPatient = await validate(patientExist);
     if (errorsPatient.length > 0) {
-      const messages = errorsPatient.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const messages = errorsPatient.map(err => (
+        Object.values(err.constraints || {}).join(', ')
+      ));
 
       await queryRunner.rollbackTransaction();
 
       return res
         .status(400)
-        .json({ message: "Error updating patient", messages });
+        .json({ message: messages });
     }
-
-
 
     // upload file soport
     if (!file) {
       await queryRunner.rollbackTransaction();
-      return res.status(400).json({ message: "File support is required" });
+      return res.status(400).json({ message: "El archivo de soporte es obligatorio" });
     }
 
   const fileNameWithoutExt = file ? path.basename(file.originalname, path.extname(file.originalname)) : "";
@@ -964,16 +971,15 @@ export const createRequestService = async (
 
     const errorsSupport = await validate(newSupportRequest);
     if (errorsSupport.length > 0) {
-      const messages = errorsSupport.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const messages = errorsSupport.map(err => (
+        Object.values(err.constraints || {}).join(', ')
+      ));
 
       await queryRunner.rollbackTransaction();
 
       return res
         .status(400)
-        .json({ message: "Error creating support", messages });
+        .json({ message: messages });
     }
 
     await queryRunner.manager.save(newSupportRequest);
@@ -999,16 +1005,15 @@ export const createRequestService = async (
 
     const errorsRequestService = await validate(requestService);
     if (errorsRequestService.length > 0) {
-      const messages = errorsRequestService.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const messages = errorsRequestService.map((err) => (
+        Object.values(err.constraints || {}).join(', ')
+      ));
 
       await queryRunner.rollbackTransaction();
 
       return res
         .status(400)
-        .json({ message: "Error creating request service", messages });
+        .json({ message: messages });
     }
 
     await queryRunner.manager.save(requestService);
@@ -1031,16 +1036,15 @@ export const createRequestService = async (
       const errorsCups = await validate(createCups);
 
       if (errorsCups.length > 0) {
-        const messages = errorsCups.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
+        const messages = errorsCups.map(err => (
+          Object.values(err.constraints || {}).join(', ')
+        ));
 
         await queryRunner.rollbackTransaction();
 
         return res
           .status(400)
-          .json({ message: "Error creating cups", messages });
+          .json({ message: messages });
       }
 
       await queryRunner.manager.save(createCups);
