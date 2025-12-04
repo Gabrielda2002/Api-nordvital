@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min, ValidateIf } from "class-validator";
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, MaxLength, Min, ValidateIf } from "class-validator";
 import { Radicacion } from "./radicacion";
 import { Cirugias } from "./cirugias";
 import { DemandaInducida } from "./demanda-inducida";
@@ -39,7 +39,7 @@ export class Pacientes extends BaseEntity {
     @Column({name: "TelefonoFijo", nullable: true})
     @ValidateIf((o) => o.landline !== null && o.landline !== undefined && o.landline !== '')
     @IsString()
-    @Length(1, 10, {message: "El campo TelefonoFijo debe tener entre $constraint1 y $constraint2 caracteres"})
+    @MaxLength(10, {message: "El campo TelefonoFijo no debe exceder los $constraint1 dígitos"})
     landline?: string;
 
     @Column({name: "numeroCelular2", nullable: true})
