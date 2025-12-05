@@ -380,7 +380,8 @@ export async function  auditorRadicados(
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
       CUPS: r.cupsRadicadosRelation?.map((c) => ({
-        id: c.servicioRelation?.id,
+        id: c.id,
+        idCups: c.servicioRelation?.id,
         code: c.servicioRelation?.code,
         description: c.servicioRelation?.name,
         status: c.statusRelation.name,

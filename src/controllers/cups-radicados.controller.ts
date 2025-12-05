@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { CupsRadicados } from "../entities/cups-radicados";
 import { validate } from "class-validator";
-import { AppDataSource } from "../db/conexion";
 
 export async function getAllCupsRadicados(
   req: Request,
@@ -185,62 +184,32 @@ export async function updateAuditados(
 
     const { observation, status, quantity } = req.body;
 
-    const cupExist = await CupsRadicados.findOne({
-      where: { id: parseInt(id) }
-    });
+    const cupExist = await CupsRadicados.createQueryBuilder("cupsRadicados")
+      .where("cupsRadicados.id = :id", { id: id })
+      .getOne();
 
     if (!cupExist) {
       return res.status(404).json({ message: "Cups Radicados not found" });
     }
 
-    // Validar solo los campos que se van a actualizar
-    const parsedStatus = parseInt(status, 10);
-    const parsedQuantity = Number(quantity);
+    cupExist.status = parseInt(status, 10);
+    cupExist.observation = observation;
+    cupExist.quantity = Number(quantity);
 
-    if (isNaN(parsedStatus) || parsedStatus < 0) {
-      return res.status(400).json({ message: "El estado debe ser un número válido" });
+    const errors = await validate(cupExist);
+    if (errors.length > 0) {
+      const errorMensage = errors.map((err) => (
+        Object.values(err.constraints || {}).join(", ")
+      ))
+
+      return res
+        .status(400)
+        .json({ message: errorMensage });
     }
 
-    if (!observation || typeof observation !== 'string' || observation.length < 1 || observation.length > 500) {
-      return res.status(400).json({ message: "La observación debe tener entre 1 y 500 caracteres" });
-    }
+    await cupExist.save();
 
-    if (isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
-      return res.status(400).json({ message: "La cantidad debe ser un número entero válido" });
-    }
-
-    // Usar transacción explícita para garantizar el COMMIT
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.update(
-        CupsRadicados,
-        { id: parseInt(id) },
-        {
-          status: parsedStatus,
-          observation: observation,
-          quantity: parsedQuantity
-        }
-      );
-    });
-
-    console.log('Update completado con éxito');
-
-    // Leer el registro actualizado para confirmar
-    const updatedRecord = await CupsRadicados.findOne({
-      where: { id: parseInt(id) }
-    });
-
-    console.log('Registro después del update:', updatedRecord);
-
-    return res.status(200).json({ 
-      message: "Cups actualizado exitosamente!",
-      debug: {
-        updated: {
-          status: updatedRecord?.status,
-          observation: updatedRecord?.observation,
-          quantity: updatedRecord?.quantity
-        }
-      }
-    });
+    return res.status(200).json({ message: "Cups actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }
