@@ -209,7 +209,7 @@ export async function updateAuditados(
     }
 
     // Usar .update() para forzar la ejecución del UPDATE
-    await CupsRadicados.update(
+    const updateResult = await CupsRadicados.update(
       { id: parseInt(id) },
       {
         status: parsedStatus,
@@ -218,7 +218,35 @@ export async function updateAuditados(
       }
     );
 
-    return res.status(200).json({ message: "Cups actualizado exitosamente!" });
+    console.log('Update result:', updateResult);
+    console.log('Affected rows:', updateResult.affected);
+
+    // Verificar que se actualizó
+    if (updateResult.affected === 0) {
+      return res.status(404).json({ 
+        message: "No se actualizó ningún registro. Verifica el ID.",
+        debug: { id: parseInt(id), updateResult }
+      });
+    }
+
+    // Leer el registro actualizado para confirmar
+    const updatedRecord = await CupsRadicados.findOne({
+      where: { id: parseInt(id) }
+    });
+
+    console.log('Registro después del update:', updatedRecord);
+
+    return res.status(200).json({ 
+      message: "Cups actualizado exitosamente!",
+      debug: {
+        affected: updateResult.affected,
+        updated: {
+          status: updatedRecord?.status,
+          observation: updatedRecord?.observation,
+          quantity: updatedRecord?.quantity
+        }
+      }
+    });
   } catch (error) {
     next(error);
   }
