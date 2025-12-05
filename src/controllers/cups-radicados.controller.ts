@@ -184,30 +184,39 @@ export async function updateAuditados(
 
     const { observation, status, quantity } = req.body;
 
-    const cupExist = await CupsRadicados.createQueryBuilder("cupsRadicados")
-      .where("cupsRadicados.id = :id", { id: id })
-      .getOne();
+    const cupExist = await CupsRadicados.findOne({
+      where: { id: parseInt(id) }
+    });
 
     if (!cupExist) {
       return res.status(404).json({ message: "Cups Radicados not found" });
     }
 
-    cupExist.status = parseInt(status, 10);
-    cupExist.observation = observation;
-    cupExist.quantity = Number(quantity);
+    // Validar solo los campos que se van a actualizar
+    const parsedStatus = parseInt(status, 10);
+    const parsedQuantity = Number(quantity);
 
-    const errors = await validate(cupExist);
-    if (errors.length > 0) {
-      const errorMensage = errors.map((err) => (
-        Object.values(err.constraints || {}).join(", ")
-      ))
-
-      return res
-        .status(400)
-        .json({ message: errorMensage });
+    if (isNaN(parsedStatus) || parsedStatus < 0) {
+      return res.status(400).json({ message: "El estado debe ser un número válido" });
     }
 
-    await cupExist.save();
+    if (!observation || typeof observation !== 'string' || observation.length < 1 || observation.length > 500) {
+      return res.status(400).json({ message: "La observación debe tener entre 1 y 500 caracteres" });
+    }
+
+    if (isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+      return res.status(400).json({ message: "La cantidad debe ser un número entero válido" });
+    }
+
+    // Usar .update() para forzar la ejecución del UPDATE
+    await CupsRadicados.update(
+      { id: parseInt(id) },
+      {
+        status: parsedStatus,
+        observation: observation,
+        quantity: parsedQuantity
+      }
+    );
 
     return res.status(200).json({ message: "Cups actualizado exitosamente!" });
   } catch (error) {
