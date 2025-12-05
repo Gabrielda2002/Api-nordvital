@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CupsRadicados } from "../entities/cups-radicados";
 import { validate } from "class-validator";
+import { AppDataSource } from "../db/conexion";
 
 export async function getAllCupsRadicados(
   req: Request,
@@ -208,26 +209,20 @@ export async function updateAuditados(
       return res.status(400).json({ message: "La cantidad debe ser un número entero válido" });
     }
 
-    // Usar .update() para forzar la ejecución del UPDATE
-    const updateResult = await CupsRadicados.update(
-      { id: parseInt(id) },
-      {
-        status: parsedStatus,
-        observation: observation,
-        quantity: parsedQuantity
-      }
-    );
+    // Usar transacción explícita para garantizar el COMMIT
+    await AppDataSource.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.update(
+        CupsRadicados,
+        { id: parseInt(id) },
+        {
+          status: parsedStatus,
+          observation: observation,
+          quantity: parsedQuantity
+        }
+      );
+    });
 
-    console.log('Update result:', updateResult);
-    console.log('Affected rows:', updateResult.affected);
-
-    // Verificar que se actualizó
-    if (updateResult.affected === 0) {
-      return res.status(404).json({ 
-        message: "No se actualizó ningún registro. Verifica el ID.",
-        debug: { id: parseInt(id), updateResult }
-      });
-    }
+    console.log('Update completado con éxito');
 
     // Leer el registro actualizado para confirmar
     const updatedRecord = await CupsRadicados.findOne({
@@ -239,7 +234,6 @@ export async function updateAuditados(
     return res.status(200).json({ 
       message: "Cups actualizado exitosamente!",
       debug: {
-        affected: updateResult.affected,
         updated: {
           status: updatedRecord?.status,
           observation: updatedRecord?.observation,
