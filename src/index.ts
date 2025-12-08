@@ -6,6 +6,7 @@ import { PushService } from "./services/push.service";
 import { TokenCleanupJob } from "./services/token-cleanup-job.service";
 import { CVCleanupService } from "./services/cv-cleanup.service";
 import { VacationCheckJob } from "./services/vacation-check-job.service";
+import { NotificationsCleanupJob } from "./services/notifications-cleanup-job.service";
 
 
     const start = async () => {
@@ -16,7 +17,10 @@ import { VacationCheckJob } from "./services/vacation-check-job.service";
 
             await AppDataSource.initialize();
 
-            // jop cleanup de tokens revokes
+            // job marcar notificaciones antiguas como leídas
+            NotificationsCleanupJob.start(); 
+
+            // job cleanup de tokens revokes
             TokenCleanupJob.start();
             
             // Inicializar servicio de limpieza de CVs (elimina CVs > 60 días)

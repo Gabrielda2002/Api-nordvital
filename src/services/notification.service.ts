@@ -121,6 +121,13 @@ export class NotificationService {
     return notifications;
   }
 
+  // Contar notificaciones no leidas
+  static async countUnreadNotifications(): Promise<number> {
+    return await Notification.createQueryBuilder("notification")
+      .where("notification.is_read = :isRead", { isRead: false })
+      .getCount();
+  }
+
   /**
    * Marca una notificación como leída
    */
@@ -163,7 +170,7 @@ export class NotificationService {
           referenceId,
           referenceType,
         });
-      })      
+      })
 
       for (const user of users) {
         const notification = new Notification();
@@ -182,6 +189,28 @@ export class NotificationService {
           type: referenceType,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
+  }
+
+  // eliminar notificaciones antiguas (mas de 90 dias)
+  static async deleteOldNotifications(days: number): Promise<void> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    await Notification.createQueryBuilder()
+      .delete()
+      .where("created_at < :cutoffDate", { cutoffDate })
+      .execute();
+  }
+
+  // marcar notificaciones de ciertos dias como leidas
+  static async markOldNotificationsAsRead(days: number): Promise<void> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    await Notification.createQueryBuilder()
+      .update()
+      .set({ isRead: true })
+      .where("is_read = :isRead", { isRead: false })
+      .andWhere("created_at < :cutoffDate", { cutoffDate })
+      .execute();
   }
 }
