@@ -93,7 +93,7 @@ export async function createFile(req: Request, res: Response, next: NextFunction
 
         const errors = fileResponses.filter(response => response.status !== 201);
         if (errors.length > 0) {
-            return res.status(errors[0].status).json(errors.map(error => error.message));
+            return res.status(errors[0].status).json(errors.map(error => ({ message:  error.message })));
         }
 
         return res.status(201).json(fileResponses.map(response => response.file));
