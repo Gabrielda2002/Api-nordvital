@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { Request } from 'express';
 
 /**
@@ -11,7 +11,7 @@ export const fileAccessRateLimit = rateLimit({
     keyGenerator: (req: Request) => {
         // Usar el ID del usuario si está autenticado, sino usar IP
         const user = (req as any).user;
-        return user?.id?.toString() || req.ip;
+        return user?.id?.toString() || ipKeyGenerator(req.ip || '');
     },
     message: {
         error: 'Demasiadas solicitudes de archivos',
@@ -33,7 +33,7 @@ export const fileDownloadRateLimit = rateLimit({
     max: 20, // máximo 20 descargas cada 5 minutos por usuario
     keyGenerator: (req: Request) => {
         const user = (req as any).user;
-        return user?.id?.toString() || req.ip;
+        return user?.id?.toString() || ipKeyGenerator(req.ip || '');
     },
     message: {
         error: 'Demasiadas descargas',
