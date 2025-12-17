@@ -148,7 +148,7 @@ export async function updateNotaTecnicaStatusFromExcel(req: Request, res: Respon
 
         // Leer el archivo Excel con ExcelJS en lugar de XLSX
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(req.file.buffer);
+        await workbook.xlsx.load(req.file.buffer as any);
 
         if (workbook.worksheets.length === 0) {
             return res.status(400).json({ message: "El archivo no contiene hojas" });

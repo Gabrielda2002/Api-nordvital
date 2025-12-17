@@ -1,4 +1,4 @@
-import { NextFunction, query, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Cirugias } from "../entities/cirugias";
 import { validate } from "class-validator";
 import { stat } from "fs";

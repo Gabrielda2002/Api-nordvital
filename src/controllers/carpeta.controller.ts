@@ -301,7 +301,7 @@ export async function deleteFolder(
       "uploads",
       folder.path
     );
-    await fsPromises.rmdir(folderAbsolutePath, { recursive: true });
+    await fsPromises.rm(folderAbsolutePath, { recursive: true, force: true });
 
     // Eliminar la entidad Carpeta en la base de datos
     await folder.remove();

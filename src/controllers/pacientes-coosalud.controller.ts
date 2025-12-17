@@ -243,7 +243,7 @@ export async function updatePatientsStatusFromExcel(
     try {
       // Leer el archivo Excel con ExcelJS en lugar de XLSX
       const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.load(req.file.buffer);
+      await workbook.xlsx.load(req.file.buffer as any);
 
       // Verificar que hay hojas en el libro
       if (workbook.worksheets.length === 0) {
@@ -363,7 +363,7 @@ export async function updatePatientsRegimenFromExcel(
     try {
       // Leer el archivo Excel con ExcelJS
       const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.load(req.file.buffer);
+      await workbook.xlsx.load(req.file.buffer as any);
 
       // Verificar que hay hojas en el libro
       if (workbook.worksheets.length === 0) {
