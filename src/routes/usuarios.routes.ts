@@ -100,7 +100,7 @@ router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *       403:
  *         description: Sin permisos
  */
-router.post('/usuarios', authenticate, authorizeRoles(['1', '2']), createUsuario);
+router.post('/usuarios', authenticate, authorizeRoles(['1', '2', '18']), createUsuario);
 
 /**
  * @swagger
