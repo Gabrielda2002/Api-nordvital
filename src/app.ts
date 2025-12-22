@@ -18,6 +18,7 @@ import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 import cookieParser from "cookie-parser";
 import { config } from "./config/environment.config";
+import Logger from "./utils/logger-wrapper";
 
 // * cargar variables de entorno
 dotenv.config();
@@ -40,16 +41,16 @@ io = new SocketIOServer(server, {
 
 
 io.on('connection', (socket) => {
-  console.log('Usuario conectado', socket.id)
+  Logger.info(`Usuario conectado: ${socket.id}`);
 
   // unirse a una sala especifica
   socket.on('join', (room) => {
     socket.join(room)
-    console.log(`Se unicio el usuario ${socket.id} a la sala ${room}`)
+    Logger.info(`Usuario ${socket.id} se unió a la sala: ${room}`);
   })
 
   socket.on('disconnect', () => {
-    console.log('Usuario desconectado', socket.id)
+    Logger.info(`Usuario desconectado: ${socket.id}`);
   })
 })
 
@@ -101,9 +102,9 @@ app.use(config.server.apiPrefix, routes);
 // * Swagger UI - Solo disponible en desarrollo y testing
 if (!config.server.isProduction) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
-  console.log('📚 Swagger UI disponible en: /api-docs');
+  Logger.info('📚 Swagger UI disponible en: /api-docs');
 } else {
-  console.log('🔒 Swagger UI deshabilitado en producción');
+  Logger.info('🔒 Swagger UI deshabilitado en producción');
 }
 
 // * middleware para manejar los errores en los logs

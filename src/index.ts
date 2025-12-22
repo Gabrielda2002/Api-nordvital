@@ -7,6 +7,7 @@ import { CVCleanupService } from "./services/cv-cleanup.service";
 import { VacationCheckJob } from "./services/vacation-check-job.service";
 import { NotificationsCleanupJob } from "./services/notifications-cleanup-job.service";
 import { config } from "./config/environment.config";
+import Logger from "./utils/logger-wrapper";
 
 
     const start = async () => {
@@ -29,13 +30,13 @@ import { config } from "./config/environment.config";
             // Inicializar job de verificación de vencimientos de vacaciones
             VacationCheckJob.start();
             
-            console.log('Conexión a la base de datos establecida');
+            Logger.info('Conexión a la base de datos establecida');
         
             server.listen(config.server.port, () => {
-                console.log(`Servidor corriendo en el puerto http://localhost:${config.server.port}`);
+                Logger.info(`Servidor corriendo en el puerto http://localhost:${config.server.port}`);
             });
         } catch (error) {
-            console.log(`Ha ocurrido un error al iniciar el servidor: ${error}`);
+            Logger.error('Ha ocurrido un error al iniciar el servidor', error);
             process.exit(1);
         }
 
