@@ -1,15 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Usuarios } from "../entities/usuarios";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { TokenService } from "../services/token.service";
-import dotenv from "dotenv";
-import { time } from "console";
-
-dotenv.config();
-
-
-const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
+import { config } from "../config/environment.config";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -51,9 +44,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Solo enviar cookies seguras en producción
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      secure: config.server.isProduction,
+      sameSite: config.server.isProduction ? "none" : "lax",
+      maxAge: config.jwt.refreshTokenExpiry,
     });
 
     res.json({
