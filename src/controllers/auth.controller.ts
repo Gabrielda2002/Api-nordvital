@@ -3,6 +3,7 @@ import { Usuarios } from "../entities/usuarios";
 import bcrypt from "bcrypt";
 import { TokenService } from "../services/token.service";
 import { config } from "../config/environment.config";
+import { UnauthorizedError } from "../utils/custom-errors";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -20,16 +21,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     const passwordMatch = await bcrypt.compare(password, user?.password || "");
 
-    // Validar el usuario y la contraseña
     if (!user || !passwordMatch) {
-      return res
-        .status(401)
-        .json({ message: "Usuario o contraseña incorrectos" });
+      throw new UnauthorizedError("Usuario o contraseña incorrectos");
     }
 
-    // validar que el usuario este activo
     if (user.status === false) {
-      return res.status(401).json({ message: "Usuario inactivo" });
+      throw new UnauthorizedError("Usuario inactivo");
     }
 
     // Generar el token JWT
@@ -89,17 +86,13 @@ export async function refreshToken(
     const { refreshToken } = req.cookies;
 
     if (!refreshToken) {
-      return res.status(401).json({
-        message: "No se proporcionó un token de actualización",
-      });
+      throw new UnauthorizedError("No se proporcionó un token de actualización");
     }
 
     const tokenData = await TokenService.verifyAccessToken(refreshToken);
 
     if (!tokenData) {
-      return res.status(401).json({
-        message: "Token de actualización inválido o expirado",
-      });
+      throw new UnauthorizedError("Token de actualización inválido o expirado");
     }
 
     const newAccessToken = TokenService.genereteAccessTocken({
@@ -108,12 +101,10 @@ export async function refreshToken(
       rol: tokenData.userRelation.rol,
     });
 
-    // * crea el nuevo token
     const newRefreshToken = TokenService.generateRefreshToken(
       tokenData.userRelation.id
     );
 
-    // * revoca el token anterior y guarda el nuevo
     await TokenService.revokeAllUserTokens(tokenData.userRelation.id);
     await TokenService.saveRefreshToken(
       tokenData.userRelation.id,
@@ -122,9 +113,9 @@ export async function refreshToken(
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Solo enviar cookies seguras en producción
+      secure: config.server.isProduction,
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      maxAge: config.jwt.refreshTokenExpiry,
     });
 
     res.json({

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Servicios } from "../entities/servicios";
-import exp from "constants";
-import { validate } from "class-validator";
+import { NotFoundError, BadRequestError } from "../utils/custom-errors";
+import { validateEntity } from "../utils/validation-helper";
 
 export async function getAllServicios(
   req: Request,
@@ -12,9 +12,7 @@ export async function getAllServicios(
     const servicios = await Servicios.find();
     return res.json(servicios);
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 }
 
@@ -29,7 +27,7 @@ export async function getServicioById(
     const servicio = await Servicios.findOneBy({ id: parseInt(id) });
 
     if (!servicio) {
-      return res.status(404).json({ message: "Servicio no encontrado" });
+      throw new NotFoundError("Servicio no encontrado");
     }
 
     return res.json(servicio);
@@ -47,25 +45,14 @@ export async function createServicio(
     const { name } = req.body;
 
     if (!name) {
-      return res
-        .status(400)
-        .json({ message: "El nombre y el estado del servicio son requeridos" });
+      throw new BadRequestError("El nombre del servicio es requerido");
     }
 
     const servicio = new Servicios();
     servicio.name = name;
     servicio.status = true;
 
-    const errors = await validate(servicio);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res.status(400).json({ messages: "ocurrio un error", message });
-    }
-
+    await validateEntity(servicio);
     await servicio.save();
 
     return res.status(201).json(servicio);
@@ -86,22 +73,13 @@ export async function updateServicio(
     const servicio = await Servicios.findOneBy({ id: parseInt(id) });
 
     if (!servicio) {
-      return res.status(404).json({ message: "Servicio no encontrado" });
+      throw new NotFoundError("Servicio no encontrado");
     }
 
     servicio.name = name;
     servicio.status = status;
 
-    const errors = await validate(servicio);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res.status(400).json({ messages: "ocurrio un error", message });
-    }
-
+    await validateEntity(servicio);
     await servicio.save();
 
     return res.json(servicio);
@@ -121,7 +99,7 @@ export async function deleteServicio(
     const servicio = await Servicios.findOneBy({ id: parseInt(id) });
 
     if (!servicio) {
-      return res.status(404).json({ message: "Servicio no encontrado" });
+      throw new NotFoundError("Servicio no encontrado");
     }
 
     await servicio.remove();
@@ -141,9 +119,7 @@ export async function getServiciosByName(
     const { name } = req.body;
 
     if (!name) {
-      return res
-        .status(400)
-        .json({ message: "El nombre del servicio es requerido" });
+      throw new BadRequestError("El nombre del servicio es requerido");
     }
 
     let servicios;
@@ -164,8 +140,6 @@ export async function getServiciosByName(
   }
 }
 
-// actualizar el estado de servicio
-
 export async function updateStatusServicio(
   req: Request,
   res: Response,
@@ -178,7 +152,7 @@ export async function updateStatusServicio(
     const servicio = await Servicios.findOneBy({ id: parseInt(id) });
 
     if (!servicio) {
-      return res.status(404).json({ message: "Servicio no encontrado" });
+      throw new NotFoundError("Servicio no encontrado");
     }
 
     if (name) {
@@ -189,16 +163,7 @@ export async function updateStatusServicio(
       servicio.status = status == "1";
     }
 
-    const errors = await validate(servicio);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res.status(400).json({ messages: "ocurrio un error", message });
-    }
-
+    await validateEntity(servicio);
     await servicio.save();
 
     return res.json(servicio);
