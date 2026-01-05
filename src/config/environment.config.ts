@@ -62,7 +62,22 @@ class EnvironmentConfig {
       "https://www.app.nordvitalips.com",
       "https://app.nordvitalips.com",
       "http://localhost:4321",
+      "http://localhost:8080", // Moodle dev
     ],
+  };
+
+  public readonly moodle = {
+    url: process.env.MOODLE_URL || "http://localhost:8080",
+    apiToken: this.validateRequired("MOODLE_API_TOKEN", process.env.MOODLE_API_TOKEN),
+    ssoSecret: this.validateRequired("MOODLE_SSO_SECRET", process.env.MOODLE_SSO_SECRET),
+    ssoTokenExpiry: 300, // 5 minutes in seconds
+  };
+
+  public readonly redis = {
+    host: process.env.REDIS_HOST || "localhost",
+    port: parseInt(process.env.REDIS_PORT || "6379"),
+    password: process.env.REDIS_PASSWORD || undefined,
+    db: parseInt(process.env.REDIS_DB || "0"),
   };
 }
 
