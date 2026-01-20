@@ -162,7 +162,7 @@ export const createDemandInduced = async (
       return res.status(400).json({ message: "Patient ID is required" });
     }
 
-    const patient = await Pacientes.findOneBy({ id: parseInt(idPatient) });
+    const patient = await Pacientes.findOneBy({ id: parseInt(String(idPatient)) });
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
@@ -190,26 +190,26 @@ export const createDemandInduced = async (
 
     const demandInduced = new DemandaInducida();
     demandInduced.pacienteId = patient.id;
-    demandInduced.elementoDemandaInducidaId = parseInt(elementDemand);
+    demandInduced.elementoDemandaInducidaId = parseInt(String(elementDemand));
     demandInduced.tipoDemandaInducidaId = typeElementDemand
-      ? parseInt(typeElementDemand)
+      ? parseInt(String(typeElementDemand))
       : null;
     demandInduced.objetivoDemandaInducidaId = objetive
-      ? parseInt(objetive)
+      ? parseInt(String(objetive))
       : null;
     demandInduced.relacionUsuarioId = relationshipUser
-      ? parseInt(relationshipUser)
+      ? parseInt(String(relationshipUser))
       : null;
-    demandInduced.areaEpsId = areaEps ? parseInt(areaEps) : null;
+    demandInduced.areaEpsId = areaEps ? parseInt(String(areaEps)) : null;
     demandInduced.resumenSeguimientoActividadId = summaryCall
-      ? parseInt(summaryCall)
+      ? parseInt(String(summaryCall))
       : null;
-    demandInduced.resultadoLlamadaId = resultCall ? parseInt(resultCall) : null;
+    demandInduced.resultadoLlamadaId = resultCall ? parseInt(String(resultCall)) : null;
     demandInduced.motivoVisitaId = reasonVisitNotEffective
-      ? parseInt(reasonVisitNotEffective)
+      ? parseInt(String(reasonVisitNotEffective))
       : null;
     demandInduced.areaPersonaSeguimientoId = areaPersonProcess
-      ? parseInt(areaPersonProcess)
+      ? parseInt(String(areaPersonProcess))
       : null;
     demandInduced.clasificacion =
       elementDemand == 1 || elementDemand == 3 ? true : classification;
@@ -228,9 +228,9 @@ export const createDemandInduced = async (
     demandInduced.textEnvio = textSend || null;
     demandInduced.fechaVisita = dateVisit || null;
     demandInduced.resumenVisita = sumaryVisit || null;
-    demandInduced.programaId = parseInt(programPerson);
+    demandInduced.programaId = parseInt(String(programPerson));
     demandInduced.fechaCita = assignmentDate || null;
-    demandInduced.personaSeguimientoId = parseInt(idUser);
+    demandInduced.personaSeguimientoId = parseInt(String(idUser));
 
     const errorsDemandInduced = await validate(demandInduced);
 
@@ -291,9 +291,9 @@ export async function getEstadisticasDemandaInducida(
     const idHeadquartersCurrentUser = headquartersCurrentUser?.headquarters;
     // Obtener meta del programa para el mes
     const metaPrograma = await ProgramaMetaService.getGoalMonth(
-      parseInt(programaId),
+      parseInt(String(programaId)),
       parseInt(año),
-      parseInt(mes),
+      parseInt(String(mes)),
       profesional,
       idHeadquartersCurrentUser,
       rolCurrentUser,

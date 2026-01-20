@@ -28,7 +28,7 @@ export async function getPaciente(
     const { id } = req.params;
 
     const paciente = await Pacientes.findOne({
-       where:{id: parseInt(id)} ,
+       where:{id: parseInt(String(id))} ,
         relations: ["convenioRelation", "ipsPrimariaRelation","documentRelation"]
       });
 
@@ -75,16 +75,16 @@ export async function createPatient(
     }
 
     const paciente = new Pacientes();
-    paciente.documentType = parseInt(documentType);
-    paciente.documentNumber = parseInt(documentNumber);
+    paciente.documentType = parseInt(String(documentType));
+    paciente.documentNumber = parseInt(String(documentNumber));
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(agreement);
-    paciente.ipsPrimaria = parseInt(ipsPrimaria);
+    paciente.convenio = parseInt(String(agreement));
+    paciente.ipsPrimaria = parseInt(String(ipsPrimaria));
     paciente.status = true;
 
     const errors = await validate(paciente);
@@ -129,7 +129,7 @@ export async function updatePaciente(
     } = req.body;
     console.log(req.body);
 
-    const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
+    const paciente = await Pacientes.findOneBy({ id: parseInt(String(id)) });
 
     if (!paciente) {
       return res.status(404).json({ message: "Paciente not found" });
@@ -176,7 +176,7 @@ export async function deletePaciente(
   try {
     const { id } = req.params;
 
-    const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
+    const paciente = await Pacientes.findOneBy({ id: parseInt(String(id)) });
 
     if (!paciente) {
       return res.status(404).json({ message: "Paciente not found" });
@@ -234,7 +234,7 @@ export async function updatePacienteTable(
       ipsPrimaria
     } = req.body;
 
-    const paciente = await Pacientes.findOneBy({ id: parseInt(id) });
+    const paciente = await Pacientes.findOneBy({ id: parseInt(String(id)) });
 
     if (!paciente) {
       return res.status(404).json({ message: "Paciente not found" });
@@ -247,16 +247,16 @@ export async function updatePacienteTable(
       return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
     }
 
-    paciente.documentType = parseInt(documentType);
-    paciente.documentNumber = parseInt(documentNumber);
+    paciente.documentType = parseInt(String(documentType));
+    paciente.documentNumber = parseInt(String(documentNumber));
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
     paciente.landline = landline.toString();
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(agreement);
-    paciente.ipsPrimaria = parseInt(ipsPrimaria);
+    paciente.convenio = parseInt(String(agreement));
+    paciente.ipsPrimaria = parseInt(String(ipsPrimaria));
 
     const errors = await validate(paciente);
 

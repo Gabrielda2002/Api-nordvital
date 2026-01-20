@@ -28,8 +28,8 @@ export async function getDevice(
   next: NextFunction
 ) {
   try {
-    const id = req.params.id;
-    const device = await dispositivosRed.findOneBy({ id: parseInt(id) });
+    const id = String(req.params.id);
+    const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
       return res.status(404).json({
@@ -73,7 +73,7 @@ export async function createDevice(
     }
 
     const device = new dispositivosRed();
-    device.sedeId = parseInt(sedeId);
+    device.sedeId = parseInt(String(sedeId));
     device.name = name;
     device.brand = brand;
     device.model = model;
@@ -132,7 +132,7 @@ export async function updateDevice(
       });
     }
 
-    const device = await dispositivosRed.findOneBy({ id: parseInt(id) });
+    const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
       return res.status(404).json({
@@ -149,7 +149,7 @@ export async function updateDevice(
     device.otherData = otherData;
     device.status = status;
     device.inventoryNumber = inventoryNumber;
-    device.sedeId = parseInt(sedeId);
+    device.sedeId = parseInt(String(sedeId));
 
     const errors = await validate(device);
     if (errors.length > 0) {
@@ -176,7 +176,7 @@ export async function deleteDevice(
   try {
     const { id } = req.params;
 
-    const device = await dispositivosRed.findOneBy({ id: parseInt(id) });
+    const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
       return res.status(404).json({
@@ -209,7 +209,7 @@ export async function getDevicesBySede(
         "seguimiento"
       )
       .leftJoinAndSelect("seguimiento.userRelation", "user")
-      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(String(id)) })
       .getMany();
 
     if (devices.length < 0) {
@@ -261,7 +261,7 @@ export async function getDevicesCountByHeadquarters(
       .leftJoin("dispositivosRed.placeRelation", "place")
       .select("place.name", "name")
       .addSelect("COUNT(dispositivosRed.id)", "count")
-      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(String(id)) })
       .groupBy("place.name")
       .getRawMany();
 

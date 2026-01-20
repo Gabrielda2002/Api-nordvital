@@ -158,15 +158,15 @@ export async function createInventoryGeneral(
     newInventarioGeneral.warranty = warranty === "true" ? true : false;
     newInventarioGeneral.warrantyPeriod = warrantyPeriod;
     newInventarioGeneral.inventoryNumber = inventoryNumber;
-    newInventarioGeneral.classificationId = parseInt(classificationId);
-    newInventarioGeneral.headquartersId = parseInt(headquartersId);
-    newInventarioGeneral.statusId = parseInt(statusId); 
-    newInventarioGeneral.assetId = parseInt(assetId);
-    newInventarioGeneral.materialId = parseInt(materialId);
-    newInventarioGeneral.areaTypeId = parseInt(areaTypeId);
-    newInventarioGeneral.assetTypeId = parseInt(assetTypeId);
-    newInventarioGeneral.responsableId = parseInt(responsableId);
-    newInventarioGeneral.dependencyAreaId = parseInt(dependencyAreaId);
+    newInventarioGeneral.classificationId = parseInt(String(classificationId));
+    newInventarioGeneral.headquartersId = parseInt(String(headquartersId));
+    newInventarioGeneral.statusId = parseInt(String(statusId)); 
+    newInventarioGeneral.assetId = parseInt(String(assetId));
+    newInventarioGeneral.materialId = parseInt(String(materialId));
+    newInventarioGeneral.areaTypeId = parseInt(String(areaTypeId));
+    newInventarioGeneral.assetTypeId = parseInt(String(assetTypeId));
+    newInventarioGeneral.responsableId = parseInt(String(responsableId));
+    newInventarioGeneral.dependencyAreaId = parseInt(String(dependencyAreaId));
 
     const errors = await validate(newInventarioGeneral);
     if (errors.length > 0) {
@@ -239,15 +239,15 @@ export async function updateInventoryGeneral(
     inventarioGeneral.warranty = warranty === "1" ? true : false;
     inventarioGeneral.warrantyPeriod = warrantyPeriod;
     inventarioGeneral.inventoryNumber = inventoryNumber;
-    inventarioGeneral.classificationId = parseInt(classificationId);
-    inventarioGeneral.headquartersId = parseInt(headquartersId);
-    inventarioGeneral.statusId = parseInt(statusId); 
-    inventarioGeneral.assetId = parseInt(assetId);
-    inventarioGeneral.materialId = parseInt(materialId);
-    inventarioGeneral.areaTypeId = parseInt(areaTypeId);
-    inventarioGeneral.assetTypeId = parseInt(assetTypeId);
-    inventarioGeneral.responsableId = parseInt(responsableId);
-    inventarioGeneral.dependencyAreaId = parseInt(dependencyAreaId);
+    inventarioGeneral.classificationId = parseInt(String(classificationId));
+    inventarioGeneral.headquartersId = parseInt(String(headquartersId));
+    inventarioGeneral.statusId = parseInt(String(statusId)); 
+    inventarioGeneral.assetId = parseInt(String(assetId));
+    inventarioGeneral.materialId = parseInt(String(materialId));
+    inventarioGeneral.areaTypeId = parseInt(String(areaTypeId));
+    inventarioGeneral.assetTypeId = parseInt(String(assetTypeId));
+    inventarioGeneral.responsableId = parseInt(String(responsableId));
+    inventarioGeneral.dependencyAreaId = parseInt(String(dependencyAreaId));
 
     const errors = await validate(inventarioGeneral);
     if (errors.length > 0) {
@@ -330,25 +330,25 @@ export async function getInventoryGeneralAgeStatistics(
       
       const totalIvGeneral = await InventarioGeneral.count({ where: { headquartersId: Number(id) }});
 
-      const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo), headquartersId: parseInt(id) } });
+      const lessThanOneYear = await InventarioGeneral.count({ where: { acquisitionDate: MoreThan(oneYearAgo), headquartersId: parseInt(String(id)) } });
       const betweenOneAndTwoYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: Between(twoYearsAgo, oneYearAgo), headquartersId: parseInt(id)
+          acquisitionDate: Between(twoYearsAgo, oneYearAgo), headquartersId: parseInt(String(id))
         } 
       });
       const betweenTwoAndThreeYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: Between(threeYearsAgo, twoYearsAgo), headquartersId: parseInt(id)
+          acquisitionDate: Between(threeYearsAgo, twoYearsAgo), headquartersId: parseInt(String(id))
         } 
       });
       const moreThanThreeYears = await InventarioGeneral.count({ 
         where: { 
-          acquisitionDate: LessThan(threeYearsAgo), headquartersId: parseInt(id)
+          acquisitionDate: LessThan(threeYearsAgo), headquartersId: parseInt(String(id))
         } 
       });
       
       // Cálculo de la edad promedio en días
-      const inventoryGeneral = await InventarioGeneral.find({ select: ["acquisitionDate"], where: { headquartersId: parseInt(id) } });
+      const inventoryGeneral = await InventarioGeneral.find({ select: ["acquisitionDate"], where: { headquartersId: parseInt(String(id)) } });
       let totalAge = 0;
       inventoryGeneral.forEach(equipment => {
         if (equipment.acquisitionDate) {

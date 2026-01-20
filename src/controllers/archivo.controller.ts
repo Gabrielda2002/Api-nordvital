@@ -30,7 +30,7 @@ export async function getFileById(req: Request, res: Response, next: NextFunctio
         const { id } = req.params;
 
         const file = await Archivos.findOne({
-            where: {id: parseInt(id)},
+            where: {id: parseInt(String(id))},
             order: { name: "ASC" }
         });
 
@@ -109,7 +109,7 @@ export async function updateFile(req: Request, res: Response, next: NextFunction
 
         const { name, parentFolderId } = req.body;
 
-        const file = await Archivos.findOne({where: {id: parseInt(id)}});
+        const file = await Archivos.findOne({where: {id: parseInt(String(id))}});
 
         if (!file) {
             return res.status(404).json({message: "Archivo no encontrado"});
@@ -142,7 +142,7 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
         const { id } = req.params;
         
 
-        const file = await Archivos.findOne({where: {id: parseInt(id)}});
+        const file = await Archivos.findOne({where: {id: parseInt(String(id))}});
 
         if (!file) {
             return res.status(404).json({message: "Archivo no encontrado"});
@@ -179,7 +179,7 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
         
         const { id } = req.params;
 
-        const file = await Archivos.findOne({where: {id: parseInt(id)}});
+        const file = await Archivos.findOne({where: {id: parseInt(String(id))}});
 
         if (!file) {
             return res.status(404).json({message: "Archivo no encontrado"});
@@ -227,7 +227,7 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
         for(const fileId of fileIds) {
             try {
                 
-                const file = await Archivos.findOne({ where: { id: parseInt(fileId)}});
+                const file = await Archivos.findOne({ where: { id: parseInt(String(fileId))}});
                 if (!file) {
                     errors.push({ fileId, error: "File not found" });
                     continue;
@@ -320,7 +320,7 @@ export async function moveFile(req: Request, res: Response, next: NextFunction){
         const { newParentId } = req.body;
 
         req.body = {
-            fileIds: [parseInt(id)],
+            fileIds: [parseInt(String(id))],
             newParentId: newParentId
         };
 
@@ -342,7 +342,7 @@ export async function generateFileAccessToken(req: Request, res: Response, next:
         const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
 
         // Validar parámetros
-        const fileId = parseInt(id);
+        const fileId = parseInt(String(id));
         const actionType = (action as string)?.toUpperCase() as 'VIEW' | 'DOWNLOAD';
         
         if (!fileId || !actionType || !['VIEW', 'DOWNLOAD'].includes(actionType)) {
@@ -395,7 +395,7 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
         }
 
         // Validar token
-        const validation = FileTokenService.validateFileAccessToken(token, clientIP);
+        const validation = FileTokenService.validateFileAccessToken(String(token), clientIP);
         
         if (!validation.valid) {
             return res.status(403).json({ 

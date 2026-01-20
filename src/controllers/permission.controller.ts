@@ -151,7 +151,7 @@ export async function getPermissionRequestById(
   try {
     const { id } = req.params;
     const service = new PermissionService();
-    const found = await service.getRequestById(parseInt(id));
+    const found = await service.getRequestById(parseInt(String(id)));
     if (!found) return res.status(404).json({ message: "Request not found" });
     return res.json(found);
   } catch (error) {
@@ -188,8 +188,8 @@ export async function actOnPermissionStep(
 
     const service = new PermissionService();
     const result = await service.actOnStep(
-      parseInt(id),
-      parseInt(stepId),
+      parseInt(String(id)),
+      parseInt(String(stepId)),
       actorUserId,
       action,
       comment
@@ -263,7 +263,7 @@ export async function generatePermissionAttachmentAccessToken(
     const user = (req as any).user;
     const clientIP = req.ip || req.connection.remoteAddress || "unknown";
 
-    const attachmentId = parseInt(id);
+    const attachmentId = parseInt(String(id));
     const actionType = (action as string)?.toUpperCase() as "VIEW" | "DOWNLOAD";
 
     if (
@@ -320,7 +320,7 @@ export async function serveSecurePermissionAttachment(
     }
 
     const validation = FileTokenService.validateFileAccessToken(
-      token,
+      String(token),
       clientIP
     );
 
@@ -390,7 +390,7 @@ export async function cancelPermissionRequest(
     const { id } = req.params;
 
     const service = new PermissionService();
-    const result = await service.cancelRequest(parseInt(id));
+    const result = await service.cancelRequest(parseInt(String(id)));
     if (!result.success) {
       return res.status(result.statusCode).json({ message: result.error });
     }

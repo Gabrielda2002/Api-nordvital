@@ -20,7 +20,7 @@ export async function getTicketById(req: Request, res: Response, next: NextFunct
 
         const { id } = req.params;
 
-        const ticket = await Tickets.findOneBy({id : parseInt(id)});
+        const ticket = await Tickets.findOneBy({id : parseInt(String(id))});
 
         if(!ticket){
             return res.status(404).json({message: "Ticket no encontrado"});
@@ -51,10 +51,10 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         const ticket = new Tickets();
         ticket.title = title;
         ticket.description = description;
-        ticket.userId = parseInt(userId);
-        ticket.categoryId = parseInt(categoryId);
+        ticket.userId = parseInt(String(userId));
+        ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = 1;
-        ticket.preorityId = parseInt(priorityId);
+        ticket.preorityId = parseInt(String(priorityId));
 
         await ticket.save();
 
@@ -78,7 +78,7 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
         const { id } = req.params;
         const { title, description, userId, categoryId, statusId, preorityId } = req.body;
 
-        const ticket = await Tickets.findOneBy({id : parseInt(id)});
+        const ticket = await Tickets.findOneBy({id : parseInt(String(id))});
 
         if(!ticket){
             return res.status(404).json({message: "Ticket no encontrado"});
@@ -89,10 +89,10 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
 
         ticket.title = title;
         ticket.description = description;
-        ticket.userId = parseInt(userId);
-        ticket.categoryId = parseInt(categoryId);
-        ticket.statusId = parseInt(statusId);
-        ticket.preorityId = parseInt(preorityId);
+        ticket.userId = parseInt(String(userId));
+        ticket.categoryId = parseInt(String(categoryId));
+        ticket.statusId = parseInt(String(statusId));
+        ticket.preorityId = parseInt(String(preorityId));
 
         await ticket.save();
 
@@ -112,7 +112,7 @@ export async function deleteTicket(req: Request, res: Response, next: NextFuncti
     try {
         const { id } = req.params;
 
-        const ticket = await Tickets.findOneBy({id : parseInt(id)});
+        const ticket = await Tickets.findOneBy({id : parseInt(String(id))});
 
         if(!ticket){
             return res.status(404).json({message: "Ticket no encontrado"});

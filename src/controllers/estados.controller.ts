@@ -19,7 +19,7 @@ export async function getEstadosById(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const estado = await Estados.findOneBy({ id: parseInt(id) });
+        const estado = await Estados.findOneBy({ id: parseInt(String(id)) });
 
         if (!estado) {
             return res.status(404).json({ message: "Estado not found" });
@@ -77,7 +77,7 @@ export async function updateEstados(req: Request, res: Response, next: NextFunct
         const { id } = req.params;
         const { name } = req.body;
 
-        const estado = await Estados.findOneBy({ id: parseInt(id) });
+        const estado = await Estados.findOneBy({ id: parseInt(String(id)) });
 
         if (!estado) {
             return res.status(404).json({ message: "Estado not found" });
@@ -111,7 +111,7 @@ export async function deleteEstados(req: Request, res: Response, next: NextFunct
         
         const { id } = req.params;
 
-        const estado = await Estados.findOneBy({ id: parseInt(id) });
+        const estado = await Estados.findOneBy({ id: parseInt(String(id)) });
 
         if (!estado) {
             return res.status(404).json({ message: "Estado not found" });

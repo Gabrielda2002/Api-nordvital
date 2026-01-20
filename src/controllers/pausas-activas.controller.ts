@@ -27,7 +27,7 @@ export async function getActiveBrakeById(
         const { id } = req.params;
 
         const activeBrake = await PausasActivas.createQueryBuilder("pausas_activas")
-        .where({ id: parseInt(id) })
+        .where({ id: parseInt(String(id)) })
         .getOne();
 
         if (!activeBrake) {
@@ -50,7 +50,7 @@ export async function createActiveBrake(
 
         const activeBrake = new PausasActivas();
         activeBrake.observation = observation || null;
-        activeBrake.userId = parseInt(userId);
+        activeBrake.userId = parseInt(String(userId));
 
         const errors = await validate(activeBrake);
 
@@ -83,7 +83,7 @@ export async function updateActiveBrake(
         const { observation, userId } = req.body;
 
         const activeBrake = await PausasActivas.createQueryBuilder("pausas_activas")
-        .where({ id: parseInt(id) })
+        .where({ id: parseInt(String(id)) })
         .getOne();
 
         if (!activeBrake) {
@@ -91,7 +91,7 @@ export async function updateActiveBrake(
         }
 
         activeBrake.observation = observation;
-        activeBrake.userId = parseInt(userId);
+        activeBrake.userId = parseInt(String(userId));
 
         const errors = await validate(activeBrake);
 
@@ -123,7 +123,7 @@ export async function deleteActiveBrake(
         const { id } = req.params;
 
         const activeBrake = await PausasActivas.createQueryBuilder("pausas_activas")
-        .where({ id: parseInt(id) })
+        .where({ id: parseInt(String(id)) })
         .getOne();
 
         if (!activeBrake) {

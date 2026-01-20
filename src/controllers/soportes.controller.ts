@@ -29,7 +29,7 @@ export async function getSoporteById(req: Request, res: Response, next: NextFunc
         const { id } = req.params;
 
         const soporte = await Soportes.findOne({
-            where: {id: parseInt(id)},
+            where: {id: parseInt(String(id))},
             relations: ["radicacionRelation"]
         });
 
@@ -97,7 +97,7 @@ export async function updateSoporte(req: Request, res: Response, next: NextFunct
         const { id } = req.params;
         const { name, url } = req.body;
 
-        const soporteExist = await Soportes.findOneBy({id: parseInt (id)});
+        const soporteExist = await Soportes.findOneBy({id: parseInt(String(id))});
 
         if (!soporteExist) {
             return res.status(404).json({message: "Soporte no encontrado"});
@@ -130,7 +130,7 @@ export async function deleteSoporte(req: Request, res: Response, next: NextFunct
         
         const { id } = req.params;
 
-        const soporteExist = await Soportes.findOneBy({id: parseInt(id)});
+        const soporteExist = await Soportes.findOneBy({id: parseInt(String(id))});
         
         if (!soporteExist) {
             return res.status(404).json({message: "Soporte no encontrado"});

@@ -18,7 +18,7 @@ export async function getSurveySatisfaction(req: Request, res: Response, next: N
     try {
         const { id } = req.params;
 
-        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(id)});
+        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(String(id))});
 
         if(!encuestaSatisfaccion){
             return res.status(404).json({message: "Encuesta de satisfacción no encontrada"});
@@ -37,12 +37,12 @@ export async function createSurveySatisfaction(req: Request, res: Response, next
         const { ticketId, usuarioId, calificacionGeneral, tiempoRespuesta, conocimientoTecnico, amabilidadSoporte, solucionEfectiva, comentario, recomendariaServicio } = req.body;
 
         const encuestaSatisfaccion = new EncuestasSatisfaccion();
-        encuestaSatisfaccion.ticketId = parseInt(ticketId);
-        encuestaSatisfaccion.usuarioId = parseInt(usuarioId);
-        encuestaSatisfaccion.calificacionGeneral = parseInt(calificacionGeneral);
-        encuestaSatisfaccion.tiempoRespuesta = parseInt(tiempoRespuesta);
-        encuestaSatisfaccion.conocimientoTecnico = parseInt(conocimientoTecnico);
-        encuestaSatisfaccion.amabilidadSoporte = parseInt(amabilidadSoporte);
+        encuestaSatisfaccion.ticketId = parseInt(String(ticketId));
+        encuestaSatisfaccion.usuarioId = parseInt(String(usuarioId));
+        encuestaSatisfaccion.calificacionGeneral = parseInt(String(calificacionGeneral));
+        encuestaSatisfaccion.tiempoRespuesta = parseInt(String(tiempoRespuesta));
+        encuestaSatisfaccion.conocimientoTecnico = parseInt(String(conocimientoTecnico));
+        encuestaSatisfaccion.amabilidadSoporte = parseInt(String(amabilidadSoporte));
         encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "1" ? true : false;
         encuestaSatisfaccion.comentario = comentario;
         encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "1" ? true : false;
@@ -71,18 +71,18 @@ export async function updateSurveySatisfaction(req: Request, res: Response, next
         const { id } = req.params;
         const { ticketId, usuarioId, calificacionGeneral, tiempoRespuesta, conocimientoTecnico, amabilidadSoporte, solucionEfectiva, comentario, recomendariaServicio } = req.body;
 
-        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(id)});
+        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(String(id))});
 
         if(!encuestaSatisfaccion){
             return res.status(404).json({message: "Encuesta de satisfacción no encontrada"});
         }
 
-        encuestaSatisfaccion.ticketId = parseInt(ticketId);
-        encuestaSatisfaccion.usuarioId = parseInt(usuarioId);
-        encuestaSatisfaccion.calificacionGeneral = parseInt(calificacionGeneral);
-        encuestaSatisfaccion.tiempoRespuesta = parseInt(tiempoRespuesta);
-        encuestaSatisfaccion.conocimientoTecnico = parseInt(conocimientoTecnico);
-        encuestaSatisfaccion.amabilidadSoporte = parseInt(amabilidadSoporte);
+        encuestaSatisfaccion.ticketId = parseInt(String(ticketId));
+        encuestaSatisfaccion.usuarioId = parseInt(String(usuarioId));
+        encuestaSatisfaccion.calificacionGeneral = parseInt(String(calificacionGeneral));
+        encuestaSatisfaccion.tiempoRespuesta = parseInt(String(tiempoRespuesta));
+        encuestaSatisfaccion.conocimientoTecnico = parseInt(String(conocimientoTecnico));
+        encuestaSatisfaccion.amabilidadSoporte = parseInt(String(amabilidadSoporte));
         encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "true" ? true : false;
         encuestaSatisfaccion.comentario = comentario;
         encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "true" ? true : false;
@@ -110,7 +110,7 @@ export async function deleteSurveySatisfaction(req: Request, res: Response, next
     try {
         const { id } = req.params;
 
-        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(id)});
+        const encuestaSatisfaccion = await EncuestasSatisfaccion.findOneBy({id : parseInt(String(id))});
 
         if(!encuestaSatisfaccion){
             return res.status(404).json({message: "Encuesta de satisfacción no encontrada"});

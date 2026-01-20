@@ -29,8 +29,8 @@ export async function getComponent(
     next: NextFunction
     ) {
     try {
-        const id = req.params.id;
-        const component = await Componentes.findOneBy({ id: parseInt(id) });
+        const id = String(req.params.id);
+        const component = await Componentes.findOneBy({ id: parseInt(String(id)) });
     
         if (!component) {
         return res.status(404).json({
@@ -63,7 +63,7 @@ export async function createComponent(
     
         const component = new Componentes()
 
-        component.idEquipments = parseInt(equipmentId);
+        component.idEquipments = parseInt(String(equipmentId));
         component.name = name;
         component.brand = brand;
         component.capacity = capacity;
@@ -107,7 +107,7 @@ export async function updateComponent(
             serial,
         } = req.body;
     
-        const component = await Componentes.findOneBy({ id: parseInt(id) });
+        const component = await Componentes.findOneBy({ id: parseInt(String(id)) });
     
         if (!component) {
             return res.status(404).json({
@@ -149,7 +149,7 @@ export async function deleteComponent(
     try {
         const { id } = req.params;
     
-        const component = await Componentes.findOneBy({ id: parseInt(id) });
+        const component = await Componentes.findOneBy({ id: parseInt(String(id)) });
     
         if (!component) {
             return res.status(404).json({

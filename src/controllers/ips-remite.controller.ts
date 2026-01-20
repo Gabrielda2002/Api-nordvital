@@ -23,7 +23,7 @@ export async function getIpsRemite(
   try {
     const { id } = req.params;
 
-    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
+    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(String(id)) });
 
     if (!ipsRemite) {
       return res.status(404).json({ message: "Ips Remite not found" });
@@ -87,7 +87,7 @@ export async function updateIpsRemite(
     const { id } = req.params;
     const { name, status } = req.body;
 
-    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
+    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(String(id)) });
 
     if (!ipsRemite) {
       return res.status(404).json({ message: "Ips Remite not found" });
@@ -125,7 +125,7 @@ export async function deleteIpsRemite(
   try {
     const { id } = req.params;
 
-    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
+    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(String(id)) });
 
     if (!ipsRemite) {
       return res.status(404).json({ message: "Ips Remite not found" });
@@ -179,7 +179,7 @@ export async function updateStatusIpsRemite(
     const { id } = req.params;
     const { status, name } = req.body;
 
-    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(id) });
+    const ipsRemite = await IpsRemite.findOneBy({ id: parseInt(String(id)) });
 
     if (!ipsRemite) {
       return res.status(404).json({ message: "Ips Remite not found" });

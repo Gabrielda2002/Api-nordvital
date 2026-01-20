@@ -18,7 +18,7 @@ export async function getCategoryById(req: Request, res: Response, next: NextFun
         
         const { id } = req.params;
 
-        const category = await Categorias.findOneBy({ id: parseInt(id) });
+        const category = await Categorias.findOneBy({ id: parseInt(String(id)) });
 
         if (!category) {
             return res.status(404).json({ message: "Category not found" });
@@ -68,7 +68,7 @@ export async function updateCategory(req: Request, res: Response, next: NextFunc
             return res.status(400).json({ message: "Name is required" });
         }
 
-        const category = await Categorias.findOneBy({ id: parseInt(id) });
+        const category = await Categorias.findOneBy({ id: parseInt(String(id)) });
 
         if (!category) {
             return res.status(404).json({ message: "Category not found" });
@@ -90,7 +90,7 @@ export async function deleteCategory(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const category = await Categorias.findOneBy({ id: parseInt(id) });
+        const category = await Categorias.findOneBy({ id: parseInt(String(id)) });
 
         if (!category) {
             return res.status(404).json({ message: "Category not found" });

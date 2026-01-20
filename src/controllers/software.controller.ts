@@ -29,8 +29,8 @@ export async function getSoftware(
     next: NextFunction
     ) {
     try {
-        const id = req.params.id;
-        const software = await Software.findOneBy({ id: parseInt(id) });
+        const id = String(req.params.id);
+        const software = await Software.findOneBy({ id: parseInt(String(id)) });
     
         if (!software) {
         return res.status(404).json({
@@ -62,7 +62,7 @@ export async function createSoftware(
 
         const software =  new Software()
 
-        software.equipmentId = parseInt(equipmentId);
+        software.equipmentId = parseInt(String(equipmentId));
         software.name = name;
         software.versions = version;
         software.license = license;
@@ -101,7 +101,7 @@ export async function updateSoftware(
             status,
         } = req.body;
 
-        const software = await Software.findOneBy({ id: parseInt(id) });
+        const software = await Software.findOneBy({ id: parseInt(String(id)) });
 
         if (!software) {
         return res.status(404).json({
@@ -138,7 +138,7 @@ export async function deleteSoftware(
     try {
         const { id } = req.params;
 
-        const software = await Software.findOneBy({ id: parseInt(id) });
+        const software = await Software.findOneBy({ id: parseInt(String(id)) });
 
         if (!software) {
         return res.status(404).json({

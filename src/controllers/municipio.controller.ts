@@ -18,7 +18,7 @@ export async function getMunicipioById(req: Request, res: Response, next: NextFu
         
         const { id } = req.params;
 
-        const municipio = await Municipio.findOneBy({ id: parseInt(id) });
+        const municipio = await Municipio.findOneBy({ id: parseInt(String(id)) });
 
         if (!municipio) {
             return res.status(404).json({ message: "Municipio not found" });
@@ -74,7 +74,7 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
         const { id } = req.params;
         const { name, municipioCode, idDepartment, status } = req.body;
 
-        const municipio = await Municipio.findOneBy({ id: parseInt(id) });
+        const municipio = await Municipio.findOneBy({ id: parseInt(String(id)) });
 
         if (!municipio) {
             return res.status(404).json({ message: "Municipio not found" });
@@ -109,7 +109,7 @@ export async function deleteMunicipio(req: Request, res: Response, next: NextFun
         
         const { id } = req.params;
 
-        const municipio = await Municipio.findOneBy({ id: parseInt(id) });
+        const municipio = await Municipio.findOneBy({ id: parseInt(String(id)) });
 
         if (!municipio) {
             return res.status(404).json({ message: "Municipio not found" });
@@ -130,7 +130,7 @@ export async function updateStatusMunicipio(req: Request, res: Response, next: N
         const { id } = req.params;
         const { status } = req.body;
 
-        const municipio = await Municipio.findOneBy({ id: parseInt(id) });
+        const municipio = await Municipio.findOneBy({ id: parseInt(String(id)) });
 
         if (!municipio) {
             return res.status(404).json({ message: "Municipio not found" });

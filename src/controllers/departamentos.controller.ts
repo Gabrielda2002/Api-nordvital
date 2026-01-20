@@ -20,8 +20,8 @@ export async function getAllDepartments(req: Request, res: Response, next: NextF
 
 export async function getDepartment(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
-        const department = await departamentos.findOneBy({id: parseInt(id)})
+        const id = String(req.params.id)
+        const department = await departamentos.findOneBy({id: parseInt(String(id))})
         if (!department) {
             return res.status(404).json({
                 message: "Departamento no encontrado"
@@ -75,7 +75,7 @@ export async function updateDepartment(req: Request, res: Response, next: NextFu
 
         const { name } = req.body
 
-        const department = await departamentos.findOneBy({id: parseInt(id)})
+        const department = await departamentos.findOneBy({id: parseInt(String(id))})
 
         if (!department) {
             return res.status(404).json({
@@ -106,7 +106,7 @@ export async function deleteDepartment(req: Request, res: Response, next: NextFu
     try {
         const { id } = req.params
 
-        const department = await departamentos.findOneBy({id: parseInt(id)})
+        const department = await departamentos.findOneBy({id: parseInt(String(id))})
 
         if (!department) {
             return res.status(404).json({

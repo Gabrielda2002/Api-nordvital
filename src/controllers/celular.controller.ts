@@ -158,13 +158,13 @@ export async function createPhone(
     newPhone.warranty = warranty == "true" ? true : false;
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
-    newPhone.responsable = parseInt(responsable);
+    newPhone.responsable = parseInt(String(responsable));
     newPhone.caseProtector = caseProtector == "true" ? true : false;
     newPhone.temperedGlass = tenperedGlass == "true" ? true : false;
     newPhone.observation = observations;
     newPhone.status = status;
     newPhone.acquisitionValue = parseInt(acquisitionValue, 10);
-    newPhone.sedeId = parseInt(sedeId);
+    newPhone.sedeId = parseInt(String(sedeId));
     newPhone.brand = brand;
 
     const errorsPhone = await validate(newPhone);
@@ -273,7 +273,7 @@ export async function updatePhone(
   try {
     const { id } = req.params;
 
-    const phone = await Celular.findOneBy({ id: parseInt(id) });
+    const phone = await Celular.findOneBy({ id: parseInt(String(id)) });
 
     if (!phone) {
       await queryRunner.rollbackTransaction();
@@ -330,13 +330,13 @@ export async function updatePhone(
     phone.warranty = warranty === 'true' ? true : false;
     phone.deliveryDate = deliveryDate;
     phone.inventoryNumber = inventoryNumber;
-    phone.responsable = parseInt(responsable);
+    phone.responsable = parseInt(String(responsable));
     phone.caseProtector = caseProtector === 'true' ? true : false;
     phone.temperedGlass = tenperedGlass === 'true' ? true : false;
     phone.observation = observations;
     phone.status = status;
     phone.acquisitionValue = Number(acquisitionValue);
-    phone.sedeId = parseInt(sedeId);
+    phone.sedeId = parseInt(String(sedeId));
 
     const errorsPhone = await validate(phone);
 
@@ -486,7 +486,7 @@ export async function getCountPhonesByHeadquartersId(req: Request, res: Response
     .leftJoinAndSelect('celular.sedeRelation', 'sede')
     .select('sede.name', 'sedeName')
     .addSelect('COUNT(celular.id)', 'count')
-    .where('sede.id = :id', { id: parseInt(id) })
+    .where('sede.id = :id', { id: parseInt(String(id)) })
     .groupBy('sede.name')
     .orderBy('count', 'DESC')
     .getRawMany();
@@ -513,28 +513,28 @@ export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, n
     const threeYearsAgo = subYears(now, 3);
 
     const totalPhones = await Celular.count({
-      where: { sedeId: parseInt(id) }
+      where: { sedeId: parseInt(String(id)) }
     })
 
     const lessThanOneYear = await Celular.count({
-      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) }
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(String(id)) }
     })
 
     const betweenOneAndTwoYears = await Celular.count({
-      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(id) }
+      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(String(id)) }
     })
 
     const betweenTwoAndThreeYears = await Celular.count({
-      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id) }
+      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(String(id)) }
     })
 
     const moreThanThreeYears = await Celular.count({
-      where: { purchaseDate: MoreThan(threeYearsAgo), sedeId: parseInt(id) }
+      where: { purchaseDate: MoreThan(threeYearsAgo), sedeId: parseInt(String(id)) }
     })
 
     const phoneAge = await Celular.find({
       select: ['purchaseDate'],
-      where: { sedeId: parseInt(id) }
+      where: { sedeId: parseInt(String(id)) }
     });
     let totalAge = 0;
     
@@ -576,14 +576,14 @@ export async function getPhoneWarrantyStatistics(req: Request, res: Response, ne
 
     const { id } = req.params;
 
-      const totalPhones = await Celular.count({ where: { sedeId: parseInt(id) } });
+      const totalPhones = await Celular.count({ where: { sedeId: parseInt(String(id)) } });
       
       const phonesInWarranty = await Celular.count({
-        where: { warranty:  true, sedeId: parseInt(id) }
+        where: { warranty:  true, sedeId: parseInt(String(id)) }
       })
 
     const phonesWithWarranty = await Celular.find({
-      where: { warranty: true, sedeId: parseInt(id) },
+      where: { warranty: true, sedeId: parseInt(String(id)) },
       select: ['id', 'purchaseDate', 'warrantyTime']
     });
 

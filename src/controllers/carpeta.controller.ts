@@ -29,7 +29,7 @@ export async function getFolderById(
 ) {
   try {
     const { id } = req.params;
-    const folder = await Carpeta.findOneBy({ id: parseInt(id) });
+    const folder = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     if (!folder) {
       return res.status(404).json({ message: "Folder not found" });
     }
@@ -134,7 +134,7 @@ export async function updateFolder(
     const { name, parentFolderId } = req.body;
 
     // Buscar la carpeta existente en la base de datos
-    const folder = await Carpeta.findOneBy({ id: parseInt(id) });
+    const folder = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     if (!folder) {
       return res.status(404).json({ message: "Folder not found" });
     }
@@ -274,7 +274,7 @@ export async function deleteFolder(
     const { id } = req.params;
 
     // Buscar la carpeta existente en la base de datos
-    const folder = await Carpeta.findOneBy({ id: parseInt(id) });
+    const folder = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     if (!folder) {
       return res.status(404).json({ message: "Folder not found" });
     }
@@ -330,7 +330,7 @@ export async function getSgcFoldersFiles(
     if (id) {
       // * mostrar archivos y carpetas de la carpeta seleccionada
       const folder = await Carpeta.createQueryBuilder("carpeta")
-        .where("carpeta.id = :id", { id: parseInt(id) })
+        .where("carpeta.id = :id", { id: parseInt(String(id)) })
         .andWhere("carpeta.seccion = :section", { section: section })
         .orderBy("carpeta.name", "ASC")
         .getOne();
@@ -395,7 +395,7 @@ export async function moveFolder(
     const { id } = req.params;
     const { newParentId, section } = req.body;
 
-    const folderToMove = await Carpeta.findOneBy({ id: parseInt(id) });
+    const folderToMove = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     // ? validar carpeta a mover
     if (!folderToMove) {
       return res.status(404).json({ message: "Folder not found" });
@@ -406,7 +406,7 @@ export async function moveFolder(
     let newRelativePath: string;
 
     if (newParentId) {
-      newParentFolder = await Carpeta.findOneBy({ id: parseInt(newParentId) });
+      newParentFolder = await Carpeta.findOneBy({ id: parseInt(String(newParentId)) });
       if (!newParentFolder) {
         return res.status(404).json({ message: "New parent folder not found" });
       }

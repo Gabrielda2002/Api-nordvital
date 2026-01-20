@@ -18,7 +18,7 @@ export async function getStatusTicketById(req: Request, res: Response, next: Nex
 
         const { id } = req.params;
 
-        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(id)});
+        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(String(id))});
 
         if(!estadoTicket){
             return res.status(404).json({message: "Estado de ticket no encontrado"});
@@ -52,7 +52,7 @@ export async function updateStatusTicket(req: Request, res: Response, next: Next
         const { id } = req.params;
         const { name } = req.body;
 
-        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(id)});
+        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(String(id))});
 
         if(!estadoTicket){
             return res.status(404).json({message: "Estado de ticket no encontrado"});
@@ -73,7 +73,7 @@ export async function deleteStatusTicket(req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(id)});
+        const estadoTicket = await EstadoTickets.findOneBy({id : parseInt(String(id))});
 
         if(!estadoTicket){
             return res.status(404).json({message: "Estado de ticket no encontrado"});

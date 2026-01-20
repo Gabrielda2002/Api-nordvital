@@ -19,7 +19,7 @@ export async function getServicioGeneralById(req: Request, res: Response, next: 
         
         const { id } = req.params;
 
-        const servicio = await ServiciosGenerales.findOneBy({ id: parseInt(id) });
+        const servicio = await ServiciosGenerales.findOneBy({ id: parseInt(String(id)) });
 
         if (!servicio) {
             return res.status(404).json({ message: "Servicio not found" });
@@ -76,7 +76,7 @@ export async function updateServicioGeneral(req: Request, res: Response, next: N
         const { code, description} = req.body;
 
         const servicio = await ServiciosGenerales.createQueryBuilder("servicios_generales")
-        .where("servicios_generales.id = :id", { id: parseInt(id) })
+        .where("servicios_generales.id = :id", { id: parseInt(String(id)) })
         .getOne();
 
         if (!servicio) {
@@ -110,7 +110,7 @@ export async function deleteServicioGeneral(req: Request, res: Response, next: N
         
         const { id } = req.params;
 
-        const servicio = await ServiciosGenerales.findOneBy({ id: parseInt(id) });
+        const servicio = await ServiciosGenerales.findOneBy({ id: parseInt(String(id)) });
 
         if (!servicio) {
             return res.status(404).json({ message: "Servicio not found" });

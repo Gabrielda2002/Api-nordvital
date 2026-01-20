@@ -15,7 +15,7 @@ export async function generateSoporteAccessToken(req: Request, res: Response, ne
         const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
 
         // Validar parámetros
-        const soporteId = parseInt(id);
+        const soporteId = parseInt(String(id));
         const actionType = (action as string)?.toUpperCase() as 'VIEW' | 'DOWNLOAD';
         
         if (!soporteId || !actionType || !['VIEW', 'DOWNLOAD'].includes(actionType)) {
@@ -67,7 +67,7 @@ export async function serveSecureSoporte(req: Request, res: Response, next: Next
         }
 
         // Validar token
-        const validation = FileTokenService.validateFileAccessToken(token, clientIP);
+        const validation = FileTokenService.validateFileAccessToken(String(token), clientIP);
         
         if (!validation.valid) {
             return res.status(403).json({ 

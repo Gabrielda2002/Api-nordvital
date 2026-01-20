@@ -30,11 +30,11 @@ export async function createInventoryTrackingGeneral(req: Request, res: Response
         const { itemId, eventDate, typeEvent, description, responsable } = req.body;
 
         const seguimientoInventarioGeneral = new SeguimientoInventarioGeneral();
-        seguimientoInventarioGeneral.itemId = parseInt(itemId);
+        seguimientoInventarioGeneral.itemId = parseInt(String(itemId));
         seguimientoInventarioGeneral.fecha_evento = eventDate;
         seguimientoInventarioGeneral.typeEvent = typeEvent;
         seguimientoInventarioGeneral.description = description;
-        seguimientoInventarioGeneral.responsable = parseInt(responsable);
+        seguimientoInventarioGeneral.responsable = parseInt(String(responsable));
 
         const errors = await validate(seguimientoInventarioGeneral);
         if (errors.length > 0) {

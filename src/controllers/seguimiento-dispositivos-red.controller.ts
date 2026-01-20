@@ -22,8 +22,8 @@ export async function getAllMonitoringDevicesNetwork(req: Request, res: Response
 
 export async function getMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
-        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(id)})
+        const id = String(req.params.id)
+        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(String(id))})
         
         if (!data) {
             return res.status(404).json({
@@ -45,11 +45,11 @@ export async function createMonitoringDevicesNetwork(req: Request, res: Response
         const { itemId, typeEvent, eventDate, description,responsable  } = req.body
 
         const data = new SeguimientoDispositivosRed()
-        data.deviceId = parseInt(itemId)
+        data.deviceId = parseInt(String(itemId))
         data.eventType = typeEvent
         data.dateEvent = eventDate
         data.description = description
-        data.responsible = parseInt(responsable)
+        data.responsible = parseInt(String(responsable))
 
         const errors = await validate(data)
 
@@ -72,10 +72,10 @@ export async function createMonitoringDevicesNetwork(req: Request, res: Response
 
 export async function updateMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
+        const id = String(req.params.id)
         const { equipmentId, eventType, eventDate, description, responsible } = req.body
 
-        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(id)})
+        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
             return res.status(404).json({
@@ -83,11 +83,11 @@ export async function updateMonitoringDevicesNetwork(req: Request, res: Response
             })
         }
 
-        data.deviceId = parseInt(equipmentId)
+        data.deviceId = parseInt(String(equipmentId))
         data.eventType = eventType
         data.dateEvent = eventDate
         data.description = description
-        data.responsible = parseInt(responsible)
+        data.responsible = parseInt(String(responsible))
         
         const errors = await validate(data)
 
@@ -111,8 +111,8 @@ export async function updateMonitoringDevicesNetwork(req: Request, res: Response
 
 export async function deleteMonitoringDevicesNetwork(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
-        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(id)})
+        const id = String(req.params.id)
+        const data = await SeguimientoDispositivosRed.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
             return res.status(404).json({

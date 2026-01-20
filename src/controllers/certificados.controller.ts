@@ -58,9 +58,9 @@ export async function createCertificate(req: Request, res: Response, next: NextF
 
 export async function getCertificateByDni(req: Request, res: Response, next: NextFunction){
     try {
-        const dni = req.params.dni;
+        const dni = String(req.params.dni);
 
-        const certificate = await Certificados.findOneBy({dni: parseInt(dni)});
+        const certificate = await Certificados.findOneBy({dni: parseInt(String(dni))});
 
         if (!certificate) {
             return res.status(404).json({message: "Certificado no encontrado"});
@@ -75,9 +75,9 @@ export async function getCertificateByDni(req: Request, res: Response, next: Nex
 
 export async function downloadCertificate(req: Request, res: Response, next: NextFunction){
     try {
-        const dni = req.params.dni;
+        const dni = String(req.params.dni);
 
-        const certificate = await Certificados.findOneBy({dni: parseInt(dni)});
+        const certificate = await Certificados.findOneBy({dni: parseInt(String(dni))});
 
         if (!certificate) {
             return res.status(404).json({message: "Certificado no encontrado"});

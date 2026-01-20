@@ -16,7 +16,7 @@ export async function getGrupoServicios(req: Request, res: Response, next: NextF
   try {
     const { id } = req.params;
 
-    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });
@@ -75,7 +75,7 @@ export async function updateGrupoServicios(req: Request, res: Response, next: Ne
     const { id } = req.params;
     const { name, status } = req.body;
 
-    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });
@@ -111,7 +111,7 @@ export async function deleteGrupoServicios(req: Request, res: Response, next: Ne
     
     const { id } = req.params;
 
-    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(id) });
+    const grupoServicios = await GrupoServicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!grupoServicios) {
       return res.status(404).json({ message: "Grupo de servicios no encontrado" });

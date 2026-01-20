@@ -22,7 +22,7 @@ export async function servePublicCV(req: Request, res: Response, next: NextFunct
         }
 
         // Validar token de CV público
-        const validation = CVTokenService.validateCVAccessToken(token, clientIP);
+        const validation = CVTokenService.validateCVAccessToken(String(token), clientIP);
         
         if (!validation.valid) {
             return res.status(403).json({ 

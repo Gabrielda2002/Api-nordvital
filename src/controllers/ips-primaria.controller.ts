@@ -18,7 +18,7 @@ export async function getIpsPrimaria(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(String(id)) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -78,7 +78,7 @@ export async function updateIpsPrimaria(req: Request, res: Response, next: NextF
         const { id } = req.params;
         const { name, status } = req.body;
 
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(String(id)) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -114,7 +114,7 @@ export async function deleteIpsPrimaria(req: Request, res: Response, next: NextF
         
         const { id } = req.params;
 
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(String(id)) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
@@ -155,7 +155,7 @@ export async function updateStatusIpsPrimaria(req: Request, res: Response, next:
         const { id } = req.params;
         const { status, name } = req.body;
 
-        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(id) });
+        const ipsPrimaria = await IpsPrimaria.findOneBy({ id: parseInt(String(id)) });
 
         if (!ipsPrimaria) {
             return res.status(404).json({ message: "Ips Primaria not found" });
