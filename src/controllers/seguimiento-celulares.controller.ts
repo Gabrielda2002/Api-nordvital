@@ -14,11 +14,11 @@ export async function createProcessPhone(req: Request, res: Response, next: Next
         } = req.body;
 
         const processPhone = new SeguimientoCelular();
-        processPhone.phoneId = parseInt(itemId);
+        processPhone.phoneId = parseInt(String(itemId));
         processPhone.eventDate = new Date(eventDate);
         processPhone.eventType = typeEvent;
         processPhone.description = description;
-        processPhone.responsable = parseInt(responsable);
+        processPhone.responsable = parseInt(String(responsable));
         
         const errors = await validate(processPhone);
         if (errors.length > 0) {

@@ -29,7 +29,7 @@ export async function getUsuario(
     const { id } = req.params;
 
     const usuario = await Usuarios.findOne({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(String(id)) },
       relations: ["rolesRelation", "municipioRelation", "typeDocumentRelation"],
     });
 
@@ -72,18 +72,18 @@ export async function createUsuario(
       return res.status(409).json({ message: "El usuario ya existe" });
 
     const usuario = new Usuarios();
-    usuario.dniNumber = parseInt(dniNumber);
+    usuario.dniNumber = parseInt(String(dniNumber));
     usuario.name = name;
     usuario.lastName = lastName;
-    usuario.dniType = parseInt(dniType);
+    usuario.dniType = parseInt(String(dniType));
     usuario.email = email;
     // incriptacion password
     const saltRounds = 10;
     usuario.password = await bcrypt.hash(password, saltRounds);
     usuario.status = true;
-    usuario.rol = parseInt(rol);
-    usuario.headquarters = parseInt(headquarters);
-    usuario.phoneNumber = parseInt(phoneNumber);
+    usuario.rol = parseInt(String(rol));
+    usuario.headquarters = parseInt(String(headquarters));
+    usuario.phoneNumber = parseInt(String(phoneNumber));
     usuario.positionId = position;
     usuario.contractType = contractType;
     usuario.dateStartContract = dateStartContract;
@@ -118,7 +118,7 @@ export async function updateUsuario(
     const { dniNumber, name, lastName, dniType, email, password, status, rol } =
       req.body;
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -168,7 +168,7 @@ export async function updateUsuarioBasicData(
     const { id } = req.params;
     const { name, lastName, email, phone } = req.body;
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario not found" });
@@ -177,7 +177,7 @@ export async function updateUsuarioBasicData(
     usuario.name = name;
     usuario.lastName = lastName;
     usuario.email = email;
-    usuario.phoneNumber = parseInt(phone);
+    usuario.phoneNumber = parseInt(String(phone));
 
     const errors = await validate(usuario);
 
@@ -208,7 +208,7 @@ export async function deleteUsuario(
   try {
     const { id } = req.params;
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -234,7 +234,7 @@ export async function uploadPhoto(
 
     const { id } = req.params;
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -262,7 +262,7 @@ export async function deletePhoto(
     const { id } = req.params;
 
     // Busca el usuario en la base de datos
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -344,7 +344,7 @@ export async function updatePassword(
       return res.status(400).json({ message: "Las contraseñas no coinciden" });
     }
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -392,27 +392,27 @@ export async function updateUsuarioTable(
     } = request.body;
     console.log(request.body);
 
-    const usuario = await Usuarios.findOneBy({ id: parseInt(id) });
+    const usuario = await Usuarios.findOneBy({ id: parseInt(String(id)) });
     if (!usuario) {
       return response.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    usuario.dniNumber = parseInt(dniNumber);
+    usuario.dniNumber = parseInt(String(dniNumber));
     usuario.status = status == 1;
     usuario.name = name;
     usuario.lastName = lastName;
-    usuario.dniType = parseInt(dniType);
+    usuario.dniType = parseInt(String(dniType));
     usuario.email = email;
     if (password) {
       const saltRounds = 10;
       usuario.password = await bcrypt.hash(password, saltRounds);
     }
-    usuario.rol = parseInt(rol);
-    usuario.headquarters = parseInt(headquarters);
-    usuario.phoneNumber = parseInt(phoneNumber);
+    usuario.rol = parseInt(String(rol));
+    usuario.headquarters = parseInt(String(headquarters));
+    usuario.phoneNumber = parseInt(String(phoneNumber));
     usuario.contractType = contractType;
     usuario.dateStartContract = dateStartContract;
-    usuario.positionId = parseInt(positionId);
+    usuario.positionId = parseInt(String(positionId));
 
     const errors = await validate(usuario);
     if (errors.length > 0) {

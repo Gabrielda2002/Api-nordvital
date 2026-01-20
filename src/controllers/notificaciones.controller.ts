@@ -7,7 +7,7 @@ export async function getUserNotifications(req: Request, res: Response, next: Ne
     try {
         const { userId } = req.params;
 
-        const notifications = await NotificationService.getUserNotifications(parseInt(userId));
+        const notifications = await NotificationService.getUserNotifications(parseInt(String(userId)));
 
         if (!notifications) {
             return res.status(404).json({ message: "No se encontraron notificaciones para este usuario" });
@@ -40,7 +40,7 @@ export async function markNotificationAsRead(req: Request, res: Response, next: 
     try {
         const { id } = req.params;
 
-        const notification = await NotificationService.markAsRead(parseInt(id));
+        const notification = await NotificationService.markAsRead(parseInt(String(id)));
 
         if (!notification) {
             return res.status(404).json({ message: "Notificación no encontrada" });

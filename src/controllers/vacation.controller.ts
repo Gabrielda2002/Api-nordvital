@@ -103,7 +103,7 @@ export const configureUserVacationBalance = async (
     }
 
     const result = await vacationService.configureUserVacationBalance(
-      parseInt(userId),
+      parseInt(String(userId)),
       configuration
     );
 
@@ -134,7 +134,7 @@ export const getUserVacationBalance = async (
   next: NextFunction
 ) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userId = parseInt(String(req.params.userId));
 
     const result = await vacationService.getUserVacationBalance(userId);
 
@@ -203,7 +203,7 @@ export const getUserVacationNotifications = async (
 ) => {
   try {
     const userId = (req as any).user?.id;
-    const unreadOnly = req.query.unreadOnly === "true";
+    const unreadOnly = String(req.query.unreadOnly) === "true";
 
     if (!userId) {
       return res.status(401).json({
@@ -236,7 +236,7 @@ export const markNotificationAsRead = async (
   next: NextFunction
 ) => {
   try {
-    const notificationId = parseInt(req.params.notificationId);
+    const notificationId = parseInt(String(req.params.notificationId));
     const userId = (req as any).user?.id;
 
     if (!userId) {

@@ -28,8 +28,8 @@ export async function getEquipment(
   next: NextFunction
 ) {
   try {
-    const id = req.params.id;
-    const equipment = await Equipos.findOneBy({ id: parseInt(id) });
+    const id = String(req.params.id);
+    const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!equipment) {
       return res.status(404).json({
@@ -95,7 +95,7 @@ export async function createEquipment(
 
     // Crear y configurar el equipo
     const equipment = new Equipos();
-    equipment.sedeId = parseInt(sedeId);
+    equipment.sedeId = parseInt(String(sedeId));
     equipment.name = name;
     equipment.ubicacion = "Sin ubicación";
     equipment.typeEquipment = typeEquipment;
@@ -247,13 +247,13 @@ export async function updateEquipment(
       serial: serial,
     });
 
-    if (serialExist && serialExist.id !== parseInt(id)) {
+    if (serialExist && serialExist.id !== parseInt(String(id))) {
       return res.status(409).json({
         message: "El número de serie ya existe",
       });
     }
 
-    const equipment = await Equipos.findOneBy({ id: parseInt(id) });
+    const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!equipment) {
       return res.status(404).json({
@@ -279,7 +279,7 @@ export async function updateEquipment(
     equipment.lock = lock == "true";
     equipment.lockKey = codeLock || null;
     equipment.inventoryNumber = inventoryNumber;
-    equipment.sedeId = parseInt(sedeId);
+    equipment.sedeId = parseInt(String(sedeId));
 
     const errors = await validate(equipment);
 
@@ -412,7 +412,7 @@ export async function deleteEquipment(
 ) {
   try {
     const { id } = req.params;
-    const equipment = await Equipos.findOneBy({ id: parseInt(id) });
+    const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!equipment) {
       return res.status(404).json({
@@ -445,7 +445,7 @@ export async function getEquipmentBySede(
       .leftJoinAndSelect("equipos.userRelation", "equipmentUser")
       .leftJoinAndSelect("equipos.soportRelacion", "document")
       .leftJoinAndSelect("seguimientoEquipos.userRelation", "user")
-      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(String(id)) })
       .getMany();
 
     if (!equipment) {
@@ -541,7 +541,7 @@ export async function getEquipmentTypeDistribution(
       .addSelect("COUNT(equipos.id)", "count")
       .groupBy("equipos.typeEquipment")
       .orderBy("count", "DESC")
-      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(id) })
+      .where("equipos.sedeId = :sedeId", { sedeId: parseInt(String(id)) })
       .getRawMany();
 
     if (!equipment) {
@@ -572,7 +572,7 @@ export async function getEquipmentHeadquartersDistribution(
       .addSelect("COUNT(equipos.id)", "count")
       .groupBy("sede.name")
       .orderBy("count", "DESC")
-      .where("sede.id = :sedeId", { sedeId: parseInt(id) })
+      .where("sede.id = :sedeId", { sedeId: parseInt(String(id)) })
       .getRawMany();
 
     if (!equipment) {
@@ -601,30 +601,30 @@ export async function getEquipmentAgeBySede(
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
-    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(String(id)) } });
 
     const lessThanOneYear = await Equipos.count({
-      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(String(id)) },
     });
     const betweenOneAndTwoYears = await Equipos.count({
       where: {
         purchaseDate: Between(twoYearsAgo, oneYearAgo),
-        sedeId: parseInt(id),
+        sedeId: parseInt(String(id)),
       },
     });
     const betweenTwoAndThreeYears = await Equipos.count({
       where: {
-        purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id)
+        purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(String(id))
       },
     });
     const moreThanThreeYears = await Equipos.count({
       where: {
-        purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(id)
+        purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(String(id))
       },
     });
 
     // Cálculo de la edad promedio en días
-    const equipments = await Equipos.find({ select: ["purchaseDate"], where: { sedeId: parseInt(id) } });
+    const equipments = await Equipos.find({ select: ["purchaseDate"], where: { sedeId: parseInt(String(id)) } });
     let totalAge = 0;
     equipments.forEach((equipment) => {
       if (equipment.purchaseDate) {
@@ -665,14 +665,14 @@ export async function getEquipmentWarrantyStatistics(
 
     const { id } = req.params;
 
-    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(String(id)) } });
     const equipmentsInWarranty = await Equipos.count({
-      where: { warranty: true, sedeId: parseInt(id) },
+      where: { warranty: true, sedeId: parseInt(String(id)) },
     });
 
     // obtener equipos con garantia para calcular fecha de vencimiento
     const equipmentWithWarranty = await Equipos.find({
-      where: { warranty: true, sedeId: parseInt(id) },
+      where: { warranty: true, sedeId: parseInt(String(id)) },
       select: ["id", "purchaseDate", "warrantyTime"],
     });
 
@@ -715,8 +715,8 @@ export async function getEquipmentLockStatistics(
 
     const { id } = req.params;
 
-    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(id) } });
-    const equipmentsWithLock = await Equipos.count({ where: { lock: true, sedeId: parseInt(id) } });
+    const totalEquipments = await Equipos.count({ where: { sedeId: parseInt(String(id)) } });
+    const equipmentsWithLock = await Equipos.count({ where: { lock: true, sedeId: parseInt(String(id)) } });
 
     return res.json({
       total: totalEquipments,

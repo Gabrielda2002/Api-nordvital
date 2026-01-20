@@ -62,7 +62,7 @@ export async function getRadicacionById(
     const { id } = req.params;
 
     const radicacion = await Radicacion.createQueryBuilder("radicacion")
-      .where("radicacion.id = :id", { id: parseInt(id) })
+      .where("radicacion.id = :id", { id: parseInt(String(id)) })
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
@@ -140,19 +140,19 @@ export async function createRadicado(
     const radicacado = new Radicacion();
 
     radicacado.orderDate = orderDate;
-    radicacado.place = parseInt(place);
-    radicacado.ipsRemitente = parseInt(ipsRemitente);
+    radicacado.place = parseInt(String(place));
+    radicacado.ipsRemitente = parseInt(String(ipsRemitente));
     radicacado.idProfesional = Number(profetional);
-    radicacado.specialty = parseInt(specialty);
-    radicacado.groupServices = parseInt(groupServices);
-    radicacado.typeServices = parseInt(typeServices);
-    radicacado.radicador = parseInt(radicador);
+    radicacado.specialty = parseInt(String(specialty));
+    radicacado.groupServices = parseInt(String(groupServices));
+    radicacado.typeServices = parseInt(String(typeServices));
+    radicacado.radicador = parseInt(String(radicador));
     radicacado.auditora = "Pendiente";
     radicacado.justify = "Pendiente";
     radicacado.auditConcept = 6;
-    radicacado.idPatient = parseInt(idPatient);
-    radicacado.idSoporte = parseInt(idSoporte);
-    radicacado.idDiagnostico = parseInt(idDiagnostico);
+    radicacado.idPatient = parseInt(String(idPatient));
+    radicacado.idSoporte = parseInt(String(idSoporte));
+    radicacado.idDiagnostico = parseInt(String(idDiagnostico));
 
     const errors = await validate(radicacado);
 
@@ -201,7 +201,7 @@ export async function updateRadicado(
       auditConcept,
     } = req.body;
 
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(id) });
+    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
 
     if (!radicacado) {
       return res.status(404).json({ message: "Radicacion not found" });
@@ -251,7 +251,7 @@ export async function deleteRadicado(
   try {
     const { id } = req.params;
 
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(id) });
+    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
 
     if (!radicacado) {
       return res.status(404).json({ message: "Radicacion not found" });
@@ -413,7 +413,7 @@ export async function autorizarRadicado(
 
     const { auditora, fechaAuditoria, justificacion, cupsDetails } = req.body;
 
-    const existRadicado = await Radicacion.findOneBy({ id: parseInt(id) });
+    const existRadicado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
 
     if (!existRadicado) {
       await queryRunner.rollbackTransaction();
@@ -437,7 +437,7 @@ export async function autorizarRadicado(
         .json({ message: "Error updating radicacion", messages });
     }
 
-    const cupsRadicados = await CupsRadicados.findBy({ idRadicacion: parseInt(id) });
+    const cupsRadicados = await CupsRadicados.findBy({ idRadicacion: parseInt(String(id)) });
 
     if (!cupsRadicados || cupsRadicados.length === 0) {
       await queryRunner.rollbackTransaction();
@@ -845,7 +845,7 @@ export async function updateGroupServices(
 
     const { groupServices } = req.body;
 
-    const radicacion = await Radicacion.findOneBy({ id: parseInt(id) });
+    const radicacion = await Radicacion.findOneBy({ id: parseInt(String(id)) });
 
     if (!radicacion) {
       return res.status(404).json({ message: "Radicacion not found" });
@@ -920,7 +920,7 @@ export const createRequestService = async (
     const cupsRequestService: CupsRequest[] = JSON.parse(req.body.items);
 
     // update data patient
-    const patientExist = await Pacientes.findOneBy({ id: parseInt(idPatient) });
+    const patientExist = await Pacientes.findOneBy({ id: parseInt(String(idPatient)) });
 
     if (!patientExist) {
       await queryRunner.rollbackTransaction();
@@ -990,19 +990,19 @@ export const createRequestService = async (
     // create request service
     const requestService = new Radicacion();
     requestService.orderDate = orderDate;
-    requestService.place = parseInt(place);
-    requestService.ipsRemitente = parseInt(ipsRemitente);
+    requestService.place = parseInt(String(place));
+    requestService.ipsRemitente = parseInt(String(ipsRemitente));
     requestService.idProfesional = Number(profetional);
-    requestService.specialty = parseInt(specialty);
-    requestService.groupServices = parseInt(groupServices);
-    requestService.typeServices = parseInt(typeServices);
-    requestService.radicador = parseInt(radicador);
+    requestService.specialty = parseInt(String(specialty));
+    requestService.groupServices = parseInt(String(groupServices));
+    requestService.typeServices = parseInt(String(typeServices));
+    requestService.radicador = parseInt(String(radicador));
     requestService.auditora = "Pendiente";
     requestService.justify = "Pendiente";
     requestService.auditConcept = 6;
-    requestService.idPatient = parseInt(idPatient);
+    requestService.idPatient = parseInt(String(idPatient));
     requestService.idSoporte = supportId;
-    requestService.idDiagnostico = parseInt(idDiagnostico);
+    requestService.idDiagnostico = parseInt(String(idDiagnostico));
 
     const errorsRequestService = await validate(requestService);
     if (errorsRequestService.length > 0) {

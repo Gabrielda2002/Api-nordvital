@@ -122,7 +122,7 @@ export async function sendTestPush(
     }
 
     const subscriptions = await PushSubscription.find({
-      where: { userId: parseInt(userId) },
+      where: { userId: parseInt(String(userId)) },
     });
 
     if (subscriptions.length === 0) {

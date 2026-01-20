@@ -56,9 +56,9 @@ export async function createRecoveryLetter (req: Request, res: Response, next: N
         const { idRadicado, idUserRequest, idUserAudit, observacion, justification, dateImpression } = req.body;
 
         const recoveryLatter = new CartaRecobro();
-        recoveryLatter.idRadicado = parseInt(idRadicado);
-        recoveryLatter.idUserRequest = parseInt(idUserRequest);
-        recoveryLatter.idUserAudit = parseInt(idUserAudit);
+        recoveryLatter.idRadicado = parseInt(String(idRadicado));
+        recoveryLatter.idUserRequest = parseInt(String(idUserRequest));
+        recoveryLatter.idUserAudit = parseInt(String(idUserAudit));
         recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
@@ -97,9 +97,9 @@ export async function updateRecoveryLetter (req: Request, res: Response, next: N
             return res.status(404).json({message: "Carta de recobro no encontrada"});
         }
 
-        recoveryLatter.idRadicado = parseInt(idRadicado);
-        recoveryLatter.idUserRequest = parseInt(idUserRequest);
-        recoveryLatter.idUserAudit = parseInt(idUserAudit);
+        recoveryLatter.idRadicado = parseInt(String(idRadicado));
+        recoveryLatter.idUserRequest = parseInt(String(idUserRequest));
+        recoveryLatter.idUserAudit = parseInt(String(idUserAudit));
         recoveryLatter.observation = observacion;
         recoveryLatter.justification = justification;
         recoveryLatter.dateImpression = dateImpression;
@@ -266,8 +266,8 @@ export async function createRequestLetter(req: Request, res: Response, next: Nex
         }
 
         const requestLatter = new CartaRecobro();
-        requestLatter.idRadicado = parseInt(idRadicado);
-        requestLatter.idUserRequest = parseInt(idUserRequest);
+        requestLatter.idRadicado = parseInt(String(idRadicado));
+        requestLatter.idUserRequest = parseInt(String(idUserRequest));
         requestLatter.justification = justification;
 
         const erros = await validate(requestLatter);
@@ -307,7 +307,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
         }
 
         // * se actualiza el registro de solicitud
-        requestExist.idUserAudit = parseInt(idUserAudit);
+        requestExist.idUserAudit = parseInt(String(idUserAudit));
         requestExist.observation = observation;
         
         const erros = await validate(requestExist);

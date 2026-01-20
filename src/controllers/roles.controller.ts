@@ -18,7 +18,7 @@ export async function getRole(req: Request, res: Response, next: NextFunction){
         
         const { id } = req.params;
 
-        const role = await Roles.findOneBy({id: parseInt(id)});
+        const role = await Roles.findOneBy({id: parseInt(String(id))});
 
         if(!role){
             return res.status(404).json({message: 'roles no encontrados'});
@@ -72,7 +72,7 @@ export async function updateRole(req: Request, res: Response, next: NextFunction
 
         const { name } = req.body;
 
-        const rolExist = await Roles.findOneBy({id: parseInt(id)});
+        const rolExist = await Roles.findOneBy({id: parseInt(String(id))});
 
         if (!rolExist) {
             return res.status(404).json({message: 'Rol no encontrado'});
@@ -105,7 +105,7 @@ export async function deleteRole(req: Request, res: Response, next: NextFunction
         
         const { id } = req.params;
 
-        const rolExist = await Roles.findOneBy({id: parseInt(id)});
+        const rolExist = await Roles.findOneBy({id: parseInt(String(id))});
 
         if (!rolExist) {
             return res.status(404).json({message: 'Rol no encontrado'});

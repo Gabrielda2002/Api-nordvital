@@ -23,7 +23,7 @@ export async function getPatientCoosalud(
 ) {
   try {
     const patient = await PacientesCoosalud.findOneBy({
-      id: parseInt(req.params.id),
+      id: parseInt(String(req.params.id)),
     });
 
     res.json(patient);
@@ -128,7 +128,7 @@ export async function updatePatientCoosalud(
     } = req.body;
 
     const patient = await PacientesCoosalud.findOneBy({
-      id: parseInt(req.params.id),
+      id: parseInt(String(req.params.id)),
     });
 
     if (!patient) {
@@ -169,7 +169,7 @@ export async function deletePatientCoosalud(
 ) {
   try {
     const patient = await PacientesCoosalud.findOneBy({
-      id: parseInt(req.params.id),
+      id: parseInt(String(req.params.id)),
     });
 
     if (!patient) {

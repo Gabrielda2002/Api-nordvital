@@ -23,7 +23,7 @@ export async function getDiagnosticoById(req: Request, res: Response, next: Next
         
         const { id } = req.params;
 
-        const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
+        const diagnostico = await Diagnostico.findOneBy({id: parseInt(String(id))});
 
         if (!diagnostico) {
             return res.status(404).json({message: "Diagnostico not found"});
@@ -76,7 +76,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
 
         const { description } = req.body;
 
-        const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
+        const diagnostico = await Diagnostico.findOneBy({id: parseInt(String(id))});
 
         if (!diagnostico) {
             return res.status(404).json({message: "Diagnostico not found"});
@@ -111,7 +111,7 @@ export async function deleteDiagnostico(req: Request, res: Response, next: NextF
             return res.status(400).json({message: "Id is required"});
         }
 
-        const diagnostico = await Diagnostico.findOneBy({id: parseInt(id)});
+        const diagnostico = await Diagnostico.findOneBy({id: parseInt(String(id))});
 
         if (!diagnostico) {
             return res.status(404).json({message: "Diagnostico not found"});

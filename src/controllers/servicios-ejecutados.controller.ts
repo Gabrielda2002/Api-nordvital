@@ -70,15 +70,15 @@ export async function createServiciosEjecutados(req: Request, res: Response, nex
         } = req.body;
 
         const serviciosEjecutados = new ServiciosEjecutados();
-        serviciosEjecutados.idSede = parseInt(idSede);
-        serviciosEjecutados.idService = parseInt(idService);
-        serviciosEjecutados.amount = parseInt(amount);
-        serviciosEjecutados.rate = parseInt(rate);
+        serviciosEjecutados.idSede = parseInt(String(idSede));
+        serviciosEjecutados.idService = parseInt(String(idService));
+        serviciosEjecutados.amount = parseInt(String(amount));
+        serviciosEjecutados.rate = parseInt(String(rate));
         serviciosEjecutados.statusService = statusService;
         serviciosEjecutados.group = group;
         serviciosEjecutados.subGroup = subGroup;
-        serviciosEjecutados.documentType = parseInt(documentType);
-        serviciosEjecutados.identification = parseInt(identification);
+        serviciosEjecutados.documentType = parseInt(String(documentType));
+        serviciosEjecutados.identification = parseInt(String(identification));
         serviciosEjecutados.patientName = patientName;
         serviciosEjecutados.patientSex = patientSex;
         serviciosEjecutados.dateBirth = dateBirth;
@@ -167,15 +167,15 @@ export async function updateServiciosEjecutados(req: Request, res: Response, nex
             return res.status(404).json({ message: "ServiciosEjecutados not found" });
         }
 
-        serviciosEjecutados.idSede = parseInt(idSede);
-        serviciosEjecutados.idService = parseInt(idService);
-        serviciosEjecutados.amount = parseInt(amount);
-        serviciosEjecutados.rate = parseInt(rate);
+        serviciosEjecutados.idSede = parseInt(String(idSede));
+        serviciosEjecutados.idService = parseInt(String(idService));
+        serviciosEjecutados.amount = parseInt(String(amount));
+        serviciosEjecutados.rate = parseInt(String(rate));
         serviciosEjecutados.statusService = statusService;
         serviciosEjecutados.group = group;
         serviciosEjecutados.subGroup = subGroup;
-        serviciosEjecutados.documentType = parseInt(documentType);
-        serviciosEjecutados.identification = parseInt(identification);
+        serviciosEjecutados.documentType = parseInt(String(documentType));
+        serviciosEjecutados.identification = parseInt(String(identification));
         serviciosEjecutados.patientName = patientName;
         serviciosEjecutados.patientSex = patientSex;
         serviciosEjecutados.dateBirth = dateBirth;
@@ -222,7 +222,7 @@ export async function deleteServiciosEjecutados(req: Request, res: Response, nex
     try {
         const { id } = req.params;
 
-        const serviciosEjecutados = await ServiciosEjecutados.findOneBy({ id: parseInt(id) });
+        const serviciosEjecutados = await ServiciosEjecutados.findOneBy({ id: parseInt(String(id)) });
 
         if (!serviciosEjecutados) {
             return res.status(404).json({ message: "ServiciosEjecutados not found" });

@@ -14,11 +14,11 @@ export async function createProcessTelevisor(req: Request, res: Response, next: 
         } = req.body;
 
         const newProcess = await SeguimientoTelevisor.create()
-        newProcess.televisorId = parseInt(itemId);
+        newProcess.televisorId = parseInt(String(itemId));
         newProcess.eventDate = eventDate;
         newProcess.eventType = typeEvent;
         newProcess.description = description;
-        newProcess.responsable = parseInt(responsable);
+        newProcess.responsable = parseInt(String(responsable));
 
         const errors = await validate(newProcess);
 

@@ -28,8 +28,8 @@ export async function getAccessory(
   next: NextFunction
 ) {
   try {
-    const id = req.params.id;
-    const accessory = await AccesoriosEquipos.findOneBy({ id: parseInt(id) });
+    const id = String(req.params.id);
+    const accessory = await AccesoriosEquipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!accessory) {
       return res.status(404).json({
@@ -76,7 +76,7 @@ export async function createAccessory(
 
 
     const accessory = new AccesoriosEquipos();
-    accessory.equipmentId = parseInt(equipmentId);
+    accessory.equipmentId = parseInt(String(equipmentId));
     accessory.name = name;
     accessory.brand = brand;
     accessory.model = model;
@@ -115,7 +115,7 @@ export async function updateAccessory(
 
     const existSerial = await AccesoriosEquipos.createQueryBuilder()
       .where("serial = :serial", { serial })
-      .andWhere("id != :id", { id: parseInt(id) })
+      .andWhere("id != :id", { id: parseInt(String(id)) })
       .getOne();
 
     // if (existSerial) {
@@ -125,7 +125,7 @@ export async function updateAccessory(
     // }
 
     const accessory = await AccesoriosEquipos.findOne({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(String(id)) },
     });
 
     if (!accessory) {
@@ -169,7 +169,7 @@ export async function deleteAccessory(
     const { id } = req.params;
 
     const accessory = await AccesoriosEquipos.findOne({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(String(id)) },
     });
 
     if (!accessory) {

@@ -116,7 +116,7 @@ export async function createTelevisor(
     console.log("tiempo garantia", req.body.warrantyTime);
 
     const televisor = new Televisor();
-    televisor.sedeId = parseInt(sedeId);
+    televisor.sedeId = parseInt(String(sedeId));
     televisor.name = name.toLowerCase();
     televisor.location = location;
     televisor.brand = brand;
@@ -200,7 +200,7 @@ export async function updateTelevisor(
       sedeId
     } = req.body;
 
-    const televisor = await Televisor.findOneBy({ id: parseInt(id) });
+    const televisor = await Televisor.findOneBy({ id: parseInt(String(id)) });
 
     if (!televisor) {
       return res.status(404).json({ message: "Televisor no encontrado" });
@@ -267,7 +267,7 @@ export async function getTvHeadquartersDistribution(
       .leftJoinAndSelect("televisor.sedeRelation", "sede")
       .select("sede.name", "sedeName")
       .addSelect("COUNT(televisor.id)", "count")
-      .where("televisor.sedeId = :id", { id: parseInt(id) })
+      .where("televisor.sedeId = :id", { id: parseInt(String(id)) })
       .groupBy("sede.name")
       .orderBy("count", "DESC")
       .getRawMany();
@@ -298,22 +298,22 @@ export async function getTvAgeByHeadquarter(
     const twoYearsAgo = subYears(now, 2);
     const threeYearsAgo = subYears(now, 3);
 
-    const totalTvs = await Televisor.count({ where: { sedeId: parseInt(id) } });
+    const totalTvs = await Televisor.count({ where: { sedeId: parseInt(String(id)) } });
 
     const lessThanOneYear = await Televisor.count({
-      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(id) },
+      where: { purchaseDate: MoreThan(oneYearAgo), sedeId: parseInt(String(id)) },
     });
     const betweenOneAndTwoYears = await Televisor.count({
-      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(id) },
+      where: { purchaseDate: Between(twoYearsAgo, oneYearAgo), sedeId: parseInt(String(id)) },
     });
     const betweenTwoAndThreeYears = await Televisor.count({
-      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(id) },
+      where: { purchaseDate: Between(threeYearsAgo, twoYearsAgo), sedeId: parseInt(String(id)) },
     });
     const moreThanThreeYears = await Televisor.count({
-      where: { purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(id) },
+      where: { purchaseDate: LessThan(threeYearsAgo), sedeId: parseInt(String(id)) },
     });
 
-    const tv = await Televisor.find({ select: ["purchaseDate"], where: { sedeId: parseInt(id) } });
+    const tv = await Televisor.find({ select: ["purchaseDate"], where: { sedeId: parseInt(String(id)) } });
     let totalAge = 0;
 
     tv.forEach((t) => {
@@ -356,11 +356,11 @@ export async function getTvWarrantyStatistics(
     const { id } = req.params;
 
     const tvs = await Televisor.count({
-      where: { sedeId: parseInt(id) },
+      where: { sedeId: parseInt(String(id)) },
     });
 
     const tvWithWarranty = await Televisor.find({
-      where: { warranty: true, sedeId: parseInt(id) },
+      where: { warranty: true, sedeId: parseInt(String(id)) },
       select: ["id", "purchaseDate", "warrantyTime"],
     });
 

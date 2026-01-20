@@ -21,7 +21,7 @@ export async function getServicioSolicitado(req: Request, res: Response, next: N
         
         const { id } = req.params;
 
-        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(String(id))});
 
         if(!servicioSolicitado){
             return res.status(404).json({message: "Servicio solicitado no encontrado"});
@@ -83,7 +83,7 @@ export async function updateServicioSolicitado(req: Request, res: Response, next
 
         const { code, name, status } = req.body;
 
-        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(String(id))});
 
         if (!servicioSolicitado) {
             return res.status(404).json({message: "Servicio solicitado no encontrado"});
@@ -120,7 +120,7 @@ export async function deleteServicioSolicitado(req: Request, res: Response, next
         
         const { id } = req.params;
 
-        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(id)});
+        const servicioSolicitado = await ServiciosSolicitados.findOneBy({id: parseInt(String(id))});
 
         if (!servicioSolicitado) {
             return res.status(404).json({message: "Servicio solicitado no encontrado"});
@@ -163,7 +163,7 @@ export async function updateServicioSolicitadoTable(req: Request, res: Response,
       const { id } = req.params;
       const { description, status } = req.body;
   
-      const servicioSolicitado = await ServiciosSolicitados.findOneBy({ id: parseInt(id) });
+      const servicioSolicitado = await ServiciosSolicitados.findOneBy({ id: parseInt(String(id)) });
   
       if (!servicioSolicitado) {
         return res.status(404).json({ message: "Servicio solicitado not found" });

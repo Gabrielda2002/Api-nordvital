@@ -17,7 +17,7 @@ export async function getDocumentTypeById(req: Request, res: Response, next: Nex
 
         const { id } = req.params;
 
-        const documentType = await TipoDocumento.findOneBy({id : parseInt(id)});
+        const documentType = await TipoDocumento.findOneBy({id : parseInt(String(id))});
 
         if(!documentType){
             return res.status(404).json({message: "Tipo de documento no encontrado"});
@@ -68,7 +68,7 @@ export async function updateDocumentType(req: Request, res: Response, next: Next
         const { id } = req.params;
         const { name, status } = req.body;
 
-        const documentType = await TipoDocumento.findOneBy({id : parseInt(id)});
+        const documentType = await TipoDocumento.findOneBy({id : parseInt(String(id))});
 
         if(!documentType){
             return res.status(404).json({message: "Tipo de documento no encontrado"});
@@ -101,7 +101,7 @@ export async function deleteDocumentType(req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        const documentType = await TipoDocumento.findOneBy({id : parseInt(id)});
+        const documentType = await TipoDocumento.findOneBy({id : parseInt(String(id))});
 
         if(!documentType){
             return res.status(404).json({message: "Tipo de documento no encontrado"});
@@ -123,7 +123,7 @@ export async function updateStatusDocumentType(req: Request, res: Response, next
         const { id } = req.params;
         const { status, name } = req.body;
         
-        const tipoDocumento = await TipoDocumento.findOneBy({ id: parseInt(id) });
+        const tipoDocumento = await TipoDocumento.findOneBy({ id: parseInt(String(id)) });
 
         if (!tipoDocumento) {
             return res.status(404).json({ message: 'Document type not fond' });

@@ -22,7 +22,7 @@ export async function getEstadosSeguimiento(req: Request, res: Response, next: N
             return res.status(400).json({message: "Id is required"});
         }
 
-        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
+        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(String(id))});
 
         if (!estadoSeguimiento) {
             return res.status(404).json({message: "Estado de seguimiento not found"});
@@ -92,7 +92,7 @@ export async function updateEstadosSeguimiento(req: Request, res: Response, next
             return res.status(400).json({message: "Name and status are required"});
         }
 
-        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
+        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(String(id))});
         if (!estadoSeguimiento) {
             return res.status(404).json({message: "Estado de seguimiento not found"});
         }
@@ -128,7 +128,7 @@ export async function deleteEstadosSeguimiento(req: Request, res: Response, next
             return res.status(400).json({message: "Id is required"});
         }
 
-        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(id)});
+        const estadoSeguimiento = await EstadosSeguimiento.findOneBy({id: parseInt(String(id))});
 
         if (!estadoSeguimiento) {
             return res.status(404).json({message: "Estado de seguimiento not found"});

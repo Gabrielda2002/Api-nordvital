@@ -18,7 +18,7 @@ export async function getEspecialidad(req: Request, res: Response, next: NextFun
         
         const { id } = req.params;
 
-        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(String(id)) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -92,7 +92,7 @@ export async function updateEspecialidad(req: Request, res: Response, next: Next
             return res.status(400).json({ message: "Name is required" });
         }
 
-        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(String(id)) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -129,7 +129,7 @@ export async function deleteEspecialidad(req: Request, res: Response, next: Next
             return res.status(400).json({ message: "Id is required" });
         }
 
-        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(String(id)) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });
@@ -184,7 +184,7 @@ export async function updateStatusEspecialidad(req: Request, res: Response, next
         const { id } = req.params;
         const { status, name } = req.body;
 
-        const especialidad = await Especialidad.findOneBy({ id: parseInt(id) });
+        const especialidad = await Especialidad.findOneBy({ id: parseInt(String(id)) });
 
         if (!especialidad) {
             return res.status(404).json({ message: "Especialidad not found" });

@@ -22,7 +22,7 @@ export async function getSurgery(req: Request, res: Response, next: NextFunction
 
         const { id } = req.params;
 
-        const surgery = await Cirugias.findOne({ where: { id: parseInt(id) } })
+        const surgery = await Cirugias.findOne({ where: { id: parseInt(String(id)) } })
 
         if (!surgery) {
             return res.status(404).json({ message: "Surgery not found" });
@@ -53,7 +53,7 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         } = req.body;
 
         const specialistEntity = await Profesionales.findOne({
-            where: { id: parseInt(specialist) },
+            where: { id: parseInt(String(specialist)) },
             select: ["name"]
         });
 
@@ -64,10 +64,10 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         const surgery = new Cirugias();
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
-        surgery.ipsRemite = parseInt(ipsRemite);
+        surgery.ipsRemite = parseInt(String(ipsRemite));
         surgery.observation = observation;
         surgery.status = true;
-        surgery.radicadoId = parseInt(radicadoId);
+        surgery.radicadoId = parseInt(String(radicadoId));
         surgery.paraclinicalDate = paraclinicalDate || "0000-00-00";
         surgery.anesthesiologyDate = anesthesiologyDate || "0000-00-00";
         surgery.specialist = specialistEntity.name;
@@ -134,7 +134,7 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
             radicadoId
         } = req.body;
 
-        const surgery = await Cirugias.findOne({ where: { id: parseInt(id) } })
+        const surgery = await Cirugias.findOne({ where: { id: parseInt(String(id)) } })
 
         if (!surgery) {
             return res.status(404).json({ message: "Surgery not found" });
@@ -171,7 +171,7 @@ export async function deleteSurgery(req: Request, res: Response, next: NextFunct
 
         const { id } = req.params;
 
-        const surgery = await Cirugias.findOne({ where: { id: parseInt(id) } })
+        const surgery = await Cirugias.findOne({ where: { id: parseInt(String(id)) } })
 
         if (!surgery) {
             return res.status(404).json({ message: "Surgery not found" });

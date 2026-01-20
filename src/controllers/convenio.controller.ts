@@ -24,7 +24,7 @@ export async function getConvenioById(req: Request, res: Response, next: NextFun
         
         const { id } = req.params;
 
-        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
+        const convenio = await Convenio.findOneBy({ id: parseInt(String(id)) });
 
         if (!convenio) {
             return res.status(404).json({ message: "Convenio not found" });
@@ -94,7 +94,7 @@ export async function updateConvenio(req: Request, res: Response, next: NextFunc
         const { name } = req.body;
 
 
-        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
+        const convenio = await Convenio.findOneBy({ id: parseInt(String(id)) });
 
         if (!convenio) {
             return res.status(404).json({ message: "Convenio not found" });
@@ -133,7 +133,7 @@ export async function deleteConvenio(req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
 
-        const convenio = await Convenio.findOneBy({ id: parseInt(id) });
+        const convenio = await Convenio.findOneBy({ id: parseInt(String(id)) });
 
         if (!convenio) {
             return res.status(404).json({ message: "Convenio not found" });
@@ -157,7 +157,7 @@ export async function updateStatusConvenio(req: Request, res: Response, next: Ne
 
         const { status, name } = req.body;
 
-        const convenioExist = await Convenio.findOneBy({ id: parseInt(id) });
+        const convenioExist = await Convenio.findOneBy({ id: parseInt(String(id)) });
 
         if (!convenioExist) {
             return res.status(404).json({ message: "Convenio no encontrado" });

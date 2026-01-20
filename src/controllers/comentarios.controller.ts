@@ -21,7 +21,7 @@ export async function getCommentById(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const comment = await Comentarios.findOneBy({ id: parseInt(id) });
+        const comment = await Comentarios.findOneBy({ id: parseInt(String(id)) });
 
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
@@ -70,7 +70,7 @@ export async function updateComment(req: Request, res: Response, next: NextFunct
         const { id } = req.params;
         const { ticketId, usuarioId, coment } = req.body;
 
-        const comment = await Comentarios.findOneBy({ id: parseInt(id) });
+        const comment = await Comentarios.findOneBy({ id: parseInt(String(id)) });
 
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
@@ -105,7 +105,7 @@ export async function deleteComment(req: Request, res: Response, next: NextFunct
         
         const { id } = req.params;
 
-        const comment = await Comentarios.findOneBy({ id: parseInt(id) });
+        const comment = await Comentarios.findOneBy({ id: parseInt(String(id)) });
 
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
@@ -159,7 +159,7 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         
         const oldStatusId = ticket.statusId;
 
-        ticket.statusId = parseInt(status);
+        ticket.statusId = parseInt(String(status));
         ticket.remote = remote === 'true';
 
         await queryRunner.manager.save(comment);

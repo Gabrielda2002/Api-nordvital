@@ -18,7 +18,7 @@ export async function getAuxiliarySurgery(req: Request, res: Response, next: Nex
         
         const { id } = req.params;
 
-        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(id)}})
+        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(String(id))}})
 
         if (!auxiliarySurgery) {
             return res.status(404).json({ message: "Auxiliary surgery not found" });
@@ -47,8 +47,8 @@ export async function createAuxiliarySurgery(req:Request, res: Response, next: N
         auxiliarySurgery.observation = observation;
         auxiliarySurgery.status = status;
         auxiliarySurgery.cupsId = 1;
-        auxiliarySurgery.surgeryId = parseInt(surgeryId);
-        auxiliarySurgery.userId = userId ? parseInt(userId) : null;
+        auxiliarySurgery.surgeryId = parseInt(String(surgeryId));
+        auxiliarySurgery.userId = userId ? parseInt(String(userId)) : null;
 
 
 
@@ -83,7 +83,7 @@ export async function updateAuxiliarySurgery(req: Request, res: Response, next: 
             surgeryId
         } = req.body;
 
-        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(id)}})
+        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(String(id))}})
 
         if (!auxiliarySurgery) {
             return res.status(404).json({ message: "Auxiliary surgery not found" });
@@ -118,7 +118,7 @@ export async function deleteAuxiliarySurgery(req: Request, res: Response, next: 
         
         const { id } = req.params;
 
-        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(id)}})
+        const auxiliarySurgery = await SeguimientoAuxiliarCirugias.findOne({where: {id: parseInt(String(id))}})
 
         if (!auxiliarySurgery) {
             return res.status(404).json({ message: "Auxiliary surgery not found" });

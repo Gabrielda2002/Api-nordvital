@@ -36,7 +36,7 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id)  });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id))  });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -94,7 +94,7 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
         const { id } = req.params;
         const { name, status, address, city, headquartersNumber } = req.body;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -131,7 +131,7 @@ export async function deleteLugarRadicacion(req: Request, res: Response, next: N
     try {
         const { id } = req.params;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -182,7 +182,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         const { id } = req.params;
         const { status, name, address, city, headquartersNumber } = req.body;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(id) });
+        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
             return res.status(404).json({ message: "LugarRadicacion not found" });
@@ -224,7 +224,7 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
         const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
         .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
         .leftJoinAndSelect("municipio.departmentRelation", "department")
-        .where("department.id = :id", { id: parseInt(id) })
+        .where("department.id = :id", { id: parseInt(String(id)) })
         .getMany();
 
         if (!lugaresRadicacion) {

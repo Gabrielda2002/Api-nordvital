@@ -122,7 +122,7 @@ export async function updatePosition(
         const { id } = req.params;
         const { name, description, areaId, status } = req.body;
 
-        const position = await Cargo.findOne({ where: { id: parseInt(id, 10) } });
+        const position = await Cargo.findOne({ where: { id: parseInt(String(id), 10) } });
 
         if (!position) {
             return res.status(404).json({ message: "Cargo no encontrado" });

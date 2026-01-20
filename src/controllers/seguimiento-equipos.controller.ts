@@ -23,8 +23,8 @@ export async function getAllFollowEquipment(req: Request, res: Response, next: N
 
 export async function getFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
-        const data = await seguimientoEquipos.findOneBy({id: parseInt(id)})
+        const id = String(req.params.id)
+        const data = await seguimientoEquipos.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
             return res.status(404).json({
@@ -44,11 +44,11 @@ export async function createFollowEquipment(req: Request, res: Response, next: N
         const { itemId, eventDate, typeEvent, description, responsable } = req.body
 
         const data = new seguimientoEquipos()
-        data.equipmentId = parseInt(itemId)
+        data.equipmentId = parseInt(String(itemId))
         data.eventDate = eventDate
         data.eventType = typeEvent
         data.description = description
-        data.responsible = parseInt(responsable)
+        data.responsible = parseInt(String(responsable))
 
         const errors = await validate(data)
 
@@ -70,10 +70,10 @@ export async function createFollowEquipment(req: Request, res: Response, next: N
 
 export async function updateFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
+        const id = String(req.params.id)
         const { equipmentId, eventDate, eventType, description, responsible } = req.body
 
-        const data = await seguimientoEquipos.findOneBy({id: parseInt(id)})
+        const data = await seguimientoEquipos.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
             return res.status(404).json({
@@ -81,11 +81,11 @@ export async function updateFollowEquipment(req: Request, res: Response, next: N
             })
         }
 
-        data.equipmentId = parseInt(equipmentId)
+        data.equipmentId = parseInt(String(equipmentId))
         data.eventDate = eventDate
         data.eventType = eventType
         data.description = description
-        data.responsible = parseInt(responsible)
+        data.responsible = parseInt(String(responsible))
 
         const errors = await validate(data)
 
@@ -107,8 +107,8 @@ export async function updateFollowEquipment(req: Request, res: Response, next: N
 
 export async function deleteFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
-        const id = req.params.id
-        const data = await seguimientoEquipos.findOneBy({id: parseInt(id)})
+        const id = String(req.params.id)
+        const data = await seguimientoEquipos.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
             return res.status(404).json({

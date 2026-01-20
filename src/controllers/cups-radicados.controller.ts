@@ -26,7 +26,7 @@ export async function getCupsRadicados(
     const { id } = req.params;
 
     const cupsRadicados = await CupsRadicados.findOne({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(String(id)) },
       relations: ["radicacionRelation", "functionalUnitRelation"],
     });
 
@@ -121,7 +121,7 @@ export async function updateCupsRadicados(
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
+    const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(String(id)) });
 
     if (!cupsRadicados) {
       return res.status(404).json({ message: "Cups Radicados not found" });
@@ -160,7 +160,7 @@ export async function deleteCupsRadicados(
   try {
     const { id } = req.params;
 
-    const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(id) });
+    const cupsRadicados = await CupsRadicados.findOneBy({ id: parseInt(String(id)) });
 
     if (!cupsRadicados) {
       return res.status(404).json({ message: "Cups Radicados not found" });

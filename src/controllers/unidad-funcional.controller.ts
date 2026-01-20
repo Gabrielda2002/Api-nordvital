@@ -21,7 +21,7 @@ export async function getUnidadFuncionalById(req: Request, res: Response, next: 
         
         const { id } = req.params;
 
-        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(id)});
+        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(String(id))});
 
         if(!unidadFuncional){
             return res.status(404).json({message: "Unidad Funcional no encontrada"});
@@ -78,7 +78,7 @@ export async function updateUnidadFuncional(req: Request, res: Response, next: N
 
         const { name, status } = req.body;
 
-        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(id)});
+        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(String(id))});
 
         if (!unidadFuncional){
             return res.status(404).json({message: "Unidad Funcional no encontrada"});
@@ -112,7 +112,7 @@ export async function deleteUnidadFuncional(req: Request, res: Response, next: N
         
         const { id } = req.params;
 
-        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(id)});
+        const unidadFuncional = await UnidadFuncional.findOneBy({id: parseInt(String(id))});
 
         if (!unidadFuncional){
             return res.status(404).json({message: "Unidad Funcional no encontrada"});

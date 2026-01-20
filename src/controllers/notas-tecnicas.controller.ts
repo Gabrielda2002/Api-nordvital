@@ -22,7 +22,7 @@ export async function getNotaTecnicaById(req: Request, res: Response, next: Next
         const { id } = req.params;
 
         const nota = await NotasTecnicas.createQueryBuilder("nota")
-            .where("nota.id = :id", { id: parseInt(id) })
+            .where("nota.id = :id", { id: parseInt(String(id)) })
             .getMany();
 
         if (!nota) {
@@ -42,14 +42,14 @@ export async function createNotaTecnica(req: Request, res: Response, next: NextF
         const { idEps, idService, frecuencyUse, amount, subgroup, group, idSede, rate } = req.body;
 
         const nota = new NotasTecnicas();
-        nota.idEps = parseInt(idEps);
-        nota.idService = parseInt(idService);
+        nota.idEps = parseInt(String(idEps));
+        nota.idService = parseInt(String(idService));
         nota.frecuencyUse = frecuencyUse;
-        nota.amount = parseInt(amount);
+        nota.amount = parseInt(String(amount));
         nota.subgroup = subgroup;
         nota.group = group;
-        nota.idSede = parseInt(idSede);
-        nota.rate = parseInt(rate);
+        nota.idSede = parseInt(String(idSede));
+        nota.rate = parseInt(String(rate));
 
         const errors = await validate(nota);
         if (errors.length > 0) {
@@ -76,21 +76,21 @@ export async function updateNotaTecnica(req: Request, res: Response, next: NextF
         const { idEps, idService, frecuencyUse, amount, subgroup, group, idSede, rate } = req.body;
 
         const nota = await NotasTecnicas.createQueryBuilder("nota")
-            .where("nota.id = :id", { id: parseInt(id) })
+            .where("nota.id = :id", { id: parseInt(String(id)) })
             .getOne();
 
         if (!nota) {
             return res.status(404).json({ message: "Nota tecnica not found" });
         }
 
-        nota.idEps = parseInt(idEps);
-        nota.idService = parseInt(idService);
+        nota.idEps = parseInt(String(idEps));
+        nota.idService = parseInt(String(idService));
         nota.frecuencyUse = frecuencyUse;
-        nota.amount = parseInt(amount);
+        nota.amount = parseInt(String(amount));
         nota.subgroup = subgroup;
         nota.group = group;
-        nota.idSede = parseInt(idSede);
-        nota.rate = parseInt(rate);
+        nota.idSede = parseInt(String(idSede));
+        nota.rate = parseInt(String(rate));
 
         const errors = await validate(nota);
         if (errors.length > 0) {
@@ -116,7 +116,7 @@ export async function deleteNotaTecnica(req: Request, res: Response, next: NextF
         const { id } = req.params;
 
         const nota = await NotasTecnicas.createQueryBuilder("nota")
-            .where("nota.id = :id", { id: parseInt(id) })
+            .where("nota.id = :id", { id: parseInt(String(id)) })
             .getOne();
 
         if (!nota) {

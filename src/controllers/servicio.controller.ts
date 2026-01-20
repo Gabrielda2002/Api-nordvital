@@ -24,7 +24,7 @@ export async function getServicioById(
   try {
     const { id } = req.params;
 
-    const servicio = await Servicios.findOneBy({ id: parseInt(id) });
+    const servicio = await Servicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!servicio) {
       throw new NotFoundError("Servicio no encontrado");
@@ -70,7 +70,7 @@ export async function updateServicio(
     const { id } = req.params;
     const { name, status } = req.body;
 
-    const servicio = await Servicios.findOneBy({ id: parseInt(id) });
+    const servicio = await Servicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!servicio) {
       throw new NotFoundError("Servicio no encontrado");
@@ -96,7 +96,7 @@ export async function deleteServicio(
   try {
     const { id } = req.params;
 
-    const servicio = await Servicios.findOneBy({ id: parseInt(id) });
+    const servicio = await Servicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!servicio) {
       throw new NotFoundError("Servicio no encontrado");
@@ -149,7 +149,7 @@ export async function updateStatusServicio(
     const { id } = req.params;
     const { status, name } = req.body;
 
-    const servicio = await Servicios.findOneBy({ id: parseInt(id) });
+    const servicio = await Servicios.findOneBy({ id: parseInt(String(id)) });
 
     if (!servicio) {
       throw new NotFoundError("Servicio no encontrado");

@@ -18,7 +18,7 @@ export async function getPriorityById(req: Request, res: Response, next: NextFun
         
         const { id } = req.params;
 
-        const priority = await Prioridad.findOneBy({ id: parseInt(id) });
+        const priority = await Prioridad.findOneBy({ id: parseInt(String(id)) });
 
         if (!priority) {
             return res.status(404).json({ message: "Priority not found" });
@@ -68,7 +68,7 @@ export async function updatePriority(req: Request, res: Response, next: NextFunc
             return res.status(400).json({ message: "Name is required" });
         }
 
-        const priority = await Prioridad.findOneBy({ id: parseInt(id) });
+        const priority = await Prioridad.findOneBy({ id: parseInt(String(id)) });
 
         if (!priority) {
             return res.status(404).json({ message: "Priority not found" });
@@ -90,7 +90,7 @@ export async function deletePriority(req: Request, res: Response, next: NextFunc
         
         const { id } = req.params;
 
-        const priority = await Prioridad.findOneBy({ id: parseInt(id) });
+        const priority = await Prioridad.findOneBy({ id: parseInt(String(id)) });
 
         if (!priority) {
             return res.status(404).json({ message: "Priority not found" });
