@@ -12,7 +12,7 @@ class RedisService {
       port: config.redis.port,
       password: config.redis.password,
       db: config.redis.db,
-      retryStrategy: (times) => {
+      retryStrategy: (times: any) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
@@ -22,7 +22,7 @@ class RedisService {
       Logger.info("Redis connected successfully");
     });
 
-    this.client.on("error", (error) => {
+    this.client.on("error", (error: any) => {
       Logger.error("Redis connection error", error);
     });
   }

@@ -1353,8 +1353,9 @@ export async function getReportRedDevice(req: Request, res: Response, next: Next
       { header: "", key: "serial", width: 20 },
       { header: "", key: "addressIp", width: 20 },
       { header: "", key: "mac", width: 20 },
-      { header: " ", key: "otherData", width: 30 },
+      { header: "", key: "otherData", width: 30 },
       { header: "", key: "status", width: 15 },
+      { header: "", key: "headquarters", width: 20 },
       { header: "", key: "inventoryNumber", width: 20 },
       { header: "", key: "updatedAt", width: 20 },
     ];
@@ -1369,6 +1370,7 @@ export async function getReportRedDevice(req: Request, res: Response, next: Next
       "MAC",
       "Otros Datos",
       "Estado",
+      "Sede",
       "Número de Inventario",
       "Fecha de Actualización",
     ];
@@ -1400,6 +1402,7 @@ export async function getReportRedDevice(req: Request, res: Response, next: Next
         serial: d.serial,
         otherData: d.otherData,
         status: d.status,
+        headquarters: d.placeRelation?.name || "",
         inventoryNumber: d.inventoryNumber,
         createdAt: d.createAt,
         updatedAt: d.updateAt,
@@ -1759,6 +1762,7 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
       { header: "", key: "temperedGlass", width: 20 },
       { header: "", key: "observarion", width: 20 },
       { header: "", key: "status", width: 20 },
+      { header: "", key: "headquarters", width: 20 },
       { header: "", key: "acquisitionValue", width: 20 },
       { header: "", key: "updatedAt", width: 20 },
     ];
@@ -1790,6 +1794,7 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
       "Vidrio templado",
       "Observaciones",
       "Estado",
+      "Sede",
       "Valor de adquisición",
       "Fecha de actualización"
     ];
@@ -1837,6 +1842,7 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
         temperedGlass: c.temperedGlass ? "Si" : "No",
         observation: c.observation || "",
         status: c.status || "",
+        headquarters: c.sedeRelation?.name || "",
         acquisitionValue: c.acquisitionValue || "",
         updatedAt: c.updatedAt || "",
       })
