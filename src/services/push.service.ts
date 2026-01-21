@@ -1,20 +1,13 @@
 import webpush from 'web-push';
 import { PushSubscription } from '../entities/push-subscription';
+import { config } from '../config/environment.config';
 
 export class PushService{
     static async initialize(){
-        const PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
-        const PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
-
-        if (!PUBLIC_KEY || !PRIVATE_KEY) {
-            console.log('VAPID keys are not set');
-            return;
-        }
-
         webpush.setVapidDetails(
             'mailto:contacto@nordvitalips.com',
-            PUBLIC_KEY,
-            PRIVATE_KEY
+            config.push.vapidPublicKey,
+            config.push.vapidPrivateKey
         );
     }
 

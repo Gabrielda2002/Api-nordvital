@@ -1,13 +1,7 @@
 import jwk from "jsonwebtoken";
 import crypto from "crypto";
 import { RefreshToken } from "../entities/refresh-tokens";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const JWK_secret = process.env.JWT_SECRET || "default_secret_key";
-const REFRESH_TOKEN_SECRET =
-  process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret_key";
+import { config } from "../config/environment.config";
 
 export class TokenService {
 
@@ -15,17 +9,17 @@ export class TokenService {
     id: number;
     dniNumber: number;
     rol: number;
-  }) {
+  }): string {
     return jwk.sign(
       {
         id: user.id,
         dniNumber: user.dniNumber,
         rol: user.rol,
       },
-      JWK_secret,
+      config.jwt.secret,
       {
-        expiresIn: "4h",
-      }
+        expiresIn: config.jwt.accessTokenExpiry,
+      } as jwk.SignOptions
     );
   }
 
@@ -49,7 +43,7 @@ export class TokenService {
     const refreshToken = new RefreshToken();
     refreshToken.token = token;
     refreshToken.userId = userId;
-    refreshToken.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 30 días
+    refreshToken.expiresAt = new Date(Date.now() + config.jwt.refreshTokenExpiry);
     refreshToken.isRevoked = false;
 
     return await refreshToken.save();

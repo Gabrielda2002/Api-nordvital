@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { Soportes } from '../entities/soportes';
 import { QueryRunner } from 'typeorm';
+import Logger from './logger-wrapper';
 
 /**
  * Actualiza un archivo existente y su registro en la base de datos
@@ -48,7 +49,7 @@ export async function updateFileAndRecord(
     
     return oldSoporte;
   } catch (error) {
-    console.error('Error al actualizar archivo:', error);
+    Logger.error('Error al actualizar archivo', error);
     throw error;
   }
 }
@@ -78,7 +79,7 @@ export async function deleteFileAndRecord(
     // 3. Eliminar el registro
     await queryRunner.manager.remove(soporte);
   } catch (error) {
-    console.error('Error al eliminar archivo:', error);
+    Logger.error('Error al eliminar archivo', error);
     throw error;
   }
 }

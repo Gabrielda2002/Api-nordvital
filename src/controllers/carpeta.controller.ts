@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { Carpeta } from "../entities/carpeta";
-import { validate } from "class-validator";
-import { error } from "console";
 import * as fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
 import { Archivos } from "../entities/archivos";
 import { IsNull, QueryRunner } from "typeorm";
 import { AppDataSource } from "../db/conexion";
+import { NotFoundError, ConflictError, InternalServerError } from "../utils/custom-errors";
+import { validateEntity } from "../utils/validation-helper";
 
 export async function getAllFolders(
   req: Request,
@@ -31,7 +31,7 @@ export async function getFolderById(
     const { id } = req.params;
     const folder = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     if (!folder) {
-      return res.status(404).json({ message: "Folder not found" });
+      throw new NotFoundError("Folder not found");
     }
     return res.json(folder);
   } catch (error) {
@@ -52,23 +52,20 @@ export async function createFolder(
 
     let folderPath: string;
 
-    // ? comprobar si la carpeta padre existe
     if (parentFolderId) {
       const parentFolder = await Carpeta.createQueryBuilder("carpeta")
         .where("carpeta.id = :id", { id: parentFolderId })
         .getOne();
       if (!parentFolder) {
-        return res.status(404).json({ message: "Parent folder not found" });
+        throw new NotFoundError("Parent folder not found");
       }
       folderPath = path.join(parentFolder.path, folderName).replace(/\\/g, "/");
     } else {
-      // * si es una carpeta raiz
       folderPath = path
         .join("SistemaGestionCalidad", folderName)
         .replace(/\\/g, "/");
     }
 
-    // ruta fisica absoluta
     const absoluteFolderPath = path.join(
       __dirname,
       "..",
@@ -82,16 +79,14 @@ export async function createFolder(
       .catch(() => false);
 
     if (folderExists) {
-      return res.status(409).json({ message: "Folder already exists" });
+      throw new ConflictError("Folder already exists");
     }
-    // crear carpeta fisica y verificar que se haya creado correctamente
-    await fsPromises
-      .mkdir(absoluteFolderPath, { recursive: true })
-      .catch((err) => {
-        return res
-          .status(500)
-          .json({ message: "Error creating folder", error: err.message });
-      });
+
+    try {
+      await fsPromises.mkdir(absoluteFolderPath, { recursive: true });
+    } catch (err: any) {
+      throw new InternalServerError(`Error creating folder: ${err.message}`);
+    }
 
     const folder = new Carpeta();
     folder.name = folderName;
@@ -101,18 +96,7 @@ export async function createFolder(
     folder.userId = user_id;
     folder.seccion = section;
 
-    const errors = await validate(folder);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => (
-        Object.values(err.constraints || {}).join(", ")
-      ));
-
-      return res
-        .status(400)
-        .json({ message: message });
-    }
-
+    await validateEntity(folder);
     await folder.save();
 
     return res.status(201).json(folder);
@@ -182,19 +166,11 @@ export async function updateFolder(
     await queryRunner.startTransaction();
 
     try {
-      // Actualizar la entidad Carpeta en la base de datos
       folder.name = name;
       folder.parentFolderId = parentFolderId;
       folder.path = newPath;
 
-      const errors = await validate(folder);
-      if (errors.length > 0) {
-        const message = errors.map((err) => (
-          Object.values(err.constraints || {}).join(", ")
-        ));
-        throw new Error(`Validation error: ${message.join(", ")}`);
-      }
-
+      await validateEntity(folder);
       await queryRunner.manager.save(folder);
 
       // Actualizar las rutas de los archivos y subcarpetas usando QueryRunner
@@ -476,19 +452,11 @@ export async function moveFolder(
     await queryRunner.startTransaction();
 
     try {
-      // actualizar carpeta en la base de datos
       folderToMove.parentFolderId = newParentId || null;
       folderToMove.path = newRelativePath;
       folderToMove.seccion = section;
 
-      const errors = await validate(folderToMove);
-      if (errors.length > 0) {
-        const message = errors.map((err) => (
-          Object.values(err.constraints || {}).join(", ")
-        ));
-        throw new Error(`Validation error: ${message.join(", ")}`);
-      }
-
+      await validateEntity(folderToMove);
       await queryRunner.manager.save(folderToMove);
 
       // actualizar rutas de archivos y subcarpetas con transacción

@@ -17,6 +17,8 @@ import { options } from "./swagger-options";
 import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 import cookieParser from "cookie-parser";
+import { config } from "./config/environment.config";
+import Logger from "./utils/logger-wrapper";
 
 // * cargar variables de entorno
 dotenv.config();
@@ -25,24 +27,12 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3600",
-  "https://test.nordvitalips.com",
-  "https://nordvitalips.com",
-  "https://www.nordvitalips.com",
-  "https://nordvitalips.com",
-  "https://www.app.nordvitalips.com",
-  "https://app.nordvitalips.com",
-  "http://localhost:4321"
-];
-
 export let  io: SocketIOServer;
 
 const server = http.createServer(app);
 io = new SocketIOServer(server, {
   cors: {
-    origin: allowedOrigins, 
+    origin: config.cors.allowedOrigins, 
     methods: ['GET', 'PUT', 'POST'],
     credentials: true
   },
@@ -51,16 +41,16 @@ io = new SocketIOServer(server, {
 
 
 io.on('connection', (socket) => {
-  console.log('Usuario conectado', socket.id)
+  Logger.info(`Usuario conectado: ${socket.id}`);
 
   // unirse a una sala especifica
   socket.on('join', (room) => {
     socket.join(room)
-    console.log(`Se unicio el usuario ${socket.id} a la sala ${room}`)
+    Logger.info(`Usuario ${socket.id} se unió a la sala: ${room}`);
   })
 
   socket.on('disconnect', () => {
-    console.log('Usuario desconectado', socket.id)
+    Logger.info(`Usuario desconectado: ${socket.id}`);
   })
 })
 
@@ -69,7 +59,7 @@ app.use(
     exposedHeaders: ["token-status", "Content-Disposition"],
     origin: function (origin, callback) {
       // * permitir la solicitud si esta ene el array
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      if (!origin || config.cors.allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -103,21 +93,18 @@ app.use(
 //* Middleware para loggear las peticiones
 app.use(loggerMiddleware);
 
-// * variable global de prefijos para las rutas
-const apiPrefix = process.env.API_PREFIX || "/api/v1";
-
 // * Rutas
 
 const spects = swaggerJsDoc(options)
 
-app.use(apiPrefix, routes);
+app.use(config.server.apiPrefix, routes);
 
 // * Swagger UI - Solo disponible en desarrollo y testing
-if (process.env.NODE_ENV !== 'production') {
+if (!config.server.isProduction) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spects));
-  console.log('📚 Swagger UI disponible en: /api-docs');
+  Logger.info('📚 Swagger UI disponible en: /api-docs');
 } else {
-  console.log('🔒 Swagger UI deshabilitado en producción');
+  Logger.info('🔒 Swagger UI deshabilitado en producción');
 }
 
 // * middleware para manejar los errores en los logs

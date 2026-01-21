@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
-import dotenv from "dotenv";
-
-dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
+import { config } from "../config/environment.config";
+import Logger from "../utils/logger-wrapper";
 
 // * Middleware para autenticar a los usuarios
 export function authenticate(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +23,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   jwt.verify(
     token,
-    JWT_SECRET,
+    config.jwt.secret,
     (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
       if (err) {
         let code = "INVALID_TOKEN";
@@ -33,8 +31,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
           code = "TOKEN_EXPIRED";
         }
 
-        console.log("Error al verificar el token:", err.message);
-        console.log("Token:", token);
+        Logger.warn("Token inválido o expirado", {
+          error: err.message,
+          code: code,
+          token: token.substring(0, 20) + "...",
+        });
 
         return res.status(401).json({
           message: "Token no válido o expirado.",
