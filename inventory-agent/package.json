@@ -1,0 +1,25 @@
+{
+  "name": "@nordvital/inventory-agent",
+  "version": "1.0.0",
+  "description": "Agente automático para inventariar equipos de cómputo",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "build:exe": "pnpm build && pkg dist/index.js --targets node18-win-x64 --output build/inventory-agent.exe",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["inventory", "hardware", "automation"],
+  "author": "NordVital",
+  "license": "MIT",
+  "dependencies": {
+    "systeminformation": "^5.21.20",
+    "axios": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node-dev": "^2.0.0",
+    "pkg": "^5.8.1"
+  }
+}
