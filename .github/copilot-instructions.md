@@ -98,8 +98,9 @@ npm run m:revert     # Revertir la última migración
 ### Estructura de Tareas (Sintaxis unificada Notion/ClickUp)
 
 #### **Campos obligatorios:**
+### Estos campos deben estar presentes en cada tarea creada para asegurar una gestión adecuada si no es posible integrarlos en la solicitud decirlo.
 - **Nombre de tarea:** Título con prefijo según tipo (feat:, fix:, refactor:, etc.)
-- **Descripción:** Descripción detallada de la tarea
+- **Descripción:** Descripción clara del objetivo y alcance de la tarea minimo 10 lineas y maximo 50 lineas.
 - **Estado:** 
   - Notion: Sin empezar | En curso | Retrasada | Listo
   - ClickUp: EN ESPERA | PENDIENTE | EN PROCESO | COMPLETADO | EN REVISION | ACEPTADO
@@ -108,11 +109,10 @@ npm run m:revert     # Revertir la última migración
   - ClickUp: Baja | Normal | Alta | Urgente
 - **Responsable:** Gabriel Duarte (por defecto)
 - **Fecha límite:** Fecha en formato YYYY-MM-DD
-
-#### **Campos opcionales:**
 - **Tiempo Estimado:** Duración en horas
 - **Tags/Etiquetas:** Tags relevantes para la tarea
 - **Fecha de inicio:** Fecha en formato YYYY-MM-DD
+
 
 #### **Campos específicos de Notion (no en ClickUp):**
 - **Nivel de esfuerzo:** Pequeño | Media | Grande
