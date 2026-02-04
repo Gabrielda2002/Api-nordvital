@@ -851,3 +851,259 @@ export async function searchEquipmentGlobal(
     next(error);
   }
 }
+
+
+export interface EquipmentData {
+  name: string;
+  ubicacion: string;
+  typeEquipment: string;
+  brand: string;
+  model: string;
+  serial: string;
+  operationalSystem: string;
+  addressIp?: string;
+  mac: string;
+  purchaseDate?: Date;
+  warrantyTime?: string;
+  warranty?: boolean;
+  deliveryDate?: Date;
+  inventoryNumber?: string;
+  dhcp?: boolean;
+  lock?: boolean;
+  lockKey?: string | null;
+}
+
+export interface ComponentData {
+  name: string;
+  brand: string;
+  capacity: string;
+  speed: string;
+  otherData: string;
+  model: string;
+  serial: string;
+}
+
+export interface SoftwareData {
+  name: string;
+  versions: string;
+  license: string;
+  otherData: string;
+  installDate?: Date;
+  status: string;
+}
+
+export interface AccessoryData {
+  name: string;
+  brand: string;
+  model: string;
+  serial?: string;
+  otherData: string;
+  status: string;
+  inventoryNumber?: string;
+}
+
+export interface InventoryPayload {
+  equipment: EquipmentData;
+  components: ComponentData[];
+  software: SoftwareData[];
+  // accessories: AccessoryData[];
+}
+
+
+/**
+ * Auto-inventory endpoint
+ * Creates or updates equipment with components and software based on MAC/Serial
+ */
+export async function autoInventory(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const queryRunner = Equipos.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    const { equipment, components, software }: InventoryPayload = req.body;
+
+    console.log(req.body);
+
+    // Validar datos requeridos
+    if (!equipment || !equipment.mac || !equipment.serial) {
+      return res.status(400).json({
+        message: "MAC y Serial son requeridos para identificar el equipo"
+      });
+    }
+
+    // Buscar equipo existente por MAC o Serial
+    const existingEquipment = await queryRunner.manager.findOne(Equipos, {
+      where: [
+        // { mac: equipment.mac }, // ? comentar con los companeros para ver si se recomienda usar la mac como identificador unico
+        { serial: equipment.serial }
+      ],
+      relations: ['componentRelation', 'softwareRelation']
+    });
+
+    let savedEquipment: Equipos;
+
+    if (existingEquipment) {
+      // ACTUALIZAR equipo existente
+      console.log(`Actualizando equipo existente: ${existingEquipment.id}`);
+
+      // Actualizar solo datos técnicos, NO administrativosvale
+      existingEquipment.name = equipment.name || existingEquipment.name;
+      existingEquipment.typeEquipment = equipment.typeEquipment || existingEquipment.typeEquipment;
+      existingEquipment.brand = equipment.brand || existingEquipment.brand;
+      existingEquipment.model = equipment.model || existingEquipment.model;
+      existingEquipment.serial = equipment.serial || existingEquipment.serial;
+      existingEquipment.operationalSystem = equipment.operationalSystem || existingEquipment.operationalSystem;
+      existingEquipment.addressIp = equipment.addressIp || existingEquipment.addressIp;
+      existingEquipment.mac = equipment.mac || existingEquipment.mac;
+      existingEquipment.dhcp = equipment.dhcp !== undefined ? equipment.dhcp : existingEquipment.dhcp;
+
+      // Actualizar datos administrativos SOLO si vienen en el request
+      if (equipment.ubicacion) existingEquipment.ubicacion = equipment.ubicacion;
+      if (equipment.inventoryNumber) existingEquipment.inventoryNumber = equipment.inventoryNumber;
+      if (equipment.purchaseDate) existingEquipment.purchaseDate = new Date(equipment.purchaseDate);
+      if (equipment.warrantyTime) existingEquipment.warrantyTime = equipment.warrantyTime;
+      if (equipment.warranty !== undefined) existingEquipment.warranty = equipment.warranty;
+      if (equipment.deliveryDate) existingEquipment.deliveryDate = new Date(equipment.deliveryDate);
+      if (equipment.lock !== undefined) existingEquipment.lock = equipment.lock;
+      if (equipment.lockKey) existingEquipment.lockKey = equipment.lockKey;
+
+      // Validar antes de guardar
+      const errors = await validate(existingEquipment);
+      if (errors.length > 0) {
+        await queryRunner.rollbackTransaction();
+        const errorMessage = errors.map(e => (
+          Object.values(e.property || {}).join(', ')
+        ))
+        return res.status(400).json({
+          message: errorMessage
+        });
+      }
+
+      savedEquipment = await queryRunner.manager.save(existingEquipment);
+
+      // Eliminar componentes antiguos
+      if (existingEquipment.componentRelation && existingEquipment.componentRelation.length > 0) {
+        await queryRunner.manager.remove(existingEquipment.componentRelation);
+      }
+
+      // Eliminar software antiguo
+      if (existingEquipment.softwareRelation && existingEquipment.softwareRelation.length > 0) {
+        await queryRunner.manager.remove(existingEquipment.softwareRelation);
+      }
+
+    } else {
+      // CREAR nuevo equipo
+      console.log('Creando nuevo equipo');
+
+      const newEquipment = new Equipos();
+      newEquipment.sedeId = 1;
+      newEquipment.name = equipment.name;
+      newEquipment.ubicacion = equipment.ubicacion || 'Por definir';
+      newEquipment.typeEquipment = equipment.typeEquipment;
+      newEquipment.brand = equipment.brand;
+      newEquipment.model = equipment.model;
+      newEquipment.serial = equipment.serial;
+      newEquipment.operationalSystem = equipment.operationalSystem;
+      newEquipment.addressIp = equipment.addressIp || 'DHCP';
+      newEquipment.mac = equipment.mac;
+      newEquipment.purchaseDate = equipment.purchaseDate ? new Date(equipment.purchaseDate) : new Date();
+      newEquipment.warrantyTime = equipment.warrantyTime || 'Sin garantía';
+      newEquipment.warranty = equipment.warranty || false;
+      newEquipment.deliveryDate = equipment.deliveryDate ? new Date(equipment.deliveryDate) : new Date();
+      newEquipment.inventoryNumber = equipment.inventoryNumber || 'Por asignar';
+      newEquipment.dhcp = equipment.dhcp !== undefined ? equipment.dhcp : true;
+      newEquipment.idUsuario = null;
+      newEquipment.lock = equipment.lock || false;
+      newEquipment.lockKey = equipment.lockKey || null;
+      newEquipment.docId = null;
+
+      // Validar antes de guardar
+      const errors = await validate(newEquipment);
+      if (errors.length > 0) {
+        await queryRunner.rollbackTransaction();
+
+        const errorMessage = errors.map(e => (
+          Object.values(e.property || {}).join(', ')
+        ));
+
+        return res.status(400).json({
+          message: errorMessage
+        });
+      }
+
+      savedEquipment = await queryRunner.manager.save(newEquipment);
+    }
+
+    // Crear componentes nuevos
+    const savedComponents = [];
+    if (components && Array.isArray(components)) {
+      for (const comp of components) {
+        const { Componentes } = await import("../entities/componentes");
+        const newComponent = new Componentes();
+        newComponent.idEquipments = savedEquipment.id;
+        newComponent.name = comp.name;
+        newComponent.brand = comp.brand;
+        newComponent.capacity = comp.capacity;
+        newComponent.speed = comp.speed;
+        newComponent.otherData = comp.otherData;
+        newComponent.model = comp.model;
+        newComponent.serial = comp.serial;
+
+        const compErrors = await validate(newComponent);
+        if (compErrors.length === 0) {
+          const saved = await queryRunner.manager.save(newComponent);
+          savedComponents.push(saved);
+        }
+      }
+    }
+
+    // Crear software nuevo
+    const savedSoftware = [];
+    if (software && Array.isArray(software)) {
+      for (const soft of software) {
+        const { Software } = await import("../entities/software");
+        const newSoftware = new Software();
+        newSoftware.equipmentId = savedEquipment.id;
+        newSoftware.name = soft.name;
+        newSoftware.versions = soft.versions;
+        newSoftware.license = soft.license || 'Por verificar';
+        newSoftware.otherData = soft.otherData || 'Detectado automáticamente';
+        newSoftware.installDate = soft.installDate ? new Date(soft.installDate) : new Date();
+        newSoftware.status = soft.status || 'Activo';
+
+        const softErrors = await validate(newSoftware);
+        if (softErrors.length === 0) {
+          const saved = await queryRunner.manager.save(newSoftware);
+          savedSoftware.push(saved);
+        }
+      }
+    }
+
+    await queryRunner.commitTransaction();
+
+    return res.status(existingEquipment ? 200 : 201).json({
+      message: existingEquipment 
+        ? "Equipo actualizado exitosamente" 
+        : "Equipo creado exitosamente",
+      action: existingEquipment ? "updated" : "created",
+      equipment: {
+        id: savedEquipment.id,
+        name: savedEquipment.name,
+        serial: savedEquipment.serial,
+        mac: savedEquipment.mac
+      },
+      componentsCount: savedComponents.length,
+      softwareCount: savedSoftware.length
+    });
+
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    next(error);
+  } finally {
+    await queryRunner.release();
+  }
+}
