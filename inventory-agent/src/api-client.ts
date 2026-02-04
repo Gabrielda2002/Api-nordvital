@@ -1,14 +1,15 @@
 import axios, { AxiosInstance } from 'axios';
 import { InventoryPayload } from './types/inventory.types';
+import * as dotenv from 'dotenv';
 
 export class ApiClient {
   private client: AxiosInstance;
   private apiUrl: string;
 
-  constructor(apiUrl: string = 'http://localhost:3600') {
-    this.apiUrl = apiUrl;
+  constructor(apiUrl: string) {
+    this.apiUrl = dotenv.config().parsed?.API_URL || apiUrl;
     this.client = axios.create({
-      baseURL: apiUrl,
+      baseURL: this.apiUrl,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json'
@@ -18,14 +19,18 @@ export class ApiClient {
 
   async sendInventory(data: InventoryPayload): Promise<void> {
     try {
-      console.log(`📡 Conectando a: ${this.apiUrl}/api/equipment/auto-inventory`);
+      console.log(`📡 Conectando a: ${this.apiUrl}/api/equipos/auto-inventory`);
       
-      const response = await this.client.post('/api/equipment/auto-inventory', data);
+      const response = await this.client.post('/equipos/auto-inventory', data);
       
       console.log('✅ Respuesta del servidor:', response.status, response.statusText);
       
       if (response.data) {
-        console.log('📦 Datos recibidos:', response.data);
+        console.log('📦 Resultado:', response.data.message);
+        console.log(`   - Acción: ${response.data.action}`);
+        console.log(`   - Equipo ID: ${response.data.equipment.id}`);
+        console.log(`   - Componentes: ${response.data.componentsCount}`);
+        console.log(`   - Software: ${response.data.softwareCount}`);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
