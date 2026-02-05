@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { InventoryPayload } from './types/inventory.types';
+import { Headquarters, InventoryPayload } from './types/inventory.types';
 import * as dotenv from 'dotenv';
 
 export class ApiClient {
@@ -52,6 +52,17 @@ export class ApiClient {
       }
       throw error;
     }
+  }
+
+  async getHeadquartersList(): Promise<Headquarters[]> {
+     try {
+      
+      const response = await this.client.get<Headquarters[]>('/headquarters');
+      return response.data; 
+
+     } catch (error: any) {
+      throw error;
+     }   
   }
 
   setApiUrl(url: string): void {

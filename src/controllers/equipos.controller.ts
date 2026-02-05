@@ -855,6 +855,7 @@ export async function searchEquipmentGlobal(
 
 
 export interface EquipmentData {
+  sedeId?: number;
   name: string;
   ubicacion: string;
   typeEquipment: string;
@@ -998,8 +999,16 @@ export async function autoInventory(
       // CREAR nuevo equipo
       Logger.info('Creando nuevo equipo');
 
+      // Validar que venga el sedeId
+      if (!equipment.sedeId) {
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({
+          message: "El sedeId es requerido para crear un nuevo equipo"
+        });
+      }
+
       const newEquipment = new Equipos();
-      newEquipment.sedeId = 1;
+      newEquipment.sedeId = equipment.sedeId;
       newEquipment.name = equipment.name;
       newEquipment.ubicacion = equipment.ubicacion || 'Por definir';
       newEquipment.typeEquipment = equipment.typeEquipment;

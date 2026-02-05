@@ -1,4 +1,5 @@
 export interface EquipmentData {
+  sedeId: number;
   name: string;
   ubicacion: string;
   typeEquipment: string;
@@ -52,4 +53,10 @@ export interface InventoryPayload {
   components: ComponentData[];
   software: SoftwareData[];
   // accessories: AccessoryData[];
+}
+
+
+export type Headquarters = {
+  id: number;
+  name: string;
 }
