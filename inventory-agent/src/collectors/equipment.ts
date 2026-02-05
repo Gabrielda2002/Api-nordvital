@@ -14,7 +14,7 @@ export async function collectEquipmentData(): Promise<EquipmentData> {
     const activeNetwork = network.find(n => !n.internal && n.operstate === 'up') || network[0];
 
     const equipmentData: EquipmentData = {
-      name: osInfo.hostname || 'Unknown',
+      name: osInfo.hostname || 'N/A',
       ubicacion: 'Por definir', // Debe ser asignado manualmente
       typeEquipment: system.model.includes('Laptop') || system.model.includes('Book') ? 'Laptop' : 'Desktop',
       brand: system.manufacturer || 'Unknown',

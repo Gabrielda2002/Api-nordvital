@@ -22,13 +22,13 @@ async function askAdministrativeData(equipment: EquipmentData): Promise<Equipmen
   console.log('=========================================\n');
 
   // Ubicación
-  const ubicacion = await question('Ubicación física del equipo (ej: Oficina 301): ');
+  const ubicacion = await question('Ubicación física del equipo (ej: Consultorio 301): ');
   if (ubicacion.trim()) {
     equipment.ubicacion = ubicacion.trim();
   }
 
   // Número de inventario
-  const inventoryNumber = await question('Número de inventario (ej: INV-2024-001): ');
+  const inventoryNumber = await question('Número de inventario (ej: 00001): ');
   if (inventoryNumber.trim()) {
     equipment.inventoryNumber = inventoryNumber.trim();
   }
@@ -109,9 +109,9 @@ async function main() {
     
     rl.close();
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error('\n❌ Error durante el proceso de inventario:');
-    console.error(error);
+    console.error(error.message || error);
     console.log('\n================================================\n');
     rl.close();
     process.exit(1);

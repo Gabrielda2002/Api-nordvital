@@ -87,7 +87,7 @@ export class Equipos extends BaseEntity {
 
     @Column({name: "fecha_entrega"})
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
-    deliveryDate: Date
+    deliveryDate: Date  
 
     @Column({name: "numero_intentario"})
     @IsString()

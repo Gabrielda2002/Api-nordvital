@@ -27,11 +27,11 @@ export async function collectComponentsData(): Promise<ComponentData[]> {
     memory.forEach((mem, index) => {
       components.push({
         name: `Memoria RAM ${index + 1}`,
-        brand: mem.manufacturer || 'Unknown',
+        brand: mem.manufacturer || 'N/A',
         capacity: `${Math.round(mem.size / (1024 ** 3))} GB`,
         speed: `${mem.clockSpeed} MHz`,
         otherData: `Tipo: ${mem.type}, Slot: ${mem.bank}`,
-        model: mem.partNum || 'Unknown',
+        model: mem.partNum || 'N/A',
         serial: mem.serialNum || 'N/A'
       });
     });
@@ -40,11 +40,11 @@ export async function collectComponentsData(): Promise<ComponentData[]> {
     disk.forEach((d, index) => {
       components.push({
         name: `Disco ${index + 1}`,
-        brand: d.vendor || 'Unknown',
+        brand: d.vendor || 'N/A',
         capacity: `${Math.round(d.size / (1024 ** 3))} GB`,
         speed: d.interfaceType || 'N/A',
         otherData: `Tipo: ${d.type}, Interface: ${d.interfaceType}`,
-        model: d.name || 'Unknown',
+        model: d.name || 'N/A',
         serial: d.serialNum || 'N/A'
       });
     });
@@ -55,11 +55,11 @@ export async function collectComponentsData(): Promise<ComponentData[]> {
           !gpu.model.toLowerCase().includes('intel hd')) {
         components.push({
           name: `Tarjeta Gráfica ${index + 1}`,
-          brand: gpu.vendor || 'Unknown',
+          brand: gpu.vendor || 'N/A',
           capacity: `${gpu.vram} MB VRAM`,
           speed: 'N/A',
           otherData: `Bus: ${gpu.bus}, ${gpu.vram} MB`,
-          model: gpu.model || 'Unknown',
+          model: gpu.model || 'N/A',
           serial: 'N/A'
         });
       }
