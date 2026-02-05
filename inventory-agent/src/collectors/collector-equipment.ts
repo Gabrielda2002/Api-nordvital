@@ -17,12 +17,12 @@ export async function collectEquipmentData(): Promise<EquipmentData> {
       name: osInfo.hostname || 'N/A',
       ubicacion: 'Por definir', // Debe ser asignado manualmente
       typeEquipment: system.model.includes('Laptop') || system.model.includes('Book') ? 'Laptop' : 'Desktop',
-      brand: system.manufacturer || 'Unknown',
-      model: system.model || 'Unknown',
-      serial: system.serial || bios.serial || 'Unknown',
+      brand: system.manufacturer || 'N/A',
+      model: system.model || 'N/A',
+      serial: system.serial || bios.serial || 'N/A',
       operationalSystem: `${osInfo.distro} ${osInfo.release}`,
       addressIp: activeNetwork?.ip4 || undefined,
-      mac: activeNetwork?.mac || 'Unknown',
+      mac: activeNetwork?.mac || 'N/A',
       warrantyTime: 'Por definir',
       warranty: false,
       dhcp: true, // Asumir DHCP por defecto
