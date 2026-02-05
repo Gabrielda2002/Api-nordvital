@@ -1,7 +1,7 @@
-import { collectEquipmentData } from './collectors/equipment';
-import { collectComponentsData } from './collectors/components';
-import { collectSoftwareData } from './collectors/software';
-import { collectAccessoriesData } from './collectors/accessories';
+import { collectEquipmentData } from './collectors/collector-equipment';
+import { collectComponentsData } from './collectors/collector-components';
+import { collectSoftwareData } from './collectors/collector-software';
+import { collectAccessoriesData } from './collectors/collector-accessories';
 import { apiClient } from './api-client';
 import { EquipmentData, InventoryPayload } from './types/inventory.types';
 import * as readline from 'readline';
