@@ -8,6 +8,7 @@ import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, LessThan, MoreThan } from "typeorm";
 import { saveFileToDisk } from "../middlewares/multer-delivery.middleware";
 import { updateFileAndRecord } from "../utils/file-manager";
+import Logger from "../utils/logger-wrapper";
 
 export async function getAllEquipments(
   req: Request,
@@ -926,8 +927,6 @@ export async function autoInventory(
   try {
     const { equipment, components, software }: InventoryPayload = req.body;
 
-    console.log(req.body);
-
     // Validar datos requeridos
     if (!equipment || !equipment.mac || !equipment.serial) {
       return res.status(400).json({
@@ -948,7 +947,7 @@ export async function autoInventory(
 
     if (existingEquipment) {
       // ACTUALIZAR equipo existente
-      console.log(`Actualizando equipo existente: ${existingEquipment.id}`);
+      Logger.info(`Actualizando equipo existente: ${existingEquipment.id}`);
 
       // Actualizar solo datos técnicos, NO administrativosvale
       existingEquipment.name = equipment.name || existingEquipment.name;
@@ -976,7 +975,7 @@ export async function autoInventory(
       if (errors.length > 0) {
         await queryRunner.rollbackTransaction();
         const errorMessage = errors.map(e => (
-          Object.values(e.property || {}).join(', ')
+          Object.values(e.constraints || {}).join(', ')
         ))
         return res.status(400).json({
           message: errorMessage
@@ -997,7 +996,7 @@ export async function autoInventory(
 
     } else {
       // CREAR nuevo equipo
-      console.log('Creando nuevo equipo');
+      Logger.info('Creando nuevo equipo');
 
       const newEquipment = new Equipos();
       newEquipment.sedeId = 1;
