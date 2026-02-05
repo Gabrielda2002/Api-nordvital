@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion.controller";
+import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -213,5 +213,7 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),v
  *         description: No se encontraron lugares de radicación
  */
 router.get("/sede/departamento/:id",authenticate, authorizeRoles(['1', '6', '4','2', '17']),validarId , getLugaresRadicacionByDepartment);
+
+router.get("/headquarters", getHeadquartersList);
 
 export default router;

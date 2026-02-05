@@ -236,3 +236,17 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
         next(error);
     }
 }
+
+export async function getHeadquartersList(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const headquarters = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        .select(["lugar_radicacion.id", "lugar_radicacion.name"])
+        .getMany()
+        
+        res.json(headquarters);
+
+    } catch (error) {
+        next(error);
+    }
+}
