@@ -1,113 +1,12 @@
 import { collectEquipmentData } from './collectors/collector-equipment';
 import { collectComponentsData } from './collectors/collector-components';
 import { collectSoftwareData } from './collectors/collector-software';
-import { collectAccessoriesData } from './collectors/collector-accessories';
 import { apiClient } from './api-client';
-import { EquipmentData, InventoryPayload } from './types/inventory.types';
-import * as readline from 'readline';
+import { InventoryPayload } from './types/inventory.types';
+import { question, rl } from './utils/shell-interactive';
+import { selectHeadquarters } from './utils/select-headquarters';
+import { askAdministrativeData } from './utils/input-data';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-function question(query: string): Promise<string> {
-  return new Promise((resolve) => {
-    rl.question(query, resolve);
-  });
-}
-
-async function selectHeadquarters(): Promise<number> {
-  console.log('\n🏢 Selección de Sede');  
-  console.log('=========================================\n');
-  
-  try {
-    console.log('📡 Obteniendo lista de sedes...');
-    const headquarters = await apiClient.getHeadquartersList();
-    
-    if (!headquarters || headquarters.length === 0) {
-      console.error('❌ No se encontraron sedes disponibles');
-      throw new Error('No hay sedes disponibles');
-    }
-    
-    console.log('\n📋 Sedes disponibles:\n');
-    headquarters.forEach((hq, index) => {
-      console.log(`   ${index + 1}. ${hq.name}`);
-    });
-    
-    let selectedId: number | null = null;
-    
-    while (selectedId === null) {
-      const selection = await question(`\nSeleccione el número de la sede (1-${headquarters.length}): `);
-      const index = parseInt(selection.trim()) - 1;
-      
-      if (isNaN(index) || index < 0 || index >= headquarters.length) {
-        console.log('\n⚠️  Selección inválida. Por favor ingrese un número válido.');
-        continue;
-      }
-      
-      selectedId = headquarters[index].id;
-      console.log(`\n✅ Sede seleccionada: ${headquarters[index].name}\n`);
-    }
-    
-    return selectedId;
-  } catch (error: any) {
-    console.error('\n❌ Error al obtener las sedes:', error.message);
-    throw error;
-  }
-}
-
-async function askAdministrativeData(equipment: EquipmentData): Promise<EquipmentData> {
-  console.log('\n📝 Información Administrativa Requerida');
-  console.log('=========================================\n');
-
-  // Ubicación
-  const ubicacion = await question('Ubicación física del equipo (ej: Consultorio 301): ');
-  if (ubicacion.trim()) {
-    equipment.ubicacion = ubicacion.trim();
-  }
-
-  // Número de inventario
-  const inventoryNumber = await question('Número de inventario (ej: 00001): ');
-  if (inventoryNumber.trim()) {
-    equipment.inventoryNumber = inventoryNumber.trim();
-  }
-
-  // Fecha de compra (opcional)
-  const purchaseDateStr = await question('Fecha de compra YYYY-MM-DD [Enter para omitir]: ');
-  if (purchaseDateStr.trim()) {
-    try {
-      equipment.purchaseDate = new Date(purchaseDateStr.trim());
-    } catch {
-      console.log('   ⚠️  Fecha inválida, se omitirá');
-    }
-  }
-
-  // Garantía
-  const warrantyStr = await question('¿Tiene garantía activa? (si/no): ');
-  equipment.warranty = warrantyStr.toLowerCase().trim() === 'si';
-
-  if (equipment.warranty) {
-    const warrantyTime = await question('Tiempo de garantía (ej: 12 meses, 2 años): ');
-    if (warrantyTime.trim()) {
-      equipment.warrantyTime = warrantyTime.trim();
-    }
-  }
-
-  // Candado físico
-  const lockStr = await question('¿Tiene candado físico? (si/no): ');
-  equipment.lock = lockStr.toLowerCase().trim() === 'si';
-
-  if (equipment.lock) {
-    const lockKey = await question('Clave del candado (opcional): ');
-    if (lockKey.trim()) {
-      equipment.lockKey = lockKey.trim();
-    }
-  }
-
-  console.log('\n✅ Información administrativa capturada\n');
-  return equipment;
-}
 
 async function main() {
   console.log('🚀 NordVital - Agente de Inventario Automático');
