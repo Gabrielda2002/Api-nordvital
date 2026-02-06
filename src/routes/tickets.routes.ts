@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket, validateUserTickets } from "../controllers/tickets.controller";
+import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
@@ -156,37 +156,5 @@ router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, de
  *         description: Error interno del servidor
  */
 router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable)
-
-/**
- * @swagger
- * /user-ticket/{userId}:
- *   get:
- *     summary: Verificar si un usuario tiene tickets abiertos
- *     tags: [Tickets]
- *     parameters:
- *       - in: path
- *         name: userId
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID del usuario
- *     responses:
- *       200:
- *         description: Resultado de la verificación
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Mensaje indicando si el usuario tiene o no tickets abiertos
- *                 have:
- *                   type: boolean
- *                   description: Indica si el usuario tiene tickets abiertos (true) o no (false)
- *       500:
- *         description: Error interno del servidor
- */
-router.get('/user-ticket/:userId', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), validateUserTickets)
 
 export default router;
