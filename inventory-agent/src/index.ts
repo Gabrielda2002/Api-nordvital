@@ -120,6 +120,21 @@ async function main() {
     console.log(`   ✅ Serial: ${equipment.serial}`);
     console.log(`   ✅ MAC: ${equipment.mac}\n`);
 
+    // verificar si el equipo ya existe en la base de datos
+    // si existe mostrar mensaje de advertencia y preguntar si desea continuar y actualizar o cancelar
+    const existEquipment = await apiClient.verifyEquipmentExist(equipment.serial);
+    if (existEquipment.exists) {
+      console.log('⚠️  Advertencia: Este equipo ya existe en la base de datos');
+      console.log('  Datos del equipo existente en la base de datos:')
+      console.log(existEquipment.equipment);
+      const continueStr = await question('¿Desea continuar y actualizar la información? (si/no): ');
+      if (continueStr.toLowerCase().trim() !== 'si') {
+        console.log('\n🚫 Proceso cancelado por el usuario')
+        rl.close();
+        process.exit(0);
+      }
+    }
+
     console.log('🔍 Paso 2/3: Detectando componentes de hardware...');
     const components = await collectComponentsData();
     console.log(`   ✅ Componentes detectados: ${components.length}`);

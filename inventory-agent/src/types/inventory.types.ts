@@ -60,3 +60,13 @@ export type Headquarters = {
   id: number;
   name: string;
 }
+
+export type VerifyEquipmentResponse = {
+  exists: boolean;
+  equipment?: {
+    id: number;
+    name: string;
+    serial: string;
+    mac: string;
+  };
+}

@@ -1115,3 +1115,38 @@ export async function autoInventory(
     await queryRunner.release();
   }
 }
+
+export async function verifyEquipmentExist(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const { serial } = req.body;
+
+    if (!serial) {
+      return res.status(400).json({ message: "Serial is required" });
+    }
+
+    const equipment = await Equipos.findOne({
+      where: [
+        { serial: String(serial) },
+      ]
+    });
+
+
+    if (equipment) {
+      return res.json({
+        exists: true,
+        equipment: {
+          id: equipment.id,
+          name: equipment.name,
+          serial: equipment.serial,
+          mac: equipment.mac
+        }
+      });
+    }
+
+    return res.json({ exists: false });
+
+  } catch (error) {
+    next(error);
+  }
+}

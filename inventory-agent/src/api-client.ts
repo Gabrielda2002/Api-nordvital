@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { Headquarters, InventoryPayload } from './types/inventory.types';
+import { Headquarters, InventoryPayload, VerifyEquipmentResponse } from './types/inventory.types';
 import * as dotenv from 'dotenv';
 
 export class ApiClient {
@@ -63,6 +63,17 @@ export class ApiClient {
      } catch (error: any) {
       throw error;
      }   
+  }
+
+  async verifyEquipmentExist(serial: string): Promise<VerifyEquipmentResponse> {
+    try {
+      
+      const response = await this.client.post<VerifyEquipmentResponse>('/equipos/exist', { serial });
+      return response.data;
+
+    } catch (error) {
+        throw error;
+    }
   }
 
   setApiUrl(url: string): void {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
-import { autoInventory, createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment } from "../controllers/equipos.controller";
+import { autoInventory, createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment, verifyEquipmentExist } from "../controllers/equipos.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { uploadDocDelivery } from "../middlewares/multer-delivery.middleware";
 
@@ -129,96 +129,6 @@ router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAl
  *         description: Datos inválidos
  */
 router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, createEquipment);
-
-/**
- * @swagger
- * /equipos/auto-inventory:
- *   post:
- *     summary: Inventario automático - Crear o actualizar equipo con componentes y software
- *     tags: [Equipos]
- *     description: Endpoint para agente de inventario automático. Crea o actualiza equipo basado en MAC/Serial.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - equipment
- *             properties:
- *               equipment:
- *                 type: object
- *                 required:
- *                   - mac
- *                   - serial
- *                 properties:
- *                   sedeId:
- *                     type: integer
- *                   name:
- *                     type: string
- *                   ubicacion:
- *                     type: string
- *                   typeEquipment:
- *                     type: string
- *                   brand:
- *                     type: string
- *                   model:
- *                     type: string
- *                   serial:
- *                     type: string
- *                   operationalSystem:
- *                     type: string
- *                   addressIp:
- *                     type: string
- *                   mac:
- *                     type: string
- *                   dhcp:
- *                     type: boolean
- *                   inventoryNumber:
- *                     type: string
- *                   warranty:
- *                     type: boolean
- *                   warrantyTime:
- *                     type: string
- *               components:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     brand:
- *                       type: string
- *                     capacity:
- *                       type: string
- *                     speed:
- *                       type: string
- *                     model:
- *                       type: string
- *                     serial:
- *                       type: string
- *               software:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     versions:
- *                       type: string
- *                     license:
- *                       type: string
- *                     status:
- *                       type: string
- *     responses:
- *       200:
- *         description: Equipo actualizado exitosamente
- *       201:
- *         description: Equipo creado exitosamente
- *       400:
- *         description: Datos inválidos
- */
-router.post("/equipos/auto-inventory", autoInventory);
 
 /**
  * @swagger
@@ -517,5 +427,97 @@ router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1'
  *         description: No se encontraron equipos que coincidan con la búsqueda
  */
 router.get('/search/equipos', authenticate, authorizeRoles(['1', '2', '17']), searchEquipmentGlobal);
+
+/**
+ * @swagger
+ * /equipos/auto-inventory:
+ *   post:
+ *     summary: Inventario automático - Crear o actualizar equipo con componentes y software
+ *     tags: [Equipos]
+ *     description: Endpoint para agente de inventario automático. Crea o actualiza equipo basado en MAC/Serial.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - equipment
+ *             properties:
+ *               equipment:
+ *                 type: object
+ *                 required:
+ *                   - mac
+ *                   - serial
+ *                 properties:
+ *                   sedeId:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   ubicacion:
+ *                     type: string
+ *                   typeEquipment:
+ *                     type: string
+ *                   brand:
+ *                     type: string
+ *                   model:
+ *                     type: string
+ *                   serial:
+ *                     type: string
+ *                   operationalSystem:
+ *                     type: string
+ *                   addressIp:
+ *                     type: string
+ *                   mac:
+ *                     type: string
+ *                   dhcp:
+ *                     type: boolean
+ *                   inventoryNumber:
+ *                     type: string
+ *                   warranty:
+ *                     type: boolean
+ *                   warrantyTime:
+ *                     type: string
+ *               components:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     brand:
+ *                       type: string
+ *                     capacity:
+ *                       type: string
+ *                     speed:
+ *                       type: string
+ *                     model:
+ *                       type: string
+ *                     serial:
+ *                       type: string
+ *               software:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     versions:
+ *                       type: string
+ *                     license:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Equipo actualizado exitosamente
+ *       201:
+ *         description: Equipo creado exitosamente
+ *       400:
+ *         description: Datos inválidos
+ */
+router.post("/equipos/auto-inventory", autoInventory);
+
+router.post("/equipos/exist", verifyEquipmentExist);
 
 export default router;
