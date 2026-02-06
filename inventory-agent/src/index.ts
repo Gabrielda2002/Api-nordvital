@@ -166,6 +166,9 @@ async function main() {
     console.log('\n✅ ¡Inventario completado exitosamente!');
     console.log('================================================\n');
     
+    console.log('Presione Enter para salir...');
+    await question('');
+
     rl.close();
     process.exit(0);
   } catch (error: any) {

@@ -951,6 +951,7 @@ export async function autoInventory(
       Logger.info(`Actualizando equipo existente: ${existingEquipment.id}`);
 
       // Actualizar solo datos técnicos, NO administrativosvale
+      existingEquipment.sedeId = equipment.sedeId || existingEquipment.sedeId;
       existingEquipment.name = equipment.name || existingEquipment.name;
       existingEquipment.typeEquipment = equipment.typeEquipment || existingEquipment.typeEquipment;
       existingEquipment.brand = equipment.brand || existingEquipment.brand;

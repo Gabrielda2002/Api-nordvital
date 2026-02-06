@@ -1,13 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import { Headquarters, InventoryPayload, VerifyEquipmentResponse } from './types/inventory.types';
-import * as dotenv from 'dotenv';
 
 export class ApiClient {
   private client: AxiosInstance;
   private apiUrl: string;
 
   constructor(apiUrl: string) {
-    this.apiUrl = dotenv.config().parsed?.API_URL || apiUrl;
+    this.apiUrl = process.env.API_URL || apiUrl;
     this.client = axios.create({
       baseURL: this.apiUrl,
       timeout: 30000,
@@ -67,7 +66,7 @@ export class ApiClient {
 
   async verifyEquipmentExist(serial: string): Promise<VerifyEquipmentResponse> {
     try {
-      
+      console.log(this.apiUrl)
       const response = await this.client.post<VerifyEquipmentResponse>('/equipos/exist', { serial });
       return response.data;
 
@@ -83,5 +82,5 @@ export class ApiClient {
 }
 
 export const apiClient = new ApiClient(
-  process.env.API_URL || 'http://localhost:3600'
+  process.env.API_URL || 'http://localhost:3600/api/v1'
 );
