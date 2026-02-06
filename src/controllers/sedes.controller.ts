@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { LugarRadicacion } from "../entities/lugar-radicacion";
+import { Sedes } from "../entities/Sedes";
 import { validate } from "class-validator";
 import { parse } from "path";
 
 export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
-        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        const lugaresRadicacion = await Sedes.createQueryBuilder("lugar_radicacion")
         .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
         .leftJoinAndSelect("municipio.departmentRelation", "department")
         .getMany();
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         const lugaresFormat = lugaresRadicacion.map(lugar => ({
@@ -36,10 +36,10 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id))  });
+        const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id))  });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         return res.json(lugarRadicacion);
@@ -56,13 +56,13 @@ export async function createLugarRadicacion(req: Request, res: Response, next: N
             return res.status(400).json({ message: "Name is required" });
         }
 
-        const lugarRadicacionExist = await LugarRadicacion.findOneBy({ name });
+        const lugarRadicacionExist = await Sedes.findOneBy({ name });
 
         if (lugarRadicacionExist) {
-            return res.status(400).json({ message: "LugarRadicacion already exists" });
+            return res.status(400).json({ message: "Sedes already exists" });
         }
 
-        const lugarRadicacion = new LugarRadicacion();
+        const lugarRadicacion = new Sedes();
         lugarRadicacion.name = name;
         lugarRadicacion.status = true;
         lugarRadicacion.address = address;
@@ -94,10 +94,10 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
         const { id } = req.params;
         const { name, status, address, city, headquartersNumber } = req.body;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
+        const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         lugarRadicacion.name = name;
@@ -131,15 +131,15 @@ export async function deleteLugarRadicacion(req: Request, res: Response, next: N
     try {
         const { id } = req.params;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
+        const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         await lugarRadicacion.remove();
 
-        return res.json({ message: "LugarRadicacion deleted" });
+        return res.json({ message: "Sedes deleted" });
     } catch (error) {
         next(error);
     }
@@ -153,18 +153,18 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
         let lugaresRadicacion;
         
         if (name === "@") {
-            lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+            lugaresRadicacion = await Sedes.createQueryBuilder("lugar_radicacion")
             .limit(100)
             .getMany();
             
         }else{
-            lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+            lugaresRadicacion = await Sedes.createQueryBuilder("lugar_radicacion")
             .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
             .getMany();
         }
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
             
         }
 
@@ -182,10 +182,10 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         const { id } = req.params;
         const { status, name, address, city, headquartersNumber } = req.body;
 
-        const lugarRadicacion = await LugarRadicacion.findOneBy({ id: parseInt(String(id)) });
+        const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         lugarRadicacion.name = name;
@@ -221,14 +221,14 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
     try {
         const { id } = req.params;
 
-        const lugaresRadicacion = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        const lugaresRadicacion = await Sedes.createQueryBuilder("lugar_radicacion")
         .leftJoinAndSelect("lugar_radicacion.municipioRelation", "municipio")
         .leftJoinAndSelect("municipio.departmentRelation", "department")
         .where("department.id = :id", { id: parseInt(String(id)) })
         .getMany();
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "LugarRadicacion not found" });
+            return res.status(404).json({ message: "Sedes not found" });
         }
 
         return res.json(lugaresRadicacion);
@@ -240,7 +240,7 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
 export async function getHeadquartersList(req: Request, res: Response, next: NextFunction) {
     try {
         
-        const headquarters = await LugarRadicacion.createQueryBuilder("lugar_radicacion")
+        const headquarters = await Sedes.createQueryBuilder("lugar_radicacion")
         .select(["lugar_radicacion.id", "lugar_radicacion.name"])
         .getMany()
         

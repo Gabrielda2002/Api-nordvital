@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Especialidad } from "./especialidad";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
 import { CupsRadicados } from "./cups-radicados";
@@ -121,9 +121,9 @@ export class Radicacion extends BaseEntity {
   specialtyRelation: Especialidad;
 
   // ? relacion con lugar de radicacion
-  @ManyToOne(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
-  @JoinColumn({ name: "LugarRadicacion" })
-  placeRelation: LugarRadicacion;
+  @ManyToOne(() => Sedes, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
+  @JoinColumn({ name: "Sedes" })
+  placeRelation: Sedes;
 
   // ? relacion con ips remitente
   @ManyToOne(() => IpsRemite, (ipsRemite) => ipsRemite.radicacionRelation)

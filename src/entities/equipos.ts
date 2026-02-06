@@ -6,7 +6,7 @@ import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {
@@ -148,7 +148,7 @@ export class Equipos extends BaseEntity {
     soportRelacion: Soportes;
 
     // relacion con sedes
-    @ManyToOne(() => LugarRadicacion, (lugarRadicacion) => lugarRadicacion.EquipmentRelation)
+    @ManyToOne(() => Sedes, (lugarRadicacion) => lugarRadicacion.EquipmentRelation)
     @JoinColumn({name: "sede_id"})
-    placeRelation: LugarRadicacion;
+    placeRelation: Sedes;
 }

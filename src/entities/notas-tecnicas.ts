@@ -2,7 +2,7 @@ import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Convenio } from "./convenio";
 import { ServiciosGenerales } from "./servicios-generales";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { Servicios } from "./servicios";
 
 @Entity("notas_tecnicas")
@@ -78,9 +78,9 @@ export class NotasTecnicas extends BaseEntity {
     serviceRelation: ServiciosGenerales;
 
     // relacion con lugar radicacion
-    @ManyToOne(() => LugarRadicacion, lugarRadicacion => lugarRadicacion.notasTecnicasRelation)
+    @ManyToOne(() => Sedes, lugarRadicacion => lugarRadicacion.notasTecnicasRelation)
     @JoinColumn({name: 'id_sede'})
-    placeRelation: LugarRadicacion;
+    placeRelation: Sedes;
 
     // relacion con tipo servicios
     @ManyToOne(() => Servicios, service => service.notasTecnicasRelation)

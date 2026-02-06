@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
 import { Programa } from "./programa";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { Professional } from "../types/Professional.type";
 
 @Entity({ name: "programa_meta_historico" })
@@ -76,9 +76,9 @@ export class ProgramaMetaHistorico extends BaseEntity {
   programaRelation: Programa;
 
   @ManyToOne(
-    () => LugarRadicacion,
+    () => Sedes,
     (sede) => sede.programaMetaHistoricoRelation
   )
   @JoinColumn({ name: "sede_id" })
-  headquartersRelation: LugarRadicacion;
+  headquartersRelation: Sedes;
 }

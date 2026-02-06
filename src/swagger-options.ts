@@ -355,7 +355,7 @@ export const options = {
             },
           },
         },
-        LugarRadicacion: {
+        Sedes: {
           type: "object",
           required: ["name"],
           properties: {

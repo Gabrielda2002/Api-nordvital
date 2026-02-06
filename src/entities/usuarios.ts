@@ -32,7 +32,7 @@ import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 import { Equipos } from "./equipos";
 import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { PausasActivas } from "./pausas-activas";
 import { CartaRecobro } from "./Carta_recobro";
 import { Tickets } from "./tickets";
@@ -169,9 +169,9 @@ export class Usuarios extends BaseEntity {
   typeDocumentRelation: TipoDocumento;
 
   // * relacion con sede
-  @ManyToOne(() => LugarRadicacion, (sede) => sede.userRelation)
+  @ManyToOne(() => Sedes, (sede) => sede.userRelation)
   @JoinColumn({ name: "sede_id" })
-  sedeRelation: LugarRadicacion;
+  sedeRelation: Sedes;
 
   // * relacion con carpeta
 

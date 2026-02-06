@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
 import { SeguimientoTelevisor } from "./seguimiento-televisor";
@@ -176,9 +176,9 @@ export class Televisor extends BaseEntity {
     updatedAt: Date;
 
     // Relaciones
-    @ManyToOne(() => LugarRadicacion, sede => sede.televisoresRelation)
+    @ManyToOne(() => Sedes, sede => sede.televisoresRelation)
     @JoinColumn({ name: "sede_id" })
-    sedeRelation: LugarRadicacion;
+    sedeRelation: Sedes;
 
     @ManyToOne(() => Usuarios, usuario => usuario.televisoresRelation)
     @JoinColumn({ name: "id_responsable" })

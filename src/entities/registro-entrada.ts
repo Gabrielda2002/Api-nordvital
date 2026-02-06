@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "./usuarios";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 
 @Entity('registro_entrada')
 export class RegistroEntrada extends BaseEntity {
@@ -31,8 +31,8 @@ export class RegistroEntrada extends BaseEntity {
     @JoinColumn({name: 'user_id'})
     userRelation: Usuarios;
 
-    @ManyToOne(() => LugarRadicacion, sede => sede.registerEntriesRelation)
+    @ManyToOne(() => Sedes, sede => sede.registerEntriesRelation)
     @JoinColumn({name: 'sede_id'})
-    sedeRelation: LugarRadicacion;
+    sedeRelation: Sedes;
 
 }

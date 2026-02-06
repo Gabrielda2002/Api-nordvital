@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
 import { SeguimientoCelular } from "./seguimiento-celular";
@@ -178,9 +178,9 @@ export class Celular extends BaseEntity {
     updatedAt: Date;
 
     // Relaciones
-    @ManyToOne(() => LugarRadicacion, sede => sede.celularesRelation)
+    @ManyToOne(() => Sedes, sede => sede.celularesRelation)
     @JoinColumn({ name: "sede_id" })
-    sedeRelation: LugarRadicacion;
+    sedeRelation: Sedes;
 
     @ManyToOne(() => Usuarios, usuario => usuario.celularesRelation)
     @JoinColumn({ name: "responsable" })

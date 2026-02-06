@@ -3,7 +3,7 @@ import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/goal-program.service";
 import { Usuarios } from "../entities/usuarios";
-import { LugarRadicacion } from "../entities/lugar-radicacion";
+import { Sedes } from "../entities/Sedes";
 import { Programa } from "../entities/programa";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {
@@ -70,7 +70,7 @@ export const createGoal = async (req: Request, res: Response, next: NextFunction
         let headquartersId: number | undefined;
 
         if (typeof headquarters === "string") {
-            const headquartersExists = await LugarRadicacion.findOneBy({ name: headquarters });
+            const headquartersExists = await Sedes.findOneBy({ name: headquarters });
             headquartersId = headquartersExists?.id;
         } else if (typeof headquarters === "number") {
             headquartersId = headquarters;

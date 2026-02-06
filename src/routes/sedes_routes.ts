@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/lugar-radicacion.controller";
+import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/sedes.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -22,7 +22,7 @@ const router = Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/LugarRadicacion'
+ *                 $ref: '#/components/schemas/Sedes'
  */
 router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2','18']), getAllLugaresRadicacion);
 
@@ -46,7 +46,7 @@ router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2','18']),
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/LugarRadicacion'
+ *               $ref: '#/components/schemas/Sedes'
  *       404:
  *         description: Lugar de radicación no encontrado
  */
@@ -65,7 +65,7 @@ router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),va
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LugarRadicacion'
+ *             $ref: '#/components/schemas/Sedes'
  *     responses:
  *       200:
  *         description: Lugar de radicación creado
@@ -208,7 +208,7 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),v
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/LugarRadicacion'
+ *                 $ref: '#/components/schemas/Sedes'
  *       404:
  *         description: No se encontraron lugares de radicación
  */

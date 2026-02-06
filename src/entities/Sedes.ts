@@ -14,7 +14,7 @@ import { Celular } from "./celular";
 import { ProgramaMetaHistorico } from "./programa-meta-historico";
 
 @Entity("sedes")
-export class LugarRadicacion extends BaseEntity{
+export class Sedes extends BaseEntity{
 
     @PrimaryGeneratedColumn({name: "IdLugar"})
     id: number

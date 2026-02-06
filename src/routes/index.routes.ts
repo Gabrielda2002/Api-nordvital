@@ -6,7 +6,7 @@ import convenioRoutes from './convenio_routes';
 import ipsPrimariaRoutes from './ips-primaria_routes';
 import especialidadRoutes from './especialidad_routes';
 import ipsRemiteRoutes from './ips-remite_routes';
-import lugarRadicacionRoutes from './lugar-radicacion.routes';
+import lugarRadicacionRoutes from './sedes_routes';
 import grupoServiciosRoutes from './grupo-servicios_routes';
 import estadosRoutes from './estados_routes';
 import cupsRadicadosRoutes from './cups-radicados_routes';

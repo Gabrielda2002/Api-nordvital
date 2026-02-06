@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { LugarRadicacion } from "./lugar-radicacion";
+import { Sedes } from "./Sedes";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 
@@ -75,9 +75,9 @@ export class dispositivosRed extends BaseEntity {
     updateAt: Date
 
     // relacion con lugar radicacion
-    @ManyToOne(() => LugarRadicacion, (lugar) => lugar.devicesRelation)
+    @ManyToOne(() => Sedes, (lugar) => lugar.devicesRelation)
     @JoinColumn({name: "sede_id"})
-    placeRelation: LugarRadicacion
+    placeRelation: Sedes
 
     // releacion con seguimiento dispositivos red
     @OneToMany(() => SeguimientoDispositivosRed, (seguimiento) => seguimiento.deviceRelation)
