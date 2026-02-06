@@ -69,6 +69,7 @@ npm run m:revert     # Revertir la última migración
 - Usa Ingles como lengua principal, evita el uso de otros idiomas en el código.
 - No usar caracteres especiales o acentos en los nombres de archivos y carpetas.
 - No usar espacios en los nombres de archivos y carpetas.
+- Redacta en español los nombres y descripciones de las tareas creadas en ClickUp y Notion; el resto de la documentación técnica continúa en inglés.
 
 ### Socket.IO
 - Instancia global exportada desde `app.ts`: `export let io: SocketIOServer`
@@ -96,6 +97,12 @@ npm run m:revert     # Revertir la última migración
 - Swagger UI disponible para documentación API
 
 ### Estructura de Tareas (Sintaxis unificada Notion/ClickUp)
+
+#### Configuración por defecto
+- **ClickUp list ID:** 901325027947 (lista "Desarrollos").
+- **Notion data source ID:** 1c2e88ee-9bde-80de-a6ea-000b7171a4ba (base "Seguimiento de tareas").
+- Cuando se solicite "crear las tareas en base a los commits", analiza los commits recientes y usa los datos anteriores por defecto.
+- Distribuye el tiempo estimado total en horas para que la suma diaria alcance 8 horas; reparte la duración entre las tareas creadas ese día y asigna las fechas de inicio y fin según corresponda a cada jornada.
 
 #### **Campos obligatorios:**
 ### Estos campos deben estar presentes en cada tarea creada para asegurar una gestión adecuada si no es posible integrarlos en la solicitud decirlo.
