@@ -37,17 +37,6 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
     try {
         const { title, description, userId, categoryId, priorityId } = req.body;
 
-        // buscar si el usuario tiene tickets
-        const userTicketsExist = await Tickets.createQueryBuilder("tickets")
-        .leftJoinAndSelect("tickets.userRelation", "user")
-        .where("user.id = :userId", { userId })
-        .andWhere("tickets.statusId = 1")
-        .getOne();
-
-        if (userTicketsExist) {
-            return res.status(409).json({message: "El usuario ya tiene un ticket"});
-        }
-
         const ticket = new Tickets();
         ticket.title = title;
         ticket.description = description;
