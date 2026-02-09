@@ -35,7 +35,7 @@ export async function getTicketById(req: Request, res: Response, next: NextFunct
 
 export async function createTicket(req: Request, res: Response, next: NextFunction){
     try {
-        const { title, description, userId, categoryId, priorityId } = req.body;
+        const { type ,title, description, userId, categoryId, priorityId } = req.body;
 
         // buscar si el usuario tiene tickets
         const userTicketsExist = await Tickets.createQueryBuilder("tickets")
@@ -49,6 +49,7 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         }
 
         const ticket = new Tickets();
+        ticket.type = type;
         ticket.title = title;
         ticket.description = description;
         ticket.userId = parseInt(String(userId));
@@ -76,7 +77,7 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
 export async function updateTicket(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
-        const { title, description, userId, categoryId, statusId, preorityId } = req.body;
+        const { type, title, description, userId, categoryId, statusId, preorityId } = req.body;
 
         const ticket = await Tickets.findOneBy({id : parseInt(String(id))});
 
@@ -159,6 +160,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
 
             return {
             id: t.id,
+            type: t.type,
             title: t.title,
             description: t.description,
             nameRequester: t.userRelation?.name || 'N/A',

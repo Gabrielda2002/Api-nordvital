@@ -102,7 +102,6 @@ npm run m:revert     # Revertir la última migración
 - **ClickUp list ID:** 901325027947 (lista "Desarrollos").
 - **Notion data source ID:** 1c2e88ee-9bde-80de-a6ea-000b7171a4ba (base "Seguimiento de tareas").
 - Cuando se solicite "crear las tareas en base a los commits", analiza los commits recientes y usa los datos anteriores por defecto.
-- Distribuye el tiempo estimado total en horas para que la suma diaria alcance 8 horas; reparte la duración entre las tareas creadas ese día y asigna las fechas de inicio y fin según corresponda a cada jornada.
 
 #### **Campos obligatorios:**
 ### Estos campos deben estar presentes en cada tarea creada para asegurar una gestión adecuada si no es posible integrarlos en la solicitud decirlo.
