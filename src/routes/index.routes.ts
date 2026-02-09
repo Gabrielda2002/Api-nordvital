@@ -46,6 +46,7 @@ import pacientesCoosalud from './pacientes-coosalud_routes'
 import enviarEmail from './send-emails_routes';
 import cvPublicRoutes from './cv-public_routes';
 import ticketsRoutes from './tickets.routes';
+import ticketAttachmentsRoutes from './ticket-attachments.routes';
 import statusTicketsRoutes from './estados-tickets_routes';
 import prioridadRoutes from './prioridad.routes';
 import categoriasRoutes from './categorias.routes';
@@ -136,6 +137,7 @@ router.use(pacientesCoosalud);
 router.use(enviarEmail);
 router.use(cvPublicRoutes); // Rutas públicas para CVs - NO requieren autenticación
 router.use(ticketsRoutes);
+router.use(ticketAttachmentsRoutes);
 router.use(statusTicketsRoutes);
 router.use(prioridadRoutes);
 router.use(categoriasRoutes);

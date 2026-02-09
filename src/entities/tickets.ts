@@ -5,6 +5,7 @@ import { Prioridad } from "./prioridad";
 import { EstadoTickets } from "./estado-tickets";
 import { Comentarios } from "./comentarios";
 import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
+import { TicketAttachment } from "./ticket-attachment";
 
 @Entity("tickets")
 export class Tickets extends BaseEntity {
@@ -60,4 +61,8 @@ export class Tickets extends BaseEntity {
     // relacion con encuestas
     @OneToMany(() => EncuestasSatisfaccion, (encuestas) => encuestas.ticketRelation)
     surveyRelation: EncuestasSatisfaccion[];
+
+    // relacion con adjuntos
+    @OneToMany(() => TicketAttachment, (attachment) => attachment.ticketRelation)
+    attachmentsRelation: TicketAttachment[];
 }

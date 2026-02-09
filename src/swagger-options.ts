@@ -1366,6 +1366,73 @@ export const options = {
             },
           },
         },
+        TicketAttachment: {
+          type: "object",
+          required: [
+            "ticketId",
+            "fileName",
+            "fileUrl",
+            "fileSize",
+            "mimeType",
+            "uploadedByUserId",
+            "attachmentType"
+          ],
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del adjunto",
+            },
+            ticketId: {
+              type: "integer",
+              description: "ID del ticket al que pertenece",
+            },
+            fileName: {
+              type: "string",
+              description: "Nombre original del archivo",
+              maxLength: 150,
+            },
+            fileUrl: {
+              type: "string",
+              description: "URL relativa del archivo",
+              maxLength: 200,
+            },
+            fileSize: {
+              type: "integer",
+              description: "Tamaño del archivo en bytes",
+            },
+            mimeType: {
+              type: "string",
+              description: "Tipo MIME del archivo",
+              maxLength: 100,
+              example: "image/png",
+            },
+            fileNameSaved: {
+              type: "string",
+              description: "Nombre único con el que se guardó el archivo",
+              maxLength: 200,
+            },
+            uploadedByUserId: {
+              type: "integer",
+              description: "ID del usuario que subió el archivo",
+            },
+            attachmentType: {
+              type: "string",
+              enum: ["screenshot", "log", "document", "pdf", "video", "other"],
+              description: "Tipo de adjunto",
+              default: "other",
+            },
+            isInternal: {
+              type: "boolean",
+              description: "Si es true, solo visible para soporte técnico",
+              default: false,
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha de carga del archivo",
+            },
+          },
+        },
         EncuestaSatisfaccion: {
           type: "object",
           required: [
