@@ -171,3 +171,36 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+
+export async function getListTicketsByUserId(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const  { id } = req.params;
+
+        const tickets = await Tickets.createQueryBuilder("tickets")
+        .select("tickets.id", "id")
+        .addSelect("tickets.type", "type")
+        .addSelect("tickets.title", "title")
+        .addSelect("tickets.description", "description")
+        .addSelect("tickets.createdAt", "createdAt")
+        .addSelect("tickets.updatedAt", "updatedAt")
+        .addSelect("status.name", "status")
+        .addSelect("priority.name", "priority")
+        .addSelect("category.name", "category")
+        .leftJoin("tickets.statusRelation", "status")
+        .leftJoin("tickets.priorityRelation", "priority")
+        .leftJoin("tickets.categoryRelation", "category")
+        .where("tickets.userId = :userId", { userId: parseInt(String(id)) })
+        .orderBy("tickets.createdAt", "DESC")
+        .getRawMany();
+
+        if (tickets.length === 0) {
+            return res.status(404).json({message: "tickets not found"});
+        }        
+
+        return res.status(200).json(tickets);
+
+    } catch (error) {
+        next(error);
+    }
+}

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { createTicket, deleteTicket, getAllTickets, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
+import { createTicket, deleteTicket, getAllTickets, getListTicketsByUserId, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 
 const router = Router();
@@ -155,6 +155,8 @@ router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, de
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable)
+router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable);
+
+router.get('/tickets/user/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), validarId, getListTicketsByUserId);
 
 export default router;
