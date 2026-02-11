@@ -60,7 +60,7 @@ export async function getTelevisorBySedeId(
       acquisitionValue: t.acquisitionValue || "N/A",
       controlRemote: t.controlRemote || "N/A",
       utility: t.utility,
-      seguimiento: t.seguimientoRelation?.map((s) => ({
+      monitoring: t.seguimientoRelation?.map((s) => ({
         id: s.id || "N/A",
         eventDate: s.eventDate || "N/A",
         typeEvent: s.eventType || "N/A",

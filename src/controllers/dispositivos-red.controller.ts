@@ -230,7 +230,7 @@ export async function getDevicesBySede(
       otherData: d.otherData,
       status: d.status,
       inventoryNumber: d.inventoryNumber,
-      seguimiento: d.seguimientoDispositivosRedRelation.map((s) => ({
+      monitoring: d.seguimientoDispositivosRedRelation.map((s) => ({
         id: s.id,
         eventDate: s.dateEvent,
         typeEvent: s.eventType,

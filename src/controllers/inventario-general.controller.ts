@@ -99,7 +99,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       assetTypeId: i.assetTypeId,
       dependencyAreaId: i.dependencyAreaId,
       dependencyArea: i.dependencyAreaRelation?.name,
-      seguimiento: i.seguimiento.map((s) => ({
+      monitoring: i.seguimiento.map((s) => ({
         id: s.id,
         eventDate: s.fecha_evento,
         typeEvent: s.typeEvent,
