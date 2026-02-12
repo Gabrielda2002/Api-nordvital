@@ -3,6 +3,7 @@ import { authenticate } from "../middlewares/authenticate.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { createTicket, deleteTicket, getAllTickets, getListTicketsByUserId, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
+import { multerTicketAttachment } from "../middlewares/multer-ticket.middleware";
 
 const router = Router();
 
@@ -77,7 +78,7 @@ router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTi
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/tickets', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), createTicket)
+router.post('/tickets', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']),multerTicketAttachment.single("file"), createTicket)
 
 /**
  * @swagger
