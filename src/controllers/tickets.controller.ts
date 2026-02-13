@@ -59,7 +59,7 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = 1;
-        ticket.preorityId = parseInt(String(priorityId));
+        ticket.priorityId = parseInt(String(priorityId));
 
         await queryRunner.manager.save(ticket);
 
@@ -159,7 +159,7 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
 export async function updateTicket(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
-        const { type, title, description, userId, categoryId, statusId, preorityId } = req.body;
+        const { type, title, description, userId, categoryId, statusId, priorityId } = req.body;
 
         const ticket = await Tickets.findOneBy({ id: parseInt(String(id)) });
 
@@ -175,7 +175,7 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = parseInt(String(statusId));
-        ticket.preorityId = parseInt(String(preorityId));
+        ticket.priorityId = parseInt(String(priorityId));
 
         await ticket.save();
 

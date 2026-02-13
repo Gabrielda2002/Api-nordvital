@@ -29,7 +29,7 @@ export class Tickets extends BaseEntity {
     statusId: number;
 
     @Column({ name: "prioridad_id", default: 4 })
-    preorityId: number;
+    priorityId: number;
 
     @Column({ name: 'remoto', type: "tinyint", width: 1, default: 0 })
     remote: boolean;

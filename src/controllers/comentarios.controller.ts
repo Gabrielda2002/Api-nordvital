@@ -156,7 +156,7 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         const oldStatusId = ticket.statusId;
 
         ticket.statusId = parseInt(String(status));
-        ticket.preorityId = parseInt(String(priority));
+        ticket.priorityId = parseInt(String(priority));
         ticket.remote = remote == true ? true : false;
 
         await queryRunner.manager.save(newComment);
