@@ -83,6 +83,13 @@ export class Componentes extends BaseEntity {
   })
   serial: string;
 
+  @Column({ name: "estado", type: "varchar", length: 200, nullable: true, default: "Activo" })
+  @IsString()
+  @Length(3, 200, {
+    message: "El estado debe tener entre $constraint1 y $constraint2 caracteres",
+  })
+  state: string;
+
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 

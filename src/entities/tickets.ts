@@ -28,7 +28,7 @@ export class Tickets extends BaseEntity {
     @Column({ name: "estado_id" })
     statusId: number;
 
-    @Column({ name: "prioridad_id" })
+    @Column({ name: "prioridad_id", default: 4 })
     preorityId: number;
 
     @Column({ name: 'remoto', type: "tinyint", width: 1, default: 0 })
