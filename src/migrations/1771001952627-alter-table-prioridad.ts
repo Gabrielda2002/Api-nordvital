@@ -10,7 +10,7 @@ export class AlterTablePrioridad1771001952627 implements MigrationInterface {
 
         // actualizar valor por defecto de la columna prioridad_id en la tabla Tickets a 4 (Pendiente)
         await queryRunner.query(`
-            ALTER TABLE tickets ALTER COLUMN prioridad_id SET DEFAULT 1
+            ALTER TABLE tickets ALTER COLUMN prioridad_id SET DEFAULT 5
         `);
     }
     public async down(queryRunner: QueryRunner): Promise<void> {

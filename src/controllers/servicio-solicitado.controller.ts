@@ -161,7 +161,7 @@ export async function getServiciosSolicitadosByCode(req: Request, res: Response,
 export async function updateServicioSolicitadoTable(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { description, status } = req.body;
+      const { description, status, code } = req.body;
   
       const servicioSolicitado = await ServiciosSolicitados.findOneBy({ id: parseInt(String(id)) });
   
@@ -169,6 +169,7 @@ export async function updateServicioSolicitadoTable(req: Request, res: Response,
         return res.status(404).json({ message: "Servicio solicitado not found" });
       }
 
+      servicioSolicitado.code = code;
       servicioSolicitado.name =  description.toUpperCase();
       servicioSolicitado.status = status === "1" ? true : false;
 

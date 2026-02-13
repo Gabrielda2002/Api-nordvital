@@ -74,7 +74,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
         
         const { id } = req.params;
 
-        const { description } = req.body;
+        const { description, code } = req.body;
 
         const diagnostico = await Diagnostico.findOneBy({id: parseInt(String(id))});
 
@@ -83,7 +83,7 @@ export async function updateDiagnostico(req: Request, res: Response, next: NextF
         }
 
         diagnostico.description = description.toUpperCase();
-
+        diagnostico.code = code;
         const errors = await validate(diagnostico);
         if (errors.length > 0) {
             const errorsMessage = errors.map(err => (
