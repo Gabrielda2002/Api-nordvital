@@ -127,29 +127,25 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
     await queryRunner.startTransaction();
     try {
         
+        const { ticketId, userId, comment,priority, status, remote } = req.body;
 
-        const { ticketId, usuarioId, coment, status, remote } = req.body;
-        console.log("body", req.body);
+        const newComment = new Comentarios();
+        newComment.ticketId = ticketId;
+        newComment.usuarioId = userId;
+        newComment.comment = comment;
 
-        const comment = new Comentarios();
-        comment.ticketId = ticketId;
-        comment.usuarioId = usuarioId;
-        comment.comment = coment;
-
-        const errors =  await validate(comment);
+        const errors =  await validate(newComment);
 
         if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
+            const messages = errors.map(err => (
+                Object.values(err.constraints || {}).join(', ')
+            ))
 
             await queryRunner.rollbackTransaction();
 
-            return res.status(400).json({ mesage: 'Error al crear comentario' ,messages });
+            return res.status(400).json({ message: messages });
         }
 
-        
         const ticket = await Tickets.findOneBy({ id: ticketId });
         
         if (!ticket) {
@@ -160,9 +156,10 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         const oldStatusId = ticket.statusId;
 
         ticket.statusId = parseInt(String(status));
-        ticket.remote = remote === 'true';
+        ticket.preorityId = parseInt(String(priority));
+        ticket.remote = remote == true ? true : false;
 
-        await queryRunner.manager.save(comment);
+        await queryRunner.manager.save(newComment);
         await queryRunner.manager.save(ticket);
 
         await queryRunner.commitTransaction();
@@ -172,7 +169,7 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
             await NotificationService.createTicketClosedNotification(ticket, "Ticket Actualizado");
         }
 
-        return res.json(comment);
+        return res.json(newComment);
 
     } catch (error) {
         await queryRunner.rollbackTransaction();    
