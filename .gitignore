@@ -11,3 +11,7 @@ dist/
 # TypeScript incremental build
 .tsbuildinfo
 *.tsbuildinfo
+
+/inventory-agent/node_modules
+/inventory-agent/build
+/inventory-agent/dist

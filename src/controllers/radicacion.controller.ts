@@ -297,7 +297,7 @@ export async function tablaPorAuditar(
       )
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where(
-        "cupsRadicados.status = 6 AND servicesGroup.id <> 6 AND servicesGroup.id <> 9"
+        "cupsRadicados.status = 6"
       );
 
     if (req.departmentUserId) {
