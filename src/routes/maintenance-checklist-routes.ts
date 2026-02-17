@@ -90,7 +90,7 @@ router.get(
  *         description: Seguimiento no encontrado
  */
 router.get(
-  "/maintenance-checklist/seguimiento/:seguimientoId",
+  "/maintenance-checklist/seguimiento/:id",
   authenticate,
   authorizeRoles(["1"]),
   validarId,
@@ -142,7 +142,7 @@ router.get(
  *         description: Seguimiento no encontrado
  */
 router.put(
-  "/maintenance-checklist/seguimiento/:seguimientoId",
+  "/maintenance-checklist/seguimiento/:id",
   authenticate,
   authorizeRoles(["1"]),
   validarId,

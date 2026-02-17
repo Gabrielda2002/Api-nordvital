@@ -33,11 +33,11 @@ export async function getChecklistByFollowUp(
   next: NextFunction
 ) {
   try {
-    const seguimientoId = parseInt(String(req.params.seguimientoId));
+    const monitoringId = parseInt(String(req.params.id));
 
     // Verificar que el seguimiento existe
     const seguimiento = await seguimientoEquipos.findOneBy({
-      id: seguimientoId,
+      id: monitoringId,
     });
 
     if (!seguimiento) {
@@ -47,11 +47,11 @@ export async function getChecklistByFollowUp(
     }
 
     // Obtener los resultados del checklist con los ítems relacionados
-    const results = await MaintenanceChecklistResult.find({
-      where: { seguimientoEquipoId: seguimientoId },
-      relations: ["checklistItemRelation"],
-      order: { checklistItemRelation: { displayOrder: "ASC" } },
-    });
+    const results = await MaintenanceChecklistResult.createQueryBuilder("result")
+      .leftJoinAndSelect("result.checklistItemRelation", "item")
+      .where("result.seguimientoEquipoId = :monitoringId", { monitoringId })
+      .orderBy("item.displayOrder", "ASC")
+      .getMany();
 
     return res.json(results);
   } catch (error) {
@@ -69,8 +69,10 @@ export async function saveChecklist(
   next: NextFunction
 ) {
   try {
-    const seguimientoId = parseInt(String(req.params.seguimientoId));
+    const monitoringId = parseInt(String(req.params.id));
     const { items } = req.body;
+
+    console.log(req.body);
 
     if (!Array.isArray(items)) {
       return res.status(400).json({
@@ -80,7 +82,7 @@ export async function saveChecklist(
 
     // Verificar que el seguimiento existe y es de tipo MANTENIMIENTO PREVENTIVO
     const seguimiento = await seguimientoEquipos.findOneBy({
-      id: seguimientoId,
+      id: monitoringId,
     });
 
     if (!seguimiento) {
@@ -104,14 +106,14 @@ export async function saveChecklist(
 
       // Buscar si ya existe un resultado para este ítem
       let result = await MaintenanceChecklistResult.findOneBy({
-        seguimientoEquipoId: seguimientoId,
+        seguimientoEquipoId: monitoringId,
         checklistItemId: checklistItemId,
       });
 
       if (!result) {
         // Crear nuevo resultado
         result = new MaintenanceChecklistResult();
-        result.seguimientoEquipoId = seguimientoId;
+        result.seguimientoEquipoId = monitoringId;
         result.checklistItemId = checklistItemId;
       }
 
