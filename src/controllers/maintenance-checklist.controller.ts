@@ -51,9 +51,9 @@ export async function getChecklistByFollowUp(
     const equipmentId = seguimiento.equipmentId;
 
     const equipmentAccessories = await AccesoriosEquipos.createQueryBuilder("accessory")
-    .select(["accessory.id", "accessory.name"])
-    .where("accessory.equipmentId = :equipmentId", { equipmentId })
-    .getMany();
+      .select(["accessory.id", "accessory.name"])
+      .where("accessory.equipmentId = :equipmentId", { equipmentId })
+      .getMany();
 
     // Obtener los resultados del checklist con los ítems relacionados
     const results = await MaintenanceChecklistResult.createQueryBuilder("result")
@@ -88,15 +88,6 @@ export async function saveChecklist(
   try {
     const monitoringId = parseInt(String(req.params.id));
     const { checklist, accessories } = req.body;
-
-    console.log(req.body)
-
-    if (!Array.isArray(accessories)) {
-      await queryRunner.rollbackTransaction();
-      return res.status(400).json({
-        message: "El campo 'accessories' debe ser un array",
-      });
-    }
 
     if (!Array.isArray(checklist)) {
       await queryRunner.rollbackTransaction();
@@ -161,28 +152,31 @@ export async function saveChecklist(
       savedResults.push(result);
     }
 
-    for (const acc of accessories) {
-      const { status, observation, id } = acc;
+    // validar que viene el array y no esté vacío 
+    if (Array.isArray(accessories) ) {
+      for (const acc of accessories) {
+        const { status, observation, id } = acc;
 
-      const accObservation = new MaintenanceAccessoryObservation();
+        const accObservation = new MaintenanceAccessoryObservation();
 
-      accObservation.monitoringEquipmentId = monitoringId;
-      accObservation.accessoryIdId = id;
-      accObservation.statusMaintenance = status;
-      accObservation.observation = observation;
+        accObservation.monitoringEquipmentId = monitoringId;
+        accObservation.accessoryIdId = id;
+        accObservation.statusMaintenance = status;
+        accObservation.observation = observation;
 
-      const errors = await validate(accObservation);
-      if (errors.length > 0) {
-        const message = errors.map(err => (
-          Object.values(err.constraints || {}).join(", ")
-        ))
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({ message });
+        const errors = await validate(accObservation);
+        if (errors.length > 0) {
+          const message = errors.map(err => (
+            Object.values(err.constraints || {}).join(", ")
+          ))
+          await queryRunner.rollbackTransaction();
+          return res.status(400).json({ message });
+        }
+
+        await queryRunner.manager.save(accObservation);
       }
-
-      await queryRunner.manager.save(accObservation);
-
     }
+
 
     await queryRunner.commitTransaction();
 
