@@ -6,10 +6,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Equipos } from "./equipos";
+import { MaintenanceAccessoryObservation} from "./MaintenanceAccessoryObservation";
 
 @Entity({ name: "accesorios_equipos" })
 export class AccesoriosEquipos extends BaseEntity {
@@ -87,4 +89,10 @@ export class AccesoriosEquipos extends BaseEntity {
   @ManyToOne(() => Equipos, (equipment) => equipment.accessoriesRelation)
   @JoinColumn({ name: "equipo_id" })
   equipmentRelation: Equipos;
+
+  @OneToMany(
+    () => MaintenanceAccessoryObservation,
+    (obs) => obs.accessory
+  )
+  maintenanceObservations: MaintenanceAccessoryObservation[];
 }

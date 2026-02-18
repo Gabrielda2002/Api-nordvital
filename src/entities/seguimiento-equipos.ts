@@ -12,6 +12,7 @@ import {
 import { Equipos } from "./equipos";
 import { Usuarios } from "./usuarios";
 import { MaintenanceChecklistResult } from "./maintenance-checklist-result";
+import { MaintenanceAccessoryObservation } from "./MaintenanceAccessoryObservation";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 @Entity({ name: "seguimiento_equipos" })
@@ -68,4 +69,10 @@ export class seguimientoEquipos extends BaseEntity {
     (result) => result.seguimientoEquipoRelation
   )
   checklistResults: MaintenanceChecklistResult[];
+
+  @OneToMany(
+    () => MaintenanceAccessoryObservation,
+    (obs) => obs.monitoringEquipment
+  )
+  accessoryObservations: MaintenanceAccessoryObservation[];
 }
