@@ -3,6 +3,8 @@ import { MaintenanceChecklistItem } from "../entities/maintenance-checklist-item
 import { MaintenanceChecklistResult } from "../entities/maintenance-checklist-result";
 import { seguimientoEquipos } from "../entities/seguimiento-equipos";
 import { validate } from "class-validator";
+import { AccesoriosEquipos } from "../entities/accesorios-equipos";
+import { MaintenanceAccessoryObservation } from "../entities/MaintenanceAccessoryObservation";
 
 /**
  * Obtiene todos los ítems activos del checklist maestro
@@ -46,6 +48,13 @@ export async function getChecklistByFollowUp(
       });
     }
 
+    const equipmentId = seguimiento.equipmentId;
+
+    const equipmentAccessories = await AccesoriosEquipos.createQueryBuilder("accessory")
+    .select(["accessory.id", "accessory.name"])
+    .where("accessory.equipmentId = :equipmentId", { equipmentId })
+    .getMany();
+
     // Obtener los resultados del checklist con los ítems relacionados
     const results = await MaintenanceChecklistResult.createQueryBuilder("result")
       .leftJoinAndSelect("result.checklistItemRelation", "item")
@@ -53,7 +62,10 @@ export async function getChecklistByFollowUp(
       .orderBy("item.displayOrder", "ASC")
       .getMany();
 
-    return res.json(results);
+    return res.json({
+      checklist: results,
+      accessories: equipmentAccessories,
+    });
   } catch (error) {
     next(error);
   }
@@ -68,15 +80,28 @@ export async function saveChecklist(
   res: Response,
   next: NextFunction
 ) {
+
+  const queryRunner = MaintenanceChecklistResult.getRepository().manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
     const monitoringId = parseInt(String(req.params.id));
-    const { items } = req.body;
+    const { checklist, accessories } = req.body;
 
-    console.log(req.body);
+    console.log(req.body)
 
-    if (!Array.isArray(items)) {
+    if (!Array.isArray(accessories)) {
+      await queryRunner.rollbackTransaction();
       return res.status(400).json({
-        message: "El campo 'items' debe ser un array",
+        message: "El campo 'accessories' debe ser un array",
+      });
+    }
+
+    if (!Array.isArray(checklist)) {
+      await queryRunner.rollbackTransaction();
+      return res.status(400).json({
+        message: "El campo 'checklist' debe ser un array",
       });
     }
 
@@ -86,12 +111,14 @@ export async function saveChecklist(
     });
 
     if (!seguimiento) {
+      await queryRunner.rollbackTransaction();
       return res.status(404).json({
         message: "Seguimiento de equipo no encontrado",
       });
     }
 
     if (seguimiento.eventType !== "MANTENIMIENTO PREVENTIVO") {
+      await queryRunner.rollbackTransaction();
       return res.status(400).json({
         message:
           "El checklist solo está disponible para seguimientos de tipo MANTENIMIENTO PREVENTIVO",
@@ -101,7 +128,7 @@ export async function saveChecklist(
     const savedResults = [];
 
     // Procesar cada ítem
-    for (const item of items) {
+    for (const item of checklist) {
       const { checklistItemId, isChecked } = item;
 
       // Buscar si ya existe un resultado para este ítem
@@ -123,22 +150,48 @@ export async function saveChecklist(
 
       const errors = await validate(result);
       if (errors.length > 0) {
-        const message = errors.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
+        const message = errors.map((err) =>
+          Object.values(err.constraints || {}).join(", ")
+        );
+        await queryRunner.rollbackTransaction();
         return res.status(400).json({ message });
       }
 
-      await result.save();
+      await queryRunner.manager.save(result);
       savedResults.push(result);
     }
+
+    for (const acc of accessories) {
+      const { status, observation, id } = acc;
+
+      const accObservation = new MaintenanceAccessoryObservation();
+
+      accObservation.monitoringEquipmentId = monitoringId;
+      accObservation.accessoryIdId = id;
+      accObservation.statusMaintenance = status;
+      accObservation.observation = observation;
+
+      const errors = await validate(accObservation);
+      if (errors.length > 0) {
+        const message = errors.map(err => (
+          Object.values(err.constraints || {}).join(", ")
+        ))
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({ message });
+      }
+
+      await queryRunner.manager.save(accObservation);
+
+    }
+
+    await queryRunner.commitTransaction();
 
     return res.json({
       message: "Checklist guardado exitosamente",
       results: savedResults,
     });
   } catch (error) {
+    await queryRunner.rollbackTransaction();
     next(error);
   }
 }
