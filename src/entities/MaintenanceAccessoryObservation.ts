@@ -30,6 +30,9 @@ export class MaintenanceAccessoryObservation extends BaseEntity {
     @Column({ name: "status_at_maintenance", type: "varchar", length: 255, nullable: true })
     @IsString()
     @IsOptional()
+    @Length(0, 100, {
+        message: "El estado del accesorio en el mantenimiento debe tener máximo $constraint2 caracteres",
+    })
     statusMaintenance: string;
 
     @CreateDateColumn({ name: "created_at" })

@@ -50,10 +50,21 @@ export async function getChecklistByFollowUp(
 
     const equipmentId = seguimiento.equipmentId;
 
-    const equipmentAccessories = await AccesoriosEquipos.createQueryBuilder("accessory")
-      .select(["accessory.id", "accessory.name"])
+    const rawAccessories = await AccesoriosEquipos.createQueryBuilder("accessory")
+      .select([
+        "accessory.id AS id",
+        "accessory.name AS name",
+        "obs.observation AS observation",
+        "obs.statusMaintenance AS statusMaintenance"
+      ])
+      .leftJoin(
+        "accessory.maintenanceObservations", 
+        "obs",
+        "obs.monitoringEquipmentId = :monitoringId",
+        { monitoringId }
+      )
       .where("accessory.equipmentId = :equipmentId", { equipmentId })
-      .getMany();
+      .getRawMany();
 
     // Obtener los resultados del checklist con los ítems relacionados
     const results = await MaintenanceChecklistResult.createQueryBuilder("result")
@@ -64,7 +75,7 @@ export async function getChecklistByFollowUp(
 
     return res.json({
       checklist: results,
-      accessories: equipmentAccessories,
+      accessories: rawAccessories,
     });
   } catch (error) {
     next(error);
