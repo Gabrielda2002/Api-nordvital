@@ -26,6 +26,9 @@ import Logger from "./utils/logger-wrapper";
             
             // Inicializar servicio de limpieza de CVs (elimina CVs > 60 días)
             CVCleanupService.startCleanupService(60);
+
+            // start job of cleanup attachments > 180 days
+            CVCleanupService.startAttachmentCleanupService(180);
             
             // Inicializar job de verificación de vencimientos de vacaciones
             VacationCheckJob.start();
