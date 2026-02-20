@@ -122,7 +122,7 @@ export class Radicacion extends BaseEntity {
 
   // ? relacion con lugar de radicacion
   @ManyToOne(() => Sedes, (lugarRadicacion) => lugarRadicacion.radicacionRelation)
-  @JoinColumn({ name: "Sedes" })
+  @JoinColumn({ name: "LugarRadicacion" })
   placeRelation: Sedes;
 
   // ? relacion con ips remitente

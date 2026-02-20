@@ -14,6 +14,7 @@ export class CupsRadicados extends BaseEntity {
 
     @Column({name: "Estado"})
     @IsNumber()
+    @IsNotEmpty({message: "El estado es requerido"})
     status: number
 
     @Column({name: "observacionCups"})
@@ -24,12 +25,14 @@ export class CupsRadicados extends BaseEntity {
 
     @Column({name: "UnidadFuncional"})
     @IsInt()
+    @IsNotEmpty({message: "La unidad funcional es requerida"})
     functionalUnit: number
 
     @Column({name: "IDRADICADO"})
     @IsInt()
     @Min(1)
     @Max(999999)
+    @IsNotEmpty({message: "El ID de radicación es requerido"})
     idRadicacion: number
 
     @Column({name: "estado_carta_recobro", nullable: true, type: "varchar", length: 50})
