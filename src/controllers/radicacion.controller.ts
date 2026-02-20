@@ -8,6 +8,7 @@ import { CupsRadicados } from "../entities/cups-radicados";
 import { Pacientes } from "../entities/pacientes";
 import { Soportes } from "../entities/soportes";
 import path from "path";
+import Logger from "../utils/logger-wrapper";
 
 export async function getAllRadicacion(
   req: Request,
@@ -403,17 +404,15 @@ export async function autorizarRadicado(
   res: Response,
   next: NextFunction
 ) {
-
   const queryRunner = Radicacion.getRepository().manager.connection.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.startTransaction();
 
   try {
-    const { id } = req.params;
-
+    const radicadoId = parseInt(String(req.params.id));
     const { auditora, fechaAuditoria, justificacion, cupsDetails } = req.body;
 
-    const existRadicado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
+    const existRadicado = await queryRunner.manager.findOneBy(Radicacion, { id: radicadoId });
 
     if (!existRadicado) {
       await queryRunner.rollbackTransaction();
@@ -431,59 +430,45 @@ export async function autorizarRadicado(
         constraints: err.constraints,
       }));
       await queryRunner.rollbackTransaction();
-
-      return res
-        .status(400)
-        .json({ message: "Error updating radicacion", messages });
+      return res.status(400).json({ message: "Error updating radicacion", messages });
     }
 
-    const cupsRadicados = await CupsRadicados.findBy({ idRadicacion: parseInt(String(id)) });
-
-    if (!cupsRadicados || cupsRadicados.length === 0) {
-      await queryRunner.rollbackTransaction();
-      return res.status(404).json({ message: "CUPS radicados no encontrados" });
-    }
-
-
-    for (const cups of cupsRadicados) {
-      const updateCups = cupsDetails.find((detail: any) => {
-        return detail.idRadicado === cups.idRadicacion; 
+    for (const detail of cupsDetails) {
+      const cups = await queryRunner.manager.findOneBy(CupsRadicados, {
+        idRadicacion: radicadoId,
+        servicioId: parseInt(String(detail.idCupsRadicado)),
       });
 
-      if (updateCups) {
-        cups.status = parseInt(updateCups.estadoCups);
-        cups.observation = updateCups.observacionCups;
-        cups.functionalUnit = parseInt(updateCups.unidadFuncional);
-        cups.quantity = Number(updateCups.cantidad);
-
-        const errorsCups = await validate(cups);
-
-        if (errorsCups.length > 0) {
-          const messagesCups = errorsCups.map((err) => ({
-            property: err.property,
-            constraints: err.constraints,
-          }));
-          await queryRunner.rollbackTransaction();
-
-          return res
-            .status(400)
-            .json({ message: "Error updating cupsRadicados", messagesCups });
-        }
-
-        
-        await queryRunner.manager.save(cups);
+      if (!cups) {
+        await queryRunner.rollbackTransaction();
+        return res.status(404).json({ message: `CUPS con servicioId ${detail.idCupsRadicado} no encontrado para el radicado ${radicadoId}` });
       }
-      
+
+      cups.status = parseInt(detail.estadoCups);
+      cups.observation = detail.observacionCups;
+      cups.functionalUnit = parseInt(detail.unidadFuncional);
+      cups.quantity = Number(detail.cantidad);
+
+      const errorsCups = await validate(cups);
+      if (errorsCups.length > 0) {
+        const messagesCups = errorsCups.map((err) =>
+          Object.values(err.constraints || {}).join(", ")
+        );
+        await queryRunner.rollbackTransaction();
+        return res.status(400).json({ message: "Error updating cupsRadicados", messagesCups });
+      }
+
+      await queryRunner.manager.save(cups);
     }
 
     await queryRunner.manager.save(existRadicado);
     await queryRunner.commitTransaction();
-    res.status(200).json({ message: "Radicado autorizado exitosamente" });
+    return res.status(200).json({ message: "Radicado autorizado exitosamente" });
 
   } catch (error) {
     await queryRunner.rollbackTransaction();
     next(error);
-  }finally{
+  } finally {
     await queryRunner.release();
   }
 }
