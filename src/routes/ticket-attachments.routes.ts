@@ -6,7 +6,9 @@ import {
     getTicketAttachments, 
     uploadTicketAttachment, 
     deleteTicketAttachment,
-    getTicketAttachmentById
+    getTicketAttachmentById,
+    generateAttachmentDownloadToken,
+    downloadAttachment
 } from "../controllers/ticket-attachments.controller";
 import { multerTicketAttachment } from "../middlewares/multer-ticket.middleware";
 
@@ -152,5 +154,9 @@ router.delete(
     validarId,
     deleteTicketAttachment
 );
+
+router.post('/attachments/tickets/:id/access-token', authenticate, authorizeRoles(["1", "17"]), validarId, generateAttachmentDownloadToken);
+
+router.get('/secure-download/:token', downloadAttachment);
 
 export default router;

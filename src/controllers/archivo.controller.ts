@@ -357,9 +357,6 @@ export async function generateFileAccessToken(req: Request, res: Response, next:
             return res.status(404).json({ message: "Archivo no encontrado" });
         }
 
-        // TODO: Aquí validarías permisos específicos del archivo basado en roles
-        // Por ahora asumo que si pasó el middleware de auth, tiene acceso
-
         // Generar token temporal (15 minutos)
         const token = FileTokenService.generateFileAccessToken(
             fileId,

@@ -220,6 +220,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
             .leftJoinAndSelect("tickets.userRelation", "usuario")
             .leftJoinAndSelect("usuario.sedeRelation", "sede")
             .leftJoinAndSelect("sede.municipioRelation", "municipio")
+            .leftJoinAndSelect("tickets.attachmentsRelation", "adjuntos")
             .orderBy("tickets.createdAt", "DESC")
             .getMany();
 
@@ -252,6 +253,10 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
                 headquarter: t.userRelation?.sedeRelation?.name || 'N/A',
                 municipio: t.userRelation?.sedeRelation?.municipioRelation?.name || 'N/A',
                 phone: t.userRelation?.phoneNumber || 'N/A',
+                attachments: t.attachmentsRelation.filter(att => !att.isInternal).map(att => ({
+                    id: att.id,
+                    fileName: att.fileName,
+            })),
                 createdAt: zonedDate ? format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
                 updatedAt: zonedDateUpdated ? format(zonedDateUpdated, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
             }

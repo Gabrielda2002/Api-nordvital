@@ -5,6 +5,8 @@ import { validate } from "class-validator";
 import logger from "../utils/logger";
 import * as fs from "fs";
 import * as path from "path";
+import { FileTokenService } from "../services/file-token.service";
+import Logger from "../utils/logger-wrapper";
 
 /**
  * Get all attachments for a ticket
@@ -178,6 +180,87 @@ export async function getTicketAttachmentById(req: Request, res: Response, next:
         });
     } catch (error) {
         logger.error("Error getting attachment by ID:", error);
+        next(error);
+    }
+}
+
+// generar token temporal para descargar el attachment
+export async function generateAttachmentDownloadToken(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const attachmentId =  parseInt(req.params.id as string);
+
+        const user = (req as any).user;
+
+        const clientIp = req.ip || req.connection.remoteAddress || "unknown";
+
+        if (!user || !attachmentId) {
+            return res.status(400).json({ message: "User or attachment ID not authenticated" });
+        }
+
+        const attachmentExist = TicketAttachment.findOne({ where: { id: attachmentId } });
+
+        if (!attachmentExist) {
+            return res.status(404).json({ message: "Attachment not found" });
+        }
+
+        const token = FileTokenService.generateFileAccessToken(
+            attachmentId,
+            user.id,
+            user.rol,
+            "DOWNLOAD",
+            clientIp
+        )
+
+        return res.status(200).json({
+            token,
+            expiredIn: 900, // 15 minutes in seconds
+            url: `/secure-download/${token}`
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function downloadAttachment(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { token } = req.params;
+        const clientIp = req.ip || req.connection.remoteAddress || "unknown";
+
+        if (!token) {
+            return res.status(400).json({ message: "Invalid download token" });
+        }
+
+        const validationToken = FileTokenService.validateFileAccessToken(String(token), clientIp)
+
+        if (!validationToken.valid) {
+            return res.status(403).json({ message: "Invalid or expired download token" });
+        };
+
+        const { fileId, action } = validationToken.payload!; 
+
+        const attachmentExist = await TicketAttachment.findOne({ where: { id: fileId } });
+
+        if (!attachmentExist) {
+            return res.status(404).json({ message: "Attachment not found" });
+        }
+
+        const relativePath = attachmentExist.fileUrl.replace(/^\//, "");
+        const filePath = path.join(__dirname, "..", "uploads", relativePath);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ message: "File not found on server" });
+        }
+
+        res.download(filePath, attachmentExist.fileNameSaved, (err) => {
+            if (err) {
+                res.status(500).json({ message: "Error downloading file", error: err.message });
+            }
+        });
+
+    } catch (error) {
         next(error);
     }
 }
