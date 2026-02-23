@@ -7,7 +7,7 @@ import { Comentarios } from "./comentarios";
 import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
 import { TicketAttachment } from "./ticket-attachment";
 
-type TypeTicket = ["Solicitud", "Incidente", "Problema", "Cambio", "Otro"];
+type TypeTicket = ["Solicitud", "Incidente"];
 @Entity("tickets")
 export class Tickets extends BaseEntity {
     @PrimaryGeneratedColumn({ name: "id" })
@@ -34,7 +34,7 @@ export class Tickets extends BaseEntity {
     @Column({ name: 'remoto', type: "tinyint", width: 1, default: 0 })
     remote: boolean;
 
-    @Column({ name: "tipo", type: "enum", enum: ["Solicitud", "Incidente", "Problema", "Cambio", "Otro"], default: "Solicitud" })
+    @Column({ name: "tipo", type: "enum", enum: ["Solicitud", "Incidente"], default: "Solicitud" })
     type: TypeTicket;
 
     @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })

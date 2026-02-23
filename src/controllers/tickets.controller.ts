@@ -47,10 +47,8 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
     let uploadedFilePath: string | null = null;
 
     try {
-        const { type, title, description, userId, categoryId, priorityId, attachmentType } = req.body;
+        const { type, title, description, userId, categoryId, attachmentType } = req.body;
         const file = req.file;
-
-        console.log(file)
 
         const ticket = new Tickets();
         ticket.type = type;
@@ -59,7 +57,6 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = 1;
-        ticket.priorityId = parseInt(String(priorityId));
 
         await queryRunner.manager.save(ticket);
 
@@ -88,10 +85,12 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
                 });
             }
 
+            const relativePath = `/tickets/${file.filename}`;
+
             const ticketAttachment = new TicketAttachment();
             ticketAttachment.ticketId = ticket.id;
             ticketAttachment.fileName = fileNameWithoutExt;
-            ticketAttachment.fileUrl = file.path;
+            ticketAttachment.fileUrl = relativePath;
             ticketAttachment.mimeType = file.mimetype;
             ticketAttachment.fileSize = file.size;
             ticketAttachment.fileNameSaved = file.filename;
