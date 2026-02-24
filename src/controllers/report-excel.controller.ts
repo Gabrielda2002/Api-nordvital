@@ -282,7 +282,11 @@ export async function getReportServices(
 
     data.forEach((data) => {
       const row = {
-        radicadoDate: data.createdAt || "N/A",
+        // radicadoDate: data.createdAt ? formatInTimeZone(
+        //   new Date(data.createdAt),
+        //   "America/Bogota",
+        //   "yyyy-MM-dd HH:mm:ss"
+        // ) : "N/A",
         Id: data.id || "N/A",
         Tipo_de_documento: data.patientRelation?.documentRelation.name || "N/A",
         Nombre_del_paciente: data.patientRelation?.name || "N/A",
@@ -323,6 +327,11 @@ export async function getReportServices(
 
           worksheet.addRow({
             ...row,
+            radicadoDate: cups.createdAt ? formatInTimeZone(
+              new Date(cups.createdAt),
+              "America/Bogota",
+              "yyyy-MM-dd HH:mm:ss"
+            ) : "N/A",
             Codigo_cups: cups.servicioRelation?.code || "N/A",
             Descripcion_cups: cups.servicioRelation?.name || "N/A",
             Estado_cups: cups.statusRelation?.name || "N/A",
