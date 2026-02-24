@@ -877,35 +877,31 @@ export const createRequestService = async (
 
   try {
     const {
-      // data request service
       orderDate,
-      place,
-      ipsRemitente,
-      profetional,
+      placeId,
+      ipsRemiteId,
+      professional,
       specialty,
-      groupServices,
-      radicador,
-      typeServices,
-      idSoporte,
-      idPatient,
-      idDiagnostico,
-      // data patient
+      groupService,
+      assistantId,
+      typeService,
+      diagnosisId,
+      patientId,
       landline,
       phoneNumber,
       phoneNumber2,
       address,
       email,
-      // data CUPS
     } = req.body;
 
+    const file = req.file;
 
-
-    const file  = req.file;
-
-    const cupsRequestService: CupsRequest[] = JSON.parse(req.body.items);
+    const cupsRequestService: CupsRequest[] = typeof req.body.cupsData === "string"
+      ? JSON.parse(req.body.cupsData)
+      : req.body.cupsData;
 
     // update data patient
-    const patientExist = await Pacientes.findOneBy({ id: parseInt(String(idPatient)) });
+    const patientExist = await Pacientes.findOneBy({ id: parseInt(String(patientId)) });
 
     if (!patientExist) {
       await queryRunner.rollbackTransaction();
@@ -975,19 +971,19 @@ export const createRequestService = async (
     // create request service
     const requestService = new Radicacion();
     requestService.orderDate = orderDate;
-    requestService.place = parseInt(String(place));
-    requestService.ipsRemitente = parseInt(String(ipsRemitente));
-    requestService.idProfesional = Number(profetional);
+    requestService.place = parseInt(String(placeId));
+    requestService.ipsRemitente = parseInt(String(ipsRemiteId));
+    requestService.idProfesional = Number(professional);
     requestService.specialty = parseInt(String(specialty));
-    requestService.groupServices = parseInt(String(groupServices));
-    requestService.typeServices = parseInt(String(typeServices));
-    requestService.radicador = parseInt(String(radicador));
+    requestService.groupServices = parseInt(String(groupService));
+    requestService.typeServices = parseInt(String(typeService));
+    requestService.radicador = parseInt(String(assistantId));
     requestService.auditora = "Pendiente";
     requestService.justify = "Pendiente";
     requestService.auditConcept = 6;
-    requestService.idPatient = parseInt(String(idPatient));
+    requestService.idPatient = parseInt(String(patientId));
     requestService.idSoporte = supportId;
-    requestService.idDiagnostico = parseInt(String(idDiagnostico));
+    requestService.idDiagnostico = parseInt(String(diagnosisId));
 
     const errorsRequestService = await validate(requestService);
     if (errorsRequestService.length > 0) {
