@@ -61,12 +61,12 @@ export class Pacientes extends BaseEntity {
     @Column({name: "Convenio"})
     @IsInt()
     @IsNotEmpty({message: "El campo Convenio no puede estar vacio"})
-    convenio: number;
+    agreement: number;
 
     @Column({name: "ipsPrimaria"})
     @IsInt()
     @IsNotEmpty({message: "El campo ipsPrimaria no puede estar vacio"})
-    ipsPrimaria: number;
+    ipsPrimary: number;
 
     @Column({name: "Estado"})
     @IsBoolean()

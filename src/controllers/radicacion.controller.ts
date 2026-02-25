@@ -892,6 +892,7 @@ export const createRequestService = async (
       phoneNumber2,
       address,
       email,
+      agreement
     } = req.body;
 
     const file = req.file;
@@ -905,7 +906,7 @@ export const createRequestService = async (
 
     if (!patientExist) {
       await queryRunner.rollbackTransaction();
-      return res.status(404).json({ message: "Paciente no encontrado" });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const contactNumbers = [phoneNumber, phoneNumber2, landline].filter(num => num && num !== '');
@@ -914,7 +915,7 @@ export const createRequestService = async (
     
     if (uniqueNumbers.size !== contactNumbers.length) {
       await queryRunner.rollbackTransaction();
-      return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
+      return res.status(400).json({ message: "The phone numbers must be unique." });
     }
 
     patientExist.landline = landline;
@@ -922,6 +923,7 @@ export const createRequestService = async (
     patientExist.phoneNumber2 = phoneNumber2 == "" ? null : phoneNumber2;
     patientExist.address = address;
     patientExist.email = email;
+    patientExist.agreement = parseInt(String(agreement));
 
     const errorsPatient = await validate(patientExist);
     if (errorsPatient.length > 0) {
@@ -939,7 +941,7 @@ export const createRequestService = async (
     // upload file soport
     if (!file) {
       await queryRunner.rollbackTransaction();
-      return res.status(400).json({ message: "El archivo de soporte es obligatorio" });
+      return res.status(400).json({ message: "Attachment is required" });
     }
 
   const fileNameWithoutExt = file ? path.basename(file.originalname, path.extname(file.originalname)) : "";

@@ -83,8 +83,8 @@ export async function createPatient(
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(String(agreement));
-    paciente.ipsPrimaria = parseInt(String(ipsPrimaria));
+    paciente.agreement = parseInt(String(agreement));
+    paciente.ipsPrimary = parseInt(String(ipsPrimaria));
     paciente.status = true;
 
     const errors = await validate(paciente);
@@ -255,8 +255,8 @@ export async function updatePacienteTable(
     paciente.landline = landline.toString();
     paciente.email = email;
     paciente.address = address;
-    paciente.convenio = parseInt(String(agreement));
-    paciente.ipsPrimaria = parseInt(String(ipsPrimaria));
+    paciente.agreement = parseInt(String(agreement));
+    paciente.ipsPrimary = parseInt(String(ipsPrimaria));
 
     const errors = await validate(paciente);
 
