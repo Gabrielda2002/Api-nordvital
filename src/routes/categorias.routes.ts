@@ -9,7 +9,7 @@ const router = Router();
 /**
  * @swagger
  * /categorias:
- *   get:
+ *   post:
  *     tags:
  *       - Categorias
  *     summary: Obtener todas las categorías
@@ -28,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido.
  */
-router.get('/categorias', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21']), getAllCategories); 
+router.post('/categories/:type', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21']), getAllCategories);
 
 /**
  * @swagger
