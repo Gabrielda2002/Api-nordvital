@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import { validate } from "class-validator";
 import Logger from "../utils/logger-wrapper";
+import { Categorias } from "../entities/categorias";
 
 export async function getAllTickets(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,7 +41,7 @@ export async function getTicketById(req: Request, res: Response, next: NextFunct
 
 export async function createTicket(req: Request, res: Response, next: NextFunction) {
     const queryRunner = Tickets.getRepository().manager.connection.createQueryRunner();
-    
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -57,6 +58,20 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = 1;
+
+        // Auto-asignar: buscar prioridad de la categoría
+        const category = await queryRunner.manager.findOne('categorias', {
+            where: { id: parseInt(String(categoryId)) }
+        }) as Categorias;
+
+        if (category?.priorityId) {
+            Logger.info(`Asignando prioridad ${category.priorityId} al ticket basado en la categoría ${category.name}`);
+            ticket.priorityId = category.priorityId;
+        } else {
+            Logger.info(`No se encontró prioridad para la categoría ${categoryId}. Asignando prioridad por defecto.`);
+            // Fallback: prioridad por defecto (Media = 2)
+            ticket.priorityId = 2;
+        }
 
         await queryRunner.manager.save(ticket);
 
@@ -75,13 +90,13 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
 
             if (ticketAttachmentExist) {
                 await queryRunner.rollbackTransaction();
-                
+
                 if (fs.existsSync(uploadedFilePath)) {
                     fs.unlinkSync(uploadedFilePath);
                 }
-                
-                return res.status(400).json({ 
-                    message: "Ya existe un archivo con el mismo nombre. Por favor renombra el archivo e intenta nuevamente." 
+
+                return res.status(400).json({
+                    message: "Ya existe un archivo con el mismo nombre. Por favor renombra el archivo e intenta nuevamente."
                 });
             }
 
@@ -101,15 +116,15 @@ export async function createTicket(req: Request, res: Response, next: NextFuncti
 
             if (errorAttachment.length > 0) {
                 await queryRunner.rollbackTransaction();
-                
+
                 if (fs.existsSync(uploadedFilePath)) {
                     fs.unlinkSync(uploadedFilePath);
                 }
-                
-                const message = errorAttachment.map(e => 
+
+                const message = errorAttachment.map(e =>
                     Object.values(e.constraints || {}).join(", ")
                 ).join(", ");
-                
+
                 return res.status(400).json({ message });
             }
 
@@ -174,7 +189,22 @@ export async function updateTicket(req: Request, res: Response, next: NextFuncti
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
         ticket.statusId = parseInt(String(statusId));
-        ticket.priorityId = parseInt(String(priorityId));
+
+        // Auto-asignación de prioridad: si no viene priorityId, usar el de la categoría
+        if (priorityId !== undefined && priorityId !== null) {
+            // Override manual: usar la prioridad proporcionada
+            ticket.priorityId = parseInt(String(priorityId));
+        } else {
+            // Auto-asignar: buscar prioridad de la categoría
+            const category = await Tickets.getRepository().manager.findOne('categorias', {
+                where: { id: parseInt(String(categoryId)) }
+            }) as any;
+
+            if (category?.prioridad_id) {
+                ticket.priorityId = category.prioridad_id;
+            }
+            // Si no hay categoría o prioridad, mantener la actual del ticket
+        }
 
         await ticket.save();
 
@@ -256,7 +286,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
                 attachments: t.attachmentsRelation.filter(att => !att.isInternal).map(att => ({
                     id: att.id,
                     fileName: att.fileName,
-            })),
+                })),
                 createdAt: zonedDate ? format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
                 updatedAt: zonedDateUpdated ? format(zonedDateUpdated, "yyyy-MM-dd HH:mm", { timeZone }) : "N/A",
             }
