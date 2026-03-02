@@ -127,7 +127,7 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
     await queryRunner.startTransaction();
     try {
         
-        const { ticketId, userId, comment,priority, status, remote } = req.body;
+        const { ticketId, userId, comment, status, remote } = req.body;
 
         const newComment = new Comentarios();
         newComment.ticketId = ticketId;
@@ -156,7 +156,6 @@ export async function createCommentAndChangeTicketStatus(req: Request, res: Resp
         const oldStatusId = ticket.statusId;
 
         ticket.statusId = parseInt(String(status));
-        ticket.priorityId = parseInt(String(priority));
         ticket.remote = remote == true ? true : false;
 
         await queryRunner.manager.save(newComment);
