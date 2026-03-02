@@ -293,7 +293,7 @@ export async function getTicketsTable(req: Request, res: Response, next: NextFun
         });
 
 
-        return res.json(ticketsFormat);
+        return res.status(200).json(ticketsFormat);
     } catch (error) {
         next(error);
     }

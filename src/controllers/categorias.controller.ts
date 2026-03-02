@@ -10,11 +10,13 @@ export async function getAllCategories(req: Request, res: Response, next: NextFu
 
         if (name  === "@") {
             categories = await Categorias.createQueryBuilder("categoria")
+            .select(["categoria.name", "categoria.id", "categoria.description"])
             .where("categoria.tipo_ticket = :type", { type })
             .limit(50)
             .getMany();
         }else {
             categories = await Categorias.createQueryBuilder("categoria")
+            .select(["categoria.name", "categoria.id", "categoria.description"])
             .where("categoria.nombre LIKE :name", { name: `%${name}%` })
             .andWhere("categoria.tipo_ticket = :type", { type })
             .limit(50)
