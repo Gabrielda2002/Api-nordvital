@@ -311,31 +311,32 @@ export async function tablaPorAuditar(
 
     const formatedRadicaciones = await radicaciones.map((r) => ({
       id: r.id,
-      radicadoDate: r.createdAt,
+      createdAt: r.createdAt,
       documentType: r.patientRelation?.documentRelation.name || "N/A",
       documentNumber: r.patientRelation?.documentNumber || "N/A",
       namePatient: r.patientRelation?.name || "N/A",
-      convenio: r.patientRelation?.convenioRelation?.name || "N/A",
+      agreementName: r.patientRelation?.convenioRelation?.name || "N/A",
       ipsPrimary: r.patientRelation.ipsPrimariaRelation.name || "N/A",
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
-      profetional:
+      professional:
         r.idProfesional === null
           ? r.profetional
           : r.profesionalesRelation?.name || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
-      typeServices: r.servicesRelation?.name || "N/A",
-      radicador: r.usuarioRelation?.name || "N/A",
-      statusCups:
+      typeService: r.servicesRelation?.name || "N/A",
+      assistant: r.usuarioRelation?.name || "N/A",
+      cups:
         r.cupsRadicadosRelation?.map((c) => ({
           id: c.servicioRelation?.id || "N/A",
           code: c.servicioRelation?.code || "N/A",
           description: c.servicioRelation?.name || "N/A",
           observation: c.observation,
           status: c.statusRelation.name,
-          unidadFuncional: c.functionalUnitRelation.name,
+          functionalUnit: c.functionalUnitRelation.name,
           idRadicado: c.idRadicacion,
+          quantity: c.quantity,
         })) || "N/A",
       supportName: r.soportesRelation?.nameSaved || "N/A",
       supportId: r.soportesRelation?.id || "N/A",
@@ -436,18 +437,18 @@ export async function autorizarRadicado(
     for (const detail of cupsDetails) {
       const cups = await queryRunner.manager.findOneBy(CupsRadicados, {
         idRadicacion: radicadoId,
-        servicioId: parseInt(String(detail.idCupsRadicado)),
+        servicioId: parseInt(String(detail.id)),
       });
 
       if (!cups) {
         await queryRunner.rollbackTransaction();
-        return res.status(404).json({ message: `CUPS con servicioId ${detail.idCupsRadicado} no encontrado para el radicado ${radicadoId}` });
+        return res.status(404).json({ message: `CUPS con servicioId ${detail.id} no encontrado para el radicado ${radicadoId}` });
       }
 
-      cups.status = parseInt(detail.estadoCups);
-      cups.observation = detail.observacionCups;
-      cups.functionalUnit = parseInt(detail.unidadFuncional);
-      cups.quantity = Number(detail.cantidad);
+      cups.status = parseInt(detail.status);
+      cups.observation = detail.observation;
+      cups.functionalUnit = parseInt(detail.funtionalUnit);
+      cups.quantity = Number(detail.quantity);
 
       const errorsCups = await validate(cups);
       if (errorsCups.length > 0) {
