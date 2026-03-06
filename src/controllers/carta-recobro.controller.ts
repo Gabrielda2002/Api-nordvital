@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CartaRecobro } from "../entities/Carta_recobro";
+import { CartaRecobro } from "../entities/carta-recobro";
 import { validate } from "class-validator";
 import { Radicacion } from "../entities/radicacion";
 import { ADDRGETNETWORKPARAMS } from "dns";
@@ -174,7 +174,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
 
         const responseFormated = requestLatter.map(r => ({
             id: r.id || "N/A",
-            profetional: r.profetional || "N/A",
+            professionalName: r.professionalName || "N/A",
             creatAt: r.createdAt || "N/A",
             dniNumber: r.patientRelation.documentNumber || "N/A",
             dniType: r.patientRelation.documentRelation.name || "N/A",
@@ -227,7 +227,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
 
         const responseLetterFormated = responseLetter.map(r => ({
             id: r.id || "N/A",
-            profetional: r.radicacionRelation.profetional || "N/A",
+            professionalName: r.radicacionRelation.professionalName || "N/A",
             creatAt: r.radicacionRelation.createdAt || "N/A",
             patientName: r.radicacionRelation.patientRelation.name || "N/A",
             dniNumber: r.radicacionRelation.patientRelation.documentNumber || "N/A",

@@ -6,66 +6,66 @@ import { Radicacion } from "./radicacion";
 import { IpsRemite } from "./ips-remite";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 
-@Entity('cirugias')
+@Entity('surgeries')
 export class Cirugias extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: 'id'})
+    @PrimaryGeneratedColumn({name: 'id', type: "int", unsigned: true, comment: "Identificador único de la cirugía"})
     id: number;
 
-    @Column({name: 'fecha_cirugia'})
+    @Column({name: 'surgery_date', type: "date"})
     @IsNotEmpty({message: 'La fecha de cirugia es requerida'})
     surgeryDate: Date;
 
-    @Column({name: 'hora_programada'})
+    @Column({name: 'scheduled_time', type: "time"})
     @IsNotEmpty({message: 'La fecha de hospitalizacion es requerida'})
     scheduledTime: string;
 
-    @Column({name: 'ips_remitente'})
+    @Column({name: 'ips_remite_id', type: "int"})
     @IsNotEmpty({message: 'La ips remitente es requerida'})
-    ipsRemite: number;
+    ipsRemiteId: number;
 
-    @Column({name: 'observaciones'})
+    @Column({name: 'observation', type: "varchar", length: 500})
     @IsNotEmpty({message: 'Las observaciones son requeridas'})
     @Length(5, 150, {message: 'Las observaciones deben tener entre $constraint1 y $constraint2 caracteres'})
     observation: string;
 
-    @Column({name: 'estado'})
+    @Column({name: 'status_id', type: "int"})
     @IsNotEmpty({message: 'el estado es requerido'})
-    status: boolean;
+    status: number;
 
-    @Column({name: 'radicado_id'})
+    @Column({name: 'radicacion_id', type: "int"})
     @IsNotEmpty({message: 'El radicado es requerido'})
-    radicadoId: number;
+    radicacionId: number;
 
-    @Column({name: 'fecha_paraclinico'})
+    @Column({name: 'paraclinical_date', type: "date"})
     @IsNotEmpty({message: 'La fecha paraclinico es requerida'})
     paraclinicalDate: Date;
 
-    @Column({name: 'fecha_anesteciologia'})
+    @Column({name: 'anesthesiology_date', type: "date"})
     @IsNotEmpty({message: 'La fecha de anesteciologia es requerida'})
     anesthesiologyDate: Date;
 
-    @Column({name: 'especialista'})
+    @Column({name: 'specialist', type: "varchar", length: 255})
     @IsNotEmpty({message: 'El especialista es requerido'})
     @Length(3, 255, {message: 'El especialista debe tener entre $constraint1 y $constraint2 caracteres'})
     specialist: string;
 
-    @CreateDateColumn({name: 'createdAt'})
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({name: 'updatedAt'})
+    @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
     // * relaciones
 
     // * relacion con radicacion
     @ManyToOne(() => Radicacion, (radicacion) => radicacion.cirugiasRelation)
-    @JoinColumn({name: 'radicado_id'})
+    @JoinColumn({name: 'radicacion_id'})
     radicacionRelation: Radicacion;
 
     // * relacion con ips remite
     @ManyToOne(() => IpsRemite, (ipsRemite) => ipsRemite.cirugiasRelation)
-    @JoinColumn({name: 'ips_remitente'})
+    @JoinColumn({name: 'ips_remite_id'})
     ipsRemiteRelation: IpsRemite;
 
     // * relacion con seguimiento auxiliar cirugias

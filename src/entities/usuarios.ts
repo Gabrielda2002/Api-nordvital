@@ -31,10 +31,10 @@ import { Radicacion } from "./radicacion";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 import { Equipos } from "./equipos";
-import { SeguimietoAuxiliar } from "./seguimiento-auxiliar";
-import { Sedes } from "./Sedes";
+import { SeguimientoAuxiliar } from "./seguimiento-auxiliar";
+import { Sedes } from "./sedes";
 import { PausasActivas } from "./pausas-activas";
-import { CartaRecobro } from "./Carta_recobro";
+import { CartaRecobro } from "./carta-recobro";
 import { Tickets } from "./tickets";
 import { Notification } from "./notificaciones";
 import { PushSubscription } from "./push-subscription";
@@ -197,8 +197,8 @@ export class Usuarios extends BaseEntity {
   equipmentRelation: Equipos[];
 
   // * relacion con seguimiento auxiliar
-  @OneToMany(() => SeguimietoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.usuarioRelation)
-  seguimientoAuxiliarRelation: SeguimietoAuxiliar[];
+  @OneToMany(() => SeguimientoAuxiliar, (seguimientoAuxiliar) => seguimientoAuxiliar.usuarioRelation)
+  seguimientoAuxiliarRelation: SeguimientoAuxiliar[];
 
   // relacion con pausas activas
   @OneToMany(() => PausasActivas, (pausasActivas) => pausasActivas.userRelation)

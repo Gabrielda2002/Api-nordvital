@@ -63,10 +63,10 @@ export async function createCupsRadicados(
     for (const item of cupsRadicados) {
       // se crea un nuevo objeto de la clase CupsRadicados y se asignan los valores
       const createCupsRadicado = new CupsRadicados();
-      createCupsRadicado.status = 6;
+      createCupsRadicado.statusId = 6;
       createCupsRadicado.observation = "Pendiente";
-      createCupsRadicado.functionalUnit = 12;
-      createCupsRadicado.idRadicacion = Number(idRadicado);
+      createCupsRadicado.functionalUnitId = 12;
+      createCupsRadicado.radicacionId = Number(idRadicado);
       createCupsRadicado.quantity = Number(item.quantity);
 
 
@@ -127,9 +127,9 @@ export async function updateCupsRadicados(
       return res.status(404).json({ message: "Cups Radicados not found" });
     }
 
-    cupsRadicados.status = status;
+    cupsRadicados.statusId = status;
     cupsRadicados.observation = observation;
-    cupsRadicados.functionalUnit = functionalUnit;
+    cupsRadicados.functionalUnitId = functionalUnit;
 
     const errors = await validate(cupsRadicados);
 
@@ -192,7 +192,7 @@ export async function updateAuditados(
       return res.status(404).json({ message: "Cups Radicados not found" });
     }
 
-    cupExist.status = parseInt(status, 10);
+    cupExist.statusId = parseInt(status, 10);
     cupExist.observation = observation;
     cupExist.quantity = Number(quantity);
 

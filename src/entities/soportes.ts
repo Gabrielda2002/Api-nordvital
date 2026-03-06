@@ -34,11 +34,11 @@ export class Soportes extends BaseEntity {
     @IsNotEmpty({message: "El tipo del soporte es requerido"})
     type: string;
 
-    @CreateDateColumn({name: "fechaCreacion"})
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
 
-    @UpdateDateColumn({name: "fechaActualizacion"})
-    updateAt: Date;
+    @UpdateDateColumn({ name: "updated_at" })
+    updatedAt: Date;
 
     @Column({name: "name_saved"})
     @IsString()

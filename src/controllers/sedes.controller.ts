@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Sedes } from "../entities/Sedes";
+import { Sedes } from "../entities/sedes";
 import { validate } from "class-validator";
 import { parse } from "path";
 
@@ -66,7 +66,7 @@ export async function createLugarRadicacion(req: Request, res: Response, next: N
         lugarRadicacion.name = name;
         lugarRadicacion.status = true;
         lugarRadicacion.address = address;
-        lugarRadicacion.city = city;
+        lugarRadicacion.municipalityId = city;
         lugarRadicacion.numeroSede = headquartersNumber;
 
         const errors = await validate(lugarRadicacion);
@@ -103,7 +103,7 @@ export async function updateLugarRadicacion(req: Request, res: Response, next: N
         lugarRadicacion.name = name;
         lugarRadicacion.status = status;
         lugarRadicacion.address = address;
-        lugarRadicacion.city = city;
+        lugarRadicacion.municipalityId = city;
         lugarRadicacion.numeroSede = headquartersNumber;
 
         const errors = await validate(lugarRadicacion);
@@ -191,7 +191,7 @@ export async function updateStatusLugarRadicacion(req: Request, res: Response, n
         lugarRadicacion.name = name;
         lugarRadicacion.status = status == "1";
         lugarRadicacion.address = address;
-        lugarRadicacion.city = city;
+        lugarRadicacion.municipalityId = city;
         lugarRadicacion.numeroSede = headquartersNumber;
 
         console.log(lugarRadicacion)

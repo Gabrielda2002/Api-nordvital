@@ -64,10 +64,10 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         const surgery = new Cirugias();
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
-        surgery.ipsRemite = parseInt(String(ipsRemite));
+        surgery.ipsRemiteId = parseInt(String(ipsRemite));
         surgery.observation = observation;
-        surgery.status = true;
-        surgery.radicadoId = parseInt(String(radicadoId));
+        surgery.status = 1;
+        surgery.radicacionId = parseInt(String(radicadoId));
         surgery.paraclinicalDate = paraclinicalDate || "0000-00-00";
         surgery.anesthesiologyDate = anesthesiologyDate || "0000-00-00";
         surgery.specialist = specialistEntity.name;
@@ -99,7 +99,7 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
 
             await Promise.all(
                 cupsRadicado.map(async (radicado) => {
-                    radicado.status = 9;
+                    radicado.statusId = 9;
                     await queryRunner.manager.save(cupsRadicado);
                 }));
 
@@ -142,10 +142,10 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
 
         surgery.surgeryDate = surgeryDate;
         surgery.scheduledTime = scheduledTime;
-        surgery.ipsRemite = ipsRemite;
+        surgery.ipsRemiteId = ipsRemite;
         surgery.observation = observation;
         surgery.status = status;
-        surgery.radicadoId = radicadoId;
+        surgery.radicacionId = radicadoId;
 
         const errors = await validate(surgery);
 

@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Sedes } from "./Sedes";
+import { Sedes } from "./sedes";
 import { ServiciosGenerales } from "./servicios-generales";
 import { TipoDocumento } from "./tipo-documento";
 import { Convenio } from "./convenio";

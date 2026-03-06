@@ -5,26 +5,26 @@ import { Usuarios } from "./usuarios";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 
-@Entity("documento")
+@Entity("document_types")
 export class TipoDocumento extends BaseEntity {
 
-    @PrimaryGeneratedColumn({ name: "IdDocumento"})
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number
 
-    @Column({ name: "TipoDocumento"})
-    @IsNotEmpty({message: "El nombre del documento es requerido"})
+    @Column({ name: "name", type: "varchar", length: 10 })
+    @IsNotEmpty({ message: "El nombre del documento es requerido" })
     @IsString()
-    @Length(1, 4, {message: "El nombre del documento debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(1, 10, { message: "El nombre del documento debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string
 
-    @Column({ name: "Estado"})
+    @Column({ name: "status", type: "tinyint", width: 1, default: 1 })
     @IsBoolean()
     status: boolean
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relaciones

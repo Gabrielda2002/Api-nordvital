@@ -36,11 +36,11 @@ export class CartaRecobro extends BaseEntity {
     @IsOptional()
     dateImpression: Date | null;
 
-    @CreateDateColumn({name: "created_at"})
-    creatAt: Date;
+    @CreateDateColumn({ name: "created_at" })
+    createdAt: Date;
 
-    @UpdateDateColumn({name: "updated_at"})
-    updateAt: Date;
+    @UpdateDateColumn({ name: "updated_at" })
+    updatedAt: Date;
 
     // ? relaciones
     @ManyToOne(() => Radicacion, radicacion => radicacion.cartaRelation)

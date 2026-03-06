@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
-import { Sedes } from "./Sedes";
+import { Sedes } from "./sedes";
 import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
 import { SeguimientoCelular } from "./seguimiento-celular";

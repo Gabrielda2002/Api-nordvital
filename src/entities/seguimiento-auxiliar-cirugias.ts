@@ -5,59 +5,59 @@ import { Cirugias } from "./cirugias";
 import { ServiciosSolicitados } from "./servicios-solicitados";
 import { Usuarios } from "./usuarios";
 
-@Entity('gestion_auxiliar_cirugias')
-export class SeguimientoAuxiliarCirugias extends BaseEntity{
+@Entity('surgery_tracking_records')
+export class SeguimientoAuxiliarCirugias extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: 'id'})
+    @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
     id: number
 
-    @Column({name: 'observacion'})
-    @IsNotEmpty({message: 'La observacion es requerida'})
+    @Column({ name: 'observation', type: 'text' })
+    @IsNotEmpty({ message: 'La observacion es requerida' })
     observation: string
 
-    @Column({name: 'estado'})
-    @IsNotEmpty({message: 'El estado es requerido'})
-    status: number;
+    @Column({ name: 'status_id', type: 'int' })
+    @IsNotEmpty({ message: 'El estado es requerido' })
+    statusId: number;
 
-    @Column({name: 'cup_id'})
+    @Column({ name: 'requested_service_id', type: 'int' })
     @IsOptional()
-    cupsId: number;
+    requestedServiceId: number;
 
-    @Column({name: 'cirugia_id'})
-    @IsNotEmpty({message: 'La cirugia es requerida'})
+    @Column({ name: 'surgery_id', type: 'int' })
+    @IsNotEmpty({ message: 'La cirugia es requerida' })
     surgeryId: number;
 
-    @Column({name: 'usuario_id'})
+    @Column({ name: 'user_id', type: 'int' })
     @IsInt()
     @IsOptional()
     userId?: number | null;
 
-    @CreateDateColumn({name: 'createdAt'})
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({name: 'updatedAt'})
-    updateAt: Date;
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date;
 
     // * relaciones
 
     // * relaicon con estadoseguimiento
     @ManyToOne(() => EstadosSeguimiento, (estadoSeguimiento) => estadoSeguimiento.statusRelation)
-    @JoinColumn({name: 'estado'})
+    @JoinColumn({ name: 'status_id' })
     estadoSeguimientoRelation: EstadosSeguimiento;
 
     // * relacion con cirugias
     @ManyToOne(() => Cirugias, (cirugias) => cirugias.gestionCirugiasRelation)
-    @JoinColumn({name: 'cirugia_id'})
+    @JoinColumn({ name: 'surgery_id' })
     cirugiasRelation: Cirugias;
 
-    // * relacion con cups
-    @ManyToOne(() => ServiciosSolicitados, (cirugias) => cirugias.statusRelation)
-    @JoinColumn({name: 'cup_id'})
+    // * relacion con servicios solicitados
+    @ManyToOne(() => ServiciosSolicitados, (servicio) => servicio.statusRelation)
+    @JoinColumn({ name: 'requested_service_id' })
     cupsRelation: Cirugias;
 
     // * relacion con usuario
     @ManyToOne(() => Usuarios, (usuario) => usuario.gestionCirugiasRelation)
-    @JoinColumn({name: 'usuario_id'})
+    @JoinColumn({ name: 'user_id' })
     userRelation: Usuarios;
 
 }
