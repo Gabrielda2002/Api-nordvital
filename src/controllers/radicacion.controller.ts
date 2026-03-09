@@ -10,262 +10,6 @@ import { Soportes } from "../entities/soportes";
 import path from "path";
 import Logger from "../utils/logger-wrapper";
 
-export async function getAllRadicacion(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const radicacion = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-      .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-      .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.patientRelation", "patient")
-      .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
-      .leftJoinAndSelect("patient.convenioRelation", "convenio")
-      .leftJoinAndSelect("patient.documentRelation", "document")
-      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .leftJoinAndSelect(
-        "cupsRadicados.functionalUnitRelation",
-        "unidadFuncional"
-      )
-      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
-      .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-      .leftJoinAndSelect(
-        "cupsRadicados.seguimientoAuxiliarRelation",
-        "seguimientoAuxiliar"
-      )
-      .leftJoinAndSelect(
-        "seguimientoAuxiliar.estadoSeguimientoRelation",
-        "estadoSeguimiento"
-      )
-      .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
-      .orderBy("radicacion.id", "DESC")
-      .getMany();
-
-    return res.json(radicacion);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getRadicacionById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const radicacion = await Radicacion.createQueryBuilder("radicacion")
-      .where("radicacion.id = :id", { id: parseInt(String(id)) })
-      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-      .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-      .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.patientRelation", "patient")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
-      .getOne();
-
-    if (!radicacion) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    const radicacionFormated = {
-      id: radicacion.id,
-      name: radicacion.patientRelation?.name,
-      document: radicacion.patientRelation?.documentNumber,
-      convenio: radicacion.patientRelation?.convenioRelation?.name,
-      specialty: radicacion.specialtyRelation?.name,
-      place: radicacion.placeRelation?.name,
-      ipsRemite: radicacion.ipsRemiteRelation?.name,
-      servicesGroup: radicacion.servicesGroupRelation?.name,
-      services: radicacion.servicesRelation?.name,
-      radicador: radicacion.usuarioRelation?.name,
-      auditDate: radicacion.auditDate,
-      createdAt: radicacion.createdAt,
-      orderDate: radicacion.orderDate,
-      professionalName:
-        radicacion.professionalId === null
-          ? radicacion.professionalName
-          : radicacion.profesionalesRelation?.name,
-      serviceGroupId: radicacion.serviceGroupId,
-      serviceTypeId: radicacion.serviceTypeId,
-      auditJustification: radicacion.auditJustification,
-      auditStatusId: radicacion.auditStatusId,
-      cupsRadicados: radicacion.cupsRadicadosRelation?.map((c) => ({
-        id: c.id,
-        statusId: c.statusId,
-        observation: c.observation,
-        functionalUnitId: c.functionalUnitId,
-        radicacionId: c.radicacionId,
-        updatedAt: c.updatedAt,
-        createdAt: c.createdAt,
-      })),
-    };
-
-    return res.json(radicacionFormated);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function createRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const {
-      orderDate,
-      place,
-      ipsRemitente,
-      profetional,
-      specialty,
-      groupServices,
-      radicador,
-      typeServices,
-      idPatient,
-      idSoporte,
-      idDiagnostico,
-    } = req.body;
-
-    const radicacado = new Radicacion();
-
-    radicacado.orderDate = orderDate;
-    radicacado.placeId = parseInt(String(place));
-    radicacado.ipsRemiteId = parseInt(String(ipsRemitente));
-    radicacado.professionalId = Number(profetional);
-    radicacado.specialtyId = parseInt(String(specialty));
-    radicacado.serviceGroupId = parseInt(String(groupServices));
-    radicacado.serviceTypeId = parseInt(String(typeServices));
-    radicacado.filedByUserId = parseInt(String(radicador));
-    radicacado.auditNotes = "Pendiente";
-    radicacado.auditJustification = "Pendiente";
-    radicacado.auditStatusId = 6;
-    radicacado.patientId = parseInt(String(idPatient));
-    radicacado.supportId = parseInt(String(idSoporte));
-    radicacado.diagnosisId = parseInt(String(idDiagnostico));
-
-    const errors = await validate(radicacado);
-
-    if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-
-      return res
-        .status(400)
-        .json({ message: "Error creating radicacion", messages });
-    }
-
-    await radicacado.save();
-
-    return res.json(radicacado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function updateRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const {
-      orderDate,
-      place,
-      ipsRemitente,
-      profetional,
-      specialty,
-      diagnosticCode,
-      diagnosticDescription,
-      groupServices,
-      radicador,
-      auditora,
-      auditDate,
-      typeServices,
-      justify,
-      idPatient,
-      auditConcept,
-    } = req.body;
-
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacado) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    radicacado.orderDate = orderDate;
-    radicacado.placeId = place;
-    radicacado.ipsRemiteId = ipsRemitente;
-    radicacado.professionalId = Number(profetional);
-    radicacado.professionalName = null;
-    radicacado.specialtyId = specialty;
-    radicacado.serviceGroupId = groupServices;
-    radicacado.serviceTypeId = typeServices;
-    radicacado.filedByUserId = radicador;
-    radicacado.auditNotes = auditora;
-    radicacado.auditDate = auditDate;
-    radicacado.auditJustification = justify;
-    radicacado.patientId = idPatient;
-    radicacado.auditStatusId = auditConcept;
-
-    const errors = await validate(radicacado);
-
-    if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-
-      return res
-        .status(400)
-        .json({ message: "Error updating radicacion", messages });
-    }
-
-    await radicacado.save();
-
-    return res.json(radicacado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function deleteRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacado) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    await radicacado.remove();
-
-    return res.json({ message: "Radicacion deleted" });
-  } catch (error) {
-    next(error);
-  }
-}
-
 export async function tablaPorAuditar(
   req: Request,
   res: Response,
@@ -342,7 +86,7 @@ export async function tablaPorAuditar(
       supportId: r.soportesRelation?.id || "N/A",
     }));
 
-    return res.json(formatedRadicaciones);
+    return res.status(200).json(formatedRadicaciones);
   } catch (error) {
     next(error);
   }
@@ -378,23 +122,23 @@ export async function  auditorRadicados(
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
-      radicadoDate: r.createdAt,
+      createdAt: r.createdAt,
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
       CUPS: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
-        idCups: c.servicioRelation?.id,
+        cupsId: c.servicioRelation?.id,
         code: c.servicioRelation?.code,
         description: c.servicioRelation?.name,
         status: c.statusRelation.name,
         statusId: c.statusRelation.id,
         observation: c.observation,
-        modifyDate: c.updatedAt,
+        updatedAt: c.updatedAt,
         quantity: c.quantity,
       })),
     }));
 
-    return res.json(formatedRadicaciones);
+    return res.status(200).json(formatedRadicaciones);
   } catch (error) {
     next(error);
   }

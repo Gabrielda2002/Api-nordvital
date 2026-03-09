@@ -9,7 +9,7 @@ import { ServiciosSolicitados } from "./servicios-solicitados";
 @Entity("cups_radicados")
 export class CupsRadicados extends BaseEntity {
 
-    @PrimaryGeneratedColumn({ name: "IdCups" })
+    @PrimaryGeneratedColumn({ name: "id" })
     id: number
 
     @Column({name: "status_id"})
@@ -35,16 +35,16 @@ export class CupsRadicados extends BaseEntity {
     @IsNotEmpty({message: "El ID de radicación es requerido"})
     radicacionId: number
 
-    @Column({name: "estado_carta_recobro", nullable: true, type: "varchar", length: 50})
+    @Column({name: "status_recovery_latter", nullable: true, type: "varchar", length: 50})
     @IsString()
     @IsOptional()
     statusRecoveryLatter: string | null;
     
-    @Column({name: "fecha_audita_carta_recobro", nullable: true, type: "date"})
+    @Column({name: "date_audit_recovery_latter", nullable: true, type: "date"})
     @IsOptional()
     dateAuditRecoveryLatter: Date | null;
 
-    @Column({name: "cantidad"})
+    @Column({name: "quantity"})
     @IsInt()
     @IsNotEmpty({message: "La cantidad es requerida"})
     quantity: number;
@@ -54,10 +54,10 @@ export class CupsRadicados extends BaseEntity {
     @IsInt()
     requestedServiceId: number | null;
 
-    @UpdateDateColumn({ name: "updated_at" })
+    @UpdateDateColumn({ name: "UltimaModificacion" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "created_at" })
+    @CreateDateColumn({ name: "FechaRegistro" })
     createdAt: Date
 
     //* relaciones

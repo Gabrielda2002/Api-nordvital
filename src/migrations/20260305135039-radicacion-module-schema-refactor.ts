@@ -83,7 +83,7 @@ export class RadicacionModuleSchemaRefactor20260305135039 implements MigrationIn
         // ─── surgeries ────────────────────────────────────────────────
         await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`estado\` \`status_id\` INT NULL`);
         await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`fecha_cirugia\` \`surgery_date\` DATE NOT NULL`);
-        await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`hora_programada\` \`scheduled_time\` TIME NOT NULL`);
+    await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`hora_programada\` \`scheduled_time\` TIME NOT NULL`);
         await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`ips_remitente\` \`ips_remite_id\` INT NOT NULL`);
         await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`observaciones\` \`observation\` VARCHAR(500) NULL`);
         await queryRunner.query(`ALTER TABLE \`surgeries\` CHANGE \`radicado_id\` \`radicacion_id\` INT NOT NULL`);

@@ -5,13 +5,13 @@ import { Equipos } from "./equipos";
 import { Celular } from "./celular";
 import { PermissionAttachment } from "./permission-attachment";
 
-@Entity("soportes")
+@Entity("support_documents_radicaciones")
 export class Soportes extends BaseEntity {
 
     @PrimaryGeneratedColumn({name: "id"})
     id: number;
 
-    @Column({name: "nombre"})
+    @Column({name: "name"})
     @IsString()
     @Length(1, 150, {message: "El nombre del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
     @IsNotEmpty({message: "El nombre del soporte es requerido"})
@@ -28,7 +28,7 @@ export class Soportes extends BaseEntity {
     @IsNotEmpty({message: "El tamaño del soporte es requerido"})
     size: number;
 
-    @Column({name: "tipo"})
+    @Column({name: "type"})
     @IsString()
     @Length(1, 100, {message: "El tipo del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
     @IsNotEmpty({message: "El tipo del soporte es requerido"})
