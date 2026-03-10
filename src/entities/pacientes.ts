@@ -22,7 +22,7 @@ export class Pacientes extends BaseEntity {
     @Column({name: "document_number", type: "bigint"})
     @IsInt()
     @IsNotEmpty({message: "El campo Identificacion no puede estar vacio"})
-    @Min(5, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(5,20, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
     documentNumber: number;
 
     @Column({name: "name", type: "varchar", length: 250})

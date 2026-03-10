@@ -73,7 +73,7 @@ export async function tablaPorAuditar(
       assistant: r.usuarioRelation?.name || "N/A",
       cups:
         r.cupsRadicadosRelation?.map((c) => ({
-          id: c.servicioRelation?.id || "N/A",
+          id: c.id || "N/A",
           code: c.servicioRelation?.code || "N/A",
           description: c.servicioRelation?.name || "N/A",
           observation: c.observation,
@@ -81,6 +81,7 @@ export async function tablaPorAuditar(
           functionalUnit: c.functionalUnitRelation.name,
           idRadicado: c.radicacionId,
           quantity: c.quantity,
+          serviceId: c.servicioRelation?.id || "N/A",
         })) || "N/A",
       supportName: r.soportesRelation?.nameSaved || "N/A",
       supportId: r.soportesRelation?.id || "N/A",
@@ -181,12 +182,12 @@ export async function autorizarRadicado(
     for (const detail of cupsDetails) {
       const cups = await queryRunner.manager.findOneBy(CupsRadicados, {
         radicacionId: radicadoId,
-        requestedServiceId: parseInt(String(detail.id)),
+        id: parseInt(String(detail.id)),
       });
 
       if (!cups) {
         await queryRunner.rollbackTransaction();
-        return res.status(404).json({ message: `CUPS con requestedServiceId ${detail.id} no encontrado para el radicado ${radicadoId}` });
+        return res.status(404).json({ message: `CUPS radicado con id ${detail.id} no encontrado para el radicado ${radicadoId}` });
       }
 
       cups.statusId = parseInt(detail.status);
@@ -670,7 +671,16 @@ export const createRequestService = async (
     patientExist.email = email;
     patientExist.agreementId = parseInt(String(agreement));
 
-    const errorsPatient = await validate(patientExist);
+    const patientToValidate = Object.assign(new Pacientes(), {
+      landline: patientExist.landline,
+      phoneNumber: patientExist.phoneNumber,
+      phoneNumber2: patientExist.phoneNumber2,
+      address: patientExist.address,
+      email: patientExist.email,
+      agreementId: patientExist.agreementId,
+    });
+
+    const errorsPatient = await validate(patientToValidate, { skipMissingProperties: true });
     if (errorsPatient.length > 0) {
       const messages = errorsPatient.map(err => (
         Object.values(err.constraints || {}).join(', ')
