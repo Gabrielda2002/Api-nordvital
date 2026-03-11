@@ -54,10 +54,10 @@ export class CupsRadicados extends BaseEntity {
     @IsInt()
     requestedServiceId: number | null;
 
-    @UpdateDateColumn({ name: "UltimaModificacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "FechaRegistro" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     //* relaciones

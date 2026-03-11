@@ -3,35 +3,35 @@ import { BaseEntity, Column, CreateDateColumn, Entity, IsNull, JoinColumn, ManyT
 import { Radicacion } from "./radicacion";
 import { Usuarios } from "./usuarios";
 
-@Entity({ name: "carta_recobro" })
+@Entity({ name: "revovery_latters" })
 export class CartaRecobro extends BaseEntity {
 
     @PrimaryGeneratedColumn({name: "id"})
     id: number;
 
-    @Column({name: "id_radicado"})
+    @Column({name: "radicacion_id"})
     @IsInt()
     idRadicado: number;
 
-    @Column({name: "id_usuario_solicita"})
+    @Column({name: "user_request_id"})
     @IsInt()
     idUserRequest: number;
 
-    @Column({name: "id_usuario_audita", nullable: true, type: "int"})
+    @Column({name: "user_audit_id", nullable: true, type: "int"})
     @IsInt()
     @IsOptional()
     idUserAudit: number | null;
 
-    @Column({name: "observacion", nullable: true, type: "text"})
+    @Column({name: "observation", nullable: true, type: "text"})
     @IsString()
     @IsOptional()
     observation: string | null;
 
-    @Column({name: "justificacion"})
+    @Column({name: "justification", type: "text"})
     @IsString()
     justification: string;
 
-    @Column({name: "fecha_impresion", nullable: true, type: "date"})
+    @Column({name: "print_date", nullable: true, type: "date"})
     @IsString()
     @IsOptional()
     dateImpression: Date | null;

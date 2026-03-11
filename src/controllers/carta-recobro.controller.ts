@@ -163,11 +163,11 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
         .leftJoinAndSelect("patient.convenioRelation", "convenio")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .leftJoinAndSelect("cups_radicados.servicioRelation", "services")
-        .where("cups_radicados.status = 1")
+        .where("cups_radicados.statusId = 1")
         .andWhere("patient.documentNumber = :documentPatient", {documentPatient})
 
         if (req.departmentUserId) {
-            query.andWhere('municipality.idDepartment = :department', { department: req.departmentUserId });
+            query.andWhere('municipality.departmentId = :department', { department: req.departmentUserId });
         }
 
         const requestLatter = await query.getMany();    
@@ -217,10 +217,10 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         .leftJoinAndSelect("cups_radicados.servicioRelation", "services")
         .leftJoinAndSelect("cups_radicados.statusRelation", "estados")
         .andWhere('carta_recobro.idUserAudit IS NULL')
-        .andWhere('cups_radicados.status = 1')
+        .andWhere('cups_radicados.statusId = 1')
 
         if (req.departmentUserId) {
-            query.andWhere('municipality.idDepartment= :department', { department: req.departmentUserId });
+            query.andWhere('municipality.departmentId = :department', { department: req.departmentUserId });
         }
 
         const responseLetter = await query.getMany();
@@ -323,7 +323,7 @@ export async function creatAuditRequestLetter (req: Request, res: Response, next
         // * actualiza el cups afectados
 
         const cupsExist = await CupsRadicados.createQueryBuilder("cups_radicados")
-        .where("cups_radicados.idRadicacion = :idRadicado", {idRadicado})
+        .where("cups_radicados.radicacionId = :idRadicado", {idRadicado})
         .getMany();
 
         for (const cup of cupsExist) {
