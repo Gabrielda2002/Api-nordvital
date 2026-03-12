@@ -92,14 +92,14 @@ import moodleRoutes from './moodle.routes';
 const router = Router();
 
 // * Rutas
-router.use( radicacionRoutes);
+router.use('/radicaciones', radicacionRoutes);
 router.use( tipoDocumentoRoutes);
 router.use( convenioRoutes);
 router.use( ipsPrimariaRoutes);
 router.use( especialidadRoutes);
 router.use( lugarRadicacionRoutes);
 router.use( ipsRemiteRoutes);
-router.use( grupoServiciosRoutes);
+router.use('/group-services', grupoServiciosRoutes);
 router.use( estadosRoutes);
 router.use( cupsRadicadosRoutes);
 router.use( diagnosticosRoutes);

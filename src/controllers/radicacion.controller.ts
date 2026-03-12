@@ -10,7 +10,7 @@ import { Soportes } from "../entities/soportes";
 import path from "path";
 import Logger from "../utils/logger-wrapper";
 
-export async function tablaPorAuditar(
+export async function getRadicacionesAudit(
   req: Request,
   res: Response,
   next: NextFunction
@@ -93,7 +93,7 @@ export async function tablaPorAuditar(
   }
 }
 
-export async function  auditorRadicados(
+export async function  getRadicaciones(
   req: Request,
   res: Response,
   next: NextFunction
@@ -145,7 +145,7 @@ export async function  auditorRadicados(
   }
 }
 
-export async function autorizarRadicado(
+export async function authorizeRadicacion(
   req: Request,
   res: Response,
   next: NextFunction
@@ -219,7 +219,7 @@ export async function autorizarRadicado(
   }
 }
 
-export async function cirugiasTable(
+export async function getSurgeries(
   req: Request,
   res: Response,
   next: NextFunction
@@ -339,54 +339,8 @@ export async function cirugiasTable(
   }
 }
 
-// radicacion_controller.ts
-export async function registrosUltimosTresMeses(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const now = new Date();
-    const threeMonthsAgo = subMonths(now, 3);
-
-    const registros = await Radicacion.createQueryBuilder("radicacion")
-      .where("radicacion.createdAt BETWEEN :start AND :end", {
-        start: threeMonthsAgo,
-        end: now,
-      })
-      .getMany();
-
-    const registrosPorMes = registros.reduce(
-      (acc: { [key: string]: number }, registro) => {
-        const mes = registro.createdAt.getMonth();
-        const año = registro.createdAt.getFullYear();
-        const key = `${año}-${mes + 1}`; // Meses en JavaScript son 0-indexados
-
-        if (!acc[key]) {
-          acc[key] = 0;
-        }
-        acc[key]++;
-        return acc;
-      },
-      {}
-    );
-
-    const data = Object.keys(registrosPorMes).map((key) => {
-      const [año, mes] = key.split("-");
-      return {
-        mes: `${año}-${mes}`,
-        cantidad: registrosPorMes[key],
-      };
-    });
-
-    return res.json(data);
-  } catch (error) {
-    next(error);
-  }
-}
-
 // buscar radicado por numero documento paciente
-export async function buscarRadicadoPorDocumento(
+export async function getRadicacionByPatient(
   req: Request,
   res: Response,
   next: NextFunction
@@ -528,77 +482,6 @@ export async function buscarRadicadoPorDocumento(
     }));
 
     return res.json(radicacionFormated);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getCupsEstadisticasPorMes(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const now = new Date();
-    const firstDayOfMonth = startOfMonth(now);
-
-    const cupsRadicados = await CupsRadicados.createQueryBuilder(
-      "cupsRadicados"
-    )
-      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .select(["status.name as estado", "COUNT(*) as cantidad"])
-      .where("cupsRadicados.createdAt BETWEEN :start AND :end", {
-        start: firstDayOfMonth,
-        end: now,
-      })
-      .groupBy("status.name")
-      .getRawMany();
-
-    // Formatear los resultados en una estructura más simple
-    const resultado = cupsRadicados.map((record) => ({
-      estado: record.estado,
-      cantidad: parseInt(record.cantidad),
-    }));
-
-    return res.json(resultado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function updateGroupServices(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const { groupServices } = req.body;
-
-    const radicacion = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacion) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    radicacion.serviceGroupId = Number(groupServices);
-
-    const errors = await validate(radicacion, { skipMissingProperties: true });
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res
-        .status(400)
-        .json({ message: "Error updating radicacion", errors: message });
-    }
-
-    await radicacion.save();
-
-    return res.status(200).json({ message: "Grupo actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }
