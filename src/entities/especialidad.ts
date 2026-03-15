@@ -3,27 +3,27 @@ import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { Cirugias } from "./cirugias";
 
-@Entity("especialidad")
+@Entity("specialties")
 export class Especialidad extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "IdEspecialidad"})
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number
 
-    @Column({name: "NombreEspecialidad"})
+    @Column({ name: "name", type: "varchar", length: "255" })
     @IsString()
     @IsNotEmpty()
     @Length(3, 50, { message: "El nombre de la especialidad debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string
 
-    @Column({name: "Estado"})
+    @Column({ name: "status", type: "tinyint", default: 1 })
     @IsBoolean()
     @IsNotEmpty()
     status: boolean
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relaciones

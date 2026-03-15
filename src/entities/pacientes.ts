@@ -8,92 +8,92 @@ import { Cirugias } from "./cirugias";
 import { DemandaInducida } from "./demanda-inducida";
 
 
-@Entity("pacientes")
+@Entity("patients")
 export class Pacientes extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "id"})
+    @PrimaryGeneratedColumn({name: "id", type: "int", unsigned: true, comment: "Identificador único del paciente"})
     id: number;
 
-    @Column({name: "Documento"})
+    @Column({name: "document_type_id", type: "int"})
     @IsInt()
     @IsNotEmpty({message: "El campo Documento no puede estar vacio"})
-    documentType: number;
+    documentTypeId: number;
 
-    @Column({name: "Identificacion"})
+    @Column({name: "document_number", type: "bigint"})
     @IsInt()
     @IsNotEmpty({message: "El campo Identificacion no puede estar vacio"})
-    @Min(5, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(5,20, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
     documentNumber: number;
 
-    @Column({name: "NombreCompleto"})
+    @Column({name: "name", type: "varchar", length: 250})
     @IsString()
     @IsNotEmpty({message: "El campo NombreCompleto no puede estar vacio"})
-    @Length(3, 100, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres"})
+    @Length(3, 250, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string;
 
-    @Column({name: "NumeroCelular"})
+    @Column({name: "phone_number", type: "varchar", length: 10})
     @IsNotEmpty({message: "El campo NumeroCelular no puede estar vacio"})
     @Length(1, 10, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber: string;
 
-    @Column({name: "TelefonoFijo", nullable: true})
+    @Column({name: "landline", nullable: true, type: "varchar", length: 10})
     @ValidateIf((o) => o.landline !== null && o.landline !== undefined && o.landline !== '')
     @IsString()
     @MaxLength(10, {message: "El campo TelefonoFijo no debe exceder los $constraint1 dígitos"})
     landline?: string;
 
-    @Column({name: "numeroCelular2", nullable: true})
+    @Column({name: "phone_number_2", nullable: true, type: "varchar", length: 10})
     @ValidateIf((o) => o.phoneNumber2 !== null && o.phoneNumber2 !== undefined && o.phoneNumber2 !== '')
     @IsString()
     @Length(1, 10, {message: "El campo numeroCelular2 debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber2: string
 
-    @Column({name: "Email"})
+    @Column({name: "email", type: "varchar", length: 250})
     @IsEmail()
     @IsNotEmpty({message: "El campo Email no puede estar vacio"})
     email: string;
 
-    @Column({name: "Direccion"})
+    @Column({name: "address", type: "varchar", length: 250})
     @IsString()
     @IsNotEmpty({message: "El campo Direccion no puede estar vacio"})
     address: string;
 
-    @Column({name: "Convenio"})
+    @Column({name: "agreement_id", type: "int"})
     @IsInt()
     @IsNotEmpty({message: "El campo Convenio no puede estar vacio"})
-    agreement: number;
+    agreementId: number;
 
-    @Column({name: "ipsPrimaria"})
+    @Column({name: "ips_primary_id", type: "int"})
     @IsInt()
     @IsNotEmpty({message: "El campo ipsPrimaria no puede estar vacio"})
-    ipsPrimary: number;
+    ipsPrimaryId: number;
 
-    @Column({name: "Estado"})
+    @Column({name: "status", type: "tinyint"})
     @IsBoolean()
     @IsNotEmpty({message: "El campo Estado no puede estar vacio"})
     status: boolean;
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relaciones 
 
     // ? relacion con convenio
-    @ManyToOne(() => Convenio, (convenio) => convenio.patientRelation )
-    @JoinColumn({name: "Convenio"})
+    @ManyToOne(() => Convenio, (convenio) => convenio.patientRelation)
+    @JoinColumn({name: "agreement_id"})
     convenioRelation: Convenio
 
     // ? relacion con documento
     @ManyToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.patientRelation)
-    @JoinColumn({name: "Documento"})
+    @JoinColumn({name: "document_type_id"})
     documentRelation: TipoDocumento
 
     // * relacion con ips primaria
-    @ManyToOne(()=> IpsPrimaria, (ipsPrimaria) => ipsPrimaria.patientRelation)
-    @JoinColumn({name: "ipsPrimaria"})
+    @ManyToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.patientRelation)
+    @JoinColumn({name: "ips_primary_id"})
     ipsPrimariaRelation: IpsPrimaria
 
     // * relacion con radicacion

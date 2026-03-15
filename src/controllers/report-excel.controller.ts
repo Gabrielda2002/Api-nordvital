@@ -300,14 +300,14 @@ export async function getReportServices(
         Fecha_de_orden: data.orderDate || "N/A",
         Lugar_de_radicacion: data.placeRelation?.name || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.idProfesional === null ? data.profetional : data.profesionalesRelation?.name,
+        Profesional: data.professionalId === null ? data.professionalName : data.profesionalesRelation?.name,
         Especialidad: data.specialtyRelation?.name || "N/A",
         codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
         descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
         Radicador: data.usuarioRelation?.name || "N/A",
-        Auditora: data.auditora || "N/A",
+        Auditora: data.auditNotes || "N/A",
         Fecha_de_auditoria: data.auditDate || "N/A",
       };
 

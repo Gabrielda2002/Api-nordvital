@@ -3,22 +3,22 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 import { CupsRadicados } from "./cups-radicados";
 import { Radicacion } from "./radicacion";
 
-@Entity("autorizacion")
+@Entity("authorization_statuses")
 export class Estados extends BaseEntity {
 
-    @PrimaryGeneratedColumn({ name: "IdAutorizacion" })
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number;
 
-    @Column({ name: "OpcionAutorizacion" })
+    @Column({ name: "name", type: "varchar", length: 255 })
     @IsString()
     @IsNotEmpty({ message: "El nombre es requerido" })
     @Length(1, 50, { message: "La longitud del nombre debe ser de 1 a 50 caracteres" })
     name: string
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relaciones

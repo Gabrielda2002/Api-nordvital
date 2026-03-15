@@ -2,27 +2,27 @@ import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, One
 import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 
-@Entity("ipsremite")
+@Entity("ips_remite")
 export class IpsRemite extends BaseEntity {
-    
-    @PrimaryGeneratedColumn({name: "IdIpsRemite"})
+
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number
 
-    @Column({name: "NombreIpsRemite"})
+    @Column({ name: "name", type: "varchar", length: 255 })
     @IsString()
     @IsNotEmpty({ message: "El nombre de la IPS remitente es requerido" })
     @Length(3, 100, { message: "El nombre de la IPS remitente debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string
 
-    @Column({name: "Estado"})
-    @IsBoolean()
+    @Column({ name: "status", type: "tinyint", default: 1 })
+@IsBoolean()
     @IsNotEmpty({ message: "El estado de la IPS remitente es requerido" })
     status: boolean
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relaciones

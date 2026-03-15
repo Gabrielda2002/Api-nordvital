@@ -45,8 +45,8 @@ export async function createMunicipio(req: Request, res: Response, next: NextFun
         const municipio = new Municipio();
         municipio.name = name;
         municipio.status = true;
-        municipio.municipioCode = municipioCode;
-        municipio.idDepartment = Number(department);
+        municipio.municipalityCode = municipioCode;
+        municipio.departmentId = Number(department);
 
         const errors = await validate(municipio);
 
@@ -81,9 +81,9 @@ export async function updateMunicipio(req: Request, res: Response, next: NextFun
         }
 
         municipio.name = name;
-        municipio.municipioCode = municipioCode;
+        municipio.municipalityCode = municipioCode;
         municipio.status = status;
-        municipio.idDepartment = idDepartment;
+        municipio.departmentId = idDepartment;
 
         const errors = await validate(municipio);
 

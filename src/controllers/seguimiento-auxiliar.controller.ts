@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { SeguimietoAuxiliar } from "../entities/seguimiento-auxiliar";
+import { SeguimientoAuxiliar } from "../entities/seguimiento-auxiliar";
 import { validate } from "class-validator";
 
 export async function getAllSeguimientosAuxiliares(req: Request, res: Response, next: NextFunction){
     try {
         
-        const seguimientosAuxiliares = await SeguimietoAuxiliar.find({
-            relations: ["radicacionRelation", "estadoSeguimientoRelation"]
+        const seguimientosAuxiliares = await SeguimientoAuxiliar.find({
+            relations: ["cupsRadicadosRelation", "estadoSeguimientoRelation"]
         });
         return res.json(seguimientosAuxiliares);
 
@@ -20,9 +20,9 @@ export async function getSeguimientoAuxiliar(req: Request, res: Response, next: 
     try {
         const { id } = req.params;
 
-        const seguimientoAuxiliar = await SeguimietoAuxiliar.findOne({
+        const seguimientoAuxiliar = await SeguimientoAuxiliar.findOne({
             where: {id: parseInt(String(id))},
-            relations: ["radicacionRelation", "estadoSeguimientoRelation"]
+            relations: ["cupsRadicadosRelation", "estadoSeguimientoRelation"]
         });
 
         if (!seguimientoAuxiliar) {
@@ -44,11 +44,11 @@ export async function createSeguimientoAuxiliar(req: Request, res: Response, nex
             return res.status(400).json({message: "Todos los campos son requeridos"});
         }
 
-        const seguimientoAuxiliar = new SeguimietoAuxiliar();
+        const seguimientoAuxiliar = new SeguimientoAuxiliar();
 
         seguimientoAuxiliar.observation = observation;
-        seguimientoAuxiliar.status = parseInt(String(status));
-        seguimientoAuxiliar.idRadicacion = parseInt(String(idRadicacion));
+        seguimientoAuxiliar.statusId = parseInt(String(status));
+        seguimientoAuxiliar.cupsRadicadoId = parseInt(String(idRadicacion));
         seguimientoAuxiliar.userId = parseInt(String(userId));
 
         const errors = await validate(seguimientoAuxiliar);
@@ -78,14 +78,14 @@ export async function updateSeguimientoAuxiliar(req: Request, res: Response, nex
 
         const { observation, status } = req.body;
 
-        const seguimientoAuxiliar = await SeguimietoAuxiliar.findOneBy({id: parseInt(String(id))});
+        const seguimientoAuxiliar = await SeguimientoAuxiliar.findOneBy({id: parseInt(String(id))});
 
         if (!seguimientoAuxiliar) {
             return res.status(404).json({message: "Seguimiento auxiliar no encontrado"});
         }
 
         seguimientoAuxiliar.observation = observation;
-        seguimientoAuxiliar.status = status;
+        seguimientoAuxiliar.statusId = status;
 
         const errors = await validate(seguimientoAuxiliar);
 
@@ -112,7 +112,7 @@ export async function deleteSeguimientoAuxiliar(req: Request, res: Response, nex
         
         const { id } = req.params;
 
-        const seguimientoAuxiliar = await SeguimietoAuxiliar.findOneBy({id: parseInt(String(id))});
+        const seguimientoAuxiliar = await SeguimientoAuxiliar.findOneBy({id: parseInt(String(id))});
 
         if (!seguimientoAuxiliar) {
             return res.status(404).json({message: "Seguimiento auxiliar no encontrado"});

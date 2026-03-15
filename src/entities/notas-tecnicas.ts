@@ -2,7 +2,7 @@ import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Convenio } from "./convenio";
 import { ServiciosGenerales } from "./servicios-generales";
-import { Sedes } from "./Sedes";
+import { Sedes } from "./sedes";
 import { Servicios } from "./servicios";
 
 @Entity("notas_tecnicas")

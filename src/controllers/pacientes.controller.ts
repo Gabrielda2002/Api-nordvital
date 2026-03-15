@@ -75,7 +75,7 @@ export async function createPatient(
     }
 
     const paciente = new Pacientes();
-    paciente.documentType = parseInt(String(documentType));
+    paciente.documentTypeId = parseInt(String(documentType));
     paciente.documentNumber = parseInt(String(documentNumber));
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
@@ -83,8 +83,8 @@ export async function createPatient(
     paciente.landline = landline;
     paciente.email = email;
     paciente.address = address;
-    paciente.agreement = parseInt(String(agreement));
-    paciente.ipsPrimary = parseInt(String(ipsPrimaria));
+    paciente.agreementId = parseInt(String(agreement));
+    paciente.ipsPrimaryId = parseInt(String(ipsPrimaria));
     paciente.status = true;
 
     const errors = await validate(paciente);
@@ -247,7 +247,7 @@ export async function updatePacienteTable(
       return res.status(400).json({ message: "Los números de contacto no pueden ser iguales." });
     }
 
-    paciente.documentType = parseInt(String(documentType));
+    paciente.documentTypeId = parseInt(String(documentType));
     paciente.documentNumber = parseInt(String(documentNumber));
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
@@ -255,8 +255,8 @@ export async function updatePacienteTable(
     paciente.landline = landline.toString();
     paciente.email = email;
     paciente.address = address;
-    paciente.agreement = parseInt(String(agreement));
-    paciente.ipsPrimary = parseInt(String(ipsPrimaria));
+    paciente.agreementId = parseInt(String(agreement));
+    paciente.ipsPrimaryId = parseInt(String(ipsPrimaria));
 
     const errors = await validate(paciente);
 

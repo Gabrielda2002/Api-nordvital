@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { GrupoServicios } from "../entities/grupo-servicios";
 import { validate } from "class-validator";
 import { parse } from "path";
+import { Radicacion } from "../entities/radicacion";
 
 export async function getAllGruposServicios(req: Request, res: Response, next: NextFunction ) {
   try {
@@ -147,6 +148,44 @@ export async function getGrupoServiciosByName(req: Request, res: Response, next:
     }
 
     return res.json(grupoServicios);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateByRadicacion(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    const { groupServices } = req.body;
+
+    const radicacion = await Radicacion.findOneBy({ id: parseInt(String(id)) });
+
+    if (!radicacion) {
+      return res.status(404).json({ message: "Radicacion not found" });
+    }
+
+    radicacion.serviceGroupId = Number(groupServices);
+
+    const errors = await validate(radicacion, { skipMissingProperties: true });
+
+    if (errors.length > 0) {
+      const message = errors.map((err) => ({
+        property: err.property,
+        constraints: err.constraints,
+      }));
+      return res
+        .status(400)
+        .json({ message: "Error updating radicacion", errors: message });
+    }
+
+    await radicacion.save();
+
+    return res.status(200).json({ message: "Grupo actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }

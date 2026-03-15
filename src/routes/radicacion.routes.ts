@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auditorRadicados, autorizarRadicado, buscarRadicadoPorDocumento, cirugiasTable, createRadicado, createRequestService, deleteRadicado, getAllRadicacion, getCupsEstadisticasPorMes, getRadicacionById, registrosUltimosTresMeses, tablaPorAuditar, updateGroupServices, updateRadicado } from "../controllers/radicacion.controller";
+import { authorizeRadicacion, createRequestService, getRadicacionByPatient, getRadicaciones, getRadicacionesAudit, getSurgeries } from "../controllers/radicacion.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import {upload} from "../middlewares/multer-support.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
@@ -7,202 +7,11 @@ import { authenticate } from "../middlewares/authenticate.middleware";
 import { getDepartmentUser } from "../middlewares/get-department-user.middleware";
 
 
-const router = Router();
+const router = Router(); 
 
 /**
  * @swagger
- * /radicacion:
- *   get:
- *     tags:
- *       - Radicación
- *     summary: Obtiene todas las radicaciones
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de radicaciones
- *       401:
- *         description: No autorizado
- */
-router.get('/radicacion',authenticate, authorizeRoles(['1','10', '3', '15', 6]), getAllRadicacion);
-
-/**
- * @swagger
- * /radicacion/{id}:
- *   get:
- *     tags:
- *       - Radicación
- *     summary: Obtiene una radicación por ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Radicación encontrada
- *       404:
- *         description: Radicación no encontrada
- */
-router.get('/radicacion/:id',authenticate, authorizeRoles(['1', '10', '3', '15']), validarId, getRadicacionById);
-
-/**
- * @swagger
- * /radicacion:
- *   post:
- *     tags:
- *       - Radicación
- *     summary: Crea una nueva radicación
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - orderDate
- *               - place
- *               - ipsRemitente
- *               - profetional
- *               - specialty
- *               - groupServices
- *               - radicador
- *               - typeServices
- *               - idPatient
- *               - idSoporte
- *               - idDiagnostico
- *             properties:
- *               orderDate:
- *                 type: string
- *                 format: date
- *               place:
- *                 type: integer
- *               ipsRemitente:
- *                 type: integer
- *               profetional:
- *                 type: string
- *               specialty:
- *                 type: integer
- *               groupServices:
- *                 type: integer
- *               radicador:
- *                 type: integer
- *               typeServices:
- *                 type: integer
- *               idPatient:
- *                 type: integer
- *               idSoporte:
- *                 type: integer
- *               idDiagnostico:
- *                 type: integer
- *     responses:
- *       200:
- *         description: Radicación creada exitosamente
- *       400:
- *         description: Error en la validación de datos
- */
-router.post('/radicacion',authenticate, authorizeRoles(['1', '10', '3', '15', '6']), createRadicado);
-
-/**
- * @swagger
- * /radicacion/{id}:
- *   put:
- *     tags:
- *       - Radicación
- *     summary: Actualiza una radicación por ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - orderDate
- *               - place
- *               - ipsRemitente
- *               - profetional
- *               - specialty
- *               - groupServices
- *               - radicador
- *               - typeServices
- *               - idPatient
- *               - idSoporte
- *               - idDiagnostico
- *             properties:
- *               orderDate:
- *                 type: string
- *                 format: date
- *               place:
- *                 type: integer
- *               ipsRemitente:
- *                 type: integer
- *               profetional:
- *                 type: string
- *               specialty:
- *                 type: integer
- *               groupServices:
- *                 type: integer
- *               radicador:
- *                 type: integer
- *               typeServices:
- *                 type: integer
- *               idPatient:
- *                 type: integer
- *               idSoporte:
- *                 type: integer
- *               idDiagnostico:
- *                 type: integer
- *     responses:
- *       200:
- *         description: Radicación actualizada exitosamente
- *       400:
- *         description: Error en la validación de datos
- *       404:
- *         description: Radicación no encontrada
- */
-router.put('/radicacion/:id',authenticate, authorizeRoles(['1', '10', '3']), validarId, updateRadicado);
-
-/**
- * @swagger
- * /radicacion/{id}:
- *   delete:
- *     tags:
- *       - Radicación
- *     summary: Elimina una radicación por ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Radicación eliminada exitosamente
- *       404:
- *         description: Radicación no encontrada
- */
-router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, deleteRadicado);
-
-// router.get('/radicacion-table',authenticate, authorizeRoles(['1', '10', '3', '15']),  mostrarTabla);
-
-/**
- * @swagger
- * /auditoria-table:
+ * /radicacion/audit:
  *   get:
  *     tags:
  *       - Radicación
@@ -215,11 +24,11 @@ router.delete('/radicacion/:id',authenticate, authorizeRoles(['1']), validarId, 
  *       404:
  *         description: No hay radicaciones por auditar
  */
-router.get('/auditoria-table', authenticate, authorizeRoles(['1','3', '2']),getDepartmentUser, tablaPorAuditar);
+router.get('/audit', authenticate, authorizeRoles(['1','3', '2']),getDepartmentUser, getRadicacionesAudit);
 
 /**
  * @swagger
- * /auditoria-auditados:
+ * /radicacion/all:
  *   get:
  *     tags:
  *       - Radicación
@@ -230,7 +39,7 @@ router.get('/auditoria-table', authenticate, authorizeRoles(['1','3', '2']),getD
  *       200:
  *         description: Lista de radicaciones auditadas
  */
-router.get('/auditoria-auditados', authenticate, authorizeRoles(['1','3']),getDepartmentUser , auditorRadicados);
+router.get('/all', authenticate, authorizeRoles(['1','3']),getDepartmentUser, getRadicaciones);
 
 /**
  * @swagger
@@ -271,11 +80,11 @@ router.get('/auditoria-auditados', authenticate, authorizeRoles(['1','3']),getDe
  *       404:
  *         description: Radicación no encontrada
  */
-router.put('/autorizar-radicado/:id',authenticate, authorizeRoles(['1','3']), validarId, autorizarRadicado);
+router.put('/:id',authenticate, authorizeRoles(['1','3']), validarId, authorizeRadicacion);
 
 /**
  * @swagger
- * /tabla-cirugias:
+ * /radicaciones/surgeries:
  *   get:
  *     tags:
  *       - Radicación
@@ -288,26 +97,11 @@ router.put('/autorizar-radicado/:id',authenticate, authorizeRoles(['1','3']), va
  *       404:
  *        description: No hay radicaciones de cirugías
  */
-router.get('/tabla-cirugias',authenticate, authorizeRoles(['1', '10', '3', '15', '2']), cirugiasTable);
+router.get('/surgeries',authenticate, authorizeRoles(['1', '10', '3', '15', '2']), getSurgeries);
 
 /**
  * @swagger
- * /radicacion-month:
- *   get:
- *     tags:
- *       - Radicación
- *     summary: Obtiene estadísticas de radicaciones de los últimos 3 meses
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Estadísticas mensuales de radicaciones
- */
-router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '15']), registrosUltimosTresMeses);
-
-/**
- * @swagger
- * /radicado-doc-patient:
+ * /radicaciones/doc-patient:
  *   post:
  *     tags:
  *       - Radicación
@@ -334,76 +128,11 @@ router.get("/radicacion-month", authenticate, authorizeRoles(['1', '10', '3', '1
  *       404:
  *         description: No se encontraron radicaciones para ese documento
  */
-router.post('/radicado-doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6', '2']), getDepartmentUser ,buscarRadicadoPorDocumento); 
+router.post('/doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6', '2']), getDepartmentUser, getRadicacionByPatient); 
 
 /**
  * @swagger
- * /estadistica-cups-estado:
- *   get:
- *     tags:
- *       - Radicación
- *     summary: Obtiene estadísticas de radicaciones por estado de los CUPS
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Estadísticas de radicaciones por estado de los CUPS
- */
-router.get('/estadistica-cups-estado', authenticate, authorizeRoles(['1', '10', '3','6', '15']), getCupsEstadisticasPorMes);
-
-/**
- * @swagger
- * /update-group-services/{id}:
- *   put:
- *     tags:
- *       - Radicación
- *     summary: Actualiza el grupo de servicios de una radicación
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID de la radicación a actualizar
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - groupServices
- *             properties:
- *               groupServices:
- *                 type: integer
- *                 description: ID del nuevo grupo de servicios
- *     responses:
- *       200:
- *         description: Grupo de servicios actualizado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Radicacion updated"
- *       400:
- *         description: Error en la validación de datos
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Acceso denegado
- *       404:
- *         description: Radicación no encontrada
- */
-router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15', '3']), validarId, updateGroupServices);
-
-/**
- * @swagger
- * /request/service:
+ * /radicaciones:
  *   post:
  *     tags:
  *       - Radicación
@@ -509,6 +238,6 @@ router.put('/update-group-services/:id' ,authenticate, authorizeRoles(['1', '15'
  *       500:
  *         description: Error del servidor
  */
-router.post('/request/service', authenticate, authorizeRoles(['1', '10', '3', '15', '6']), upload.single('file'), createRequestService);
+router.post('/', authenticate, authorizeRoles(['1', '10', '3', '15', '6']), upload.single('file'), createRequestService);
 
 export default router;

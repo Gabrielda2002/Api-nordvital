@@ -1,55 +1,53 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "./radicacion";
 import { EstadosSeguimiento } from "./estados-seguimiento";
-import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 import { CupsRadicados } from "./cups-radicados";
 import { Usuarios } from "./usuarios";
 
-@Entity({name: "seguimientoauxiliar"})
-export class SeguimietoAuxiliar extends BaseEntity {
+@Entity({ name: "tracking_records" })
+export class SeguimientoAuxiliar extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "IdSeguimiento"})
+    @PrimaryGeneratedColumn({ name: "id" })
     id: number;
 
-    @CreateDateColumn({name: "fecha-creacion"})
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
 
-    @Column({name: "ObservacionSeguimiento"})
+    @Column({ name: "observation" })
     @IsString()
-    @IsNotEmpty({message: "La observación es requerida"})
-    @Length(10, 200, {message: "La observación debe tener entre 10 y 200 caracteres"})
+    @IsNotEmpty({ message: "La observación es requerida" })
+    @Length(10, 200, { message: "La observación debe tener entre 10 y 200 caracteres" })
     observation: string;
 
-    @Column({name: "EstadoSeguimiento"})
+    @Column({ name: "status_id" })
     @IsInt()
-    @IsNotEmpty({message: "El estado es requerido"})
-    status: number;
+    @IsNotEmpty({ message: "El estado es requerido" })
+    statusId: number;
 
-    @Column({name: "id_cups_radicados"})
+    @Column({ name: "cups_radicado_id" })
     @IsInt()
-    idRadicacion: number;
+    cupsRadicadoId: number;
 
-    @Column({name: "usuario_id"})
+    @Column({ name: "user_id" })
     @IsInt()
-    @IsNotEmpty({message: "El usuario es requerido"})
+    @IsNotEmpty({ message: "El usuario es requerido" })
     userId: number;
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
 
     // * relacion
-
     @ManyToOne(() => CupsRadicados, (cupsRadicados) => cupsRadicados.seguimientoAuxiliarRelation)
-    @JoinColumn({name: "id_cups_radicados"})
+    @JoinColumn({ name: "cups_radicado_id" })
     cupsRadicadosRelation: CupsRadicados;
 
     // * relacion con estados seguimiento
-    @ManyToOne(()=> EstadosSeguimiento, (estadoSeguimiento) => estadoSeguimiento.seguimientoAuxiliarRelation)
-    @JoinColumn({name: "EstadoSeguimiento"})
-    estadoSeguimientoRelation: EstadosSeguimiento
+    @ManyToOne(() => EstadosSeguimiento, (estadoSeguimiento) => estadoSeguimiento.seguimientoAuxiliarRelation)
+    @JoinColumn({ name: "status_id" })
+    estadoSeguimientoRelation: EstadosSeguimiento;
 
     // relacion con usuarios
     @ManyToOne(() => Usuarios, usuarios => usuarios.seguimientoAuxiliarRelation)
-    @JoinColumn({name: "usuario_id"})
-    usuarioRelation: Usuarios
+    @JoinColumn({ name: "user_id" })
+    usuarioRelation: Usuarios;
 }

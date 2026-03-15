@@ -6,7 +6,7 @@ import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "./usuarios";
 import { Soportes } from "./soportes";
-import { Sedes } from "./Sedes";
+import { Sedes } from "./sedes";
 
 @Entity({name: "equipos"})
 export class Equipos extends BaseEntity {

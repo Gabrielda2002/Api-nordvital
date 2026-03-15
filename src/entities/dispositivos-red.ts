@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Sedes } from "./Sedes";
+import { Sedes } from "./sedes";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
 

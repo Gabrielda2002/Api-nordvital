@@ -45,8 +45,8 @@ export async function createAuxiliarySurgery(req:Request, res: Response, next: N
 
         const auxiliarySurgery = new SeguimientoAuxiliarCirugias();
         auxiliarySurgery.observation = observation;
-        auxiliarySurgery.status = status;
-        auxiliarySurgery.cupsId = 1;
+        auxiliarySurgery.statusId = status;
+        auxiliarySurgery.requestedServiceId = 1;
         auxiliarySurgery.surgeryId = parseInt(String(surgeryId));
         auxiliarySurgery.userId = userId ? parseInt(String(userId)) : null;
 
@@ -90,8 +90,8 @@ export async function updateAuxiliarySurgery(req: Request, res: Response, next: 
         }
 
         auxiliarySurgery.observation = obersevation;
-        auxiliarySurgery.status = status;
-        auxiliarySurgery.cupsId = cupsId;
+        auxiliarySurgery.statusId = status;
+        auxiliarySurgery.requestedServiceId = cupsId;
         auxiliarySurgery.surgeryId = surgeryId;
 
         const errors = await validate(auxiliarySurgery);

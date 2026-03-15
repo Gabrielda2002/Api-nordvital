@@ -10,263 +10,7 @@ import { Soportes } from "../entities/soportes";
 import path from "path";
 import Logger from "../utils/logger-wrapper";
 
-export async function getAllRadicacion(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const radicacion = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-      .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-      .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.patientRelation", "patient")
-      .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
-      .leftJoinAndSelect("patient.convenioRelation", "convenio")
-      .leftJoinAndSelect("patient.documentRelation", "document")
-      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .leftJoinAndSelect(
-        "cupsRadicados.functionalUnitRelation",
-        "unidadFuncional"
-      )
-      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
-      .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
-      .leftJoinAndSelect(
-        "cupsRadicados.seguimientoAuxiliarRelation",
-        "seguimientoAuxiliar"
-      )
-      .leftJoinAndSelect(
-        "seguimientoAuxiliar.estadoSeguimientoRelation",
-        "estadoSeguimiento"
-      )
-      .leftJoinAndSelect("radicacion.cirugiasRelation", "cirugias")
-      .orderBy("radicacion.id", "DESC")
-      .getMany();
-
-    return res.json(radicacion);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getRadicacionById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const radicacion = await Radicacion.createQueryBuilder("radicacion")
-      .where("radicacion.id = :id", { id: parseInt(String(id)) })
-      .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-      .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
-      .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-      .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.patientRelation", "patient")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
-      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
-      .getOne();
-
-    if (!radicacion) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    const radicacionFormated = {
-      id: radicacion.id,
-      name: radicacion.patientRelation?.name,
-      document: radicacion.patientRelation?.documentNumber,
-      convenio: radicacion.patientRelation?.convenioRelation?.name,
-      specialty: radicacion.specialtyRelation?.name,
-      place: radicacion.placeRelation?.name,
-      ipsRemite: radicacion.ipsRemiteRelation?.name,
-      servicesGroup: radicacion.servicesGroupRelation?.name,
-      services: radicacion.servicesRelation?.name,
-      radicador: radicacion.usuarioRelation?.name,
-      auditDate: radicacion.auditDate,
-      createdAt: radicacion.createdAt,
-      orderDate: radicacion.orderDate,
-      profetional:
-        radicacion.idProfesional === null
-          ? radicacion.profetional
-          : radicacion.profesionalesRelation?.name,
-      groupServices: radicacion.groupServices,
-      typeServices: radicacion.typeServices,
-      justify: radicacion.justify,
-      auditConcept: radicacion.auditConcept,
-      cupsRadicados: radicacion.cupsRadicadosRelation?.map((c) => ({
-        id: c.id,
-        status: c.status,
-        observation: c.observation,
-        functionalUnit: c.functionalUnit,
-        idRadicacion: c.idRadicacion,
-        updatedAt: c.updatedAt,
-        createdAt: c.createdAt,
-      })),
-    };
-
-    return res.json(radicacionFormated);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function createRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const {
-      orderDate,
-      place,
-      ipsRemitente,
-      profetional,
-      specialty,
-      groupServices,
-      radicador,
-      typeServices,
-      idPatient,
-      idSoporte,
-      idDiagnostico,
-    } = req.body;
-
-    const radicacado = new Radicacion();
-
-    radicacado.orderDate = orderDate;
-    radicacado.place = parseInt(String(place));
-    radicacado.ipsRemitente = parseInt(String(ipsRemitente));
-    radicacado.idProfesional = Number(profetional);
-    radicacado.specialty = parseInt(String(specialty));
-    radicacado.groupServices = parseInt(String(groupServices));
-    radicacado.typeServices = parseInt(String(typeServices));
-    radicacado.radicador = parseInt(String(radicador));
-    radicacado.auditora = "Pendiente";
-    radicacado.justify = "Pendiente";
-    radicacado.auditConcept = 6;
-    radicacado.idPatient = parseInt(String(idPatient));
-    radicacado.idSoporte = parseInt(String(idSoporte));
-    radicacado.idDiagnostico = parseInt(String(idDiagnostico));
-
-    const errors = await validate(radicacado);
-
-    if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-
-      return res
-        .status(400)
-        .json({ message: "Error creating radicacion", messages });
-    }
-
-    await radicacado.save();
-
-    return res.json(radicacado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function updateRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const {
-      orderDate,
-      place,
-      ipsRemitente,
-      profetional,
-      specialty,
-      diagnosticCode,
-      diagnosticDescription,
-      groupServices,
-      radicador,
-      auditora,
-      auditDate,
-      typeServices,
-      justify,
-      idPatient,
-      auditConcept,
-    } = req.body;
-
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacado) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    radicacado.orderDate = orderDate;
-    radicacado.place = place;
-    radicacado.ipsRemitente = ipsRemitente;
-    radicacado.idProfesional = Number(profetional);
-    radicacado.profetional = null;
-    radicacado.specialty = specialty;
-    radicacado.groupServices = groupServices;
-    radicacado.typeServices = typeServices;
-    radicacado.radicador = radicador;
-    radicacado.auditora = auditora;
-    radicacado.auditDate = auditDate;
-    radicacado.justify = justify;
-    radicacado.idPatient = idPatient;
-    radicacado.auditConcept = auditConcept;
-
-    const errors = await validate(radicacado);
-
-    if (errors.length > 0) {
-      const messages = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-
-      return res
-        .status(400)
-        .json({ message: "Error updating radicacion", messages });
-    }
-
-    await radicacado.save();
-
-    return res.json(radicacado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function deleteRadicado(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const radicacado = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacado) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    await radicacado.remove();
-
-    return res.json({ message: "Radicacion deleted" });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function tablaPorAuditar(
+export async function getRadicacionesAudit(
   req: Request,
   res: Response,
   next: NextFunction
@@ -298,11 +42,11 @@ export async function tablaPorAuditar(
       )
       .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
       .where(
-        "cupsRadicados.status = 6"
+        "cupsRadicados.statusId = 6"
       );
 
     if (req.departmentUserId) {
-      query.andWhere("municipio.idDepartment = :departmentId", {
+      query.andWhere("municipio.departmentId = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
@@ -321,34 +65,35 @@ export async function tablaPorAuditar(
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
       professional:
-        r.idProfesional === null
-          ? r.profetional
+        r.professionalId === null
+          ? r.professionalName
           : r.profesionalesRelation?.name || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
       typeService: r.servicesRelation?.name || "N/A",
       assistant: r.usuarioRelation?.name || "N/A",
       cups:
         r.cupsRadicadosRelation?.map((c) => ({
-          id: c.servicioRelation?.id || "N/A",
+          id: c.id || "N/A",
           code: c.servicioRelation?.code || "N/A",
           description: c.servicioRelation?.name || "N/A",
           observation: c.observation,
           status: c.statusRelation.name,
           functionalUnit: c.functionalUnitRelation.name,
-          idRadicado: c.idRadicacion,
+          idRadicado: c.radicacionId,
           quantity: c.quantity,
+          serviceId: c.servicioRelation?.id || "N/A",
         })) || "N/A",
       supportName: r.soportesRelation?.nameSaved || "N/A",
       supportId: r.soportesRelation?.id || "N/A",
     }));
 
-    return res.json(formatedRadicaciones);
+    return res.status(200).json(formatedRadicaciones);
   } catch (error) {
     next(error);
   }
 }
 
-export async function  auditorRadicados(
+export async function  getRadicaciones(
   req: Request,
   res: Response,
   next: NextFunction
@@ -365,11 +110,11 @@ export async function  auditorRadicados(
       .leftJoinAndSelect("cupsRadicados.servicioRelation", "services")
       .orderBy("radicacion.id", "DESC")
       .where(
-        "cupsRadicados.status <> 6 AND cupsRadicados.idRadicacion = radicacion.id"
+        "cupsRadicados.statusId <> 6 AND cupsRadicados.radicacionId = radicacion.id"
       );
 
     if (req.departmentUserId) {
-      query.andWhere("municipality.idDepartment = :departmentId", {
+      query.andWhere("municipality.departmentId = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
@@ -378,29 +123,29 @@ export async function  auditorRadicados(
 
     const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
-      radicadoDate: r.createdAt,
+      createdAt: r.createdAt,
       document: r.patientRelation?.documentNumber || "N/A",
       patientName: r.patientRelation?.name || "N/A",
       CUPS: r.cupsRadicadosRelation?.map((c) => ({
         id: c.id,
-        idCups: c.servicioRelation?.id,
+        cupsId: c.servicioRelation?.id,
         code: c.servicioRelation?.code,
         description: c.servicioRelation?.name,
         status: c.statusRelation.name,
         statusId: c.statusRelation.id,
         observation: c.observation,
-        modifyDate: c.updatedAt,
+        updatedAt: c.updatedAt,
         quantity: c.quantity,
       })),
     }));
 
-    return res.json(formatedRadicaciones);
+    return res.status(200).json(formatedRadicaciones);
   } catch (error) {
     next(error);
   }
 }
 
-export async function autorizarRadicado(
+export async function authorizeRadicacion(
   req: Request,
   res: Response,
   next: NextFunction
@@ -420,9 +165,9 @@ export async function autorizarRadicado(
       return res.status(404).json({ message: "Radicado no existe" });
     }
 
-    existRadicado.auditora = auditora;
+    existRadicado.auditNotes = auditora;
     existRadicado.auditDate = fechaAuditoria;
-    existRadicado.justify = justificacion;
+    existRadicado.auditJustification = justificacion;
 
     const errors = await validate(existRadicado);
     if (errors.length > 0) {
@@ -436,18 +181,18 @@ export async function autorizarRadicado(
 
     for (const detail of cupsDetails) {
       const cups = await queryRunner.manager.findOneBy(CupsRadicados, {
-        idRadicacion: radicadoId,
-        servicioId: parseInt(String(detail.id)),
+        radicacionId: radicadoId,
+        id: parseInt(String(detail.id)),
       });
 
       if (!cups) {
         await queryRunner.rollbackTransaction();
-        return res.status(404).json({ message: `CUPS con servicioId ${detail.id} no encontrado para el radicado ${radicadoId}` });
+        return res.status(404).json({ message: `CUPS radicado con id ${detail.id} no encontrado para el radicado ${radicadoId}` });
       }
 
-      cups.status = parseInt(detail.status);
+      cups.statusId = parseInt(detail.status);
       cups.observation = detail.observation;
-      cups.functionalUnit = parseInt(detail.funtionalUnit);
+      cups.functionalUnitId = parseInt(detail.funtionalUnit);
       cups.quantity = Number(detail.quantity);
 
       const errorsCups = await validate(cups);
@@ -474,7 +219,7 @@ export async function autorizarRadicado(
   }
 }
 
-export async function cirugiasTable(
+export async function getSurgeries(
   req: Request,
   res: Response,
   next: NextFunction
@@ -594,54 +339,8 @@ export async function cirugiasTable(
   }
 }
 
-// radicacion_controller.ts
-export async function registrosUltimosTresMeses(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const now = new Date();
-    const threeMonthsAgo = subMonths(now, 3);
-
-    const registros = await Radicacion.createQueryBuilder("radicacion")
-      .where("radicacion.createdAt BETWEEN :start AND :end", {
-        start: threeMonthsAgo,
-        end: now,
-      })
-      .getMany();
-
-    const registrosPorMes = registros.reduce(
-      (acc: { [key: string]: number }, registro) => {
-        const mes = registro.createdAt.getMonth();
-        const año = registro.createdAt.getFullYear();
-        const key = `${año}-${mes + 1}`; // Meses en JavaScript son 0-indexados
-
-        if (!acc[key]) {
-          acc[key] = 0;
-        }
-        acc[key]++;
-        return acc;
-      },
-      {}
-    );
-
-    const data = Object.keys(registrosPorMes).map((key) => {
-      const [año, mes] = key.split("-");
-      return {
-        mes: `${año}-${mes}`,
-        cantidad: registrosPorMes[key],
-      };
-    });
-
-    return res.json(data);
-  } catch (error) {
-    next(error);
-  }
-}
-
 // buscar radicado por numero documento paciente
-export async function buscarRadicadoPorDocumento(
+export async function getRadicacionByPatient(
   req: Request,
   res: Response,
   next: NextFunction
@@ -708,7 +407,7 @@ export async function buscarRadicadoPorDocumento(
       .where("patient.documentNumber = :documento", { documento });
 
     if (req.departmentUserId) {
-      query.andWhere("municipio.idDepartment = :departmentId", {
+      query.andWhere("municipio.departmentId = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
@@ -721,7 +420,7 @@ export async function buscarRadicadoPorDocumento(
     const radicacionFormated = radicacion.map((r) => ({
       id: r.id || "N/A",
       createdAt: r.createdAt || "N/A",
-      auditora: r.auditora || "N/A",
+      auditNotes: r.auditNotes || "N/A",
       documentNumber: r.patientRelation?.documentNumber || "N/A",
       convenioName: r.patientRelation?.convenioRelation?.name || "N/A",
       documentType: r.patientRelation?.documentRelation?.name || "N/A",
@@ -736,16 +435,16 @@ export async function buscarRadicadoPorDocumento(
       supportName: r.soportesRelation?.nameSaved || "N/A",
       supportId: r.soportesRelation?.id || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
-      profetional:
-        r.idProfesional === null
-          ? r.profetional
+      professionalName:
+        r.professionalId === null
+          ? r.professionalName
           : r.profesionalesRelation?.name || "N/A",
       specialty: r.specialtyRelation?.name || "N/A",
       orderDate: r.orderDate || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
       groupServices: r.servicesGroupRelation?.name || "N/A",
       radicador: r.usuarioRelation?.name || "N/A",
-      justify: r.justify || "N/A",
+      auditJustification: r.auditJustification || "N/A",
       surgery: r.cirugiasRelation?.map((c) => ({
         id: c.id || "N/A",
         surgeryDate: c.surgeryDate || "N/A",
@@ -783,77 +482,6 @@ export async function buscarRadicadoPorDocumento(
     }));
 
     return res.json(radicacionFormated);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getCupsEstadisticasPorMes(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const now = new Date();
-    const firstDayOfMonth = startOfMonth(now);
-
-    const cupsRadicados = await CupsRadicados.createQueryBuilder(
-      "cupsRadicados"
-    )
-      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .select(["status.name as estado", "COUNT(*) as cantidad"])
-      .where("cupsRadicados.createdAt BETWEEN :start AND :end", {
-        start: firstDayOfMonth,
-        end: now,
-      })
-      .groupBy("status.name")
-      .getRawMany();
-
-    // Formatear los resultados en una estructura más simple
-    const resultado = cupsRadicados.map((record) => ({
-      estado: record.estado,
-      cantidad: parseInt(record.cantidad),
-    }));
-
-    return res.json(resultado);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function updateGroupServices(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-
-    const { groupServices } = req.body;
-
-    const radicacion = await Radicacion.findOneBy({ id: parseInt(String(id)) });
-
-    if (!radicacion) {
-      return res.status(404).json({ message: "Radicacion not found" });
-    }
-
-    radicacion.groupServices = Number(groupServices);
-
-    const errors = await validate(radicacion, { skipMissingProperties: true });
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res
-        .status(400)
-        .json({ message: "Error updating radicacion", errors: message });
-    }
-
-    await radicacion.save();
-
-    return res.status(200).json({ message: "Grupo actualizado exitosamente!" });
   } catch (error) {
     next(error);
   }
@@ -924,9 +552,18 @@ export const createRequestService = async (
     patientExist.phoneNumber2 = phoneNumber2 == "" ? null : phoneNumber2;
     patientExist.address = address;
     patientExist.email = email;
-    patientExist.agreement = parseInt(String(agreement));
+    patientExist.agreementId = parseInt(String(agreement));
 
-    const errorsPatient = await validate(patientExist);
+    const patientToValidate = Object.assign(new Pacientes(), {
+      landline: patientExist.landline,
+      phoneNumber: patientExist.phoneNumber,
+      phoneNumber2: patientExist.phoneNumber2,
+      address: patientExist.address,
+      email: patientExist.email,
+      agreementId: patientExist.agreementId,
+    });
+
+    const errorsPatient = await validate(patientToValidate, { skipMissingProperties: true });
     if (errorsPatient.length > 0) {
       const messages = errorsPatient.map(err => (
         Object.values(err.constraints || {}).join(', ')
@@ -974,19 +611,19 @@ export const createRequestService = async (
     // create request service
     const requestService = new Radicacion();
     requestService.orderDate = orderDate;
-    requestService.place = parseInt(String(placeId));
-    requestService.ipsRemitente = parseInt(String(ipsRemiteId));
-    requestService.idProfesional = Number(professional);
-    requestService.specialty = parseInt(String(specialty));
-    requestService.groupServices = parseInt(String(groupService));
-    requestService.typeServices = parseInt(String(typeService));
-    requestService.radicador = parseInt(String(assistantId));
-    requestService.auditora = "Pendiente";
-    requestService.justify = "Pendiente";
-    requestService.auditConcept = 6;
-    requestService.idPatient = parseInt(String(patientId));
-    requestService.idSoporte = supportId;
-    requestService.idDiagnostico = parseInt(String(diagnosisId));
+    requestService.placeId = parseInt(String(placeId));
+    requestService.ipsRemiteId = parseInt(String(ipsRemiteId));
+    requestService.professionalId = Number(professional);
+    requestService.specialtyId = parseInt(String(specialty));
+    requestService.serviceGroupId = parseInt(String(groupService));
+    requestService.serviceTypeId = parseInt(String(typeService));
+    requestService.filedByUserId = parseInt(String(assistantId));
+    requestService.auditNotes = "Pendiente";
+    requestService.auditJustification = "Pendiente";
+    requestService.auditStatusId = 6;
+    requestService.patientId = parseInt(String(patientId));
+    requestService.supportId = supportId;
+    requestService.diagnosisId = parseInt(String(diagnosisId));
 
     const errorsRequestService = await validate(requestService);
     if (errorsRequestService.length > 0) {
@@ -1011,12 +648,12 @@ export const createRequestService = async (
     for (const item of cupsRequestService) {
       const createCups = new CupsRadicados();
 
-      createCups.status = 6;
+      createCups.statusId = 6;
       createCups.observation = "Pendiente";
-      createCups.functionalUnit = 12;
-      createCups.idRadicacion = Number(requestServiceId);
+      createCups.functionalUnitId = 12;
+      createCups.radicacionId = Number(requestServiceId);
       createCups.quantity = Number(item.quantity);
-      createCups.servicioId = Number(item.id);
+      createCups.requestedServiceId = Number(item.id);
 
       const errorsCups = await validate(createCups);
 

@@ -3,33 +3,33 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 import { CupsRadicados } from "./cups-radicados";
 
-@Entity({name: "serviciosolicitado"})
+@Entity("requested_services")
 export class ServiciosSolicitados extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "IdServicioSolicitado"})
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number;
 
-    @Column({name: "Codigo"})
+    @Column({ name: "code", type: "varchar", length: 20 })
     @IsString()
-    @IsNotEmpty({message: "El código es requerido"})
-    @Length(1, 10, {message: "El código debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({ message: "El código es requerido" })
+    @Length(1, 10, { message: "El código debe tener entre $constraint1 y $constraint2 caracteres" })
     code: string;
 
-    @Column({name: "NombreSolicitado"})
+    @Column({ name: "name", type: "varchar", length: 255 })
     @IsString()
-    @IsNotEmpty({message: "El nombre es requerido"})
-    @Length(1, 150, {message: "El nombre debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({ message: "El nombre es requerido" })
+    @Length(1, 150, { message: "El nombre debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string;
 
-    @Column({name: "Estado"}) 
+    @Column({ name: "status", type: "tinyint", default: 1 })
     @IsBoolean()
-    @IsNotEmpty({message: "El estado es requerido"})
+    @IsNotEmpty({ message: "El estado es requerido" })
     status: boolean;
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * relacion con gestion auxiliar cirugias

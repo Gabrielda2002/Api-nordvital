@@ -5,25 +5,25 @@ import { IsBoolean, IsNotEmpty, Length } from "class-validator";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 
-@Entity("convenio")
-export class Convenio extends BaseEntity{
+@Entity("agreements")
+export class Convenio extends BaseEntity {
 
-    @PrimaryGeneratedColumn({ name: "IdConvenio"})
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number
 
-    @Column({ name: "NombreConvenio"})
-    @IsNotEmpty({message: "El nombre del convenio no puede estar vacío"})
-    @Length(3, 50, {message: "El nombre del convenio debe tener entre $constraint1 y $constraint2 caracteres"})
+@Column({ name: "name", type: "varchar", length: 100 })
+    @IsNotEmpty({ message: "El nombre del convenio no puede estar vacío" })
+    @Length(3, 100, { message: "El nombre del convenio debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string
 
-    @Column({ name: "Estado", type: "boolean"})
-    @IsBoolean({message: "El estado del convenio debe ser un valor booleano"})
+    @Column({ name: "status", type: "tinyint", width: 1, default: 1 })
+    @IsBoolean({ message: "El estado del convenio debe ser un valor booleano" })
     status: boolean
 
-    @UpdateDateColumn({ name: "fecha-actualizacion" })
+    @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "fecha-creacion" })
+    @CreateDateColumn({ name: "created_at" })
     createdAt: Date
 
     // * Relaciones
