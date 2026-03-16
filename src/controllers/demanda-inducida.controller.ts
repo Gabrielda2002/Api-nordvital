@@ -173,18 +173,23 @@ export const createDemandInduced = async (
     patient.phoneNumber2 = phoneNumber2;
     patient.address = address;
 
-    const errorsPatient = await validate(patient);
+    const patientToValidate = Object.assign(new Pacientes(), {
+      email: patient.email,
+      phoneNumber: patient.phoneNumber,
+      phoneNumber2: patient.phoneNumber2,
+      address: patient.address,
+    });
+
+    const errorsPatient = await validate(patientToValidate, { skipMissingProperties: true });
     if (errorsPatient.length > 0) {
-      const message = errorsPatient.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
+      const message = errorsPatient.map(err => (
+        Object.values(err.constraints || {}).join(", ")
+      ));
 
       await queryRunner.rollbackTransaction();
 
       return res.status(400).json({
-        message: "Validation failed for patient",
-        errors: message,
+        message: message,
       });
     }
 
