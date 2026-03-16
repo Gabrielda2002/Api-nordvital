@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /inventario/televisores-sede/{id}:
+    * /tv/inventory/sede/{id}:
  *   get:
  *     summary: Obtener televisores por ID de sede
  *     tags: [Televisores]
@@ -60,11 +60,11 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1', '4', '2', '17']), validarId, getTelevisorBySedeId);
+router.get('/sede/:id', authenticate, authorizeRoles(['1', '4', '2', '17']), validarId, getTelevisorBySedeId);
 
 /**
  * @swagger
- * /televisores:
+ * /tv/inventory:
  *   post:
  *     summary: Crear un nuevo televisor
  *     tags: [Televisores]
@@ -161,11 +161,11 @@ router.get('/inventario/televisores-sede/:id', authenticate, authorizeRoles(['1'
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/televisores', authenticate, authorizeRoles(['1']), createTelevisor);
+router.post('/', authenticate, authorizeRoles(['1']), createTelevisor);
 
 /**
  * @swagger
- * /televisores/{id}:
+ * /tv/inventory/{id}:
  *   put:
  *     summary: Actualizar un televisor existente
  *     tags: [Televisores]
@@ -221,11 +221,11 @@ router.post('/televisores', authenticate, authorizeRoles(['1']), createTelevisor
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/televisores/:id', authenticate, authorizeRoles(['1']), validarId, updateTelevisor);
+router.put('/:id', authenticate, authorizeRoles(['1']), validarId, updateTelevisor);
 
 /**
  * @swagger
- * /tv/statics/headquarters:
+ * /tv/inventory/statics/headquarters:
  *   get:
  *     summary: Obtener estadísticas de televisores por sede
  *     tags: [Televisores]
@@ -252,11 +252,11 @@ router.put('/televisores/:id', authenticate, authorizeRoles(['1']), validarId, u
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvHeadquartersDistribution);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvHeadquartersDistribution);
 
 /**
  * @swagger
- * /tv/statics/age:
+ * /tv/inventory/statics/age:
  *   get:
  *     summary: Obtener estadísticas de antigüedad de televisores
  *     tags: [Televisores]
@@ -296,11 +296,11 @@ router.get('/tv/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getTvAgeByHeadquarter);
+router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getTvAgeByHeadquarter);
 
 /**
  * @swagger
- * /tv/statics/warrantyExpiration:
+ * /tv/inventory/statics/warrantyExpiration:
  *   get:
  *     summary: Obtener estadísticas de expiración de garantía de televisores
  *     tags: [Televisores]
@@ -326,11 +326,11 @@ router.get('/tv/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17'])
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvWarrantyStatistics);
 
 /**
  * @swagger
- * /search/inventario/televisores:
+ * /tv/inventory/search:
  *   get:
  *     summary: Búsqueda global de televisores
  *     tags: [Televisores]
@@ -374,6 +374,6 @@ router.get('/tv/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search/inventario/televisores', authenticate, authorizeRoles(['1', '2', '17']), searchTv);
+router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchTv);
 
 export default router;

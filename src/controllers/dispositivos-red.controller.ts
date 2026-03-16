@@ -49,6 +49,7 @@ export async function createDevice(
   next: NextFunction
 ) {
   try {
+    console.log(req.body)
     const {
       sedeId,
       name,
@@ -122,16 +123,6 @@ export async function updateDevice(
       sedeId,
     } = req.body;
 
-    const serialExist = await dispositivosRed.findOneBy({
-      serial: serial,
-    });
-
-    if (serialExist) {
-      return res.status(409).json({
-        message: "El número de serie ya existe",
-      });
-    }
-
     const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
@@ -153,11 +144,10 @@ export async function updateDevice(
 
     const errors = await validate(device);
     if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res.status(400).json({ message });
+      const message = errors.map(err => (
+        Object.values(err.constraints || {}).join(', ')
+      ));
+      return res.status(400).json({ message: message });
     }
 
     await device.save();

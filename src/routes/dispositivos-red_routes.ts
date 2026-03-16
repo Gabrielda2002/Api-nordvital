@@ -60,7 +60,7 @@ const router = Router();
 
 /**
  * @swagger
- * /dispositivos-red:
+ * /devices-red:
  *   get:
  *     summary: Obtiene todos los dispositivos de red
  *     tags: [Dispositivos de Red]
@@ -78,11 +78,11 @@ const router = Router();
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/dispositivos-red", authenticate, authorizeRoles(['1']), getAllDevices);
+router.get("/", authenticate, authorizeRoles(['1']), getAllDevices);
 
 /**
  * @swagger
- * /dispositivos-red/{id}:
+ * /devices-red/{id}:
  *   get:
  *     summary: Obtiene un dispositivo por ID
  *     tags: [Dispositivos de Red]
@@ -105,11 +105,11 @@ router.get("/dispositivos-red", authenticate, authorizeRoles(['1']), getAllDevic
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.get("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),validarId, getDevice);
+router.get("/:id", authenticate, authorizeRoles(['1']),validarId, getDevice);
 
 /**
  * @swagger
- * /dispositivos-red:
+ * /devices-red:
  *   post:
  *     summary: Crea un nuevo dispositivo
  *     tags: [Dispositivos de Red]
@@ -127,11 +127,11 @@ router.get("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),validarI
  *       400:
  *         description: Datos inválidos en la solicitud
  */
-router.post("/dispositivos-red", authenticate, authorizeRoles(['1', '17']), createDevice);
+router.post("/", authenticate, authorizeRoles(['1', '17']), createDevice);
 
 /**
  * @swagger
- * /dispositivos-red/{id}:
+ * /devices-red/{id}:
  *   put:
  *     summary: Actualiza un dispositivo existente
  *     tags: [Dispositivos de Red]
@@ -156,11 +156,11 @@ router.post("/dispositivos-red", authenticate, authorizeRoles(['1', '17']), crea
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.put("/dispositivos-red/:id", authenticate, authorizeRoles(['1', '17']),validarId, updateDevice);
+router.put("/:id", authenticate, authorizeRoles(['1', '17']),validarId, updateDevice);
 
 /**
  * @swagger
- * /dispositivos-red/{id}:
+ * /devices-red/{id}:
  *   delete:
  *     summary: Elimina un dispositivo
  *     tags: [Dispositivos de Red]
@@ -179,11 +179,11 @@ router.put("/dispositivos-red/:id", authenticate, authorizeRoles(['1', '17']),va
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),validarId, deleteDevice);
+router.delete("/:id", authenticate, authorizeRoles(['1']),validarId, deleteDevice);
 
 /**
  * @swagger
- * /dispositivos-red-sede/{id}:
+ * /devices-red/sede/{id}:
  *   get:
  *     summary: Obtiene todos los dispositivos de una sede específica
  *     tags: [Dispositivos de Red]
@@ -202,11 +202,11 @@ router.delete("/dispositivos-red/:id", authenticate, authorizeRoles(['1']),valid
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4', '2', '17']),validarId, getDevicesBySede);
+router.get("/sede/:id", authenticate, authorizeRoles(['1', '4', '2', '17']),validarId, getDevicesBySede);
 
 /**
  * @swagger
- * /dispositivos-red/statistics/headquarters:
+ * /devices-red/statistics/headquarters:
  *   get:
  *     summary: Obtiene estadísticas de dispositivos por sede
  *     tags: [Dispositivos de Red]
@@ -231,11 +231,11 @@ router.get("/dispositivos-red-sede/:id", authenticate, authorizeRoles(['1', '4',
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getDevicesCountByHeadquarters);
+router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getDevicesCountByHeadquarters);
 
 /**
  * @swagger
- * /search/dispositivos-red:
+ * /search/devices-red:
  *   get:
  *     summary: Buscar dispositivos de red por nombre o serial
  *     tags: [Dispositivos de Red]
@@ -279,6 +279,6 @@ router.get('/dispositivos-red/statistics/headquarters/:id', authenticate, author
  *       404:
  *         description: No se encontraron dispositivos que coincidan con la búsqueda
  */
-router.get('/search/dispositivos-red', authenticate, authorizeRoles(['1', '2', '17']), searchDevices);
+router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchDevices);
 
 export default router;

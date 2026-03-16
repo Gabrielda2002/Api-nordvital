@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @swagger
- * /inventario/celulares-sede/{id}:
+ * /phones/inventory/sede/{id}:
  *   get:
  *     summary: Obtener celulares por ID de sede
  *     tags: [Celulares]
@@ -56,11 +56,11 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1','4', '2', '17']), getPhoneBySedeId);
+router.get('/sede/:id', authenticate, authorizeRoles(['1','4', '2', '17']), getPhoneBySedeId);
 
 /**
  * @swagger
- * /celular:
+ * /phones/inventory:
  *   post:
  *     summary: Crear un nuevo celular
  *     tags: [Celulares]
@@ -141,11 +141,11 @@ router.get('/inventario/celulares-sede/:id', authenticate, authorizeRoles(['1','
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/celular', authenticate, authorizeRoles(['1', '17']), uploadDocDelivery, createPhone);
+router.post('/', authenticate, authorizeRoles(['1', '17']), uploadDocDelivery, createPhone);
 
 /**
  * @swagger
- * /celular/{id}:
+ * /phones/inventory/{id}:
  *   put:
  *     summary: Actualizar un celular existente
  *     tags: [Celulares]
@@ -202,11 +202,11 @@ router.post('/celular', authenticate, authorizeRoles(['1', '17']), uploadDocDeli
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/celular/:id', authenticate, authorizeRoles(['1', '17']), validarId, uploadDocDelivery, updatePhone);
+router.put('/:id', authenticate, authorizeRoles(['1', '17']), validarId, uploadDocDelivery, updatePhone);
 
 /**
  * @swagger
- * /celular/statics/headquarters:
+ * /phones/inventory/statics/headquarters:
  *   get:
  *     summary: Obtener estadísticas de celulares por sede
  *     tags: [Celulares]
@@ -233,11 +233,11 @@ router.put('/celular/:id', authenticate, authorizeRoles(['1', '17']), validarId,
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getCountPhonesByHeadquartersId);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getCountPhonesByHeadquartersId);
 
 /**
  * @swagger
- * /celular/statics/age:
+ * /phones/inventory/statics/age:
  *   get:
  *     summary: Obtener estadísticas de antigüedad de celulares
  *     tags: [Celulares]
@@ -277,11 +277,11 @@ router.get('/celular/statics/headquarters/:id', authenticate, authorizeRoles(['1
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneAgeByHeadquartersId)
+router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneAgeByHeadquartersId)
 
 /**
  * @swagger
- * /celular/statics/warrantyExpiration:
+ * /phones/inventory/statics/warrantyExpiration:
  *   get:
  *     summary: Obtener estadísticas de expiración de garantía
  *     tags: [Celulares]
@@ -307,11 +307,11 @@ router.get('/celular/statics/age/:id', authenticate, authorizeRoles(['1', '2', '
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/celular/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneWarrantyStatistics);
 
 /**
  * @swagger
- * /search/inventario/celulares:
+ * /phones/inventory/search:
  *   get:
  *     summary: Buscar celulares por nombre, serial o responsable
  *     tags: [Celulares]
@@ -357,6 +357,6 @@ router.get('/celular/statics/warrantyExpiration/:id', authenticate, authorizeRol
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search/inventario/celulares', authenticate, authorizeRoles(['1', '2', '17']), searchPhone);
+router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchPhone);
 
 export default router;

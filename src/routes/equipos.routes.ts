@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
-import { autoInventory, createEquipment, deleteEquipment, getAllEquipments, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment, verifyEquipmentExist } from "../controllers/equipos.controller";
+import { autoInventory, createEquipment, deleteEquipment, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment, verifyEquipmentExist } from "../controllers/equipos.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { uploadDocDelivery } from "../middlewares/multer-delivery.middleware";
 
@@ -60,53 +60,7 @@ const router = Router();
 
 /**
  * @swagger
- * /equipos:
- *   get:
- *     summary: Obtiene todos los equipos
- *     tags: [Equipos]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de equipos
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Equipo'
- */
-router.get("/equipos", authenticate, authorizeRoles(['1']), getAllEquipments);
-
-/**
- * @swagger
- * /equipos/{id}:
- *   get:
- *     summary: Obtiene un equipo por ID
- *     tags: [Equipos]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Equipo encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Equipo'
- *       404:
- *         description: Equipo no encontrado
- */
-router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAllEquipments);
-
-/**
- * @swagger
- * /equipos:
+ * /equipments:
  *   post:
  *     summary: Crea un nuevo equipo
  *     tags: [Equipos]
@@ -128,11 +82,11 @@ router.get("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAl
  *       400:
  *         description: Datos inválidos
  */
-router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, createEquipment);
+router.post("/", authenticate, authorizeRoles(['1']), uploadDocDelivery, createEquipment);
 
 /**
  * @swagger
- * /equipos/{id}:
+ * /equipments/{id}:
  *   put:
  *     summary: Actualiza un equipo
  *     tags: [Equipos]
@@ -156,11 +110,11 @@ router.post("/equipos", authenticate, authorizeRoles(['1']), uploadDocDelivery, 
  *       404:
  *         description: Equipo no encontrado
  */
-router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery, updateEquipment);
+router.put("/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery, updateEquipment);
 
 /**
  * @swagger
- * /equipos/{id}:
+ * /equipments/{id}:
  *   delete:
  *     summary: Elimina un equipo
  *     tags: [Equipos]
@@ -178,11 +132,11 @@ router.put("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, uploa
  *       404:
  *         description: Equipo no encontrado
  */
-router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, deleteEquipment);
+router.delete("/:id", authenticate, authorizeRoles(['1']), validarId, deleteEquipment);
 
 /**
  * @swagger
- * /equipos-sede/{id}:
+ * /equipments-sede/{id}:
  *   get:
  *     summary: Obtiene equipos por sede
  *     tags: [Equipos]
@@ -206,7 +160,7 @@ router.delete("/equipos/:id", authenticate, authorizeRoles(['1']), validarId, de
  *       404:
  *         description: No se encontraron equipos
  */
-router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4','2', '17']), validarId, getEquipmentBySede);
+router.get("/sede/:id", authenticate, authorizeRoles(['1', '4','2', '17']), validarId, getEquipmentBySede);
 
 /**
  * @swagger
@@ -235,7 +189,7 @@ router.get("/equipos-sede/:id", authenticate, authorizeRoles(['1', '4','2', '17'
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentTypeDistribution);
+router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentTypeDistribution);
 
 /**
  * @swagger
@@ -264,7 +218,7 @@ router.get('/equipments/statics/typeEquipment/:id', authenticate, authorizeRoles
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentHeadquartersDistribution);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentHeadquartersDistribution);
 
 /**
  * @swagger
@@ -308,7 +262,7 @@ router.get('/equipments/statics/headquarters/:id', authenticate, authorizeRoles(
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentAgeBySede);
+router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentAgeBySede);
 
 /**
  * @swagger
@@ -348,7 +302,7 @@ router.get('/equipments/statics/age/:id', authenticate, authorizeRoles(['1', '2'
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentWarrantyStatistics);
 
 /**
  * @swagger
@@ -378,11 +332,11 @@ router.get('/equipments/statics/warrantyExpiration/:id', authenticate, authorize
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getEquipmentLockStatistics);
+router.get('/statics/withLock/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getEquipmentLockStatistics);
 
 /**
  * @swagger
- * /search/equipos:
+ * /equipments/search:
  *   get:
  *     summary: Buscar equipos por nombre, serial, marca, modelo o responsable
  *     tags: [Equipos]
@@ -426,96 +380,8 @@ router.get('/equipments/statics/withLock/:id', authenticate, authorizeRoles(['1'
  *       404:
  *         description: No se encontraron equipos que coincidan con la búsqueda
  */
-router.get('/search/equipos', authenticate, authorizeRoles(['1', '2', '17']), searchEquipmentGlobal);
+router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchEquipmentGlobal);
 
-/**
- * @swagger
- * /equipos/auto-inventory:
- *   post:
- *     summary: Inventario automático - Crear o actualizar equipo con componentes y software
- *     tags: [Equipos]
- *     description: Endpoint para agente de inventario automático. Crea o actualiza equipo basado en MAC/Serial.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - equipment
- *             properties:
- *               equipment:
- *                 type: object
- *                 required:
- *                   - mac
- *                   - serial
- *                 properties:
- *                   sedeId:
- *                     type: integer
- *                   name:
- *                     type: string
- *                   ubicacion:
- *                     type: string
- *                   typeEquipment:
- *                     type: string
- *                   brand:
- *                     type: string
- *                   model:
- *                     type: string
- *                   serial:
- *                     type: string
- *                   operationalSystem:
- *                     type: string
- *                   addressIp:
- *                     type: string
- *                   mac:
- *                     type: string
- *                   dhcp:
- *                     type: boolean
- *                   inventoryNumber:
- *                     type: string
- *                   warranty:
- *                     type: boolean
- *                   warrantyTime:
- *                     type: string
- *               components:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     brand:
- *                       type: string
- *                     capacity:
- *                       type: string
- *                     speed:
- *                       type: string
- *                     model:
- *                       type: string
- *                     serial:
- *                       type: string
- *               software:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     versions:
- *                       type: string
- *                     license:
- *                       type: string
- *                     status:
- *                       type: string
- *     responses:
- *       200:
- *         description: Equipo actualizado exitosamente
- *       201:
- *         description: Equipo creado exitosamente
- *       400:
- *         description: Datos inválidos
- */
 router.post("/equipos/auto-inventory", autoInventory);
 
 router.post("/equipos/exist", verifyEquipmentExist);

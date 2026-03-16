@@ -10,40 +10,6 @@ import { saveFileToDisk } from "../middlewares/multer-delivery.middleware";
 import { updateFileAndRecord } from "../utils/file-manager";
 import Logger from "../utils/logger-wrapper";
 
-export async function getAllEquipments(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const equipments = await Equipos.find();
-    return res.json(equipments);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getEquipment(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const id = String(req.params.id);
-    const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
-
-    if (!equipment) {
-      return res.status(404).json({
-        message: "Equipo no encontrado",
-      });
-    }
-
-    return res.json(equipment);
-  } catch (error) {
-    next(error);
-  }
-}
-
 export async function createEquipment(
   req: Request,
   res: Response,
