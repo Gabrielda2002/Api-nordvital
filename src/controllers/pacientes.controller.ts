@@ -61,7 +61,9 @@ export async function createPatient(
       ipsPrimaria
     } = req.body;
 
-    const pacienteExist = await Pacientes.findOneBy({ documentNumber });
+    const normalizedDocumentNumber = String(documentNumber).trim();
+
+    const pacienteExist = await Pacientes.findOneBy({ documentNumber: normalizedDocumentNumber });
 
     if (pacienteExist) {
       return res.status(400).json({ message: "Paciente ya existe" });
@@ -76,7 +78,7 @@ export async function createPatient(
 
     const paciente = new Pacientes();
     paciente.documentTypeId = parseInt(String(documentType));
-    paciente.documentNumber = parseInt(String(documentNumber));
+    paciente.documentNumber = normalizedDocumentNumber;
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
@@ -197,8 +199,9 @@ export async function getPacientesByDocument(
 ) {
   try {
     const { documentNumber } = req.body;
+    const normalizedDocumentNumber = String(documentNumber).trim();
     const paciente = await Pacientes.createQueryBuilder("pacientes")
-    .where("pacientes.documentNumber = :documentNumber", { documentNumber })
+    .where("pacientes.documentNumber = :documentNumber", { documentNumber: normalizedDocumentNumber })
     .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
     .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
     .leftJoinAndSelect("pacientes.documentRelation", "documentRelation")
@@ -248,7 +251,7 @@ export async function updatePacienteTable(
     }
 
     paciente.documentTypeId = parseInt(String(documentType));
-    paciente.documentNumber = parseInt(String(documentNumber));
+    paciente.documentNumber = String(documentNumber).trim();
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
@@ -257,6 +260,7 @@ export async function updatePacienteTable(
     paciente.address = address;
     paciente.agreementId = parseInt(String(agreement));
     paciente.ipsPrimaryId = parseInt(String(ipsPrimaria));
+    paciente.status = true;
 
     const errors = await validate(paciente);
 

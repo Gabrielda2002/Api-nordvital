@@ -2,9 +2,8 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "./convenio";
 import { TipoDocumento } from "./tipo-documento";
 import { IpsPrimaria } from "./ips-primaria";
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, MaxLength, Min, ValidateIf } from "class-validator";
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
 import { Radicacion } from "./radicacion";
-import { Cirugias } from "./cirugias";
 import { DemandaInducida } from "./demanda-inducida";
 
 
@@ -20,10 +19,11 @@ export class Pacientes extends BaseEntity {
     documentTypeId: number;
 
     @Column({name: "document_number", type: "bigint"})
-    @IsInt()
+    @IsString()
     @IsNotEmpty({message: "El campo Identificacion no puede estar vacio"})
+    @Matches(/^\d+$/, { message: "El campo Identificacion solo permite numeros" })
     @Length(5,20, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
-    documentNumber: number;
+    documentNumber: string;
 
     @Column({name: "name", type: "varchar", length: 250})
     @IsString()
