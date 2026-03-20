@@ -153,7 +153,7 @@ export async function createEquipment(
     // Confirmar la transacción
     await queryRunner.commitTransaction();
 
-    return res.json(equipment);
+    return res.status(200).json(equipment);
   } catch (error) {
     await queryRunner.rollbackTransaction();
 
@@ -353,7 +353,7 @@ export async function updateEquipment(
     await queryRunner.manager.save(equipment);
     await queryRunner.commitTransaction();
 
-    return res.json(equipment);
+    return res.status(200).json(equipment);
   } catch (error) {
     await queryRunner.rollbackTransaction();
 

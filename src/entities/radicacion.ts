@@ -14,14 +14,13 @@ import { Sedes } from "./sedes";
 import { IpsRemite } from "./ips-remite";
 import { GrupoServicios } from "./grupo-servicios";
 import { CupsRadicados } from "./cups-radicados";
-import { IsInt, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
 import { Cirugias } from "./cirugias";
 import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
-import { Estados } from "./estados";
 import { CartaRecobro } from "./carta-recobro";
 import { Profesionales } from "./profesionales";
 
@@ -32,6 +31,9 @@ export class Radicacion extends BaseEntity {
 
   @CreateDateColumn({ name: "created_at", type: "datetime", comment: "Fecha y hora de creación de la radicación" })
   createdAt: Date;
+
+  @UpdateDateColumn({ name: "updated_at", type: "datetime", comment: "Fecha y hora de actualización de la radicación" })
+  updatedAt: Date;
 
   @Column({ name: "order_date", type: "date", comment: "Fecha de la orden" })
   @IsNotEmpty({message: "La fecha de la orden es requerida"})
@@ -47,9 +49,6 @@ export class Radicacion extends BaseEntity {
   @IsInt()
   @IsNotEmpty({message: "La ips remitente es requerida"})
   ipsRemiteId: number;
-
-  @Column({ name: "professional_name", nullable: true, type: "varchar", length: 255 })
-  professionalName: string | null;
 
   @Column({ name: "specialty_id", type: "int" })
   @IsInt()
@@ -86,11 +85,6 @@ export class Radicacion extends BaseEntity {
   @Length(3, 500, {message: "La justificacion de la auditoria debe tener entre 3 y 100 caracteres"})
   auditJustification: string;
 
-  @Column({ name: "audit_status_id", type: "int" })
-  @IsNumber()
-  @IsNotEmpty({message: "El concepto de la auditoria es requerido"})
-  auditStatusId: number;
-
   @Column({ name: "patient_id", type: "int" })
   @IsInt()
   @IsNotEmpty()
@@ -107,7 +101,14 @@ export class Radicacion extends BaseEntity {
   diagnosisId: number;
 
   @Column({ name: "professional_id", type: "int" })
+  @IsNotEmpty({message: "El profesional es requerido"})
+  @IsInt()
   professionalId: number;
+
+  @Column({ name: "audit_user_id", type: "int", nullable: true })
+  @IsOptional()
+  @IsInt()
+  auditUserId: number;
 
   // * relaciones
 
@@ -155,10 +156,6 @@ export class Radicacion extends BaseEntity {
   @JoinColumn({ name: "diagnosis_id" })
   diagnosticoRelation: Diagnostico;
 
-  @ManyToOne(() => Estados, (estados) => estados.radicacionRelation)
-  @JoinColumn({ name: "audit_status_id" })
-  statusRelation: Estados;
-
   // * rrelaciones no llaves foraneas
 
   // ? relacion con cups radicados
@@ -175,5 +172,9 @@ export class Radicacion extends BaseEntity {
   @ManyToOne(() => Profesionales, (profesionales) => profesionales.radicacionRelation)
   @JoinColumn({ name: "professional_id" })
   profesionalesRelation: Profesionales;
+  
+  @ManyToOne(() => Usuarios, (usuario) => usuario.auditRelation)
+  @JoinColumn({ name: "audit_user_id" })
+  auditUserRelation: Usuarios;
 
 }

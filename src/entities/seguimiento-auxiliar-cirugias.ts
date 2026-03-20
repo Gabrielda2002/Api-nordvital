@@ -19,10 +19,6 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity {
     @IsNotEmpty({ message: 'El estado es requerido' })
     statusId: number;
 
-    @Column({ name: 'requested_service_id', type: 'int' })
-    @IsOptional()
-    requestedServiceId: number;
-
     @Column({ name: 'surgery_id', type: 'int' })
     @IsNotEmpty({ message: 'La cirugia es requerida' })
     surgeryId: number;
@@ -49,11 +45,6 @@ export class SeguimientoAuxiliarCirugias extends BaseEntity {
     @ManyToOne(() => Cirugias, (cirugias) => cirugias.gestionCirugiasRelation)
     @JoinColumn({ name: 'surgery_id' })
     cirugiasRelation: Cirugias;
-
-    // * relacion con servicios solicitados
-    @ManyToOne(() => ServiciosSolicitados, (servicio) => servicio.statusRelation)
-    @JoinColumn({ name: 'requested_service_id' })
-    cupsRelation: Cirugias;
 
     // * relacion con usuario
     @ManyToOne(() => Usuarios, (usuario) => usuario.gestionCirugiasRelation)

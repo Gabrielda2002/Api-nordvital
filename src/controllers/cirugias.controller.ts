@@ -66,7 +66,6 @@ export async function createSurgery(req: Request, res: Response, next: NextFunct
         surgery.scheduledTime = scheduledTime;
         surgery.ipsRemiteId = parseInt(String(ipsRemite));
         surgery.observation = observation;
-        surgery.status = 1;
         surgery.radicacionId = parseInt(String(radicadoId));
         surgery.paraclinicalDate = paraclinicalDate || "0000-00-00";
         surgery.anesthesiologyDate = anesthesiologyDate || "0000-00-00";
@@ -144,7 +143,6 @@ export async function updateSurgery(req: Request, res: Response, next: NextFunct
         surgery.scheduledTime = scheduledTime;
         surgery.ipsRemiteId = ipsRemite;
         surgery.observation = observation;
-        surgery.status = status;
         surgery.radicacionId = radicadoId;
 
         const errors = await validate(surgery);

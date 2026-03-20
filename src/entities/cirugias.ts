@@ -1,7 +1,5 @@
 import { IsNotEmpty, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, NumericType, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Pacientes } from "./pacientes";
-import { Especialidad } from "./especialidad";
 import { Radicacion } from "./radicacion";
 import { IpsRemite } from "./ips-remite";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
@@ -28,10 +26,6 @@ export class Cirugias extends BaseEntity {
     @IsNotEmpty({message: 'Las observaciones son requeridas'})
     @Length(5, 150, {message: 'Las observaciones deben tener entre $constraint1 y $constraint2 caracteres'})
     observation: string;
-
-    @Column({name: 'status_id', type: "int"})
-    @IsNotEmpty({message: 'el estado es requerido'})
-    status: number;
 
     @Column({name: 'radicacion_id', type: "int"})
     @IsNotEmpty({message: 'El radicado es requerido'})

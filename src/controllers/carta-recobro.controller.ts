@@ -154,6 +154,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
         const { documentPatient  } = req.params;
         
         const query = await Radicacion.createQueryBuilder("radicacion")
+        .leftJoinAndSelect("radicacion.profesionalesRelation", "professional")
         .leftJoinAndSelect("radicacion.placeRelation", "place")
         .leftJoinAndSelect("place.municipioRelation", "municipality")
         .leftJoinAndSelect("radicacion.cartaRelation", "carta_recobro")
@@ -174,7 +175,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
 
         const responseFormated = requestLatter.map(r => ({
             id: r.id || "N/A",
-            professionalName: r.professionalName || "N/A",
+            professionalName: r.profesionalesRelation?.name || "N/A",
             creatAt: r.createdAt || "N/A",
             dniNumber: r.patientRelation.documentNumber || "N/A",
             dniType: r.patientRelation.documentRelation.name || "N/A",
@@ -206,6 +207,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
         
         const query = await CartaRecobro.createQueryBuilder("carta_recobro")
         .leftJoinAndSelect("carta_recobro.radicacionRelation", "radicacion")
+        .leftJoinAndSelect("radicacion.profesionalesRelation", "professional")
         .leftJoinAndSelect("radicacion.placeRelation", "place")
         .leftJoinAndSelect("place.municipioRelation", "municipality")
         .leftJoinAndSelect("radicacion.patientRelation", "patient")
@@ -227,7 +229,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
 
         const responseLetterFormated = responseLetter.map(r => ({
             id: r.id || "N/A",
-            professionalName: r.radicacionRelation.professionalName || "N/A",
+            professionalName: r.radicacionRelation?.profesionalesRelation?.name || "N/A",
             creatAt: r.radicacionRelation.createdAt || "N/A",
             patientName: r.radicacionRelation.patientRelation.name || "N/A",
             dniNumber: r.radicacionRelation.patientRelation.documentNumber || "N/A",

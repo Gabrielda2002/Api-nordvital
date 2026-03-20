@@ -15,7 +15,17 @@ export function errorHandler(error: any, req: Request, res: Response, next: Next
         return next(error);
     }
 
-    const statusCode = error.statusCode || 500;
+    const multerStatusCode =
+        error?.name === "MulterError"
+            ? error?.code === "LIMIT_FILE_SIZE"
+                ? 413
+                : 400
+            : undefined;
+
+    const invalidPdfStatusCode =
+        error?.message === "Only pdfs are allowed" ? 400 : undefined;
+
+    const statusCode = error.statusCode || multerStatusCode || invalidPdfStatusCode || 500;
     
     const message = config.server.isProduction && statusCode === 500
         ? "Internal Server Error"

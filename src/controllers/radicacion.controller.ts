@@ -64,10 +64,7 @@ export async function getRadicacionesAudit(
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
-      professional:
-        r.professionalId === null
-          ? r.professionalName
-          : r.profesionalesRelation?.name || "N/A",
+      professional: r.profesionalesRelation?.name || "N/A",
       speciality: r.specialtyRelation?.name || "N/A",
       typeService: r.servicesRelation?.name || "N/A",
       assistant: r.usuarioRelation?.name || "N/A",
@@ -158,6 +155,8 @@ export async function authorizeRadicacion(
     const radicadoId = parseInt(String(req.params.id));
     const { auditora, fechaAuditoria, justificacion, cupsDetails } = req.body;
 
+    const userId = req.user?.id;
+
     const existRadicado = await queryRunner.manager.findOneBy(Radicacion, { id: radicadoId });
 
     if (!existRadicado) {
@@ -165,9 +164,8 @@ export async function authorizeRadicacion(
       return res.status(404).json({ message: "Radicado no existe" });
     }
 
-    existRadicado.auditNotes = auditora;
-    existRadicado.auditDate = fechaAuditoria;
     existRadicado.auditJustification = justificacion;
+    existRadicado.auditUserId = parseInt(String(userId));
 
     const errors = await validate(existRadicado);
     if (errors.length > 0) {
@@ -292,7 +290,7 @@ export async function getSurgeries(
       numeroPaciente: r.patientRelation?.phoneNumber || "N/A",
       telefonoFijo: r.patientRelation?.landline || "N/A",
       email: r.patientRelation?.email || "N/A",
-      fechaAuditoria: r.auditDate,
+      fechaAuditoria: r.auditDate !== null ? r.auditDate : r.updatedAt,
       fechaOrden: r.orderDate,
       especialidad: r.specialtyRelation?.name || "N/A",
       nombreSoporte: r.soportesRelation?.nameSaved || "N/A",
@@ -354,6 +352,7 @@ export async function getRadicacionByPatient(
 
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
+      .leftJoinAndSelect("radicacion.auditUserRelation", "auditUser")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
@@ -362,7 +361,6 @@ export async function getRadicacionByPatient(
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.statusRelation", "estadoAuditoria")
       .leftJoinAndSelect("patient.convenioRelation", "convenio")
       .leftJoinAndSelect("patient.documentRelation", "document")
       .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
@@ -420,7 +418,7 @@ export async function getRadicacionByPatient(
     const radicacionFormated = radicacion.map((r) => ({
       id: r.id || "N/A",
       createdAt: r.createdAt || "N/A",
-      auditNotes: r.auditNotes || "N/A",
+      auditNotes: r.auditNotes !== 'Pendiente' ? r.auditNotes : r.auditUserRelation?.name  || "N/A",
       documentNumber: r.patientRelation?.documentNumber || "N/A",
       convenioName: r.patientRelation?.convenioRelation?.name || "N/A",
       documentType: r.patientRelation?.documentRelation?.name || "N/A",
@@ -431,20 +429,17 @@ export async function getRadicacionByPatient(
       address: r.patientRelation?.address || "N/A",
       ipsPrimaria: r.patientRelation?.ipsPrimariaRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",
-      auditDate: r.auditDate || "N/A",
+      auditDate: r.auditDate !== null ? r.auditDate : r.updatedAt || "N/A",
       supportName: r.soportesRelation?.nameSaved || "N/A",
       supportId: r.soportesRelation?.id || "N/A",
       radicacionPlace: r.placeRelation?.name || "N/A",
-      professionalName:
-        r.professionalId === null
-          ? r.professionalName
-          : r.profesionalesRelation?.name || "N/A",
+      professionalName: r.profesionalesRelation?.name || "N/A",
       specialty: r.specialtyRelation?.name || "N/A",
       orderDate: r.orderDate || "N/A",
       typeServices: r.servicesRelation?.name || "N/A",
       groupServices: r.servicesGroupRelation?.name || "N/A",
       radicador: r.usuarioRelation?.name || "N/A",
-      auditJustification: r.auditJustification || "N/A",
+      justification: r.auditJustification || "N/A",
       surgery: r.cirugiasRelation?.map((c) => ({
         id: c.id || "N/A",
         surgeryDate: c.surgeryDate || "N/A",
@@ -620,7 +615,6 @@ export const createRequestService = async (
     requestService.filedByUserId = parseInt(String(assistantId));
     requestService.auditNotes = "Pendiente";
     requestService.auditJustification = "Pendiente";
-    requestService.auditStatusId = 6;
     requestService.patientId = parseInt(String(patientId));
     requestService.supportId = supportId;
     requestService.diagnosisId = parseInt(String(diagnosisId));

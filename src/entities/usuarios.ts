@@ -268,4 +268,7 @@ export class Usuarios extends BaseEntity {
   @ManyToOne(() => Cargo, (cargo) => cargo.usersRelation, { nullable: true })
   @JoinColumn({ name: "cargo_id" })
   cargoRelation: Cargo;
+
+  @OneToMany(() => Radicacion, (radicacion) => radicacion.auditUserRelation)
+  auditRelation: Radicacion[];
 }

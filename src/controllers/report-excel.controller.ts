@@ -186,6 +186,7 @@ export async function getReportServices(
 
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
+      .leftJoinAndSelect("radicacion.auditUserRelation", "auditUser")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.documentRelation", "tipo_documento")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
@@ -300,15 +301,15 @@ export async function getReportServices(
         Fecha_de_orden: data.orderDate || "N/A",
         Lugar_de_radicacion: data.placeRelation?.name || "N/A",
         IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.professionalId === null ? data.professionalName : data.profesionalesRelation?.name,
+        Profesional: data.profesionalesRelation?.name || "N/A",
         Especialidad: data.specialtyRelation?.name || "N/A",
         codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
         descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
         Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
         Servicios: data.servicesRelation?.name || "N/A",
         Radicador: data.usuarioRelation?.name || "N/A",
-        Auditora: data.auditNotes || "N/A",
-        Fecha_de_auditoria: data.auditDate || "N/A",
+        Auditora: data.auditNotes !== 'Pendiente' ? data.auditNotes : data.auditUserRelation?.name || "N/A",
+        Fecha_de_auditoria: data.auditDate !== null ? data.auditDate : data.updatedAt || "N/A",
       };
 
       // * agregar filas por cada CUPS

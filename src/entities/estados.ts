@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CupsRadicados } from "./cups-radicados";
-import { Radicacion } from "./radicacion";
 
 @Entity("authorization_statuses")
 export class Estados extends BaseEntity {
@@ -26,8 +25,4 @@ export class Estados extends BaseEntity {
     // * relacion con cups
     @OneToMany(() => CupsRadicados, (cupsRadicados) => cupsRadicados.statusRelation)
     cupsRelation: CupsRadicados[]
-
-    // * relacion con radicacion
-    @OneToMany(() => Radicacion, (radicacion) => radicacion.statusRelation)
-    radicacionRelation: Radicacion[]
 }

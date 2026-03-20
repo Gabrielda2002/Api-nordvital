@@ -96,7 +96,7 @@ export async function createDevice(
 
     await device.save();
 
-    return res.json(device);
+    return res.status(200).json(device);
   } catch (error) {
     next(error);
   }
@@ -152,7 +152,7 @@ export async function updateDevice(
 
     await device.save();
 
-    return res.json(device);
+    return res.status(200).json(device);
   } catch (error) {
     next(error);
   }
