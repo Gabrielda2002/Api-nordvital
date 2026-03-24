@@ -96,6 +96,13 @@ export async function  getRadicaciones(
   next: NextFunction
 ) {
   try {
+
+    const { documentNumber } = req.query;
+
+    if (!documentNumber) {
+      return res.status(400).json({ message: "Document number is required" });
+    }
+
     const query = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
       .leftJoinAndSelect("place.municipioRelation", "municipality")
@@ -108,14 +115,14 @@ export async function  getRadicaciones(
       .orderBy("radicacion.id", "DESC")
       .where(
         "cupsRadicados.statusId <> 6 AND cupsRadicados.radicacionId = radicacion.id"
-      );
+      )
+      .andWhere("pacientes.documentNumber = :documentNumber", { documentNumber });
 
     if (req.departmentUserId) {
       query.andWhere("municipality.departmentId = :departmentId", {
         departmentId: req.departmentUserId,
       });
     }
-    query.orderBy("radicacion.id", "ASC");
     const radicaciones = await query.getMany();
 
     const formatedRadicaciones = radicaciones.map((r) => ({
