@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Radicacion } from "../entities/radicacion";
 import { validate } from "class-validator";
-import { Between, IsNull } from "typeorm";
-import { subMonths, startOfMonth, endOfMonth } from "date-fns";
-import { UnidadFuncional } from "../entities/unidad-funcional";
 import { CupsRadicados } from "../entities/cups-radicados";
 import { Pacientes } from "../entities/pacientes";
 import { Soportes } from "../entities/soportes";
@@ -16,7 +13,7 @@ export async function getRadicacionesAudit(
   next: NextFunction
 ) {
   try {
-    const query = await Radicacion.createQueryBuilder("radicacion")
+    const query = Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
       .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
@@ -28,9 +25,13 @@ export async function getRadicacionesAudit(
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("place.municipioRelation", "municipio")
-      .leftJoinAndSelect("municipio.departmentRelation", "departamento")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
+      .leftJoin("place.municipioRelation", "municipio")
+      .innerJoinAndSelect(
+        "radicacion.cupsRadicadosRelation",
+        "cupsRadicados",
+        "cupsRadicados.statusId = :pendingStatus",
+        { pendingStatus: 6 }
+      )
       .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
       .leftJoinAndSelect(
         "cupsRadicados.functionalUnitRelation",
@@ -40,10 +41,7 @@ export async function getRadicacionesAudit(
         "cupsRadicados.servicioRelation",
         "servicios"
       )
-      .leftJoinAndSelect("radicacion.soportesRelation", "soportes")
-      .where(
-        "cupsRadicados.statusId = 6"
-      );
+      .leftJoinAndSelect("radicacion.soportesRelation", "soportes");
 
     if (req.departmentUserId) {
       query.andWhere("municipio.departmentId = :departmentId", {
@@ -53,7 +51,7 @@ export async function getRadicacionesAudit(
     query.orderBy("radicacion.createdAt", "ASC");
     const radicaciones = await query.getMany();
 
-    const formatedRadicaciones = await radicaciones.map((r) => ({
+    const formatedRadicaciones = radicaciones.map((r) => ({
       id: r.id,
       createdAt: r.createdAt,
       documentType: r.patientRelation?.documentRelation.name || "N/A",
@@ -232,15 +230,9 @@ export async function getSurgeries(
   try {
     const radicacion = await Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
-      .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
-      .leftJoinAndSelect("radicacion.servicesRelation", "services")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("patient.convenioRelation", "convenio")
-      .leftJoinAndSelect("patient.documentRelation", "document")
-      .leftJoinAndSelect("patient.ipsPrimariaRelation", "ipsPrimaria")
       .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cupsRadicados")
       .leftJoinAndSelect(
         "cupsRadicados.seguimientoAuxiliarRelation",
@@ -257,11 +249,6 @@ export async function getSurgeries(
       .leftJoinAndSelect(
         "seguimientoCups.estadoSeguimientoRelation",
         "statusSeguimientoCups"
-      )
-      .leftJoinAndSelect("cupsRadicados.statusRelation", "status")
-      .leftJoinAndSelect(
-        "cupsRadicados.functionalUnitRelation",
-        "unidadFuncional"
       )
       .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
       .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
@@ -357,13 +344,13 @@ export async function getRadicacionByPatient(
       return res.status(400).json({ message: "Documento es requerido" });
     }
 
-    const query = await Radicacion.createQueryBuilder("radicacion")
+    const query = Radicacion.createQueryBuilder("radicacion")
       .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
       .leftJoinAndSelect("radicacion.auditUserRelation", "auditUser")
       .leftJoinAndSelect("radicacion.patientRelation", "patient")
       .leftJoinAndSelect("radicacion.specialtyRelation", "specialty")
       .leftJoinAndSelect("radicacion.placeRelation", "place")
-      .leftJoinAndSelect("place.municipioRelation", "municipio")
+      .leftJoin("place.municipioRelation", "municipio")
       .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ipsRemite")
       .leftJoinAndSelect("radicacion.servicesGroupRelation", "servicesGroup")
       .leftJoinAndSelect("radicacion.servicesRelation", "services")
@@ -377,7 +364,6 @@ export async function getRadicacionByPatient(
         "cupsRadicados.functionalUnitRelation",
         "unidadFuncional"
       )
-      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostic")
       .leftJoinAndSelect("radicacion.soportesRelation", "soporte")
       .leftJoinAndSelect(
         "cupsRadicados.seguimientoAuxiliarRelation",

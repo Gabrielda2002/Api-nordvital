@@ -314,6 +314,8 @@ export async function getListTicketsByUserId(req: Request, res: Response, next: 
             .addSelect("status.name", "status")
             .addSelect("priority.name", "priority")
             .addSelect("category.name", "category")
+            .addSelect("survey.id", "surveyId")
+            .leftJoin("tickets.surveyRelation", "survey")
             .leftJoin("tickets.statusRelation", "status")
             .leftJoin("tickets.priorityRelation", "priority")
             .leftJoin("tickets.categoryRelation", "category")
