@@ -15,13 +15,13 @@ export class Tickets extends BaseEntity {
     id: number;
 
     @Column({ name: "titulo", length: 255, type: "varchar" })
-    @Length(1, 255, { message: "Title must be between 1 and 255 characters" })
+    @Length(1, 50, { message: "Title must be between $constraint1 and $constraint2 characters" })
     @IsString()
     @IsNotEmpty()
     title: string;
 
     @Column({ name: "descripcion", type: "text" })
-    @Length(1, 500, { message: "Description must be between 1 and 500 characters" })
+    @Length(1, 500, { message: "Description must be between $constraint1 and $constraint2 characters" })
     @IsString()
     @IsNotEmpty()
     description: string;
