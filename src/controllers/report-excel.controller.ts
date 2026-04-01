@@ -771,7 +771,7 @@ export async function getReportDemandInduced(
       .orderBy("demandas_inducidas.createdAt", "ASC");
 
     if (convenio) {
-      query.andWhere("paciente.convenio = :convenio", { convenio });
+      query.andWhere("paciente.agreementId = :convenio", { convenio });
     }
 
     if (rolUser == 19) {
