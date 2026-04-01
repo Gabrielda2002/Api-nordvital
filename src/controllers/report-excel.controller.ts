@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response } from "express";
-import { Radicacion } from "../entities/radicacion";
 import ExcelJS from "exceljs";
 import { randomBytes } from "crypto";
-import { Cirugias } from "../entities/cirugias";
-import { PausasActivas } from "../entities/pausas-activas";
-import { format } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
-import { RegistroEntrada } from "../entities/registro-entrada";
-import { Tickets } from "../entities/tickets";
-import { DemandaInducida } from "../entities/demanda-inducida";
-import { Equipos } from "../entities/equipos";
-import { dispositivosRed } from "../entities/dispositivos-red";
-import { InventarioGeneral } from "../entities/inventario-general";
-import { Televisor } from "../entities/televisor";
-import { Celular } from "../entities/celular";
+import { BadRequestError, NotFoundError } from "../utils/custom-errors";
+import { getReportRadicacionRows } from "../services/report-radicacion.service";
+import { getReportSurgerysRows } from "../services/report-surgerys.service";
+import { getReportAssistantsRows } from "../services/report-assistants.service";
+import { getReportBreakesActiveRows } from "../services/report-breakes-active.service";
+import { getReportBiometricRows } from "../services/report-biometric.service";
+import { getReportTicketsRows } from "../services/report-tickets.service";
+import { getReportDemandInducedRows } from "../services/report-demand-induced.service";
+import { getReportEquipmentsRows } from "../services/report-equipments.service";
+import { getReportRedDeviceRows } from "../services/report-red-device.service";
+import { getReportGeneralInventoryRows } from "../services/report-general-inventory.service";
+import { getReportTVRows } from "../services/report-tv.service";
+import { getReportPhonesRows } from "../services/report-phones.service";
 
 // ? reporte cirugias con filtros de Fecha_ordenamiento
 export async function getReportSurgerys(
@@ -24,35 +24,14 @@ export async function getReportSurgerys(
   try {
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Cirugias.createQueryBuilder("cirugias")
-      .leftJoinAndSelect("cirugias.ipsRemiteRelation", "ipsRemite")
-      .leftJoinAndSelect("cirugias.radicacionRelation", "radicacion")
-      .leftJoinAndSelect("cirugias.gestionCirugiasRelation", "gestionCirugias")
-      .leftJoinAndSelect(
-        "gestionCirugias.estadoSeguimientoRelation",
-        "estadoSeguimiento"
-      )
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-      .leftJoinAndSelect("cups.servicioRelation", "services")
-      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico");
-
-    if (dateStart && dateEnd) {
-      query.andWhere("cirugias.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart: dateStart,
-        dateEnd: dateEnd,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Debe enviar la fecha de ordenamiento" });
+    if (!dateStart || !dateEnd) {
+      throw new BadRequestError("Debe enviar la fecha de ordenamiento");
     }
 
-    query.orderBy("cirugias.createdAt", "DESC");
+    const rows = await getReportSurgerysRows({ dateStart, dateEnd });
 
-    const dataCirugias = await query.getMany();
-
-    const worjbook = new ExcelJS.Workbook();
-    const worksheet = worjbook.addWorksheet("Reporte Cirugias");
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reporte Cirugias");
 
     worksheet.columns = [
       { header: "Fecha de Ordenamiento", key: "Fecha_ordenamiento", width: 20 },
@@ -76,106 +55,44 @@ export async function getReportSurgerys(
       { header: "Fecha de Registro", key: "Fecha_registro", width: 20 },
     ];
 
-    dataCirugias.forEach((data) => {
-      const fechaCirugia = data.surgeryDate
-        ? formatInTimeZone(
-          new Date(data.surgeryDate),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
-      const fechaOrdenamiento = data.radicacionRelation.orderDate
-        ? formatInTimeZone(
-          new Date(data.radicacionRelation.orderDate),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
-      const fechaParaclinico = data.paraclinicalDate
-        ? formatInTimeZone(
-          new Date(data.paraclinicalDate),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
-      const fechaAnesteciologia = data.anesthesiologyDate
-        ? formatInTimeZone(
-          new Date(data.anesthesiologyDate),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
-      const fechaRegistro = data.createdAt
-        ? formatInTimeZone(
-          new Date(data.createdAt),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
-
-      const row = {
-        Fecha_ordenamiento: fechaOrdenamiento,
-        Fecha_cirugia: fechaCirugia,
-        Hora_programada: data.scheduledTime || "N/A",
-        IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Observaciones: data.observation || "N/A",
-        diagnostico_name:
-          data.radicacionRelation?.diagnosticoRelation.description || "N/A",
-        diagnostico_code:
-          data.radicacionRelation?.diagnosticoRelation.code || "N/A",
-        especialista: data.specialist || "N/A",
-        fecha_paraclinico: fechaParaclinico,
-        fecha_anesteciologia: fechaAnesteciologia,
-        Fecha_registro: fechaRegistro,
-      };
-
-      // agregar gilas por cada cups
-      if (data.radicacionRelation?.cupsRadicadosRelation?.length > 0) {
-        data.radicacionRelation?.cupsRadicadosRelation.forEach((cups) => {
-          worksheet.addRow({
-            ...row,
-            Codigo_cups: cups.servicioRelation?.code || "N/A",
-            Descripcion_cups: cups.servicioRelation?.name || "N/A",
-            Observacionesgestion: cups.observation || "N/A",
-            Estado: cups.statusRelation?.name || "N/A",
-          });
-        });
-      } else {
-        worksheet.addRow(row);
-      }
-
-      // agregar filas por seguimiento cirugias
-      if (data.gestionCirugiasRelation.length > 0) {
-        data.gestionCirugiasRelation.forEach((gestion) => {
-          worksheet.addRow({
-            ...row,
-            Estado: gestion.estadoSeguimientoRelation?.name || "N/A",
-            Observacionesgestion: gestion.observation || "N/A",
-            Fecha_registro: gestion.createdAt || "N/A",
-          });
-        });
-      }
-    });
+    rows.forEach((row) => worksheet.addRow(row));
 
     const randomStr = randomBytes(4).toString("hex");
-
     const fileName = `Reporte_Cirugias_${randomStr}.xlsx`;
 
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
 
-    await worjbook.xlsx.write(res);
-
+    await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
     next(error);
   }
 }
-// ? controlador para reporte de servicios
+// ? preview JSON del reporte de radicación (mismos filtros que Excel)
+export async function previewReportServices(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
+    const data = await getReportRadicacionRows({
+      statusCups,
+      dateStart,
+      dateEnd,
+      cupsCode,
+    }, 20);
+    res.status(200).json({ total: data.length ,data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? controlador para reporte de servicios (Excel)
 export async function getReportServices(
   req: Request,
   res: Response,
@@ -184,54 +101,16 @@ export async function getReportServices(
   try {
     const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
 
-    const query = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
-      .leftJoinAndSelect("radicacion.auditUserRelation", "auditUser")
-      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
-      .leftJoinAndSelect("pacientes.documentRelation", "tipo_documento")
-      .leftJoinAndSelect("pacientes.convenioRelation", "convenio")
-      .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ips_primaria")
-      .leftJoinAndSelect("radicacion.placeRelation", "lugar_radicacion")
-      .leftJoinAndSelect("radicacion.ipsRemiteRelation", "ips_remitente")
-      .leftJoinAndSelect("radicacion.servicesGroupRelation", "grupo_servicios")
-      .leftJoinAndSelect("radicacion.servicesRelation", "servicios")
-      .leftJoinAndSelect("radicacion.diagnosticoRelation", "diagnostico")
-      .leftJoinAndSelect("radicacion.usuarioRelation", "radicador")
-      .leftJoinAndSelect("radicacion.specialtyRelation", "especialidad")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-      .leftJoinAndSelect("cups.functionalUnitRelation", "unidad_funcional")
-      .leftJoinAndSelect("cups.statusRelation", "estado_cups")
-      .leftJoinAndSelect(
-        "cups.seguimientoAuxiliarRelation",
-        "seguimiento_auxiliar"
-      )
-      .leftJoinAndSelect("cups.servicioRelation", "services")
+    const rows = await getReportRadicacionRows({
+      statusCups,
+      dateStart,
+      dateEnd,
+      cupsCode,
+    });
 
-    // Filtro por estado de CUPS
-    if (statusCups) {
-      query.andWhere("estado_cups.id = :statusCups", { statusCups });
-    }
-
-    // Filtro por rango de fechas de radicación
-    if (dateStart && dateEnd) {
-      query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
-    }
-
-    // Filtro por código CUPS
-    if (cupsCode) {
-      query.andWhere("cups.code = :cupsCode", { cupsCode });
-    }
-
-    const data = await query.getMany();
-
-    // Crear workbook y workshee
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte CUPS");
 
-    // Definir las columnas en la hoja de Excel
     worksheet.columns = [
       { header: "Fecha-hora", key: "radicadoDate", width: 20 },
       { header: "Numero Radicado", key: "Id", width: 10 },
@@ -274,94 +153,10 @@ export async function getReportServices(
         key: "Observacion_seguimiento_auxiliar",
         width: 30,
       },
-      // {
-      //   header: "Fecha Seguimiento",
-      //   key: "Fecha_registro",
-      //   width: 20,
-      // },
     ];
 
-    data.forEach((data) => {
-      const row = {
-        // radicadoDate: data.createdAt ? formatInTimeZone(
-        //   new Date(data.createdAt),
-        //   "America/Bogota",
-        //   "yyyy-MM-dd HH:mm:ss"
-        // ) : "N/A",
-        Id: data.id || "N/A",
-        Tipo_de_documento: data.patientRelation?.documentRelation.name || "N/A",
-        Nombre_del_paciente: data.patientRelation?.name || "N/A",
-        Numero_documento: data.patientRelation?.documentNumber || "N/A",
-        Telefono_celular: data.patientRelation?.phoneNumber || "N/A",
-        Telefono_fijo: data.patientRelation?.landline || "N/A",
-        Correo_electronico: data.patientRelation?.email || "N/A",
-        Direccion: data.patientRelation?.address || "N/A",
-        Convenio: data.patientRelation?.convenioRelation.name || "N/A",
-        IPS_Primaria: data.patientRelation?.ipsPrimariaRelation.name || "N/A",
-        Fecha_de_orden: data.orderDate || "N/A",
-        Lugar_de_radicacion: data.placeRelation?.name || "N/A",
-        IPS_Remitente: data.ipsRemiteRelation?.name || "N/A",
-        Profesional: data.profesionalesRelation?.name || "N/A",
-        Especialidad: data.specialtyRelation?.name || "N/A",
-        codigo_diagnostico: data.diagnosticoRelation?.code || "N/A",
-        descripcion_diagnostico: data.diagnosticoRelation?.description || "N/A",
-        Grupo_de_servicios: data.servicesGroupRelation?.name || "N/A",
-        Servicios: data.servicesRelation?.name || "N/A",
-        Radicador: data.usuarioRelation?.name || "N/A",
-        Auditora: data.auditNotes !== 'Pendiente' ? data.auditNotes : data.auditUserRelation?.name || "N/A",
-        Fecha_de_auditoria: data.auditDate !== null ? data.auditDate : data.updatedAt || "N/A",
-      };
+    rows.forEach((row) => worksheet.addRow(row));
 
-      // * agregar filas por cada CUPS
-      if (data.cupsRadicadosRelation?.length > 0) {
-        data.cupsRadicadosRelation.forEach((cups) => {
-          const observations =
-            cups.seguimientoAuxiliarRelation
-              .map(
-                (s) =>
-                  `${s.observation}, ${format(
-                    new Date(s.createdAt),
-                    "yyyy-MM-dd HH:mm:ss"
-                  )}`
-              )
-              .join(" || ") || "N/A";
-
-          worksheet.addRow({
-            ...row,
-            radicadoDate: cups.createdAt ? formatInTimeZone(
-              new Date(cups.createdAt),
-              "America/Bogota",
-              "yyyy-MM-dd HH:mm:ss"
-            ) : "N/A",
-            Codigo_cups: cups.servicioRelation?.code || "N/A",
-            Descripcion_cups: cups.servicioRelation?.name || "N/A",
-            Estado_cups: cups.statusRelation?.name || "N/A",
-            Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
-            Fecha_actualizacion: cups.updatedAt || "N/A",
-            Observacion_seguimiento_auxiliar: observations,
-          });
-        });
-      } else {
-        worksheet.addRow(row);
-      }
-
-      // * agregar filas por cada seguimiento auxiliar de CUPS radicacion
-      // if (data.cupsRadicadosRelation.length > 0) {
-      //   data.cupsRadicadosRelation.forEach((cups) => {
-      //     if (cups.seguimientoAuxiliarRelation?.length > 0) {
-      //       cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
-      //         worksheet.addRow({
-      //           ...row,
-      //           Observacion_seguimiento_auxiliar: seguimiento.observation || "N/A",
-      //           Fecha_registro: seguimiento.createdAt || "N/A",
-      //         });
-      //       });
-      //     }
-      //   });
-      // }
-    });
-
-    // Configurar respuesta
     const fileName = `Reporte_CUPS_${randomBytes(4).toString("hex")}.xlsx`;
     res.setHeader(
       "Content-Type",
@@ -384,36 +179,11 @@ export async function getReportAssistants(
   try {
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Radicacion.createQueryBuilder("radicacion")
-      .leftJoinAndSelect("radicacion.patientRelation", "pacientes")
-      .leftJoinAndSelect("radicacion.cupsRadicadosRelation", "cups")
-      .leftJoinAndSelect(
-        "cups.seguimientoAuxiliarRelation",
-        "seguimiento_auxiliar"
-      )
-      .leftJoinAndSelect("cups.servicioRelation", "services")
-      .leftJoinAndSelect(
-        "seguimiento_auxiliar.estadoSeguimientoRelation",
-        "estado_seguimiento"
-      )
-      .leftJoinAndSelect("seguimiento_auxiliar.usuarioRelation", "usuario")
-      .orderBy("radicacion.createdAt", "DESC");
+    const rows = await getReportAssistantsRows({ dateStart, dateEnd });
 
-    // Aplicar filtro de fechas si se proporcionan
-    if (dateStart && dateEnd) {
-      query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
-    }
-
-    const data = await query.getMany();
-
-    // Crear workbook y worksheet
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte Gestion Auxiliar");
 
-    // Definir columnas
     worksheet.columns = [
       { header: "ID Radicado", key: "id_radicado", width: 15 },
       { header: "Fecha-hora", key: "radicadoDate", width: 20 },
@@ -427,33 +197,8 @@ export async function getReportAssistants(
       { header: "Usuario Registro", key: "usuario_registro", width: 20 },
     ];
 
-    // Agregar datos
-    data.forEach((radicado) => {
-      if (radicado.cupsRadicadosRelation.length > 0) {
-        radicado.cupsRadicadosRelation.forEach((cups) => {
-          if (cups.seguimientoAuxiliarRelation?.length > 0) {
-            cups.seguimientoAuxiliarRelation.forEach((seguimiento) => {
-              worksheet.addRow({
-                id_radicado: radicado.id,
-                radicadoDate: radicado.createdAt || "N/A",
-                numero_documento:
-                  radicado.patientRelation?.documentNumber || "N/A",
-                nombre_paciente: radicado.patientRelation?.name || "N/A",
-                codigo_cups: cups.servicioRelation?.code || "N/A",
-                descripcion_cups: cups.servicioRelation?.name || "N/A",
-                estado_gestion:
-                  seguimiento.estadoSeguimientoRelation?.name || "N/A",
-                observacion: seguimiento.observation || "N/A",
-                fecha_registro: seguimiento.createdAt || "N/A",
-                usuario_registro: seguimiento.usuarioRelation?.name || "N/A",
-              });
-            });
-          }
-        });
-      }
-    });
+    rows.forEach((row) => worksheet.addRow(row));
 
-    // Configurar respuesta
     const fileName = `Reporte_Gestion_Auxiliar_${randomBytes(4).toString(
       "hex"
     )}.xlsx`;
@@ -479,29 +224,11 @@ export async function getReportBreakesActive(
   try {
     const { dateStart, dateEnd } = req.body;
 
-    const query = await PausasActivas.createQueryBuilder("pausas_activas")
-      .leftJoinAndSelect("pausas_activas.userRelation", "usuario")
-      .leftJoinAndSelect("usuario.sedeRelation", "sede")
-      .orderBy("pausas_activas.createdAt", "DESC");
+    const rows = await getReportBreakesActiveRows({ dateStart, dateEnd });
 
-    // Aplicar filtro de fechas si se proporcionan
-    if (dateStart && dateEnd) {
-      query.andWhere(
-        "pausas_activas.createdAt BETWEEN :dateStart AND :dateEnd",
-        {
-          dateStart,
-          dateEnd,
-        }
-      );
-    }
-
-    const data = await query.getMany();
-
-    // Crear workbook y worksheet
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte Pausas Activas");
 
-    // Definir columnas
     worksheet.columns = [
       { header: "Fecha Registro", key: "fecha_creacion", width: 20 },
       { header: "Número Documento", key: "numero_documento", width: 20 },
@@ -513,29 +240,8 @@ export async function getReportBreakesActive(
       { header: "Observación", key: "observacion", width: 30 },
     ];
 
-    // Agregar datos
-    data.forEach((pausa) => {
-      const fechaCreacion = pausa.createdAt
-        ? formatInTimeZone(
-          new Date(pausa.createdAt),
-          "America/Bogota",
-          "yyyy-MM-dd HH:mm:ss"
-        )
-        : "N/A";
+    rows.forEach((row) => worksheet.addRow(row));
 
-      worksheet.addRow({
-        fecha_creacion: fechaCreacion,
-        observacion: pausa.observation || "N/A",
-        nombre_usuario: pausa.userRelation?.name || "N/A",
-        apellidos_usuario: pausa.userRelation?.lastName || "N/A",
-        area: pausa.userRelation?.area || "N/A",
-        cargo: pausa.userRelation?.position || "N/A",
-        sede: pausa.userRelation?.sedeRelation?.name || "N/A",
-        numero_documento: pausa.userRelation?.dniNumber || "N/A",
-      });
-    });
-
-    // Configurar respuesta
     const fileName = `Reporte_Pausas_Activas_${randomBytes(4).toString(
       "hex"
     )}.xlsx`;
@@ -561,20 +267,7 @@ export async function getReportBiometric(
   try {
     const { dateStart, dateEnd } = req.body;
 
-    const query = await RegistroEntrada.createQueryBuilder("registro_entrada")
-      .leftJoinAndSelect("registro_entrada.userRelation", "usuario")
-      .leftJoinAndSelect("registro_entrada.sedeRelation", "sede")
-      .orderBy("registro_entrada.createdAt", "DESC");
-
-    if (dateStart && dateEnd) {
-      query.andWhere(
-        "registro_entrada.registerDate BETWEEN :dateStart AND :dateEnd",
-        { dateStart, dateEnd }
-      );
-    }
-
-    query.orderBy("registro_entrada.registerDate", "DESC");
-    const data = await query.getMany();
+    const rows = await getReportBiometricRows({ dateStart, dateEnd });
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Repore Registros Biometricos");
@@ -589,25 +282,7 @@ export async function getReportBiometric(
       { header: "Area", key: "area", width: 20 },
     ];
 
-    data.forEach((r) => {
-      const fechaRegistro = r.registerDate
-        ? formatInTimeZone(
-          new Date(r.registerDate),
-          "America/Bogota",
-          "yyyy-MM-dd"
-        )
-        : "N/A";
-
-      worksheet.addRow({
-        numero_documento: r.userRelation?.dniNumber || "N/A",
-        nombre_usuario: r.userRelation?.name || "N/A",
-        apellidos: r.userRelation?.lastName || "N/A",
-        fecha_registro: fechaRegistro,
-        hora_registro: r.hourRegister || "N/A",
-        sede: r.sedeRelation?.name || "N/A",
-        area: r.userRelation?.area || "N/A",
-      });
-    });
+    rows.forEach((row) => worksheet.addRow(row));
 
     const fileName = `Reporte_Registros_Biometricos_${randomBytes(4).toString(
       "hex"
@@ -634,25 +309,13 @@ export async function getReportTickets(
   try {
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Tickets.createQueryBuilder("tickets")
-      .leftJoinAndSelect("tickets.categoryRelation", "categoria")
-      .leftJoinAndSelect("tickets.userRelation", "usuario")
-      .leftJoinAndSelect("usuario.sedeRelation", "sede")
-      .leftJoinAndSelect("tickets.statusRelation", "estado")
-      .leftJoinAndSelect("tickets.priorityRelation", "prioridad")
-      .leftJoinAndSelect("tickets.commentRelation", "comentarios")
-      .leftJoinAndSelect("comentarios.userRelation", "usuario_responsdedor")
-      .leftJoinAndSelect("tickets.surveyRelation", "encuesta")
-      .orderBy("tickets.createdAt", "DESC");
+    const rows = await getReportTicketsRows({ dateStart, dateEnd });
 
-    if (dateStart && dateEnd) {
-      query.where("tickets.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
+    if (!rows || rows.length === 0) {
+      throw new NotFoundError(
+        "No se encontraron tickets en el rango de fechas especificado"
+      );
     }
-
-    const data = await query.getMany();
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Reporte Tickets Mesa de Ayuda");
@@ -674,56 +337,7 @@ export async function getReportTickets(
       },
     ];
 
-    if (!data || data.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No se encontraron tickets en el rango de fechas especificado.",
-        });
-    }
-
-    data.forEach((t) => {
-      const rows = {
-        fecha_registro: t.createdAt
-          ? formatInTimeZone(
-            new Date(t.createdAt),
-            "America/Bogota",
-            "yyyy-MM-dd HH:mm:ss"
-          )
-          : "N/A",
-        descripcion: t.description || "N/A",
-        categoria: t.categoryRelation?.name || "N/A",
-        titulo: t.title || "N/A",
-        usuario_solicitante:
-          `${t.userRelation?.name} ${t.userRelation.lastName}` || "N/A",
-        sede_solicitante: t.userRelation?.sedeRelation?.name || "N/A",
-        usuario_responsable:
-          t.commentRelation?.length > 0
-            ? `${t.commentRelation[0]?.userRelation?.name || ""} ${t.commentRelation[0]?.userRelation?.lastName || ""
-            }`
-            : "N/A",
-        ultimo_estado: t.statusRelation?.name || "N/A",
-        ultimo_comentario:
-          t.commentRelation?.length > 0
-            ? t.commentRelation[t.commentRelation.length - 1]?.comment || "N/A"
-            : "N/A",
-        fecha_ultimo_comentario:
-          t.commentRelation?.length > 0
-            ? formatInTimeZone(
-              new Date(
-                t.commentRelation[t.commentRelation.length - 1]?.createdAt
-              ),
-              "America/Bogota",
-              "yyyy-MM-dd HH:mm:ss"
-            )
-            : "N/A",
-      };
-
-      worksheet.addRow({
-        ...rows,
-      });
-    });
+    rows.forEach((row) => worksheet.addRow(row));
 
     const fileName = `Reporte_Tickets_Mesa_Ayuda_${randomBytes(4).toString(
       "hex"
@@ -736,7 +350,6 @@ export async function getReportTickets(
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
 
     await workbook.xlsx.write(res);
-
     res.end();
   } catch (error) {
     next(error);
@@ -754,47 +367,14 @@ export async function getReportDemandInduced(
 
     const rolUser = req.user?.rol;
 
-    const query = await DemandaInducida.createQueryBuilder("demandas_inducidas")
-      .leftJoinAndSelect("demandas_inducidas.pacienteRelation", "paciente")
-      .leftJoinAndSelect("paciente.documentRelation", "tipo_documento")
-      .leftJoinAndSelect("paciente.convenioRelation", "convenio")
-      .leftJoinAndSelect("demandas_inducidas.elementoRelation", "elemento")
-      .leftJoinAndSelect("demandas_inducidas.tipoRelation", "tipo_elemento")
-      .leftJoinAndSelect("demandas_inducidas.objetivoRelation", "objetivo")
-      .leftJoinAndSelect("demandas_inducidas.relacionRelation", "relacion_usuario")
-      .leftJoinAndSelect("demandas_inducidas.areaEpsRelation", "area_eps")
-      .leftJoinAndSelect("demandas_inducidas.resumenRelation", "resumen_seguimiento")
-      .leftJoinAndSelect("demandas_inducidas.resultadoRelation", "resultado_llamada")
-      .leftJoinAndSelect("demandas_inducidas.motivoRelation", "motivo")
-      .leftJoinAndSelect("demandas_inducidas.areaPersonaRelation", "area_persona")
-      .leftJoinAndSelect("demandas_inducidas.personaSeguimientoRelation", "usuario_seguimiento")
-      .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
-      .orderBy("demandas_inducidas.createdAt", "ASC");
-
-    if (convenio) {
-      query.andWhere("paciente.agreementId = :convenio", { convenio });
-    }
-
-    if (rolUser == 19) {
-      query.andWhere("demandas_inducidas.personaSeguimientoRelation = :userId", {
-        userId: req.user?.id
-      })
-    }
-
-    if (dateStart && dateEnd) {
-      query.andWhere("demandas_inducidas.createdAt BETWEEN :start AND :end", {
-        start: dateStart,
-        end: dateEnd
-      });
-    }
-
-    if (headquarter) {
-      query.andWhere("usuario_seguimiento.headquarters = :headquarter", {
-        headquarter
-      });
-    }
-
-    const data = await query.getMany();
+    const data = await getReportDemandInducedRows({
+      dateStart,
+      dateEnd,
+      headquarter,
+      convenio,
+      rolUser,
+      userId: req.user?.id
+    });
 
     if (!data || data.length === 0) {
       return res.status(404).json({
@@ -954,70 +534,7 @@ export async function getReportDemandInduced(
     worksheet.getRow(2).height = 25;
     worksheet.getRow(3).height = 40;
 
-    data.forEach((d) => {
-
-      const row = {
-        tipo_documento: d.pacienteRelation?.documentRelation?.name || "",
-        numero_identificacion: d.pacienteRelation?.documentNumber || "",
-        fecha_actividad: d.createdAt ? formatInTimeZone(
-          new Date(d.createdAt),
-          "America/Bogota",
-          "dd/MM/yyyy HH:mm:ss"
-        ) : "",
-        elemento_demanda: d.elementoRelation?.name || "",
-        tipo_elemento: d.tipoRelation?.name || "",
-        objetivo: d.objetivoRelation?.name || "",
-        numero_telefono_contacto: d.contactNumbers || "",
-        clasificacion_seguimiento: d.clasificacion ? "Efectivo" : "No Efectivo",
-        persona_recibe_llamada: d.personaRecibe || "",
-        relacion_usuario: d.relacionRelation?.name || "",
-        fecha_llamada: d.fechaLlamada ? formatInTimeZone(
-          new Date(d.fechaLlamada),
-          "America/Bogota",
-          "dd/MM/yyyy"
-        ) : "",
-        hora_llamada: d.horaLlamada
-          ? d.horaLlamada.slice(0, 5) // formato HH:mm
-          : "",
-        texto_llamada: d.textoLlamada || "",
-        barreras_acceso: d.dificultadAcceso ? "Si" : "No",
-        area_dificultad: d.areaDificultad || "",
-        area_eps: d.areaEpsRelation?.name || "",
-        resumen_actividades: d.resumenRelation?.name || "",
-        // condicion_final_usuario: d.condicionPaciente ? "VIVO" : "MUERTO",
-        soportes_recuperados: d.soporteRecuperados || "",
-        departamento: "",
-        municipio: "",
-        barrio_vereda: "",
-        numero_telefono: "",
-        correo_electronico: "",
-        resultado_llamada: d.resultadoRelation?.name || "",
-        fecha_envio: d.fechaEnvio ? formatInTimeZone(
-          new Date(d.fechaEnvio),
-          "America/Bogota",
-          "dd/MM/yyyy"
-        ) : "",
-        hora_envio: d.horaEnvio
-          ? d.horaEnvio.slice(0, 5) // formato HH:mm
-          : "",
-        texto_mensaje: d.textEnvio || "",
-        fecha_visita: d.fechaVisita ? formatInTimeZone(
-          new Date(d.fechaVisita),
-          "America/Bogota",
-          "dd/MM/yyyy"
-        ) : "",
-        resumen_visita: d.resumenRelation?.name || "",
-        motivo_visita_no_efectiva: d?.motivoRelation?.name || "",
-        persona_seguimiento: d.personaSeguimientoRelation?.name || "",
-        area_persona: d.areaPersonaRelation?.name || "",
-        programa: d.programaRelation?.name || "",
-        fecha_asignacion_cita: d.fechaCita ? formatInTimeZone(
-          new Date(d.fechaCita),
-          "America/Bogota",
-          "dd/MM/yyyy"
-        ) : "",
-        Profesional: d.profesional || "",
-      }
+    data.forEach((row) => {
       worksheet.addRow(row);
     });
 
@@ -1049,23 +566,13 @@ export async function getReportEquipments(
 
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Equipos.createQueryBuilder("equipment")
-      .leftJoinAndSelect("equipment.accessoriesRelation", "accessories")
-      .leftJoinAndSelect("equipment.seguimientoEquipos", "monitoring")
-      .leftJoinAndSelect("equipment.componentRelation", "component")
-      .leftJoinAndSelect("equipment.softwareRelation", "software")
-      .leftJoinAndSelect("equipment.userRelation", "user")
-      .leftJoinAndSelect("equipment.soportRelacion", "support")
-      .leftJoinAndSelect("equipment.placeRelation", "place")
+    const data = await getReportEquipmentsRows({ dateStart, dateEnd });
 
-    if (dateStart && dateEnd) {
-      query.andWhere("equipment.createAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        message: "Inventory Equipments Not Found.",
       });
     }
-
-    const data = await query.getMany();
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Inventario Equipos");
@@ -1204,115 +711,8 @@ export async function getReportEquipments(
     worksheet.getRow(1).height = 25;
     worksheet.getRow(2).height = 25;
 
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        message: "Inventory Equipments Not Found.",
-      });
-    }
-
-    data.forEach((d) => {
-      const baseEquipment = {
-        headquarters: d.placeRelation?.name || "",
-        name: d.name || "",
-        typeEquipment: d.typeEquipment || "",
-        brand: d.brand || "",
-        model: d.model || "",
-        serial: d.serial || "",
-        systemOperating: d.operationalSystem || "",
-        mac: d.mac || "",
-        purchaseDate: d.purchaseDate || "",
-        warrantyTime: d.warrantyTime || "",
-        warranty: d.warranty || "",
-        deliveryDate: d.deliveryDate || "",
-        inventoryNumber: d.inventoryNumber || "",
-        dateCreated: d.createAt || "",
-        dateUpdate: d.updateAt || "",
-        dhcp: d.dhcp ? "Si" : "No",
-        ipAddress: d.addressIp || "",
-        userResponsable: d.userRelation?.name || "",
-        lock: d.lock ? "Si" : "No",
-        lockPassword: d.lockKey || "",
-      };
-
-      // Si no hay periféricos, software o componentes, crear una fila básica
-      if ((!d.accessoriesRelation || d.accessoriesRelation.length === 0) &&
-        (!d.softwareRelation || d.softwareRelation.length === 0) &&
-        (!d.componentRelation || d.componentRelation.length === 0)) {
-        worksheet.addRow({
-          ...baseEquipment,
-          peripheralsName: "",
-          peripheralsBrand: "",
-          peripheralsModel: "",
-          peripheralsSerial: "",
-          peripheralsOtherData: "",
-          peripheralsStatus: "",
-          peripheralsInventoryNumber: "",
-          peripheralsDateCreated: "",
-          peripheralsDateUpdate: "",
-          softwareName: "",
-          softwareVersion: "",
-          softwareLicense: "",
-          softwareOtherData: "",
-          softwareInstallationDate: "",
-          softwareStatus: "",
-          softwareDateCreated: "",
-          softwareDateUpdated: "",
-          componentName: "",
-          componentBrand: "",
-          componentCapacity: "",
-          componentSpeed: "",
-          componentOtherData: "",
-          componentModel: "",
-          componentDateCreated: "",
-          componentDateUpdated: "",
-        });
-        return;
-      }
-
-      // Crear filas para cada combinación de periféricos, software y componentes
-      const maxLength = Math.max(
-        d.accessoriesRelation?.length || 0,
-        d.softwareRelation?.length || 0,
-        d.componentRelation?.length || 0
-      );
-
-      for (let i = 0; i < maxLength; i++) {
-        const peripheral = d.accessoriesRelation?.[i];
-        const software = d.softwareRelation?.[i];
-        const component = d.componentRelation?.[i];
-
-        worksheet.addRow({
-          ...baseEquipment,
-          // Datos de periféricos
-          peripheralsName: peripheral?.name || "",
-          peripheralsBrand: peripheral?.brand || "",
-          peripheralsModel: peripheral?.model || "",
-          peripheralsSerial: peripheral?.serial || "",
-          peripheralsOtherData: peripheral?.otherData || "",
-          peripheralsStatus: peripheral?.status || "",
-          peripheralsInventoryNumber: peripheral?.inventoryNumber || "",
-          peripheralsDateCreated: peripheral?.createdAt || "",
-          peripheralsDateUpdate: peripheral?.updatedAt || "",
-          // Datos de software
-          softwareName: software?.name || "",
-          softwareVersion: software?.versions || "",
-          softwareLicense: software?.license || "",
-          softwareOtherData: software?.otherData || "",
-          softwareInstallationDate: software?.installDate || "",
-          softwareStatus: software?.status || "",
-          softwareDateCreated: software?.createdAt || "",
-          softwareDateUpdated: software?.updatedAt || "",
-          // Datos de componentes
-          componentName: component?.name || "",
-          componentBrand: component?.brand || "",
-          componentCapacity: component?.capacity || "",
-          componentSpeed: component?.speed || "",
-          componentOtherData: component?.otherData || "",
-          componentModel: component?.model || "",
-          componentDateCreated: component?.createdAt || "",
-          componentDateUpdated: component?.updatedAt || "",
-        });
-      }
+    data.forEach((row) => {
+      worksheet.addRow(row);
     });
 
     const fileName = `inventory_report_${Date.now()}.xlsx`;
@@ -1337,19 +737,7 @@ export async function getReportRedDevice(req: Request, res: Response, next: Next
 
     const { dateStart, dateEnd } = req.body;
 
-    const query = await dispositivosRed.createQueryBuilder("red_devices")
-      .leftJoinAndSelect("red_devices.placeRelation", "place")
-
-
-    if (dateStart && dateEnd) {
-      query.andWhere("red_devices.createAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
-    }
-
-    query.orderBy("red_devices.createAt", "DESC");
-    const data = await query.getMany();
+    const data = await getReportRedDeviceRows({ dateStart, dateEnd });
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Dispositivos de Red");
@@ -1402,21 +790,8 @@ export async function getReportRedDevice(req: Request, res: Response, next: Next
     }
 
     // Agregar datos
-    data.forEach((d) => {
-      worksheet.addRow({
-        name: d.name,
-        brand: d.brand,
-        model: d.model,
-        addressIp: d.addressIp,
-        mac: d.mac,
-        serial: d.serial,
-        otherData: d.otherData,
-        status: d.status,
-        headquarters: d.placeRelation?.name || "",
-        inventoryNumber: d.inventoryNumber,
-        createdAt: d.createAt,
-        updatedAt: d.updateAt,
-      });
+    data.forEach((row) => {
+      worksheet.addRow(row);
     });
 
     const fileName = `report_dispositivos_red_${Date.now()}.xlsx`;
@@ -1441,27 +816,7 @@ export async function getReportGeneralInventory(req: Request, res: Response, nex
 
     const { dateStart, dateEnd } = req.body;
 
-    const query = await InventarioGeneral.createQueryBuilder("inventory")
-      .leftJoinAndSelect("inventory.classificationRelation", "classification")
-      .leftJoinAndSelect("inventory.assetRelation", "asset")
-      .leftJoinAndSelect("inventory.materialRelation", "material")
-      .leftJoinAndSelect("inventory.statusRelation", "status")
-      .leftJoinAndSelect("inventory.responsibleRelation", "responsible")
-      .leftJoinAndSelect("inventory.areaTypeRelation", "areaType")
-      .leftJoinAndSelect("inventory.dependencyAreaRelation", "dependencyArea")
-      .leftJoinAndSelect("inventory.assetTypeRelation", "assetType")
-      .leftJoinAndSelect("inventory.headquartersRelation", "headquarters")
-
-    if (dateStart && dateEnd) {
-      query.andWhere("inventory.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
-    }
-
-    query.orderBy("inventory.createdAt", "DESC");
-
-    const data = await query.getMany();
+    const data = await getReportGeneralInventoryRows({ dateStart, dateEnd });
 
     const workbook = new ExcelJS.Workbook();
     const workSheet = workbook.addWorksheet("Inventario General");
@@ -1532,32 +887,8 @@ export async function getReportGeneralInventory(req: Request, res: Response, nex
         alignment: { horizontal: "center", vertical: "middle" },
       };
     }
-    data.forEach((d) => {
-      workSheet.addRow({
-        createdAt: d.createdAt,
-        classification: d.classificationRelation?.name || "",
-        asset: d.assetRelation?.name || "",
-        material: d.materialRelation?.name || "",
-        status: d.statusRelation?.name || "",
-        responsible: d.responsibleRelation?.name || "",
-        areaType: d.areaTypeRelation?.name || "",
-        dependencyArea: d.dependencyAreaRelation?.name || "",
-        assetType: d.assetTypeRelation?.name || "",
-        headquarters: d.headquartersRelation?.name || "",
-        name: d.name || "",
-        brand: d.brand || "",
-        model: d.model || "",
-        serial: d.serialNumber || "",
-        location: d.location || "",
-        inventoryNumber: d.inventoryNumber || "",
-        quantity: d.quantity || "",
-        otherData: d.otherDetails || "",
-        acquisitionDate: d.acquisitionDate || "",
-        purchaseValue: d.purchaseValue || "",
-        warranty: d.warranty || "",
-        warrantyPeriod: d.warrantyPeriod || "",
-        dateUpdate: d.updatedAt || "",
-      });
+    data.forEach((row) => {
+      workSheet.addRow(row);
     });
 
     const fileName = `report_inventario_general_${Date.now()}.xlsx`;
@@ -1581,20 +912,7 @@ export async function getReportTV(req: Request, res: Response, next: NextFunctio
 
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Televisor.createQueryBuilder("tv")
-      .leftJoinAndSelect("tv.sedeRelation", "headquarters")
-      .leftJoinAndSelect("tv.responsableRelation", "responsible")
-
-    if (dateStart && dateEnd) {
-      query.andWhere("tv.createdAt BETWEEN :dateStart AND :dateEnd", {
-        dateStart,
-        dateEnd,
-      });
-    }
-
-    query.orderBy("tv.createdAt", "DESC");
-
-    const data = await query.getMany();
+    const data = await getReportTVRows({ dateStart, dateEnd });
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Televisores");
@@ -1678,38 +996,8 @@ export async function getReportTV(req: Request, res: Response, next: NextFunctio
       };
     }
 
-    data.forEach((d) => {
-      worksheet.addRow({
-        createdAt: d.createdAt || "",
-        name: d.name || "",
-        location: d.location || "",
-        headquarters: d.sedeRelation?.name || "",
-        responsible: d.responsableRelation?.name || "",
-        brand: d.brand || "",
-        model: d.model || "",
-        serial: d.serial || "",
-        screenSize: d.pulgadas || "",
-        screenType: d.screenType || "",
-        resolution: d.resolution || "",
-        smartTv: d.smartTv ? "Si" : "No",
-        operativeSystem: d.operativeSystem || "",
-        addressIp: d.addressIp || "",
-        mac: d.mac || "",
-        numHdmi: d.numPuertosHdmi || "",
-        numUSB: d.numPuertosUsb || "",
-        connectivity: d.connectivity || "",
-        purchaseDate: d.purchaseDate || "",
-        warrantyTime: d.warrantyTime || "",
-        warranty: d.warranty ? "Si" : "No",
-        deliveryDate: d.deliveryDate || "",
-        otherData: d.observation || "",
-        status: d.status || "",
-        inventoryNumber: d.inventoryNumber || "",
-        acquisitionValue: d.acquisitionValue || "",
-        controlRemote: d.controlRemote ? "Si" : "No",
-        utility: d.utility || "",
-        updatedAt: d.updatedAt || ""
-      });
+    data.forEach((row) => {
+      worksheet.addRow(row);
     })
 
     const nameFile = `report_tv_${Date.now()}.xlsx`;
@@ -1731,16 +1019,7 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
 
     const { dateStart, dateEnd } = req.body;
 
-    const query = await Celular.createQueryBuilder("phone")
-      .leftJoinAndSelect('phone.sedeRelation', 'headquarters')
-      .leftJoinAndSelect('phone.usuarioRelation', "user")
-
-    if (dateStart && dateEnd) {
-      query.andWhere("phone.createdAt BETWEEN :dateStart AND :dateEnd", { dateStart, dateEnd });
-    }
-
-    query.orderBy('phone.createdAt', 'DESC');
-    const data = await query.getMany();
+    const data = await getReportPhonesRows({ dateStart, dateEnd });
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Teléfonos");
@@ -1824,38 +1103,8 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
       };
     }
 
-    data.forEach((c) => {
-      worksheet.addRow({
-        createdAt: c.createdAt || "",
-        name: c.name || "",
-        brand: c.brand || "",
-        model: c.model || "",
-        serial: c.serial || "",
-        imei: c.imei || "",
-        operativeSystem: c.operativeSystem || "",
-        version: c.versionSO || "",
-        storage: c.storage || "",
-        storageRam: c.storageRam || "",
-        phoneNumber: c.phoneNumber || "",
-        operator: c.operador || "",
-        typePlan: c.typePlan || "",
-        dueDataPlan: c.dueDatePlan || "",
-        macWifi: c.macWifi || "",
-        addressBluetooth: c.addressBluetooth || "",
-        purchaseDate: c.purchaseDate || "",
-        warrantyTime: c.warrantyTime || "",
-        warranty: c.warranty ? "Si" : "No",
-        deliveryDate: c.deliveryDate || "",
-        inventoryNumber: c.inventoryNumber || "",
-        responsable: c.responsable || "",
-        caseProtector: c.caseProtector ? "Si" : "No",
-        temperedGlass: c.temperedGlass ? "Si" : "No",
-        observation: c.observation || "",
-        status: c.status || "",
-        headquarters: c.sedeRelation?.name || "",
-        acquisitionValue: c.acquisitionValue || "",
-        updatedAt: c.updatedAt || "",
-      })
+    data.forEach((row) => {
+      worksheet.addRow(row);
     });
 
     const fileName = `report_phones_${Date.now()}.xlsx`;
@@ -1869,5 +1118,185 @@ export async function getReportPhones(req: Request, res: Response, next: NextFun
 
   } catch (error) {
     next(error)
+  }
+}
+
+// ? =================  PREVIEW CONTROLLERS ================= //
+
+// ? preview JSON del reporte deCircugías
+export async function previewReportSurgerys(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportSurgerysRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de asistentes
+export async function previewReportAssistants(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportAssistantsRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de pausas activas
+export async function previewReportBreakesActive(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportBreakesActiveRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte biométrico
+export async function previewReportBiometric(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportBiometricRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de tickets
+export async function previewReportTickets(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportTicketsRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de demanda inducida
+export async function previewReportDemandInduced(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd, headquarter, convenio } = req.body;
+    const rolUser = req.user?.rol;
+    const userId = req.user?.id;
+
+    const data = await getReportDemandInducedRows(
+      {
+        dateStart,
+        dateEnd,
+        headquarter,
+        convenio,
+        rolUser,
+        userId,
+      },
+      20
+    );
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de equipos
+export async function previewReportEquipments(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportEquipmentsRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de dispositivos de red
+export async function previewReportRedDevice(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportRedDeviceRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de inventario general
+export async function previewReportGeneralInventory(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportGeneralInventoryRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de televisores
+export async function previewReportTV(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportTVRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ? preview JSON del reporte de teléfonos
+export async function previewReportPhones(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { dateStart, dateEnd } = req.body;
+    const data = await getReportPhonesRows({ dateStart, dateEnd }, 20);
+    res.status(200).json({ total: data.length, data });
+  } catch (error) {
+    next(error);
   }
 }

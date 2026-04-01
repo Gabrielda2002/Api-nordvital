@@ -14,6 +14,18 @@ import {
   getReportSurgerys,
   getReportTickets,
   getReportTV,
+  previewReportAssistants,
+  previewReportBiometric,
+  previewReportBreakesActive,
+  previewReportDemandInduced,
+  previewReportEquipments,
+  previewReportGeneralInventory,
+  previewReportPhones,
+  previewReportRedDevice,
+  previewReportServices,
+  previewReportSurgerys,
+  previewReportTickets,
+  previewReportTV,
 } from "../controllers/report-excel.controller";
 
 const router = Router();
@@ -48,6 +60,46 @@ const router = Router();
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/radicacion/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de radicaciones (mismos filtros que el Excel)
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ReportExcelFilter'
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+router.post(
+  "/report/excel/radicacion/preview",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  previewReportServices
+);
+
 router.post(
   "/report/excel/radicacion",
   authenticate,
@@ -57,7 +109,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/report/excel/surgerys:
+ * /api/v1/report/excel/surgeries:
  *   post:
  *     summary: Descarga reporte de cirugías filtrado en Excel
  *     tags: [Reportes Excel]
@@ -84,8 +136,48 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/surgeries/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de cirugías (mismos filtros que el Excel)
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CirugiasFiltro'
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post(
-  "/report/excel/surgerys",
+  "/report/excel/surgeries/preview",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  previewReportSurgerys
+);
+
+router.post(
+  "/report/excel/surgeries",
   authenticate,
   authorizeRoles(["1", "3", "6", "14", "15"]),
   getReportSurgerys
@@ -129,6 +221,51 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/assistants/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de gestión auxiliar
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post(
+  "/report/excel/assistants/preview",
+  authenticate,
+  authorizeRoles(["1", "3", "6", "14", "15"]),
+  previewReportAssistants
+);
+
 router.post(
   "/report/excel/assistants",
   authenticate,
@@ -174,6 +311,51 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/breakes/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de pausas activas
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post(
+  "/report/excel/breakes/preview",
+  authenticate,
+  authorizeRoles(["1", "2", "6"]),
+  previewReportBreakesActive
+);
+
 router.post(
   "/report/excel/breakes",
   authenticate,
@@ -219,6 +401,51 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/biometric/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de registros biométricos
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post(
+  "/report/excel/biometric/preview",
+  authenticate,
+  authorizeRoles(["1", "2", "6", "18", "20"]),
+  previewReportBiometric
+);
+
 router.post(
   "/report/excel/biometric",
   authenticate,
@@ -266,6 +493,51 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/tickets/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de tickets de mesa de ayuda
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post(
+  "/report/excel/tickets/preview",
+  authenticate,
+  authorizeRoles(["1"]),
+  previewReportTickets
+);
+
 router.post(
   "/report/excel/tickets"
   , authenticate
@@ -316,6 +588,53 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/demand-induced/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de demanda inducida
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *               headquarter:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post(
+  "/report/excel/demand-induced/preview",
+  authenticate,
+  authorizeRoles(["1", "19", "20", "21"]),
+  previewReportDemandInduced
+);
+
 router.post(
   "/report/excel/demand-induced"
   , authenticate
@@ -361,6 +680,46 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/equipments/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de inventario de equipos
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/report/excel/equipments/preview", authenticate, authorizeRoles(["1"]), previewReportEquipments);
+
 router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), getReportEquipments);
 
 /**
@@ -401,6 +760,46 @@ router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), get
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/device-red/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de dispositivos de red
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/report/excel/device-red/preview", authenticate, authorizeRoles(["1"]), previewReportRedDevice);
+
 router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), getReportRedDevice);
 
 /**
@@ -441,6 +840,46 @@ router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), get
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/general-inventory/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de inventario general
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/report/excel/general-inventory/preview", authenticate, authorizeRoles(["1"]), previewReportGeneralInventory);
+
 router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"]), getReportGeneralInventory);
 
 /**
@@ -481,6 +920,46 @@ router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/tv/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de televisores
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/report/excel/tv/preview", authenticate, authorizeRoles(["1"]), previewReportTV);
+
 router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV);
 
 /**
@@ -521,6 +1000,46 @@ router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/v1/report/excel/phones/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de teléfonos
+ *     tags: [Reportes Excel]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: integer
+ *       401:
+ *         description: No autorizado
+ */
+router.post("/report/excel/phones/preview", authenticate, authorizeRoles(["1"]), previewReportPhones);
+
 router.post("/report/excel/phones", authenticate, authorizeRoles(["1"]), getReportPhones);
 
 export default router;
