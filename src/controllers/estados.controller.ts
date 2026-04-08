@@ -125,3 +125,33 @@ export async function deleteEstados(req: Request, res: Response, next: NextFunct
         next(error);
     }
 }
+
+// ? controller for autocomplete
+export async function getStatusByName(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+        const { name } = req.body;
+
+        let status;
+
+        if (name === '@') {
+            status = await Estados.createQueryBuilder("estados")
+                .limit(20)
+                .getMany();
+        }else {
+            status = await Estados.createQueryBuilder("estados")
+                .where("estados.name LIKE :name", { name: `%${name}%` })
+                .limit(20)
+                .getMany();
+        }
+
+        if (status.length === 0) {
+            return res.status(404).json({ message: "Status not found" });
+        }
+
+        return res.status(200).json(status);
+
+    } catch (error) {
+        next(error);
+    }
+}

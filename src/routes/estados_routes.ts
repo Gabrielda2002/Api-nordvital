@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createEstados, deleteEstados, getAllEstados, getEstadosById, updateEstados } from "../controllers/estados.controller";
+import { createEstados, deleteEstados, getAllEstados, getEstadosById, getStatusByName, updateEstados } from "../controllers/estados.controller";
 import { validarId } from "../middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -148,5 +148,39 @@ router.put("/estados/:id", authenticate, authorizeRoles(['1', '2']), validarId, 
  *         description: Estado no encontrado
  */
 router.delete("/estados/:id", authenticate, authorizeRoles(['1']), validarId, deleteEstados);
+
+/**
+ * @swagger
+ * /status/name:
+ *   post:
+ *     summary: Busca estados por nombre (autocompletar)
+ *     tags: [Estados]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre del estado a buscar. Usar '@' para obtener los primeros 20 estados
+ *             required:
+ *               - name
+ *     responses:
+ *       200:
+ *         description: Lista de estados que coinciden con la búsqueda (máximo 20)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Estado'
+ *       404:
+ *         description: No se encontraron estados
+ */
+router.post("/status/name", authenticate, authorizeRoles(['1', '2']), getStatusByName);
 
 export default router;

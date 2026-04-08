@@ -7,6 +7,7 @@ export type ReportRadicacionFilters = {
   dateStart?: string;
   dateEnd?: string;
   cupsCode?: string;
+  specialty?: number | string;
 };
 
 /** Filas planas con las mismas claves que las columnas del Excel de radicación/CUPS */
@@ -19,7 +20,9 @@ export async function getReportRadicacionRows(
   filters: ReportRadicacionFilters,
   limit?: number
 ): Promise<ReportRadicacionRow[]> {
-  const { statusCups, dateStart, dateEnd, cupsCode } = filters;
+  const { statusCups, dateStart, dateEnd, cupsCode, specialty } = filters;
+
+  console.log('llega specialty', specialty)
 
   const query = Radicacion.createQueryBuilder("radicacion")
     .leftJoinAndSelect("radicacion.profesionalesRelation", "profesionales")
@@ -46,6 +49,11 @@ export async function getReportRadicacionRows(
 
   if (statusCups) {
     query.andWhere("estado_cups.id = :statusCups", { statusCups });
+  }
+
+  if (specialty) {
+    console.log('llega specialty en el if', specialty)
+    query.andWhere("especialidad.id = :specialty", { specialty });
   }
 
   if (dateStart && dateEnd) {

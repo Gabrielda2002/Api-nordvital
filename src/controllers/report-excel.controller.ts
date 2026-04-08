@@ -79,12 +79,13 @@ export async function previewReportServices(
   next: NextFunction
 ) {
   try {
-    const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
+    const { statusCups, dateStart, dateEnd, cupsCode, specialty } = req.body;
     const data = await getReportRadicacionRows({
       statusCups,
       dateStart,
       dateEnd,
       cupsCode,
+      specialty
     }, 20);
     res.status(200).json({ total: data.length ,data });
   } catch (error) {
@@ -99,13 +100,14 @@ export async function getReportServices(
   next: NextFunction
 ) {
   try {
-    const { statusCups, dateStart, dateEnd, cupsCode } = req.body;
+    const { statusCups, dateStart, dateEnd, cupsCode, specialty } = req.body;
 
     const rows = await getReportRadicacionRows({
       statusCups,
       dateStart,
       dateEnd,
       cupsCode,
+      specialty,
     });
 
     const workbook = new ExcelJS.Workbook();
