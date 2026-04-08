@@ -18,7 +18,7 @@ import { ResultadoLlamada } from "./resultado-llamada";
 import { MotivoVisita } from "./motivo-visita";
 import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
 import { Pacientes } from "./pacientes";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { Programa } from "../modules/programs/entities/programa";
 import { Professional } from "@core/types/Professional.type";
 

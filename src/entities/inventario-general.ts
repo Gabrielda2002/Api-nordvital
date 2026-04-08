@@ -16,7 +16,7 @@ import { EstadoInvGeneral } from "./estado-inv-general";
 import { TipoArea } from "./tipo-area";
 import { AreaDependencia } from "./area-dependencia";
 import { TipoActivo } from "./tipo-activo";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { IsOptional, IsString, Length } from "class-validator";
 import { Sedes } from "./sedes";
 import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";

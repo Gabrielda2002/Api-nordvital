@@ -4,7 +4,7 @@ import { seguimientoEquipos } from "./seguimiento-equipos";
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Componentes } from "./componentes";
 import { Software } from "./software";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { Soportes } from "./soportes";
 import { Sedes } from "./sedes";
 

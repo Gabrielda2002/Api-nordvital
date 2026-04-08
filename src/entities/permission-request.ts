@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import {
   OverallStatus,
   PermissionCategory,

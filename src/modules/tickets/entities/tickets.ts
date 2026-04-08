@@ -1,10 +1,10 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 import { Categorias } from "./categorias";
 import { Prioridad } from "./prioridad";
 import { EstadoTickets } from "./estado-tickets";
 import { Comentarios } from "./comentarios";
-import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
+import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
 import { TicketAttachment } from "./ticket-attachment";
 import { IsBoolean, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 

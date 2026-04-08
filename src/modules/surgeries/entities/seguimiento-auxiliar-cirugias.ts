@@ -3,7 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, Pr
 import { EstadosSeguimiento } from "../../../entities/estados-seguimiento";
 import { Cirugias } from "./cirugias";
 import { ServiciosSolicitados } from "../../../entities/servicios-solicitados";
-import { Usuarios } from "../../../entities/usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity('surgery_tracking_records')
 export class SeguimientoAuxiliarCirugias extends BaseEntity {

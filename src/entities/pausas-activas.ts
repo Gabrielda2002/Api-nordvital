@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 
 @Entity({ name: "pausas_activas" })
 export class PausasActivas extends BaseEntity {

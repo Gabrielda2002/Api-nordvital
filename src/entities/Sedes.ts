@@ -3,7 +3,7 @@ import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "./dispositivos-red";
 import { Municipio } from "./municipio";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 import { RegistroEntrada } from "./registro-entrada";

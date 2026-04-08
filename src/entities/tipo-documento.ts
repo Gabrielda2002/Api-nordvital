@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { Pacientes } from "./pacientes";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
 

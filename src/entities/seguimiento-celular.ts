@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { IsDate, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 import { Celular } from "./celular";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 
 @Entity({ name: "seguimiento_celulares" })
 export class SeguimientoCelular extends BaseEntity {

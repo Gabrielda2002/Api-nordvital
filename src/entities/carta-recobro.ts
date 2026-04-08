@@ -1,7 +1,7 @@
 import { IsInt, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, IsNull, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 
 @Entity({ name: "revovery_latters" })
 export class CartaRecobro extends BaseEntity {

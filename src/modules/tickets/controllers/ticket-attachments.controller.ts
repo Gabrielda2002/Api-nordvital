@@ -5,7 +5,7 @@ import { validate } from "class-validator";
 import logger from "@core/utils/logger";
 import * as fs from "fs";
 import * as path from "path";
-import { FileTokenService } from "../modules/documents/services/file-token.service";
+import { FileTokenService } from "../../documents/services/file-token.service";
 import Logger from "@core/utils/logger-wrapper";
 
 /**

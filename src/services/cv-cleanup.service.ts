@@ -272,7 +272,7 @@ export class CVCleanupService {
         };
 
         try {
-            const { TicketAttachment } = await import('../entities/ticket-attachment');
+            const { TicketAttachment } = await import('../modules/tickets/entities/ticket-attachment');
 
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - maxAgeDays);

@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { dispositivosRed } from "./dispositivos-red";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 
 @Entity({ name: "seguimiento_dispositivos_red" })
 export class SeguimientoDispositivosRed extends BaseEntity {

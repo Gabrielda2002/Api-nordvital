@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Equipos } from "./equipos";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { MaintenanceChecklistResult } from "./maintenance-checklist-result";
 import { MaintenanceAccessoryObservation } from "./MaintenanceAccessoryObservation";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";

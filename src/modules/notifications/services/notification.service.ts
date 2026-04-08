@@ -2,8 +2,8 @@
 import { io } from "../../../app";
 import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
 import { Notification } from "../entities/notificaciones";
-import { Tickets } from "../../../entities/tickets";
-import { Usuarios } from "../../../entities/usuarios";
+import { Tickets } from "../../tickets/entities/tickets";
+import { Usuarios } from "../../auth/entities/usuarios";
 import { PushService } from "./push.service";
 
 export class NotificationService {

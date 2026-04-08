@@ -2,12 +2,12 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "@core/db/conexion";
 import { VacationBalance } from "../entities/vacation-balance";
 import { VacationInitialSetup } from "../entities/vacation-initial-setup";
-import { Usuarios } from "../entities/usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { PermissionRequest } from "../entities/permission-request";
 import { Notification, NotificationService } from "../modules/notifications";
 import { 
   differenceInYears, 
-  addYears, 
+  addYears,
   subDays, 
   differenceInDays, 
   format,

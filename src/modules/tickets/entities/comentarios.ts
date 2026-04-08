@@ -1,7 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Tickets } from "./tickets";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity("comentarios")
 export class Comentarios extends BaseEntity {

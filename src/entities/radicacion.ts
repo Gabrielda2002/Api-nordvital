@@ -20,7 +20,7 @@ import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
 import { Cirugias } from "../modules/surgeries/entities/cirugias";
 import { Diagnostico } from "./diagnostico";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { CartaRecobro } from "./carta-recobro";
 import { Profesionales } from "./profesionales";
 

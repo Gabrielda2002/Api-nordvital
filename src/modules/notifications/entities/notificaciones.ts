@@ -1,6 +1,6 @@
 // src/entities/notification.ts
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Usuarios } from "../../../entities/usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity("notifications")
 export class Notification extends BaseEntity {

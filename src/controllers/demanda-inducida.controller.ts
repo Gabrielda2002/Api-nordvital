@@ -3,7 +3,7 @@ import { DemandaInducida } from "../entities/demanda-inducida";
 import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../modules/programs/services/goal-program.service";
-import { Usuarios } from "../entities/usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { formatInTimeZone } from "date-fns-tz";
 
 export const getAllDemandInduded = async (

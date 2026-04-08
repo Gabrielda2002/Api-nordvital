@@ -9,9 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Municipio } from "./municipio";
 import { Roles } from "./roles";
-import { TipoDocumento } from "./tipo-documento";
+import { RefreshToken } from "./refresh-tokens";
+import { Municipio } from "../../../entities/municipio";
+import { TipoDocumento } from "../../../entities/tipo-documento";
 import {
   IsBoolean,
   IsDate,
@@ -26,31 +27,30 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { Carpeta } from "../modules/documents/entities/carpeta";
-import { Radicacion } from "./radicacion";
-import { seguimientoEquipos } from "./seguimiento-equipos";
-import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
-import { Equipos } from "./equipos";
-import { SeguimientoAuxiliar } from "./seguimiento-auxiliar";
-import { Sedes } from "./sedes";
-import { PausasActivas } from "./pausas-activas";
-import { CartaRecobro } from "./carta-recobro";
-import { Tickets } from "./tickets";
-import { Notification, PushSubscription } from "../modules/notifications";
-import { EncuestasSatisfaccion } from "./encuestas-satisfaccion";
-import { RegistroEntrada } from "./registro-entrada";
-import { SeguimientoAuxiliarCirugias } from "../modules/surgeries/entities/seguimiento-auxiliar-cirugias";
-import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
-import { Televisor } from "./televisor";
-import { Celular } from "./celular";
-import { SeguimientoTelevisor } from "./seguimiento-televisor";
-import { SeguimientoCelular } from "./seguimiento-celular";
-import { Comentarios } from "./comentarios";
-import { TicketAttachment } from "./ticket-attachment";
-import { RefreshToken } from "./refresh-tokens";
-import { DemandaInducida } from "./demanda-inducida";
-import { Area } from "./area";
-import { Cargo } from "./cargo";
+import { Carpeta } from "../../documents/entities/carpeta";
+import { Radicacion } from "../../../entities/radicacion";
+import { seguimientoEquipos } from "../../../entities/seguimiento-equipos";
+import { SeguimientoDispositivosRed } from "../../../entities/seguimiento-dispositivos-red";
+import { Equipos } from "../../../entities/equipos";
+import { SeguimientoAuxiliar } from "../../../entities/seguimiento-auxiliar";
+import { Sedes } from "../../../entities/sedes";
+import { PausasActivas } from "../../../entities/pausas-activas";
+import { CartaRecobro } from "../../../entities/carta-recobro";
+import { Tickets } from "../../tickets/entities/tickets";
+import { Notification, PushSubscription } from "../../notifications";
+import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
+import { RegistroEntrada } from "../../../entities/registro-entrada";
+import { SeguimientoAuxiliarCirugias } from "../../surgeries/entities/seguimiento-auxiliar-cirugias";
+import { SeguimientoInventarioGeneral } from "../../../entities/seguimiento-inventario-general";
+import { Televisor } from "../../../entities/televisor";
+import { Celular } from "../../../entities/celular";
+import { SeguimientoTelevisor } from "../../../entities/seguimiento-televisor";
+import { SeguimientoCelular } from "../../../entities/seguimiento-celular";
+import { Comentarios } from "../../tickets/entities/comentarios";
+import { TicketAttachment } from "../../tickets/entities/ticket-attachment";
+import { DemandaInducida } from "../../../entities/demanda-inducida";
+import { Area } from "../../../entities/area";
+import { Cargo } from "../../../entities/cargo";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {

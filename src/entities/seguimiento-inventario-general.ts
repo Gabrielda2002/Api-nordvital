@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { InventarioGeneral } from "./inventario-general";
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 

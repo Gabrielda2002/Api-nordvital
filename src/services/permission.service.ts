@@ -3,7 +3,7 @@ import { PermissionRequest } from "../entities/permission-request";
 import { PermissionPolicy } from "../entities/permission-policy";
 import { PermissionApprovalStep } from "../entities/permission-approval-step";
 import { PermissionAttachment } from "../entities/permission-attachment";
-import { Usuarios } from "../entities/usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { PermissionCategory, PermissionGranularity, StepStatus } from "@core/types/permission";
 import { AppDataSource } from "@core/db/conexion";
 import { VacationManagementService } from "./vacation-management.service";

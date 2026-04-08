@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Tickets } from "../entities/tickets";
-import { NotificationService } from "../modules/notifications";
+import { NotificationService } from "../../notifications";
 import { format, toZonedTime } from "date-fns-tz";
 import { TicketAttachment } from "../entities/ticket-attachment";
 import path from "path";

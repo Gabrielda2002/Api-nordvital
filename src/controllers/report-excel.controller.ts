@@ -7,7 +7,7 @@ import { getReportSurgerysRows } from "../modules/surgeries/services/report-surg
 import { getReportAssistantsRows } from "../services/report-assistants.service";
 import { getReportBreakesActiveRows } from "../services/report-breakes-active.service";
 import { getReportBiometricRows } from "../services/report-biometric.service";
-import { getReportTicketsRows } from "../services/report-tickets.service";
+import { getReportTicketsRows } from "../modules/tickets/services/report-tickets.service";
 import { getReportDemandInducedRows } from "../services/report-demand-induced.service";
 import { getReportEquipmentsRows } from "../services/report-equipments.service";
 import { getReportRedDeviceRows } from "../services/report-red-device.service";

@@ -7,7 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { IsBoolean, IsDate, IsInt, IsNumber, IsOptional, IsString, Length, Min } from "class-validator";
 
 @Entity({ name: "configuracion_inicial_vacaciones" })

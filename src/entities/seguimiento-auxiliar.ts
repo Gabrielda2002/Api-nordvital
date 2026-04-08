@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, Pr
 import { EstadosSeguimiento } from "./estados-seguimiento";
 import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 import { CupsRadicados } from "./cups-radicados";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 
 @Entity({ name: "tracking_records" })
 export class SeguimientoAuxiliar extends BaseEntity {

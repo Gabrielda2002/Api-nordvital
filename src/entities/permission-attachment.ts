@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { PermissionRequest } from "./permission-request";
 import { Soportes } from "./soportes";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../modules/auth/entities/usuarios";
 import { IsInt, IsString, Length } from "class-validator";
 
 @Entity({ name: "solicitudes_permisos_adjuntos" })
