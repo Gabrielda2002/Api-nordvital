@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Soportes } from "../entities/soportes";
 import path from "path";
 import fs from "fs";
-import { FileTokenService } from "../services/file-token.service";
+import { FileTokenService } from "../modules/documents/services/file-token.service";
 
 /**
  * Genera un token temporal para acceder a un soporte de forma segura

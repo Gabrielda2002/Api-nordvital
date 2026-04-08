@@ -1,6 +1,6 @@
 import multer from "multer";
 import path, { parse } from "path";
-import { Carpeta } from "../../entities/carpeta";
+import { Carpeta } from "../../modules/documents/entities/carpeta";
 
 export const storage = multer.diskStorage({
   destination: async (req, file, cb) => {

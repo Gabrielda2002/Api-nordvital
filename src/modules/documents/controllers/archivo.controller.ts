@@ -149,7 +149,7 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
         }
 
          // Obtener la ruta absoluta del archivo
-         const fileAbsolutePath = path.resolve(__dirname, ".." ,'uploads', file.path);
+         const fileAbsolutePath = path.resolve(__dirname, "..", "..", ".." , 'uploads', file.path);
 
          // Verificar si el archivo existe en el sistema
          if (fs.existsSync(fileAbsolutePath)) {
@@ -187,7 +187,7 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
 
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
         // * Obtener la ruta absoluta del archivo
-        const filePath = path.resolve(__dirname, ".." , 'uploads', cleanPath);
+        const filePath = path.resolve(__dirname, "..", "..", ".." , 'uploads', cleanPath);
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({message: "Archivo no encontrado en el servidor"});
         }
@@ -246,9 +246,9 @@ export async function moveFiles(req: Request, res: Response, next: NextFunction)
                 }
 
                 // construir nuevas rutas
-                const oldPthysicalPath = path.join(__dirname , '..', 'uploads',file.path);
+                const oldPthysicalPath = path.join(__dirname , '..', '..', '..', 'uploads',file.path);
                 const newFileName = file.nameSaved;
-                const newPhysicalPath = path.join(__dirname, '..', "uploads", destinationFolder.path, newFileName);
+                const newPhysicalPath = path.join(__dirname, '..', "..", "..", "uploads", destinationFolder.path, newFileName);
 
                 // ? verificar que el archivo fisico existe
                 if (!fs.existsSync(oldPthysicalPath)) {
@@ -411,7 +411,7 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
 
         // Construir ruta del archivo
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
-        const filePath = path.resolve(__dirname, "..", 'uploads', cleanPath);
+        const filePath = path.resolve(__dirname, "..", "..", "..", 'uploads', cleanPath);
 
         console.log("Serving file from path:", filePath);
         console.log("clean path:", cleanPath);

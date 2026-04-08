@@ -69,6 +69,8 @@ export async function createFolder(
     const absoluteFolderPath = path.join(
       __dirname,
       "..",
+      "..",
+      "..",
       "uploads",
       folderPath
     );
@@ -135,8 +137,8 @@ export async function updateFolder(
       newPath = path.join("SistemaGestionCalidad", name).replace(/\\/g, "/");
     }
 
-    const newPathAbsolute = path.join(__dirname, "..", "uploads", newPath);
-    const oldPathAbsolute = path.join(__dirname, "..", "uploads", folder.path);
+    const newPathAbsolute = path.join(__dirname, "..", "..", "..", "uploads", newPath);
+    const oldPathAbsolute = path.join(__dirname, "..", "..", "..", "uploads", folder.path);
 
     // Verificar si la nueva ruta ya existe con el nuevo nombre
     try {
@@ -274,6 +276,8 @@ export async function deleteFolder(
     const folderAbsolutePath = path.join(
       __dirname,
       "..",
+      "..",
+      "..",
       "uploads",
       folder.path
     );
@@ -406,11 +410,15 @@ export async function moveFolder(
     const oldAbsolutePath = path.join(
       __dirname,
       "..",
+      "..",
+      "..",
       "uploads",
       folderToMove.path
     );
     const newAbsolutePath = path.join(
       __dirname,
+      "..",
+      "..",
       "..",
       "uploads",
       newRelativePath

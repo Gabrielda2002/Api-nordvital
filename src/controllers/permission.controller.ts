@@ -5,7 +5,7 @@ import path from "path";
 import { Soportes } from "../entities/soportes";
 import { AppDataSource } from "@core/db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
-import { FileTokenService } from "../services/file-token.service";
+import { FileTokenService } from "../modules/documents/services/file-token.service";
 import { NotificationService } from "../services/notification.service";
 
 // POST /permisos/requests

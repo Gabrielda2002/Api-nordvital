@@ -26,7 +26,7 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { Carpeta } from "./carpeta";
+import { Carpeta } from "../modules/documents/entities/carpeta";
 import { Radicacion } from "./radicacion";
 import { seguimientoEquipos } from "./seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "./seguimiento-dispositivos-red";
