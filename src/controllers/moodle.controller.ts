@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import { Usuarios } from "../entities/usuarios";
 import { MoodleService } from "../services/moodle.service";
 import RedisService from "../services/redis.service";
-import Logger from "../utils/logger-wrapper";
-import { config } from "../config/environment.config";
-import { NotFoundError, ValidationError } from "../utils/custom-errors";
+import Logger from "@core/utils/logger-wrapper";
+import { config } from "@core/config/environment.config";
+import { NotFoundError, ValidationError } from "@core/utils/custom-errors";
 
 /**
  * Generar token SSO para Moodle

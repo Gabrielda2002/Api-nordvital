@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createPatientCoosalud, deletePatientCoosalud, getAllPatientsCoosalud, getPatientByIdentificationCoosalud, updatePatientCoosalud, updatePatientsStatusFromExcel, updatePatientsRegimenFromExcel } from "../controllers/pacientes-coosalud.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { uploadXlsx } from "../middlewares/upload-xlsx-PS";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { uploadXlsx } from "@core/middlewares/upload-xlsx-PS";
 
 const router = Router();
 

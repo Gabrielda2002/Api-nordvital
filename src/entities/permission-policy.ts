@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { PermissionCategory } from "../types/permission";
+import { PermissionCategory } from "@core/types/permission";
 import { IsEnum, IsInt, IsNumber, IsOptional } from "class-validator";
 
 @Entity({ name: "politicas_permisos" })

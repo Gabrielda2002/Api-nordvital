@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createPhone, getCountPhonesByHeadquartersId, getPhoneAgeByHeadquartersId, getPhoneBySedeId, getPhoneWarrantyStatistics, searchPhone, updatePhone } from "../controllers/celular.controller";
-import { uploadDocDelivery } from "../middlewares/multer-delivery.middleware";
-import { validarId } from "../middlewares/validate-type-id.middleware";
+import { uploadDocDelivery } from "@core/middlewares/multer-delivery.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
 
 const router = Router();
 

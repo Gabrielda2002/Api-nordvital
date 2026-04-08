@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes.controller";
 import { generateSoporteAccessToken, serveSecureSoporte } from "../controllers/soportes-secure.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { upload } from "../middlewares/multer-support.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { fileAccessRateLimit } from "../middlewares/file-rate-limit.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { upload } from "@core/middlewares/multer-support.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
 
 const router = Router();
 

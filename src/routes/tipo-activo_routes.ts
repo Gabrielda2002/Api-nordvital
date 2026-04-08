@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { getAllAssetTypes } from "../controllers/tipo-activo.controller";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 
 const router = Router();
 

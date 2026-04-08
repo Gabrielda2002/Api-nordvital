@@ -11,7 +11,7 @@ import {
 import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
 import { Programa } from "./programa";
 import { Sedes } from "./sedes";
-import { Professional } from "../types/Professional.type";
+import { Professional } from "@core/types/Professional.type";
 
 @Entity({ name: "programa_meta_historico" })
 export class ProgramaMetaHistorico extends BaseEntity {

@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import logger from '../utils/logger';
+import logger from '@core/utils/logger';
 import { TokenService } from './token.service';
 
 export class TokenCleanupJob {

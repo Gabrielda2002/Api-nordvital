@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { uploadSggc } from "../middlewares/multer-files.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { uploadSggc } from "@core/middlewares/multer-files.middleware";
 import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile, generateFileAccessToken, serveSecureFile } from "../controllers/archivo.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { parseParentFolderId } from "../middlewares/parse-parent-folder-id";
-import { fileAccessRateLimit } from "../middlewares/file-rate-limit.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { parseParentFolderId } from "@core/middlewares/parse-parent-folder-id";
+import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
 
 const router = Router();
 

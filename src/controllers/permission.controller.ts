@@ -3,7 +3,7 @@ import { PermissionService } from "../services/permission.service";
 import fs from "fs";
 import path from "path";
 import { Soportes } from "../entities/soportes";
-import { AppDataSource } from "../db/conexion";
+import { AppDataSource } from "@core/db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
 import { FileTokenService } from "../services/file-token.service";
 import { NotificationService } from "../services/notification.service";

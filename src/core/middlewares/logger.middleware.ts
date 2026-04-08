@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logger from "../utils/logger";
+import logger from "@core/utils/logger";
 
 export function loggerMiddleware(req: Request, res: Response, next: NextFunction) {
     // Extraer solo datos útiles y evitar logging de rutas comunes

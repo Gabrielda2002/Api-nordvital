@@ -2,14 +2,14 @@ import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { errorHandler } from "./middlewares/error-handler.middleware";
+import { errorHandler } from "@core/middlewares/error-handler.middleware";
 import routes from "./routes/index.routes";
-import { loggerMiddleware } from "./middlewares/logger.middleware";
-import { limiter } from "./middlewares/rate-limit.middleware";
+import { loggerMiddleware } from "@core/middlewares/logger.middleware";
+import { limiter } from "@core/middlewares/rate-limit.middleware";
 import helmet from "helmet";
 import path from "path";
-import { errorLoggerMiddleware } from "./middlewares/error-logger.middleware";
-import { sanitizeBody } from "./middlewares/sanitize-body.middleware";
+import { errorLoggerMiddleware } from "@core/middlewares/error-logger.middleware";
+import { sanitizeBody } from "@core/middlewares/sanitize-body.middleware";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
@@ -17,8 +17,8 @@ import { options } from "./swagger-options";
 import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 import cookieParser from "cookie-parser";
-import { config } from "./config/environment.config";
-import Logger from "./utils/logger-wrapper";
+import { config } from "@core/config/environment.config";
+import Logger from "@core/utils/logger-wrapper";
 
 // * cargar variables de entorno
 dotenv.config();

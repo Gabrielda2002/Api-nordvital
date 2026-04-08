@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, searchUsuarios, updatePassword, updatePasswordGeneric, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { uploadPhotoUser } from "../middlewares/multer-photo-user.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { uploadPhotoUser } from "@core/middlewares/multer-photo-user.middleware";
 
 const router = Router();
 

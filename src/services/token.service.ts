@@ -1,7 +1,7 @@
 import jwk from "jsonwebtoken";
 import crypto from "crypto";
 import { RefreshToken } from "../entities/refresh-tokens";
-import { config } from "../config/environment.config";
+import { config } from "@core/config/environment.config";
 
 export class TokenService {
 

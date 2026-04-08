@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../db/conexion";
+import { AppDataSource } from "@core/db/conexion";
 import { VacationBalance } from "../entities/vacation-balance";
 import { VacationInitialSetup } from "../entities/vacation-initial-setup";
 import { Usuarios } from "../entities/usuarios";

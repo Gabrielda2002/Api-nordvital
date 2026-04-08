@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { generateSSOToken, syncUserToMoodle, validateSSOToken } from "../controllers/moodle.controller";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 
 const router = Router();
 

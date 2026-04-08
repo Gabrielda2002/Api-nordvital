@@ -5,8 +5,8 @@ import path from "path";
 import { ifError } from "assert";
 import { validate } from "class-validator";
 import fs from "fs";
-import { saveFileToDisk } from "../middlewares/multer-delivery.middleware";
-import { updateFileAndRecord } from "../utils/file-manager";
+import { saveFileToDisk } from "@core/middlewares/multer-delivery.middleware";
+import { updateFileAndRecord } from "@core/utils/file-manager";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, MoreThan } from "typeorm";
 

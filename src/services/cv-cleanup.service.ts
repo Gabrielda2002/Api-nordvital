@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import cron from 'node-cron';
-import Logger from '../utils/logger-wrapper';
+import Logger from '@core/utils/logger-wrapper';
 
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);

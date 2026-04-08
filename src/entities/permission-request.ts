@@ -14,7 +14,7 @@ import {
   OverallStatus,
   PermissionCategory,
   PermissionGranularity,
-} from "../types/permission";
+} from "@core/types/permission";
 import { IsDate, IsEnum, IsInt, IsNumber, IsOptional, IsString, Length, Min } from "class-validator";
 import { PermissionApprovalStep } from "./permission-approval-step";
 import { PermissionAttachment } from "./permission-attachment";

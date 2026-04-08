@@ -6,7 +6,7 @@ import { TicketAttachment } from "../entities/ticket-attachment";
 import path from "path";
 import fs from "fs";
 import { validate } from "class-validator";
-import Logger from "../utils/logger-wrapper";
+import Logger from "@core/utils/logger-wrapper";
 import { Categorias } from "../entities/categorias";
 
 export async function getAllTickets(req: Request, res: Response, next: NextFunction) {

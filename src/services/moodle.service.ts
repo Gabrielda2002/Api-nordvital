@@ -1,6 +1,6 @@
-import Logger from "../utils/logger-wrapper";
+import Logger from "@core/utils/logger-wrapper";
 import axios from "axios";
-import { config } from "../config/environment.config";
+import { config } from "@core/config/environment.config";
 
 export class MoodleService {
   /**

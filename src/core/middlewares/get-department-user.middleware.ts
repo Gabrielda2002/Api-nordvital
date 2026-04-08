@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Usuarios } from "../entities/usuarios";
-import { GLOBAL_FOLDER_ACCESS_ROLES } from "../constants/roles";
+import { Usuarios } from "../../entities/usuarios";
+import { GLOBAL_FOLDER_ACCESS_ROLES } from "@core/constants/roles";
 
 export const getDepartmentUser = async (
   req: Request,

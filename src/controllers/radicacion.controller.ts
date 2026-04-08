@@ -5,7 +5,7 @@ import { CupsRadicados } from "../entities/cups-radicados";
 import { Pacientes } from "../entities/pacientes";
 import { Soportes } from "../entities/soportes";
 import path from "path";
-import Logger from "../utils/logger-wrapper";
+import Logger from "@core/utils/logger-wrapper";
 
 export async function getRadicacionesAudit(
   req: Request,

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { autoInventory, createEquipment, deleteEquipment, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment, verifyEquipmentExist } from "../controllers/equipos.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { uploadDocDelivery } from "../middlewares/multer-delivery.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { uploadDocDelivery } from "@core/middlewares/multer-delivery.middleware";
 
 const router = Router();
 

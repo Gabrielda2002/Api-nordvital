@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import logger from '../utils/logger';
+import logger from '@core/utils/logger';
 import { NotificationService } from './notification.service';
 
 export class NotificationsCleanupJob {

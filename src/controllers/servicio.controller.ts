@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Servicios } from "../entities/servicios";
-import { NotFoundError, BadRequestError } from "../utils/custom-errors";
-import { validateEntity } from "../utils/validation-helper";
+import { NotFoundError, BadRequestError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllServicios(
   req: Request,

@@ -1,13 +1,13 @@
 import "reflect-metadata";
 import server from "./app";
-import { AppDataSource } from "./db/conexion";
+import { AppDataSource } from "@core/db/conexion";
 import { PushService } from "./services/push.service";
 import { TokenCleanupJob } from "./services/token-cleanup-job.service";
 import { CVCleanupService } from "./services/cv-cleanup.service";
 import { VacationCheckJob } from "./services/vacation-check-job.service";
 import { NotificationsCleanupJob } from "./services/notifications-cleanup-job.service";
-import { config } from "./config/environment.config";
-import Logger from "./utils/logger-wrapper";
+import { config } from "@core/config/environment.config";
+import Logger from "@core/utils/logger-wrapper";
 
 
     const start = async () => {

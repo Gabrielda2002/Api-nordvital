@@ -2,7 +2,7 @@ import path from "path"
 import { Carpeta } from "../entities/carpeta";
 import { Archivos } from "../entities/archivos";
 import { createConnection } from "typeorm";
-import { AppDataSource } from "../db/conexion";
+import { AppDataSource } from "@core/db/conexion";
 
 function limpiarRuta(ruta: string, uploadsAbsolutePath: string): string {
   // Si contiene "uploads/", extrae solo la parte después de "uploads/"

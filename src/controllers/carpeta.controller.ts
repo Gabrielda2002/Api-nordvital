@@ -5,9 +5,9 @@ import { promises as fsPromises } from "fs";
 import path from "path";
 import { Archivos } from "../entities/archivos";
 import { IsNull, QueryRunner } from "typeorm";
-import { AppDataSource } from "../db/conexion";
-import { NotFoundError, ConflictError, InternalServerError } from "../utils/custom-errors";
-import { validateEntity } from "../utils/validation-helper";
+import { AppDataSource } from "@core/db/conexion";
+import { NotFoundError, ConflictError, InternalServerError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllFolders(
   req: Request,

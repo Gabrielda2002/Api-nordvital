@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createRole, deleteRole, getAllRoles, getRole, updateRole } from "../controllers/roles.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 
 const router = Router();
 

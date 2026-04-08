@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
-import { config } from "../config/environment.config";
-import Logger from "../utils/logger-wrapper";
+import { config } from "@core/config/environment.config";
+import Logger from "@core/utils/logger-wrapper";
 
 // * Middleware para autenticar a los usuarios
 export function authenticate(req: Request, res: Response, next: NextFunction) {

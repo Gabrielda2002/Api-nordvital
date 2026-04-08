@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ExcelJS from "exceljs";
 import { randomBytes } from "crypto";
-import { BadRequestError, NotFoundError } from "../utils/custom-errors";
+import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { getReportRadicacionRows } from "../services/report-radicacion.service";
 import { getReportSurgerysRows } from "../services/report-surgerys.service";
 import { getReportAssistantsRows } from "../services/report-assistants.service";

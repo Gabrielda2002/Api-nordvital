@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { authorizeRadicacion, createRequestService, getRadicacionByPatient, getRadicaciones, getRadicacionesAudit, getSurgeries } from "../controllers/radicacion.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import {upload} from "../middlewares/multer-support.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { getDepartmentUser } from "../middlewares/get-department-user.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import {upload} from "@core/middlewares/multer-support.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
 
 
 const router = Router(); 

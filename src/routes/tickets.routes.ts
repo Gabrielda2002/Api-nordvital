@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createTicket, deleteTicket, getAllTickets, getListTicketsByUserId, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { multerTicketAttachment } from "../middlewares/multer-ticket.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { multerTicketAttachment } from "@core/middlewares/multer-ticket.middleware";
 
 const router = Router();
 

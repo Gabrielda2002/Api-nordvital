@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, getGrupoServiciosByName, updateByRadicacion, updateGrupoServicios } from "../controllers/grupo-servicios.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 
 const router = Router();
 

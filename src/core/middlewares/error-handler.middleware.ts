@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import Logger from "../utils/logger-wrapper";
-import { config } from "../config/environment.config";  
+import Logger from "@core/utils/logger-wrapper";
+import { config } from "@core/config/environment.config";
 
 export function errorHandler(error: any, req: Request, res: Response, next: NextFunction){
     Logger.error('Error en request', error, {

@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import logger from "../utils/logger";
+import logger from "@core/utils/logger";
 
 
 export const limiter = rateLimit({

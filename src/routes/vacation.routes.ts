@@ -9,8 +9,8 @@ import {
   markNotificationAsRead,
   checkVacationExpirations,
 } from "../controllers/vacation.controller";
-import { authenticate } from "../middlewares/authenticate.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { config } from "../config/environment.config";
+import { config } from "@core/config/environment.config";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -10,10 +10,13 @@ export const AppDataSource = new DataSource({
   charset: "utf8mb4",
   synchronize: false,
   port: config.database.port,
-  entities: [__dirname + "/../entities/*{.ts,.js}"],
+  // Support both legacy flat structure and new modular structure during migration
+  entities: [
+    __dirname + "/../../entities/*{.ts,.js}",
+    __dirname + "/../../modules/**/entities/*{.ts,.js}"
+  ],
   logging: true,
-  // migrationsRun: true,
-  migrations:  [__dirname + "/../migrations/*{.ts,.js}"],
+  migrations:  [__dirname + "/../../migrations/*{.ts,.js}"],
   connectTimeout: config.database.connectionTimeout, // 20 segundos de tiempo de espera
   timezone: config.database.timezone, // Ajusta la zona horaria según sea necesario
 });

@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Usuarios } from "../entities/usuarios";
 import bcrypt from "bcrypt";
 import { TokenService } from "../services/token.service";
-import { config } from "../config/environment.config";
-import { UnauthorizedError } from "../utils/custom-errors";
+import { config } from "@core/config/environment.config";
+import { UnauthorizedError } from "@core/utils/custom-errors";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createInventoryTrackingGeneral, getAllInventoryTrackingGeneralByItem } from "../controllers/seguimiento-inventario-general.controller";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 
 const router = Router();
 

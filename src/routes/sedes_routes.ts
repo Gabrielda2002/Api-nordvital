@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/sedes.controller";
-import { validarId } from "../middlewares/validate-type-id.middleware";
-import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { authenticate } from "@core/middlewares/authenticate.middleware";
 
 const router = Router();
 

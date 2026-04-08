@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { TicketAttachment } from "../entities/ticket-attachment";
 import { Tickets } from "../entities/tickets";
 import { validate } from "class-validator";
-import logger from "../utils/logger";
+import logger from "@core/utils/logger";
 import * as fs from "fs";
 import * as path from "path";
 import { FileTokenService } from "../services/file-token.service";
-import Logger from "../utils/logger-wrapper";
+import Logger from "@core/utils/logger-wrapper";
 
 /**
  * Get all attachments for a ticket

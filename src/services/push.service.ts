@@ -1,6 +1,6 @@
 import webpush from 'web-push';
 import { PushSubscription } from '../entities/push-subscription';
-import { config } from '../config/environment.config';
+import { config } from '@core/config/environment.config';
 
 export class PushService{
     static async initialize(){

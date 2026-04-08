@@ -20,7 +20,7 @@ import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
 import { Programa } from "./programa";
-import { Professional } from "../types/Professional.type";
+import { Professional } from "@core/types/Professional.type";
 
 enum AreaDificultad {
   IPS = "IPS",

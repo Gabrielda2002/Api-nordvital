@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { Usuarios } from "./usuarios";
 import { PermissionRequest } from "./permission-request";
-import { StepStatus, StepType } from "../types/permission";
+import { StepStatus, StepType } from "@core/types/permission";
 import { IsDate, IsEnum, IsInt, IsOptional, IsString, Length } from "class-validator";
 
 @Entity({ name: "solicitudes_permisos_pasos" })

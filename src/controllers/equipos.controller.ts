@@ -6,9 +6,9 @@ import path from "path";
 import fs from "fs";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, LessThan, MoreThan } from "typeorm";
-import { saveFileToDisk } from "../middlewares/multer-delivery.middleware";
-import { updateFileAndRecord } from "../utils/file-manager";
-import Logger from "../utils/logger-wrapper";
+import { saveFileToDisk } from "@core/middlewares/multer-delivery.middleware";
+import { updateFileAndRecord } from "@core/utils/file-manager";
+import Logger from "@core/utils/logger-wrapper";
 
 export async function createEquipment(
   req: Request,
