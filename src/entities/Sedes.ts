@@ -6,7 +6,7 @@ import { Municipio } from "./municipio";
 import { Usuarios } from "../modules/auth/entities/usuarios";
 import { NotasTecnicas } from "./notas-tecnicas";
 import { ServiciosEjecutados } from "./servicios-ejecutados";
-import { RegistroEntrada } from "./registro-entrada";
+import { RegistroEntrada } from "../modules/hr/entities/registro-entrada";
 import { InventarioGeneral } from "./inventario-general";
 import { Equipos } from "./equipos";
 import { Televisor } from "./televisor";

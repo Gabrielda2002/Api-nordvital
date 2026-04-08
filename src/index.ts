@@ -3,8 +3,8 @@ import server from "./app";
 import { AppDataSource } from "@core/db/conexion";
 import { PushService, NotificationsCleanupJob } from "./modules/notifications";
 import { TokenCleanupJob } from "./modules/auth/services/token-cleanup-job.service";
-import { CVCleanupService } from "./services/cv-cleanup.service";
-import { VacationCheckJob } from "./services/vacation-check-job.service";
+import { CVCleanupService } from "./modules/hr/services/cv-cleanup.service";
+import { VacationCheckJob } from "./modules/hr/services/vacation-check-job.service";
 import { config } from "@core/config/environment.config";
 import Logger from "@core/utils/logger-wrapper";
 

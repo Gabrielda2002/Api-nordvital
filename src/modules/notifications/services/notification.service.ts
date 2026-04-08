@@ -1,6 +1,6 @@
 // src/services/notification-service.ts
 import { io } from "../../../app";
-import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
+import { EncuestasSatisfaccion } from "../../hr/entities/encuestas-satisfaccion";
 import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../../tickets/entities/tickets";
 import { Usuarios } from "../../auth/entities/usuarios";

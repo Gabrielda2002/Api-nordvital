@@ -22,7 +22,7 @@ import { carpetasRoutes, archivosRoutes } from '../modules/documents';
 import { cirugiasRoutes, seguimientoAuxiliarCirugiasRoutes } from '../modules/surgeries';
 import { pacientesRoutes, pacientesCoosaludRoutes, diagnosticosRoutes } from '../modules/patients';
 import reportExcelRoutes from './report-excel.routes';
-import certificateRoutes from './certificados_routes';
+import certificateRoutes from '../modules/hr/routes/certificados.routes';
 import accesoriosRoutes from './accesorios-equipos.routes';
 import equiposRoutes from './equipos.routes';
 import dispositivoRedRoutes from './dispositivos-red_routes';
@@ -32,18 +32,18 @@ import departamentoRoutes from './departamentos_routes';
 import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
 import componenteRoutes from './componentes_routes';
 import softwareRoutes from './software_routes';
-import activeBrakesRoutes from './pausas-activas.routes';
+import activeBrakesRoutes from '../modules/hr/routes/pausas-activas.routes';
 import eventosRoutes from '../modules/events/routes/eventos.routes';
 import serviciosEjecutadosRoutes from './servicios-ejecutados_routes';
 import serviciosGeneralesRoutes from './servicios-generales_routes';
 import notaTencicaRoutes from './notas-tecnicas_routes';
 import cartaRecobroRoutes from './carta-recobro_routes';
 import emailRoutes from '../modules/email/routes/send-emails.routes';
-import cvPublicRoutes from './cv-public_routes';
+import cvPublicRoutes from '../modules/hr/routes/cv-public.routes';
 import { ticketsRoutes, ticketAttachmentsRoutes, estadosTicketsRoutes, prioridadRoutes, categoriasRoutes, comentariosRoutes } from '../modules/tickets';
-import encuestasSatisfaccionRoutes from './encuestas-satisfaccion_routes';
+import encuestasSatisfaccionRoutes from '../modules/hr/routes/encuestas-satisfaccion.routes';
 import { notificacionesRoutes, pushSubscriptionRoutes } from '../modules/notifications';
-import registerEntries from './registro-entrada_routes';
+import registerEntries from '../modules/hr/routes/registro-entrada.routes';
 import inventarioGeneralRoutes from './inventario-general.routes';
 import clasificacionRoutes from './clasificacion_routes';
 import activosRoutes from './activos_routes';
@@ -57,22 +57,24 @@ import celularesRoutes from './celular.routes';
 import televisoresRoutes from './televisor_routes';
 import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
 import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
-import elementDemandaInducidaRoutes from './elemento-demanda-inducida.route';
-import typeElementDemandInducedRoutes from './tipo-demanda-inducida.route';
-import objetiveDemandInducedRoutes from './objetivo-demanda-inducida.route';
 import relationUserRoutes from './relacion-usuario.route';
 import areaEpsRoutes from './area-eps.route';
-import summaryActivityRoutes from './resumen-seguimiento-actividad.route';
-import resultCallsRoutes from './resultado-llamada.route';
-import areaPersonRoutes from './area-persona-seguimiento.route';
-import reasonVisitRoutes from './motivo-visita.route';
 import professionalRoutes from './profesionales.route';
 import { programsRoutes, goalsRoutes } from '../modules/programs';
-import demandInducedRoutes from './demanda-inducida.routes';
+import { 
+  demandaInducidaRoutes, 
+  elementoDemandaInducidaRoutes, 
+  tipoDemandaInducidaRoutes, 
+  objetivoDemandaInducidaRoutes, 
+  areaPersonaSeguimientoRoutes, 
+  motivoVisitaRoutes, 
+  resultadoLlamadaRoutes, 
+  resumenSeguimientoActividadRoutes 
+} from '../modules/demand-induced';
 import areaRoutes from './area.routes';
-import cargoRoutes from './cargo.routes';
-import permisosRoutes from './permission-request.routes';
-import vacationsRoutes from './vacation.routes';
+import cargoRoutes from '../modules/hr/routes/cargo.routes';
+import permisosRoutes from '../modules/hr/routes/permission-request.routes';
+import vacationsRoutes from '../modules/hr/routes/vacation.routes';
 import participantesRoutes from '../modules/events/routes/participantes.routes';
 import moodleRoutes from '../modules/moodle/routes/moodle.routes';
 
@@ -149,18 +151,18 @@ router.use('/phones/inventory', celularesRoutes);
 router.use('/tv/inventory', televisoresRoutes);
 router.use(seguimientoTelevisorRoutes);
 router.use(seguimientoCelularesRoutes);
-router.use(elementDemandaInducidaRoutes);
-router.use(typeElementDemandInducedRoutes);
-router.use(objetiveDemandInducedRoutes);
+router.use(elementoDemandaInducidaRoutes);
+router.use(tipoDemandaInducidaRoutes);
+router.use(objetivoDemandaInducidaRoutes);
 router.use(relationUserRoutes);
 router.use(areaEpsRoutes);
-router.use(summaryActivityRoutes);
-router.use(resultCallsRoutes);
-router.use(areaPersonRoutes);
-router.use(reasonVisitRoutes);
+router.use(resumenSeguimientoActividadRoutes);
+router.use(resultadoLlamadaRoutes);
+router.use(areaPersonaSeguimientoRoutes);
+router.use(motivoVisitaRoutes);
 router.use(professionalRoutes);
 router.use(programsRoutes);
-router.use(demandInducedRoutes);
+router.use(demandaInducidaRoutes);
 router.use(goalsRoutes);
 router.use(areaRoutes);
 router.use(cargoRoutes);

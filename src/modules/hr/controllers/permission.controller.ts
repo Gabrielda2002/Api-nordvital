@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { PermissionService } from "../services/permission.service";
 import fs from "fs";
 import path from "path";
-import { Soportes } from "../entities/soportes";
+import { Soportes } from "../../../entities/soportes";
 import { AppDataSource } from "@core/db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
-import { FileTokenService } from "../modules/documents/services/file-token.service";
-import { NotificationService } from "../modules/notifications";
+import { FileTokenService } from "../../documents/services/file-token.service";
+import { NotificationService } from "../../notifications";
 
 // POST /permisos/requests
 // Crea una solicitud según la categoría y políticas. Valida:

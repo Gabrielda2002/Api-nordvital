@@ -11,15 +11,15 @@ import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
 import { ElementoDemandaInducida } from "./elemento-demanda-inducida";
 import { TipoDemandaInducida } from "./tipo-demanda-inducida";
 import { ObjetivoDemandaInducida } from "./objetivo-demanda-inducida";
-import { RelacionUsuario } from "./relacion-usuario";
-import { AreaEps } from "./area-eps";
+import { RelacionUsuario } from "../../../entities/relacion-usuario";
+import { AreaEps } from "../../../entities/area-eps";
 import { ResumenSeguimientoActividad } from "./resumen-seguimiento-actividad";
 import { ResultadoLlamada } from "./resultado-llamada";
 import { MotivoVisita } from "./motivo-visita";
 import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
-import { Pacientes } from "./pacientes";
-import { Usuarios } from "../modules/auth/entities/usuarios";
-import { Programa } from "../modules/programs/entities/programa";
+import { Pacientes } from "../../patients/entities/pacientes";
+import { Usuarios } from "../../auth/entities/usuarios";
+import { Programa } from "../../programs/entities/programa";
 import { Professional } from "@core/types/Professional.type";
 
 enum AreaDificultad {

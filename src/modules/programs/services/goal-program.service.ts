@@ -1,5 +1,5 @@
 import { Between } from "typeorm";
-import { DemandaInducida } from "../../../entities/demanda-inducida";
+import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { Professional } from "@core/types/Professional.type";

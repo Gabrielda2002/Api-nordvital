@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Usuarios } from "../modules/auth/entities/usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 import { IsBoolean, IsDate, IsInt, IsNumber, IsOptional, IsString, Length, Min } from "class-validator";
 
 @Entity({ name: "balances_vacaciones" })

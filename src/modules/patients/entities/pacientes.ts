@@ -4,7 +4,7 @@ import { TipoDocumento } from "../../../entities/tipo-documento";
 import { IpsPrimaria } from "../../../entities/ips-primaria";
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
 import { Radicacion } from "../../../entities/radicacion";
-import { DemandaInducida } from "../../../entities/demanda-inducida";
+import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
 
 @Entity("patients")

@@ -4,7 +4,7 @@ import { Categorias } from "./categorias";
 import { Prioridad } from "./prioridad";
 import { EstadoTickets } from "./estado-tickets";
 import { Comentarios } from "./comentarios";
-import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
+import { EncuestasSatisfaccion } from "../../hr/entities/encuestas-satisfaccion";
 import { TicketAttachment } from "./ticket-attachment";
 import { IsBoolean, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 

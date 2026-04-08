@@ -3,7 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, EntityMetadata, JoinColum
 import { Radicacion } from "./radicacion";
 import { Equipos } from "./equipos";
 import { Celular } from "./celular";
-import { PermissionAttachment } from "./permission-attachment";
+import { PermissionAttachment } from "../modules/hr/entities/permission-attachment";
 
 @Entity("support_documents_radicaciones")
 export class Soportes extends BaseEntity {

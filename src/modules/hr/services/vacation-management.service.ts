@@ -2,9 +2,9 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "@core/db/conexion";
 import { VacationBalance } from "../entities/vacation-balance";
 import { VacationInitialSetup } from "../entities/vacation-initial-setup";
-import { Usuarios } from "../modules/auth/entities/usuarios";
+import { Usuarios } from "../../auth/entities/usuarios";
 import { PermissionRequest } from "../entities/permission-request";
-import { Notification, NotificationService } from "../modules/notifications";
+import { Notification, NotificationService } from "../../notifications";
 import { 
   differenceInYears, 
   addYears,

@@ -17,8 +17,8 @@ import {
   IsString,
   Length,
 } from "class-validator";
-import { Area } from "./area";
-import { Usuarios } from "../modules/auth/entities/usuarios";
+import { Area } from "../../../entities/area";
+import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity({ name: "cargo" })
 export class Cargo extends BaseEntity {

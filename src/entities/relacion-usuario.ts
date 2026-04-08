@@ -8,7 +8,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
-import { DemandaInducida } from "./demanda-inducida";
+import { DemandaInducida } from "../modules/demand-induced/entities/demanda-inducida";
 
 @Entity({ name: "relacion_usuario" })
 export class RelacionUsuario extends BaseEntity {

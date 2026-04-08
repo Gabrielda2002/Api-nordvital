@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { PermissionRequest } from "./permission-request";
-import { Soportes } from "./soportes";
-import { Usuarios } from "../modules/auth/entities/usuarios";
+import { Soportes } from "../../../entities/soportes";
+import { Usuarios } from "../../auth/entities/usuarios";
 import { IsInt, IsString, Length } from "class-validator";
 
 @Entity({ name: "solicitudes_permisos_adjuntos" })

@@ -34,12 +34,12 @@ import { SeguimientoDispositivosRed } from "../../../entities/seguimiento-dispos
 import { Equipos } from "../../../entities/equipos";
 import { SeguimientoAuxiliar } from "../../../entities/seguimiento-auxiliar";
 import { Sedes } from "../../../entities/sedes";
-import { PausasActivas } from "../../../entities/pausas-activas";
+import { PausasActivas } from "../../hr/entities/pausas-activas";
 import { CartaRecobro } from "../../../entities/carta-recobro";
 import { Tickets } from "../../tickets/entities/tickets";
 import { Notification, PushSubscription } from "../../notifications";
-import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
-import { RegistroEntrada } from "../../../entities/registro-entrada";
+import { EncuestasSatisfaccion } from "../../hr/entities/encuestas-satisfaccion";
+import { RegistroEntrada } from "../../hr/entities/registro-entrada";
 import { SeguimientoAuxiliarCirugias } from "../../surgeries/entities/seguimiento-auxiliar-cirugias";
 import { SeguimientoInventarioGeneral } from "../../../entities/seguimiento-inventario-general";
 import { Televisor } from "../../../entities/televisor";
@@ -48,9 +48,9 @@ import { SeguimientoTelevisor } from "../../../entities/seguimiento-televisor";
 import { SeguimientoCelular } from "../../../entities/seguimiento-celular";
 import { Comentarios } from "../../tickets/entities/comentarios";
 import { TicketAttachment } from "../../tickets/entities/ticket-attachment";
-import { DemandaInducida } from "../../../entities/demanda-inducida";
+import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 import { Area } from "../../../entities/area";
-import { Cargo } from "../../../entities/cargo";
+import { Cargo } from "../../hr/entities/cargo";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {

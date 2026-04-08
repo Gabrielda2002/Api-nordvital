@@ -1,7 +1,7 @@
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Usuarios } from "../modules/auth/entities/usuarios";
-import { Tickets } from "../modules/tickets/entities/tickets";
+import { Usuarios } from "../../auth/entities/usuarios";
+import { Tickets } from "../../tickets/entities/tickets";
 @Entity({ name: "encuestas_satisfaccion" })
 export class EncuestasSatisfaccion extends BaseEntity {
 

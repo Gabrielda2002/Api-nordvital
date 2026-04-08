@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { DemandaInducida } from "../../../entities/demanda-inducida";
+import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 import { ProgramaMetaHistorico } from "./programa-meta-historico";
 @Entity({ name: "programa" })
 export class Programa extends BaseEntity {
