@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { Usuarios } from "../entities/usuarios";
+import { Usuarios } from "../../../entities/usuarios";
 import { MoodleService } from "../services/moodle.service";
-import RedisService from "../services/redis.service";
+import RedisService from "../../../services/redis.service";
 import Logger from "@core/utils/logger-wrapper";
 import { config } from "@core/config/environment.config";
 import { NotFoundError, ValidationError } from "@core/utils/custom-errors";

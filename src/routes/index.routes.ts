@@ -87,7 +87,7 @@ import areaRoutes from './area.routes';
 import cargoRoutes from './cargo.routes';
 import permisosRoutes from './permission-request.routes';
 import vacationsRoutes from './vacation.routes';
-import moodleRoutes from './moodle.routes';
+import moodleRoutes from '../modules/moodle/routes/moodle.routes';
 
 const router = Router();
 
