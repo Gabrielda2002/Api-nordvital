@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CVTokenService } from "../services/cv-token.service";
+import { CVTokenService } from "../../../services/cv-token.service";
 
 export async function sendEmailWorkUs(req: Request, res: Response, next: NextFunction){
     try {
