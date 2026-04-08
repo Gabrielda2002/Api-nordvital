@@ -19,7 +19,7 @@ import { MotivoVisita } from "./motivo-visita";
 import { AreaPersonaSeguimiento } from "./area-persona-seguimiento";
 import { Pacientes } from "./pacientes";
 import { Usuarios } from "./usuarios";
-import { Programa } from "./programa";
+import { Programa } from "../modules/programs/entities/programa";
 import { Professional } from "@core/types/Professional.type";
 
 enum AreaDificultad {

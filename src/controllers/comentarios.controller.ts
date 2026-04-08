@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Comentarios } from "../entities/comentarios";
 import { validate } from "class-validator";
 import { Tickets } from "../entities/tickets";
-import { NotificationService } from "../services/notification.service";
+import { NotificationService } from "../modules/notifications";
 
 export async function getAllComments(req: Request, res: Response, next: NextFunction){
     try {

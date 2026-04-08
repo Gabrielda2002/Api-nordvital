@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { SeguimientoAuxiliar } from "./seguimiento-auxiliar";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
-import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
+import { SeguimientoAuxiliarCirugias } from "../modules/surgeries/entities/seguimiento-auxiliar-cirugias";
 
 @Entity("tracking_statuses")
 export class EstadosSeguimiento extends BaseEntity {

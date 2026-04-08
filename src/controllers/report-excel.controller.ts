@@ -3,7 +3,7 @@ import ExcelJS from "exceljs";
 import { randomBytes } from "crypto";
 import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { getReportRadicacionRows } from "../services/report-radicacion.service";
-import { getReportSurgerysRows } from "../services/report-surgerys.service";
+import { getReportSurgerysRows } from "../modules/surgeries/services/report-surgerys.service";
 import { getReportAssistantsRows } from "../services/report-assistants.service";
 import { getReportBreakesActiveRows } from "../services/report-breakes-active.service";
 import { getReportBiometricRows } from "../services/report-biometric.service";

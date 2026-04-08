@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/goal-program.service";
-import { Usuarios } from "../entities/usuarios";
-import { Sedes } from "../entities/sedes";
+import { Usuarios } from "../../../entities/usuarios";
+import { Sedes } from "../../../entities/sedes";
 import { Programa } from "../entities/programa";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {

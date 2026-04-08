@@ -1,9 +1,9 @@
 import { IsInt, IsNotEmpty, IsOptional } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { EstadosSeguimiento } from "./estados-seguimiento";
+import { EstadosSeguimiento } from "../../../entities/estados-seguimiento";
 import { Cirugias } from "./cirugias";
-import { ServiciosSolicitados } from "./servicios-solicitados";
-import { Usuarios } from "./usuarios";
+import { ServiciosSolicitados } from "../../../entities/servicios-solicitados";
+import { Usuarios } from "../../../entities/usuarios";
 
 @Entity('surgery_tracking_records')
 export class SeguimientoAuxiliarCirugias extends BaseEntity {

@@ -1,15 +1,15 @@
 // src/services/notification-service.ts
-import { io } from "../app";
-import { EncuestasSatisfaccion } from "../entities/encuestas-satisfaccion";
+import { io } from "../../../app";
+import { EncuestasSatisfaccion } from "../../../entities/encuestas-satisfaccion";
 import { Notification } from "../entities/notificaciones";
-import { Tickets } from "../entities/tickets";
-import { Usuarios } from "../entities/usuarios";
+import { Tickets } from "../../../entities/tickets";
+import { Usuarios } from "../../../entities/usuarios";
 import { PushService } from "./push.service";
 
 export class NotificationService {
   /**
-   * Crea una notificación para un usuario cuando un ticket se cierra
-   */
+    * Crea una notificación para un usuario cuando un ticket se cierra
+    */
   static async createTicketClosedNotification(
     ticket: Tickets,
     title: string
@@ -93,8 +93,8 @@ export class NotificationService {
   }
 
   /**
-   * Obtiene todas las notificaciones de un usuario
-   */
+    * Obtiene todas las notificaciones de un usuario
+    */
   static async getUserNotifications(userId: number): Promise<Notification[]> {
     const notifications = await Notification.createQueryBuilder("notification")
       .where("notification.user_id = :userId", { userId })
@@ -129,8 +129,8 @@ export class NotificationService {
   }
 
   /**
-   * Marca una notificación como leída
-   */
+    * Marca una notificación como leída
+    */
   static async markAsRead(
     notificationId: number
   ): Promise<Notification | null> {

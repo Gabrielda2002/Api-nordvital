@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Radicacion } from "./radicacion";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
-import { Cirugias } from "./cirugias";
+import { Cirugias } from "../modules/surgeries/entities/cirugias";
 
 @Entity("specialties")
 export class Especialidad extends BaseEntity {

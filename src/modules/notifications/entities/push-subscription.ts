@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Usuarios } from "./usuarios";
+import { Usuarios } from "../../../entities/usuarios";
 
 @Entity('push_subscriptions')
 export class PushSubscription extends BaseEntity {

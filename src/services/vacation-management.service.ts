@@ -4,8 +4,7 @@ import { VacationBalance } from "../entities/vacation-balance";
 import { VacationInitialSetup } from "../entities/vacation-initial-setup";
 import { Usuarios } from "../entities/usuarios";
 import { PermissionRequest } from "../entities/permission-request";
-import { Notification } from "../entities/notificaciones";
-import { NotificationService } from "./notification.service";
+import { Notification, NotificationService } from "../modules/notifications";
 import { 
   differenceInYears, 
   addYears, 

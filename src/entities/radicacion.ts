@@ -18,7 +18,7 @@ import { IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator
 import { Pacientes } from "./pacientes";
 import { Soportes } from "./soportes";
 import { Servicios } from "./servicios";
-import { Cirugias } from "./cirugias";
+import { Cirugias } from "../modules/surgeries/entities/cirugias";
 import { Diagnostico } from "./diagnostico";
 import { Usuarios } from "./usuarios";
 import { CartaRecobro } from "./carta-recobro";

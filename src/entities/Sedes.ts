@@ -11,7 +11,7 @@ import { InventarioGeneral } from "./inventario-general";
 import { Equipos } from "./equipos";
 import { Televisor } from "./televisor";
 import { Celular } from "./celular";
-import { ProgramaMetaHistorico } from "./programa-meta-historico";
+import { ProgramaMetaHistorico } from "../modules/programs/entities/programa-meta-historico";
 
 @Entity("headquarters")
 export class Sedes extends BaseEntity{
