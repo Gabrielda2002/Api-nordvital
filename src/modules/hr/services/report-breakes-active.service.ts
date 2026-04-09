@@ -1,5 +1,5 @@
 import { formatInTimeZone } from "date-fns-tz";
-import { PausasActivas } from "../modules/hr/entities/pausas-activas";
+import { PausasActivas } from "../entities/pausas-activas";
 
 export type ReportBreakesActiveFilters = {
   dateStart?: string;

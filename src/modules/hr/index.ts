@@ -30,6 +30,8 @@ export { VacationCheckJob } from "./services/vacation-check-job.service";
 export { CVCleanupService } from "./services/cv-cleanup.service";
 export { CVTokenService } from "./services/cv-token.service";
 export * from "./services/report-biometric.service";
+export * from "./services/report-assistants.service";
+export * from "./services/report-breakes-active.service";
 
 // Routes
 export { default as permissionRequestRoutes } from "./routes/permission-request.routes";

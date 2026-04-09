@@ -10,9 +10,7 @@ export const AppDataSource = new DataSource({
   charset: "utf8mb4",
   synchronize: false,
   port: config.database.port,
-  // Support both legacy flat structure and new modular structure during migration
   entities: [
-    __dirname + "/../../entities/*{.ts,.js}",
     __dirname + "/../../modules/**/entities/*{.ts,.js}"
   ],
   logging: true,

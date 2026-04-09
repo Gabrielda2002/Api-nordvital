@@ -2487,5 +2487,5 @@ export const options = {
       },
     ],
   },
-  apis: ["./src/routes/*.ts"],
+  apis: ["./src/modules/**/routes/*.ts"],
 };
