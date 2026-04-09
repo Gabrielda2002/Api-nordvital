@@ -1,4 +1,4 @@
-import { Radicacion } from "../entities/radicacion";
+import { Radicacion } from "../modules/radicacion/entities";
 
 export type ReportAssistantsFilters = {
   dateStart?: string;

@@ -1,65 +1,72 @@
 import { Router } from "express";
 
-import radicacionRoutes from './radicacion.routes';
-import tipoDocumentoRoutes from './tipo-documento_routes';
-import convenioRoutes from './convenio_routes';
-import ipsPrimariaRoutes from './ips-primaria_routes';
-import especialidadRoutes from './especialidad_routes';
-import ipsRemiteRoutes from './ips-remite_routes';
-import lugarRadicacionRoutes from './sedes_routes';
-import grupoServiciosRoutes from './grupo-servicios_routes';
-import estadosRoutes from './estados_routes';
-import cupsRadicadosRoutes from './cups-radicados_routes';
-import estadoSeguimientoRoutes from './estados-seguimientos_routes';
-import municipioRoutes from './municipio_routes';
-import seguimientoAuxiliarRoutes from './seguimiento-auxiliar_routes';
-import serviciosRoutes from './servicio_routes';
-import servicioSolicitadoRoutes from './servicio-solicitado_routes';
-import unidadFuncionalRoutes from './unidad-funcional_routes';
-import soportesRoutes from './soportes_routes';
+import { 
+  radicacionRoutes,
+  estadosRoutes,
+  cupsRadicadosRoutes,
+  estadosSeguimientoRoutes as estadoSeguimientoRoutes,
+  seguimientoAuxiliarRoutes,
+  soportesRoutes,
+  serviciosEjecutadosRoutes,
+  serviciosGeneralesRoutes,
+  notasTecnicasRoutes as notaTencicaRoutes,
+  cartaRecobroRoutes,
+  reportExcelRoutes
+} from '../modules/radicacion';
+import { 
+  tipoDocumentoRoutes, 
+  convenioRoutes, 
+  ipsPrimariaRoutes, 
+  especialidadRoutes, 
+  ipsRemiteRoutes, 
+  sedesRoutes as lugarRadicacionRoutes, 
+  grupoServiciosRoutes, 
+  municipioRoutes, 
+  servicioRoutes as serviciosRoutes, 
+  servicioSolicitadoRoutes, 
+  unidadFuncionalRoutes,
+  departamentosRoutes as departamentoRoutes,
+  tipoAreaRoutes,
+  areaDependenciaRoutes,
+  relacionUsuarioRoutes as relationUserRoutes, 
+  areaEpsRoutes, 
+  profesionalesRoutes as professionalRoutes,
+  areaRoutes
+} from '../modules/catalog';
 import { authRoutes, usuariosRoutes, rolesRoutes } from '../modules/auth';
 import { carpetasRoutes, archivosRoutes } from '../modules/documents';
 import { cirugiasRoutes, seguimientoAuxiliarCirugiasRoutes } from '../modules/surgeries';
 import { pacientesRoutes, pacientesCoosaludRoutes, diagnosticosRoutes } from '../modules/patients';
-import reportExcelRoutes from './report-excel.routes';
+import { 
+  equiposRoutes,
+  accesoriosEquiposRoutes,
+  componentesRoutes,
+  softwareRoutes,
+  dispositivosRedRoutes,
+  celularRoutes,
+  televisorRoutes,
+  inventarioGeneralRoutes,
+  seguimientoEquiposRoutes,
+  seguimientoDispositivosRedRoutes,
+  seguimientoCelularesRoutes,
+  seguimientoTelevisoresRoutes,
+  seguimientoInventarioGeneralRoutes,
+  maintenanceChecklistRoutes,
+  activosRoutes,
+  tipoActivoRoutes,
+  clasificacionRoutes,
+  materialesRoutes,
+  estadoIvGeneralRoutes
+} from '../modules/inventory';
 import certificateRoutes from '../modules/hr/routes/certificados.routes';
-import accesoriosRoutes from './accesorios-equipos.routes';
-import equiposRoutes from './equipos.routes';
-import dispositivoRedRoutes from './dispositivos-red_routes';
-import seguimientoEquipos from './seguimiento-equipos-routes';
-import maintenanceChecklistRoutes from './maintenance-checklist-routes';
-import departamentoRoutes from './departamentos_routes';
-import seguimientoDispositivosRed from './seguimiento-dispositivos-red_routes';
-import componenteRoutes from './componentes_routes';
-import softwareRoutes from './software_routes';
 import activeBrakesRoutes from '../modules/hr/routes/pausas-activas.routes';
 import eventosRoutes from '../modules/events/routes/eventos.routes';
-import serviciosEjecutadosRoutes from './servicios-ejecutados_routes';
-import serviciosGeneralesRoutes from './servicios-generales_routes';
-import notaTencicaRoutes from './notas-tecnicas_routes';
-import cartaRecobroRoutes from './carta-recobro_routes';
 import emailRoutes from '../modules/email/routes/send-emails.routes';
 import cvPublicRoutes from '../modules/hr/routes/cv-public.routes';
 import { ticketsRoutes, ticketAttachmentsRoutes, estadosTicketsRoutes, prioridadRoutes, categoriasRoutes, comentariosRoutes } from '../modules/tickets';
 import encuestasSatisfaccionRoutes from '../modules/hr/routes/encuestas-satisfaccion.routes';
 import { notificacionesRoutes, pushSubscriptionRoutes } from '../modules/notifications';
 import registerEntries from '../modules/hr/routes/registro-entrada.routes';
-import inventarioGeneralRoutes from './inventario-general.routes';
-import clasificacionRoutes from './clasificacion_routes';
-import activosRoutes from './activos_routes';
-import materiaLRoutes from './material_routes';
-import estadoIvGeneral from './estado-iv-general_routes';
-import tipoAreaRoutes from './tipo-area_routes';
-import tipoActivoRoutes from './tipo-activo_routes';
-import areaDependenciaRoutes from './area-dependencia_routes';
-import seguimientoGeneralRoutes from './seguimiento-inventario-general_routes';
-import celularesRoutes from './celular.routes';
-import televisoresRoutes from './televisor_routes';
-import seguimientoTelevisorRoutes from './seguimiento-televisor_routes';
-import seguimientoCelularesRoutes from './seguimiento-celulares_routes';
-import relationUserRoutes from './relacion-usuario.route';
-import areaEpsRoutes from './area-eps.route';
-import professionalRoutes from './profesionales.route';
 import { programsRoutes, goalsRoutes } from '../modules/programs';
 import { 
   demandaInducidaRoutes, 
@@ -71,7 +78,6 @@ import {
   resultadoLlamadaRoutes, 
   resumenSeguimientoActividadRoutes 
 } from '../modules/demand-induced';
-import areaRoutes from './area.routes';
 import cargoRoutes from '../modules/hr/routes/cargo.routes';
 import permisosRoutes from '../modules/hr/routes/permission-request.routes';
 import vacationsRoutes from '../modules/hr/routes/vacation.routes';
@@ -110,14 +116,14 @@ router.use(cirugiasRoutes);
 router.use(seguimientoAuxiliarCirugiasRoutes);
 router.use(reportExcelRoutes);
 router.use(certificateRoutes);
-router.use(accesoriosRoutes);
+router.use(accesoriosEquiposRoutes);
 router.use('/equipments', equiposRoutes);
-router.use('/devices-red', dispositivoRedRoutes);
-router.use(seguimientoEquipos);
+router.use('/devices-red', dispositivosRedRoutes);
+router.use(seguimientoEquiposRoutes);
 router.use(maintenanceChecklistRoutes);
 router.use(departamentoRoutes);
-router.use(seguimientoDispositivosRed);
-router.use(componenteRoutes);
+router.use(seguimientoDispositivosRedRoutes);
+router.use(componentesRoutes);
 router.use(softwareRoutes);
 router.use(activeBrakesRoutes);
 router.use(eventosRoutes);
@@ -140,16 +146,16 @@ router.use(registerEntries);
 router.use('/general/inventory', inventarioGeneralRoutes);
 router.use(clasificacionRoutes);
 router.use(activosRoutes);
-router.use(materiaLRoutes);
-router.use(estadoIvGeneral);
+router.use(materialesRoutes);
+router.use(estadoIvGeneralRoutes);
 router.use(tipoAreaRoutes);
 router.use(tipoActivoRoutes);
 router.use(areaDependenciaRoutes);
-router.use(seguimientoGeneralRoutes);
+router.use(seguimientoInventarioGeneralRoutes);
 router.use(participantesRoutes);
-router.use('/phones/inventory', celularesRoutes);
-router.use('/tv/inventory', televisoresRoutes);
-router.use(seguimientoTelevisorRoutes);
+router.use('/phones/inventory', celularRoutes);
+router.use('/tv/inventory', televisorRoutes);
+router.use(seguimientoTelevisoresRoutes);
 router.use(seguimientoCelularesRoutes);
 router.use(elementoDemandaInducidaRoutes);
 router.use(tipoDemandaInducidaRoutes);

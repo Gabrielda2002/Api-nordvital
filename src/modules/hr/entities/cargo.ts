@@ -17,7 +17,7 @@ import {
   IsString,
   Length,
 } from "class-validator";
-import { Area } from "../../../entities/area";
+import { Area } from "../../catalog/entities/area";
 import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity({ name: "cargo" })

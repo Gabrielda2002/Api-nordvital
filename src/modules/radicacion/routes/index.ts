@@ -1,0 +1,11 @@
+export { default as radicacionRoutes } from "./radicacion.routes";
+export { default as cupsRadicadosRoutes } from "./cups-radicados.routes";
+export { default as soportesRoutes } from "./soportes.routes";
+export { default as estadosRoutes } from "./estados.routes";
+export { default as estadosSeguimientoRoutes } from "./estados-seguimiento.routes";
+export { default as seguimientoAuxiliarRoutes } from "./seguimiento-auxiliar.routes";
+export { default as notasTecnicasRoutes } from "./notas-tecnicas.routes";
+export { default as cartaRecobroRoutes } from "./carta-recobro.routes";
+export { default as serviciosEjecutadosRoutes } from "./servicios-ejecutados.routes";
+export { default as serviciosGeneralesRoutes } from "./servicios-generales.routes";
+export { default as reportExcelRoutes } from "./report-excel.routes";

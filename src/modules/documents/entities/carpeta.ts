@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { Archivos } from "./archivos";
-import { departamentos } from "../../../entities/departamentos";
+import { departamentos } from "../../catalog/entities/departamentos";
 
 @Entity({name: "carpetas"})
 export class Carpeta extends BaseEntity {

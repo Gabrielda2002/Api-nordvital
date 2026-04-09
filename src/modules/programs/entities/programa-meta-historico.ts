@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
 import { Programa } from "./programa";
-import { Sedes } from "../../../entities/sedes";
+import { Sedes } from "../../catalog/entities/sedes";
 import { Professional } from "@core/types/Professional.type";
 
 @Entity({ name: "programa_meta_historico" })

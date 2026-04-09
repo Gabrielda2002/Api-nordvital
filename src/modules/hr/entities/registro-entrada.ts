@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "../../auth/entities/usuarios";
-import { Sedes } from "../../../entities/sedes";
+import { Sedes } from "../../catalog/entities/sedes";
 
 @Entity('registro_entrada')
 export class RegistroEntrada extends BaseEntity {

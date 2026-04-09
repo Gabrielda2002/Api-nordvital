@@ -1,7 +1,7 @@
 import { IsNotEmpty, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, NumericType, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../../entities/radicacion";
-import { IpsRemite } from "../../../entities/ips-remite";
+import { Radicacion } from "../../radicacion/entities";
+import { IpsRemite } from "../../catalog/entities/ips-remite";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 
 @Entity('surgeries')

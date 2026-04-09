@@ -1,8 +1,8 @@
 import { IsInt, IsNotEmpty, IsOptional } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { EstadosSeguimiento } from "../../../entities/estados-seguimiento";
+import { EstadosSeguimiento } from "../../radicacion/entities";
 import { Cirugias } from "./cirugias";
-import { ServiciosSolicitados } from "../../../entities/servicios-solicitados";
+import { ServiciosSolicitados } from "../../catalog/entities/servicios-solicitados";
 import { Usuarios } from "../../auth/entities/usuarios";
 
 @Entity('surgery_tracking_records')

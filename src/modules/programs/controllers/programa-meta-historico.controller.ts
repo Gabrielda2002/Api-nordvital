@@ -3,7 +3,7 @@ import { ProgramaMetaHistorico } from "../entities/programa-meta-historico";
 import { validate } from "class-validator";
 import { ProgramaMetaService } from "../services/goal-program.service";
 import { Usuarios } from "../../auth/entities/usuarios";
-import { Sedes } from "../../../entities/sedes";
+import { Sedes } from "../../catalog/entities/sedes";
 import { Programa } from "../entities/programa";
 
 export const getGoalsByPrograms = async (req: Request, res: Response, next: NextFunction) => {

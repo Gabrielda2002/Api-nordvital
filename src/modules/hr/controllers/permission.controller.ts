@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { PermissionService } from "../services/permission.service";
 import fs from "fs";
 import path from "path";
-import { Soportes } from "../../../entities/soportes";
+import { Soportes } from "../../radicacion/entities";
 import { AppDataSource } from "@core/db/conexion";
 import { PermissionAttachment } from "../entities/permission-attachment";
 import { FileTokenService } from "../../documents/services/file-token.service";

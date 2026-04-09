@@ -1,0 +1,10 @@
+export { Radicacion } from "./radicacion";
+export { CupsRadicados } from "./cups-radicados";
+export { Soportes } from "./soportes";
+export { Estados } from "./estados";
+export { EstadosSeguimiento } from "./estados-seguimiento";
+export { SeguimientoAuxiliar } from "./seguimiento-auxiliar";
+export { NotasTecnicas } from "./notas-tecnicas";
+export { CartaRecobro } from "./carta-recobro";
+export { ServiciosEjecutados } from "./servicios-ejecutados";
+export { ServiciosGenerales } from "./servicios-generales";

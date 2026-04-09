@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Soportes } from '../../entities/soportes';
+import { Soportes } from '../../modules/radicacion/entities';
 import { QueryRunner } from 'typeorm';
 import Logger from './logger-wrapper';
 

@@ -1,9 +1,9 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Convenio } from "../../../entities/convenio";
-import { TipoDocumento } from "../../../entities/tipo-documento";
-import { IpsPrimaria } from "../../../entities/ips-primaria";
+import { Convenio } from "../../catalog/entities/convenio";
+import { TipoDocumento } from "../../catalog/entities/tipo-documento";
+import { IpsPrimaria } from "../../catalog/entities/ips-primaria";
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
-import { Radicacion } from "../../../entities/radicacion";
+import { Radicacion } from "../../radicacion/entities";
 import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
 

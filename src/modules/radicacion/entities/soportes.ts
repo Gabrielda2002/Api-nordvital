@@ -1,0 +1,61 @@
+import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { BaseEntity, Column, CreateDateColumn, Entity, EntityMetadata, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Radicacion } from "./radicacion";
+import { Equipos } from "../../inventory/entities/equipos";
+import { Celular } from "../../inventory/entities/celular";
+import { PermissionAttachment } from "../../hr/entities/permission-attachment";
+
+@Entity("support_documents_radicaciones")
+export class Soportes extends BaseEntity {
+
+    @PrimaryGeneratedColumn({name: "id"})
+    id: number;
+
+    @Column({name: "name"})
+    @IsString()
+    @Length(1, 150, {message: "El nombre del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({message: "El nombre del soporte es requerido"})
+    name: string;
+
+    @Column({name: "url"})
+    @IsString()
+    @Length(1, 200, {message: "La url del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({message: "La url del soporte es requerida"})
+    url: string;
+
+    @Column({name: "size"})
+    @IsInt()
+    @IsNotEmpty({message: "El tamaño del soporte es requerido"})
+    size: number;
+
+    @Column({name: "type"})
+    @IsString()
+    @Length(1, 100, {message: "El tipo del soporte debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({message: "El tipo del soporte es requerido"})
+    type: string;
+
+    @CreateDateColumn({ name: "created_at" })
+    createdAt: Date;
+
+    @UpdateDateColumn({ name: "updated_at" })
+    updatedAt: Date;
+
+    @Column({name: "name_saved"})
+    @IsString()
+    nameSaved: string;
+
+    //* Relaciones
+
+    @OneToMany(() => Radicacion, radicacion => radicacion.soportesRelation)
+    radicacionRelation: Radicacion[];
+
+    @OneToMany(() => Equipos, equipos => equipos.soportRelacion)
+    equiposRelation: Equipos[];
+
+    @OneToMany(() => Celular, celular => celular.actaRelation)
+    celularesRelation: Celular[];
+
+    // Relation with permisos (a support can be linked to one or more permissions)
+    @OneToMany(() => PermissionAttachment, permiso => permiso.supportRelation)
+    permissionsRelation: PermissionAttachment[];
+}
