@@ -259,7 +259,7 @@ router.get('/list/requests/user', authenticate, listAllRequestsByUser);
  *       429:
  *         description: Demasiadas solicitudes (rate limit)
  */
-router.post('/attachments/:id/access-token', fileAccessRateLimit, authenticate, validarId, generatePermissionAttachmentAccessToken);
+router.post('/attachments/permissions/:id/access-token', fileAccessRateLimit, authenticate, validarId, generatePermissionAttachmentAccessToken);
 
 /**
  * @swagger
@@ -295,7 +295,7 @@ router.post('/attachments/:id/access-token', fileAccessRateLimit, authenticate, 
  *       404:
  *         description: Archivo no encontrado
  */
-router.get('/secure-attachments/:token', serveSecurePermissionAttachment);
+router.get('/secure-attachments/permissions/:token', serveSecurePermissionAttachment);
 
 /**
  * @swagger

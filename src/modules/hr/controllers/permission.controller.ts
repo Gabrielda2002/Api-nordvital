@@ -59,7 +59,7 @@ export async function createPermissionRequest(
     if (file && result.success && result.data) {
       const uploadsDir = path.join(
         __dirname,
-        "../uploads/AttachmentsPermissions"
+        "../../../uploads/AttachmentsPermissions"
       );
       if (!fs.existsSync(uploadsDir))
         fs.mkdirSync(uploadsDir, { recursive: true });
@@ -129,7 +129,7 @@ export async function createPermissionRequest(
       if (file) {
         const uploadsDir = path.join(
           __dirname,
-          "../uploads/AttachmentsPermissions"
+          "../../../uploads/AttachmentsPermissions"
         );
         const pattern = `${file.fieldname}-`; // no sabemos el nombre final si falló antes, omitimos delete agresivo
         // Best-effort: no eliminamos por patrón para evitar borrar otros archivos; si necesitas cleanup exacto, mueve escritura dentro de la misma transacción con una tabla staging
@@ -336,7 +336,6 @@ export async function serveSecurePermissionAttachment(
     const { fileId, action }    = validation.payload!;
 
     const attachment = await Soportes.findOne({ where: { id: fileId } });
-    console.log("adjuntos", attachment);
     if (!attachment) {
       return res.status(404).json({ message: "Adjunto no encontrado" });
     }
@@ -369,7 +368,6 @@ export async function serveSecurePermissionAttachment(
       fileStream.pipe(res);
 
       fileStream.on("error", (err) => {
-        console.error("Error streaming adjunto:", err);
         if (!res.headersSent) {
           res.status(500).json({ message: "Error al cargar el adjunto" });
         }
