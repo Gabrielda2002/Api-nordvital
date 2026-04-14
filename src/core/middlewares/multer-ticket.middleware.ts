@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "..", "uploads", "tickets"));
+        cb(null, path.join(__dirname, "..", "..", "uploads", "tickets"));
     },
     filename: (req, file, cb) => {
         const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`;

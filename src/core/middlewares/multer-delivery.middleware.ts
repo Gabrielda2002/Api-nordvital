@@ -9,7 +9,7 @@ const memoryStorage = multer.memoryStorage();
 // Esta función puede ser importada y usada en los controladores
 export const saveFileToDisk = (fileBuffer: Buffer, originalName: string): {path: string, filename: string} => {
     // Aseguramos que la ruta sea consistente
-    const uploadPath = path.join(__dirname, '../uploads/ActasEntrega');
+    const uploadPath = path.join(__dirname, '../../uploads/ActasEntrega');
     
     // Creamos la carpeta si no existe
     if (!fs.existsSync(uploadPath)) {
