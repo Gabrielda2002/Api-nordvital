@@ -248,7 +248,7 @@ export async function downloadAttachment(req: Request, res: Response, next: Next
         }
 
         const relativePath = attachmentExist.fileUrl.replace(/^\//, "");
-        const filePath = path.join(__dirname, "..", "uploads", relativePath);
+        const filePath = path.join(__dirname, "..", "..", "..", "uploads", relativePath);
 
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ message: "File not found on server" });
