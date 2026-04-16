@@ -72,6 +72,12 @@ import {
   reportExcelRoutes,
 } from "./radicacion";
 import {
+  infrastructureTicketsRoutes,
+  infrastructureCategoriesRoutes,
+  infrastructureCommentsRoutes,
+  infrastructureAttachmentsRoutes,
+} from "./infrastructure-tickets";
+import {
   equiposRoutes,
   accesoriosEquiposRoutes,
   componentesRoutes,
@@ -191,6 +197,12 @@ router.use(cartaRecobroRoutes);
 router.use(serviciosEjecutadosRoutes);
 router.use(serviciosGeneralesRoutes);
 router.use(reportExcelRoutes);
+
+// Infrastructure Tickets module
+router.use(infrastructureTicketsRoutes);
+router.use(infrastructureCategoriesRoutes);
+router.use(infrastructureCommentsRoutes);
+router.use(infrastructureAttachmentsRoutes);
 
 // Inventory module
 router.use("/equipments", equiposRoutes);

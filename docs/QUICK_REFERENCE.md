@@ -6,6 +6,7 @@
 **Estos permisos los tiene absolutamente todos los usuarios:**
 
 - **Actualizar datos en el perfil**
+- **Crear ticket de infraestructura**
 - **Cargar/eliminar una foto de perfil**
 - **Ver eventos en calendario**
 - **Consultar el panel de consultas**
@@ -41,6 +42,8 @@
 | Gestionar demanda inducida y limitado a sus propios datos | Enfermería | 19 |
 | Gestionar demanda inducida + crear metas + filtro responsable | Coordinadora Enfermería | 20 |
 | Gestionar demanda inducida + crear metas y limitado datos de su sede | Líder Enfermería | 21 |
+| Gestionar tickets de infraestructura (panel completo, reportes, cierre) | Coordinador Infraestructura | 22 |
+| Gestionar tickets de infraestructura (atención y seguimiento) | Auxiliar Infraestructura | 23 |
 
 ---
 
@@ -95,9 +98,15 @@
 - **Datos sede actual:** Solo Lider Enfermeria
 - **Eliminar metas:** Solo Admin
 
-### Tickets de Soporte
+### Tickets de Soporte (Sistemas)
 - **Crear:** Todos
 - **Gestionar:** Solo Admin y Soporte
+
+### Tickets de Infraestructura
+- **Crear:** Todos los usuarios
+- **Gestionar / tabla:** Admin, Coordinador Infraestructura y Auxiliar Infraestructura
+- **Eliminar:** Solo Admin y Coordinador Infraestructura
+- **Cotización:** Se registra al gestionar el ticket (no al crear)
 
 ### Gestión de Calidad
 - **Ver:** Todos los usuarios

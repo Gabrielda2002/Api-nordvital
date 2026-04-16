@@ -74,6 +74,8 @@ Para mantener consistencia en la documentación de endpoints con restricción de
  *         - 19: Enfermería
  *         - 20: Coordinadora Enfermería
  *         - 21: Líder Enfermería
+ *         - 22: Coordinador Infraestructura
+ *         - 23: Auxiliar Infraestructura
  */
 ```
 

@@ -49,6 +49,9 @@ import { TicketAttachment } from "../../tickets/entities/ticket-attachment";
 import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 import { Area } from "../../catalog/entities/area";
 import { Cargo } from "../../hr/entities/cargo";
+import { InfrastructureTicket } from "../../infrastructure-tickets/entities/infrastructure-ticket";
+import { InfrastructureComment } from "../../infrastructure-tickets/entities/infrastructure-comment";
+import { InfrastructureAttachment } from "../../infrastructure-tickets/entities/infrastructure-attachment";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -268,4 +271,14 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => Radicacion, (radicacion) => radicacion.auditUserRelation)
   auditRelation: Radicacion[];
+
+  // * Relaciones con módulo de tickets de infraestructura
+  @OneToMany(() => InfrastructureTicket, (ticket) => ticket.userRelation)
+  infrastructureTicketsRelation: InfrastructureTicket[];
+
+  @OneToMany(() => InfrastructureComment, (comment) => comment.userRelation)
+  infrastructureCommentsRelation: InfrastructureComment[];
+
+  @OneToMany(() => InfrastructureAttachment, (attachment) => attachment.uploaderRelation)
+  infrastructureAttachmentsRelation: InfrastructureAttachment[];
 }
