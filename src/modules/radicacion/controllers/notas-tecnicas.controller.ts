@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { NotasTecnicas } from "../entities";
+import { NotasTecnicas } from "../entities/notas-tecnicas";
 import { validate } from "class-validator";
 import * as ExcelJS from "exceljs";
 import { off } from "node:process";

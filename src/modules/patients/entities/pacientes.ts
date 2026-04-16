@@ -3,7 +3,7 @@ import { Convenio } from "../../catalog/entities/convenio";
 import { TipoDocumento } from "../../catalog/entities/tipo-documento";
 import { IpsPrimaria } from "../../catalog/entities/ips-primaria";
 import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
 

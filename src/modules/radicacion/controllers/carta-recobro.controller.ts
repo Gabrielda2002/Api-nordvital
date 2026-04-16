@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { CartaRecobro, Radicacion, CupsRadicados } from "../entities";
+import { CartaRecobro } from "../entities/carta-recobro";
+import { Radicacion } from "../entities/radicacion";
+import { CupsRadicados } from "../entities/cups-radicados";
 import { validate } from "class-validator";
 import { ADDRGETNETWORKPARAMS } from "dns";
 import path from "path";

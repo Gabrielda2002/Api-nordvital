@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
 import { Sedes } from "../../catalog/entities/sedes";
 import { Usuarios } from "../../auth/entities/usuarios";
-import { Soportes } from "../../radicacion/entities";
+import { Soportes } from "../../radicacion/entities/soportes";
 import { SeguimientoTelevisor } from "./seguimiento-televisor";
 
 @Entity({name: "televisores"})

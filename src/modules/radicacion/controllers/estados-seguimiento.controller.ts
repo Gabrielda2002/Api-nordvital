@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { EstadosSeguimiento } from "../entities";
+import { EstadosSeguimiento } from "../entities/estados-seguimiento";
 import { validate, Validator } from "class-validator";
 
 export async function getEstadosSeguimientos(req: Request, res: Response, next: NextFunction){

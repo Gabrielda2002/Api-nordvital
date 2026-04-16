@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Radicacion, CupsRadicados, Soportes } from "../entities";
+import { Radicacion } from "../entities/radicacion";
+import { CupsRadicados } from "../entities/cups-radicados";
+import { Soportes } from "../entities/soportes";
 import { validate } from "class-validator";
 import { Pacientes } from "../../patients/entities/pacientes";
 import path from "path";

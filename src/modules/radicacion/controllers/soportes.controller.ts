@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Soportes } from "../entities";
+import { Soportes } from "../entities/soportes";
 import { validate } from "class-validator";
 import fs from "fs";
 import path from "path";

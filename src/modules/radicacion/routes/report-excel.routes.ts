@@ -26,7 +26,7 @@ import {
   previewReportSurgerys,
   previewReportTickets,
   previewReportTV,
-} from "../controllers";
+} from "../controllers/report-excel.controller";
 
 const router = Router();
 

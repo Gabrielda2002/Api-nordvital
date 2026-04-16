@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { validate } from "class-validator";
 import { InfrastructureComment } from "../entities/infrastructure-comment";
 import { InfrastructureTicket } from "../entities/infrastructure-ticket";
-import { NotificationService } from "../../notifications";
+import { NotificationService } from "../../notifications/services/notification.service";
 
 export async function getAllInfrastructureComments(req: Request, res: Response, next: NextFunction) {
     try {

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ServiciosGenerales } from "../entities";
+import { ServiciosGenerales } from "../entities/servicios-generales";
 import { validate } from "class-validator";
 
 export async function getServicioGeneral(req: Request, res: Response, next: NextFunction) {

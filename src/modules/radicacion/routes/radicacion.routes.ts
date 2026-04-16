@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authorizeRadicacion, createRequestService, getRadicacionByPatient, getRadicaciones, getRadicacionesAudit, getSurgeries } from "../controllers";
+import { authorizeRadicacion, createRequestService, getRadicacionByPatient, getRadicaciones, getRadicacionesAudit, getSurgeries } from "../controllers/radicacion.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import {upload} from "@core/middlewares/multer-support.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";

@@ -1,9 +1,9 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 import { Pacientes } from "../../patients/entities/pacientes";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
-import { ServiciosEjecutados } from "../../radicacion/entities";
+import { ServiciosEjecutados } from "../../radicacion/entities/servicios-ejecutados";
 
 @Entity("document_types")
 export class TipoDocumento extends BaseEntity {

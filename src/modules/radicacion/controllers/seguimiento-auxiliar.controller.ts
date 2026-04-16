@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SeguimientoAuxiliar } from "../entities";
+import { SeguimientoAuxiliar } from "../entities/seguimiento-auxiliar";
 import { validate } from "class-validator";
 
 export async function getAllSeguimientosAuxiliares(req: Request, res: Response, next: NextFunction){

@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Cirugias } from "../entities/cirugias";
 import { validate } from "class-validator";
 import { stat } from "fs";
-import { Radicacion, CupsRadicados } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
+import { CupsRadicados } from "../../radicacion/entities/cups-radicados";
 import { Profesionales } from "../../catalog/entities/profesionales";
 
 export async function getAllSurgery(req: Request, res: Response, next: NextFunction) {

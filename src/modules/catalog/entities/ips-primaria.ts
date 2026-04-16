@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 import { Pacientes } from "../../patients/entities/pacientes";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 

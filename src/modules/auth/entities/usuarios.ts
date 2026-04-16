@@ -28,14 +28,17 @@ import {
   Min,
 } from "class-validator";
 import { Carpeta } from "../../documents/entities/carpeta";
-import { Radicacion, SeguimientoAuxiliar, CartaRecobro } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
+import { SeguimientoAuxiliar } from "../../radicacion/entities/seguimiento-auxiliar";
+import { CartaRecobro } from "../../radicacion/entities/carta-recobro";
 import { seguimientoEquipos } from "../../inventory/entities/seguimiento-equipos";
 import { SeguimientoDispositivosRed } from "../../inventory/entities/seguimiento-dispositivos-red";
 import { Equipos } from "../../inventory/entities/equipos";
 import { Sedes } from "../../catalog/entities/sedes";
 import { PausasActivas } from "../../hr/entities/pausas-activas";
 import { Tickets } from "../../tickets/entities/tickets";
-import { Notification, PushSubscription } from "../../notifications";
+import { Notification } from "../../notifications/entities/notificaciones";
+import { PushSubscription } from "../../notifications/entities/push-subscription";
 import { EncuestasSatisfaccion } from "../../hr/entities/encuestas-satisfaccion";
 import { RegistroEntrada } from "../../hr/entities/registro-entrada";
 import { SeguimientoAuxiliarCirugias } from "../../surgeries/entities/seguimiento-auxiliar-cirugias";

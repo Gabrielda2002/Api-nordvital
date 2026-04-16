@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Celular } from "../entities/celular";
-import { Soportes } from "../../radicacion/entities";
+import { Soportes } from "../../radicacion/entities/soportes";
 import path from "path";
 import { ifError } from "assert";
 import { validate } from "class-validator";

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, Length, Matches } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 
 @Entity("diagnoses")
 export class Diagnostico extends BaseEntity {

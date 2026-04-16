@@ -1,37 +1,5 @@
-// Inventory Module - Main Barrel Export
+// Inventory Module Routes
 
-// Entities
-export * from "./entities";
-
-// Controllers
-export * from "./controllers/equipos.controller";
-export * from "./controllers/accesorios-equipos.controller";
-export * from "./controllers/componentes.controller";
-export * from "./controllers/software.controller";
-export * from "./controllers/dispositivos-red.controller";
-export * from "./controllers/celular.controller";
-export * from "./controllers/televisor.controller";
-export * from "./controllers/inventario-general.controller";
-export * from "./controllers/seguimiento-equipos.controller";
-export * from "./controllers/seguimiento-dispositivos-red.controller";
-export * from "./controllers/seguimiento-celulares.controller";
-export * from "./controllers/seguimiento-televisores.controller";
-export * from "./controllers/seguimiento-inventario-general.controller";
-export * from "./controllers/maintenance-checklist.controller";
-export * from "./controllers/activos.controller";
-export * from "./controllers/tipo-activo.controller";
-export * from "./controllers/clasificacion.controller";
-export * from "./controllers/materiales.controller";
-export * from "./controllers/estado-iv-general.controller";
-
-// Services
-export * from "./services/report-equipments.service";
-export * from "./services/report-general-inventory.service";
-export * from "./services/report-phones.service";
-export * from "./services/report-red-device.service";
-export * from "./services/report-tv.service";
-
-// Routes
 export { default as equiposRoutes } from "./routes/equipos.routes";
 export { default as accesoriosEquiposRoutes } from "./routes/accesorios-equipos.routes";
 export { default as componentesRoutes } from "./routes/componentes.routes";

@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { CupsRadicados } from "../../radicacion/entities";
+import { CupsRadicados } from "../../radicacion/entities/cups-radicados";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 
 @Entity("functional_units")

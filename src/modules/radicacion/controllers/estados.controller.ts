@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Estados } from "../entities";
+import { Estados } from "../entities/estados";
 import { validate } from "class-validator";
 import { parse } from "path";
 

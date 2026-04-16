@@ -5,7 +5,7 @@ import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, L
 import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "../../auth/entities/usuarios";
-import { Soportes } from "../../radicacion/entities";
+import { Soportes } from "../../radicacion/entities/soportes";
 import { Sedes } from "../../catalog/entities/sedes";
 
 @Entity({name: "equipos"})

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createSeguimientoAuxiliar, deleteSeguimientoAuxiliar, getAllSeguimientosAuxiliares, getSeguimientoAuxiliar, updateSeguimientoAuxiliar } from "../controllers";
+import { createSeguimientoAuxiliar, deleteSeguimientoAuxiliar, getAllSeguimientosAuxiliares, getSeguimientoAuxiliar, updateSeguimientoAuxiliar } from "../controllers/seguimiento-auxiliar.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";

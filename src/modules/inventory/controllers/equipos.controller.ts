@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Equipos } from "../entities/equipos";
 import { validate } from "class-validator";
-import { Soportes } from "../../radicacion/entities";
+import { Soportes } from "../../radicacion/entities/soportes";
 import path from "path";
 import fs from "fs";
 import { addMonths, differenceInDays, subYears } from "date-fns";

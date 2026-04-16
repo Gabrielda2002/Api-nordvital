@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
-import { Radicacion } from "../entities";
+import { Radicacion } from "../entities/radicacion";
 
 export type ReportRadicacionFilters = {
   statusCups?: number | string;

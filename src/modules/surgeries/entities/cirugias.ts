@@ -1,6 +1,6 @@
 import { IsNotEmpty, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, NumericType, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 import { IpsRemite } from "../../catalog/entities/ips-remite";
 import { SeguimientoAuxiliarCirugias } from "./seguimiento-auxiliar-cirugias";
 

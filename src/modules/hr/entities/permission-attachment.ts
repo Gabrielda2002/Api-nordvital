@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { PermissionRequest } from "./permission-request";
-import { Soportes } from "../../radicacion/entities";
+import { Soportes } from "../../radicacion/entities/soportes";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { IsInt, IsString, Length } from "class-validator";
 

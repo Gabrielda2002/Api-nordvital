@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { GrupoServicios } from "../entities/grupo-servicios";
 import { validate } from "class-validator";
 import { parse } from "path";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
 
 export async function getAllGruposServicios(req: Request, res: Response, next: NextFunction ) {
   try {

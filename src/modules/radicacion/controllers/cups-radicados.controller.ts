@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CupsRadicados } from "../entities";
+import { CupsRadicados } from "../entities/cups-radicados";
 import { validate } from "class-validator";
 
 export async function getAllCupsRadicados(

@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
-import { NotasTecnicas } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
+import { NotasTecnicas } from "../../radicacion/entities/notas-tecnicas";
 
 @Entity("services")
 export class Servicios extends BaseEntity {

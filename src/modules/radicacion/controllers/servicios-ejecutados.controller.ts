@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ServiciosEjecutados } from "../entities";
+import { ServiciosEjecutados } from "../entities/servicios-ejecutados";
 import { validate } from "class-validator";
 
 export async function getAllServiciosEjecutados(req: Request, res: Response, next: NextFunction){

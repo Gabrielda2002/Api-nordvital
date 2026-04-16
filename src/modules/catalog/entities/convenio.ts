@@ -1,9 +1,9 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
+import { NotasTecnicas } from "../../radicacion/entities/notas-tecnicas";
+import { ServiciosEjecutados } from "../../radicacion/entities/servicios-ejecutados";
 import { Pacientes } from "../../patients/entities/pacientes";
 import { IsBoolean, IsNotEmpty, Length } from "class-validator";
-import { NotasTecnicas } from "../../radicacion/entities";
-import { ServiciosEjecutados } from "../../radicacion/entities";
 
 @Entity("agreements")
 export class Convenio extends BaseEntity {

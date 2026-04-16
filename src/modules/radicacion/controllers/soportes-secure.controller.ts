@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Soportes } from "../entities";
+import { Soportes } from "../entities/soportes";
 import path from "path";
 import fs from "fs";
 import { FileTokenService } from "../../documents/services/file-token.service";

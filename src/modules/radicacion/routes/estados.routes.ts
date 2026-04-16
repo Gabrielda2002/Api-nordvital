@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createEstados, deleteEstados, getAllEstados, getEstadosById, getStatusByName, updateEstados } from "../controllers";
+import { createEstados, deleteEstados, getAllEstados, getEstadosById, getStatusByName, updateEstados } from "../controllers/estados.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";

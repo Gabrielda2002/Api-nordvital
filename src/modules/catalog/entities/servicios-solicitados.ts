@@ -1,6 +1,6 @@
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { CupsRadicados } from "../../radicacion/entities";
+import { CupsRadicados } from "../../radicacion/entities/cups-radicados";
 
 @Entity("requested_services")
 export class ServiciosSolicitados extends BaseEntity {

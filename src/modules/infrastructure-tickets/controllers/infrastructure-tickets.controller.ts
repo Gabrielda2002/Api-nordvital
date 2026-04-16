@@ -6,7 +6,7 @@ import fs from "fs";
 import { InfrastructureTicket } from "../entities/infrastructure-ticket";
 import { InfrastructureCategory } from "../entities/infrastructure-category";
 import { InfrastructureAttachment } from "../entities/infrastructure-attachment";
-import { NotificationService } from "../../notifications";
+import { NotificationService } from "../../notifications/services/notification.service";
 import Logger from "@core/utils/logger-wrapper";
 
 export async function getAllInfrastructureTickets(req: Request, res: Response, next: NextFunction) {

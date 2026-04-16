@@ -1,5 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Radicacion, NotasTecnicas, ServiciosEjecutados } from "../../radicacion/entities";
+import { Radicacion } from "../../radicacion/entities/radicacion";
+import { NotasTecnicas } from "../../radicacion/entities/notas-tecnicas";
+import { ServiciosEjecutados } from "../../radicacion/entities/servicios-ejecutados";
 import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
 import { dispositivosRed } from "../../inventory/entities/dispositivos-red";
 import { Municipio } from "./municipio";
