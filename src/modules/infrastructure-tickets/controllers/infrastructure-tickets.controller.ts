@@ -43,6 +43,7 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
     try {
         const { title, description, userId, categoryId, sedeId, locationDescription, attachmentType } = req.body;
         const file = req.file;
+        console.log(req.body)
 
         const ticket = new InfrastructureTicket();
         ticket.title = title;
@@ -51,6 +52,12 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
         ticket.categoryId = parseInt(String(categoryId));
         ticket.sedeId = parseInt(String(sedeId));
         ticket.statusId = 1;
+
+        if(!categoryId) {
+            await queryRunner.rollbackTransaction();
+            if ( file?.path && fs.existsSync(file?.path)) fs.unlinkSync(file.path);
+            return res.status(400).json({ message: "Category ID is required" });
+        } 
 
         if (locationDescription) {
             ticket.locationDescription = locationDescription;
@@ -69,6 +76,7 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
         }
 
         const ticketErrors = await validate(ticket);
+        console.log()
         if (ticketErrors.length > 0) {
             await queryRunner.rollbackTransaction();
             const message = ticketErrors.map(e => Object.values(e.constraints || {}).join(", ")).join(", ");

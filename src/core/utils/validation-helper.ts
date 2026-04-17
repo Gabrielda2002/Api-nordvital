@@ -2,7 +2,7 @@ import { validate, ValidationError as ClassValidatorError } from "class-validato
 import { ValidationError } from "./custom-errors";
 
 export async function validateEntity<T extends object>(entity: T): Promise<void> {
-  const errors = await validate(entity);
+  const errors = await validate(entity, { stopAtFirstError: true });
 
   if (errors.length > 0) {
     const messages = errors

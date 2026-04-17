@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { InfrastructureTicket } from "./infrastructure-ticket";
@@ -10,21 +10,21 @@ export class InfrastructureComment extends BaseEntity {
     id: number;
 
     @Column({ name: "ticket_id", type: "int" })
+    @IsNumber({}, { message: "Ticket ID must be a number" })
     @IsNotEmpty({ message: "Ticket ID is required" })
-    @IsNumber()
     ticketId: number;
 
-    @Column({ name: "usuario_id", type: "int" })
+    @Column({ name: "user_id", type: "int" })
+    @IsNumber({}, { message: "User ID must be a number" })
     @IsNotEmpty({ message: "User ID is required" })
-    @IsNumber()
     userId: number;
 
-    @Column({ name: "comentario", type: "text" })
+    @Column({ name: "comment", type: "text" })
     @IsNotEmpty({ message: "Comment is required" })
     @IsString()
     comment: string;
 
-    @CreateDateColumn({ name: "fecha_creacion", type: "timestamp" })
+    @CreateDateColumn({ name: "created_at", type: "timestamp" })
     createdAt: Date;
 
     @ManyToOne(() => InfrastructureTicket, (ticket) => ticket.commentsRelation)
@@ -32,6 +32,6 @@ export class InfrastructureComment extends BaseEntity {
     ticketRelation: InfrastructureTicket;
 
     @ManyToOne(() => Usuarios, (usuario) => usuario.infrastructureCommentsRelation)
-    @JoinColumn({ name: "usuario_id" })
+    @JoinColumn({ name: "user_id" })
     userRelation: Usuarios;
 }

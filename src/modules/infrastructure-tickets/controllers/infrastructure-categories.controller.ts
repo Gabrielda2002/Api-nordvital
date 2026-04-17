@@ -17,7 +17,7 @@ export async function getAllInfrastructureCategories(req: Request, res: Response
         } else {
             categories = await InfrastructureCategory.createQueryBuilder("category")
                 .select(["category.id", "category.name", "category.description", "category.priorityId"])
-                .where("category.nombre LIKE :name", { name: `%${name}%` })
+                .where("category.name LIKE :name", { name: `%${name}%` })
                 .orderBy("category.name", "ASC")
                 .limit(50)
                 .getMany();

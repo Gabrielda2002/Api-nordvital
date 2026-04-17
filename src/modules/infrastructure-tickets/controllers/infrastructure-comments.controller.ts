@@ -100,7 +100,8 @@ export async function createInfrastructureCommentAndChangeStatus(req: Request, r
     await queryRunner.startTransaction();
 
     try {
-        const { ticketId, userId, comment, status } = req.body;
+        console.log(req.body)
+        const { ticketId, userId, comment, status, quotationAmount } = req.body;
 
         const newComment = new InfrastructureComment();
         newComment.ticketId = parseInt(String(ticketId));
@@ -122,6 +123,7 @@ export async function createInfrastructureCommentAndChangeStatus(req: Request, r
 
         const oldStatusId = ticket.statusId;
         ticket.statusId = parseInt(String(status));
+        ticket.quotationAmount = quotationAmount ? parseFloat(String(quotationAmount)) : ticket.quotationAmount;
 
         await queryRunner.manager.save(newComment);
         await queryRunner.manager.save(ticket);
