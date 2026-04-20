@@ -94,7 +94,7 @@ router.get("/infrastructure-attachments/:attachmentId", authenticate, authorizeR
 
 /**
  * @swagger
- * /infrastructure-attachments/token/{id}:
+ * /infrastructure-attachments/token/{id}/access-token:
  *   get:
  *     summary: Generar token temporal de descarga para adjunto de infraestructura
  *     tags: [InfrastructureAttachments]
@@ -114,7 +114,7 @@ router.get("/infrastructure-attachments/:attachmentId", authenticate, authorizeR
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-attachments/token/:id", authenticate, authorizeRoles(ALL_ROLES), validarId, generateInfrastructureAttachmentDownloadToken);
+router.post("/infrastructure-attachments/token/:id/access-token", authenticate, authorizeRoles(ALL_ROLES), validarId, generateInfrastructureAttachmentDownloadToken);
 
 /**
  * @swagger

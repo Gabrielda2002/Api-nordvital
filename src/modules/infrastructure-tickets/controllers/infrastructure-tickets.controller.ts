@@ -11,8 +11,44 @@ import Logger from "@core/utils/logger-wrapper";
 
 export async function getAllInfrastructureTickets(req: Request, res: Response, next: NextFunction) {
     try {
-        const tickets = await InfrastructureTicket.find();
-        return res.json(tickets);
+        const tickets = await InfrastructureTicket.createQueryBuilder("t")
+            .leftJoinAndSelect("t.categoryRelation", "category")
+            .leftJoinAndSelect("t.userRelation", "user")
+            .leftJoinAndSelect("t.statusRelation", "status")
+            .leftJoinAndSelect("t.priorityRelation", "priority")
+            .leftJoinAndSelect("t.sedeRelation", "sede")
+            .leftJoinAndSelect("t.attachmentsRelation", "attachments")
+            .leftJoinAndSelect("sede.municipioRelation", "municipio")
+            .leftJoinAndSelect("user.sedeRelation", "userSede")
+            .orderBy("t.createdAt", "DESC")
+            .getMany();
+
+        if (tickets.length === 0) {
+            return res.status(404).json({ message: "No infrastructure tickets found" });
+        }
+
+        const ticketsFormatted = tickets.map((t) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            nameRequester: t.userRelation?.name,
+            lastNameRequester: t.userRelation?.lastName,
+            phone: t.userRelation?.phoneNumber,
+            category: t.categoryRelation?.name,
+            priority: t.priorityRelation?.name,
+            status: t.statusRelation?.name,
+            headquarter: t.sedeRelation?.name,
+            municipio: t.sedeRelation?.municipioRelation?.name,
+            locationDescription: t.locationDescription,
+            attachments: t.attachmentsRelation.map(att => ({
+                id: att.id,
+                fileUrl: att.fileUrl,
+            })),
+            createdAt: t.createdAt,
+            updatedAt: t.updatedAt,
+        }));
+
+        return res.status(200).json(ticketsFormatted);
     } catch (error) {
         next(error);
     }
@@ -41,7 +77,7 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
     let uploadedFilePath: string | null = null;
 
     try {
-        const { title, description, userId, categoryId, sedeId, locationDescription, attachmentType } = req.body;
+        const { title, description, userId, categoryId, headquartersId, locationDescription, attachmentType } = req.body;
         const file = req.file;
         console.log(req.body)
 
@@ -50,7 +86,7 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
         ticket.description = description;
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
-        ticket.sedeId = parseInt(String(sedeId));
+        ticket.sedeId = parseInt(String(headquartersId));
         ticket.statusId = 1;
 
         if(!categoryId) {
