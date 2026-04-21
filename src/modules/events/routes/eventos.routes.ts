@@ -6,6 +6,10 @@ import { validarId } from "@core/middlewares/validate-type-id.middleware";
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23'];
+
+const ALLOWED_ROLES_EVENT_CREATION = ['1', '18'];
+
 /**
  * @swagger
  * /eventos:
@@ -28,7 +32,7 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos
  */
-router.get("/eventos", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), getAllEvents)
+router.get("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES), getAllEvents)
 
 /**
  * @swagger
@@ -81,7 +85,7 @@ router.get("/evento/:id", authenticate, authorizeRoles(['1']),validarId, getEven
  *       400:
  *         description: Datos inválidos
  */
-router.post("/eventos", authenticate, authorizeRoles(['1', '18']), createEvent )
+router.post("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREATION), createEvent )
 
 /**
  * @swagger
@@ -110,7 +114,7 @@ router.post("/eventos", authenticate, authorizeRoles(['1', '18']), createEvent )
  *       404:
  *         description: Evento no encontrado
  */
-router.put("/eventos/:id", authenticate, authorizeRoles(['1', '18']),validarId, updateEvent )
+router.put("/eventos/:id", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREATION),validarId, updateEvent )
 
 /**
  * @swagger

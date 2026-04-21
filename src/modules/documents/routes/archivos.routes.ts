@@ -9,6 +9,8 @@ import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middlewar
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+
 /**
  * @swagger
  * components:
@@ -59,7 +61,7 @@ const router = Router();
  *       404:
  *         description: No hay archivos registrados
  */
-router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']) , getAllFiles);
+router.get("/archivo", authenticate, authorizeRoles(ALLOWED_ROLES) , getAllFiles);
 
 /**
  * @swagger
@@ -86,7 +88,7 @@ router.get("/archivo", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/archivo/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']),validarId ,getFileById);
+router.get("/archivo/:id", authenticate, authorizeRoles(ALLOWED_ROLES),validarId ,getFileById);
 
 /**
  * @swagger
@@ -204,7 +206,7 @@ router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId,
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/download-file/:id", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16','17','18', '19', '20']),validarId, downloadFile);
+router.get("/download-file/:id", authenticate, authorizeRoles(ALLOWED_ROLES),validarId, downloadFile);
 
 /**
  * @swagger
@@ -316,7 +318,7 @@ router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), valid
  *       403:
  *         description: Sin permisos para acceder al archivo
  */
-router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), validarId, generateFileAccessToken);
+router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(ALLOWED_ROLES), validarId, generateFileAccessToken);
 
 /**
  * @swagger

@@ -7,6 +7,8 @@ import { multerTicketAttachment } from "@core/middlewares/multer-ticket.middlewa
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21', '22', '23'];
+
 /**
  * @swagger
  * /tickets:
@@ -78,7 +80,7 @@ router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTi
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/tickets', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']),multerTicketAttachment.single("file"), createTicket)
+router.post('/tickets', authenticate, authorizeRoles(ALLOWED_ROLES), multerTicketAttachment.single("file"), createTicket)
 
 /**
  * @swagger
@@ -158,6 +160,6 @@ router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, de
  */
 router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable);
 
-router.get('/tickets/user/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), validarId, getListTicketsByUserId);
+router.get('/tickets/user/:id', authenticate, authorizeRoles(ALLOWED_ROLES), validarId, getListTicketsByUserId);
 
 export default router;

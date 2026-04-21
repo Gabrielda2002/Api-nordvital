@@ -7,6 +7,8 @@ import { uploadPhotoUser } from "@core/middlewares/multer-photo-user.middleware"
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+
 /**
  * @swagger
  * /usuarios:
@@ -201,7 +203,7 @@ router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, d
  *       200:
  *         description: Foto actualizada exitosamente
  */
-router.put('/upload-photo/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
+router.put('/upload-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
 
 /**
  * @swagger
@@ -221,7 +223,7 @@ router.put('/upload-photo/:id', authenticate, authorizeRoles(['1','2','3','4','5
  *       200:
  *         description: Foto eliminada exitosamente
  */
-router.delete('/delete-photo/:id', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20']), validarId, deletePhoto);
+router.delete('/delete-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), validarId, deletePhoto);
 
 /**
  * @swagger
@@ -269,7 +271,7 @@ router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2', '18']), ge
  *       200:
  *         description: Datos actualizados exitosamente
  */
-router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18',  '19', '20', '21']), validarId, updateUsuarioBasicData);
+router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(ALLOWED_ROLES), validarId, updateUsuarioBasicData);
 
 /**
  * @swagger
@@ -299,7 +301,7 @@ router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(['1','2','
  *       200:
  *         description: Contraseña actualizada exitosamente
  */
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21']), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(ALLOWED_ROLES), validarId, updatePassword);
 
 /**
  * @swagger

@@ -150,7 +150,7 @@ router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),vali
  *       200:
  *         description: Lugares de radicación encontrados
  */
-router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1', '3','10','15', '6', '20','21']), getLugaresRadicacionByName);
+router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23']), getLugaresRadicacionByName);
 
 /**
  * @swagger

@@ -73,7 +73,7 @@ router.get('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10
  *       409:
  *         description: La encuesta ya existe
  */
-router.post('/encuestas-satisfaccion', authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), createSurveySatisfaction);
+router.post('/encuestas-satisfaccion', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23']), createSurveySatisfaction);
 
 /**
  * @swagger

@@ -6,6 +6,8 @@ import { getUserNotifications, markNotificationAsRead } from "../controllers/not
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23'];
+
 /**
  * @swagger
  * /notifications/user/{userId}:
@@ -23,7 +25,7 @@ const router = Router();
  *       200:
  *         description: Lista de notificaciones del usuario
  */
-router.get('/notifications/user/:userId', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), getUserNotifications);
+router.get('/notifications/user/:userId', authenticate, authorizeRoles(ALLOWED_ROLES), getUserNotifications);
 
 /**
  * @swagger
@@ -44,6 +46,6 @@ router.get('/notifications/user/:userId', authenticate, authorizeRoles(['1','2',
  *       404:
  *         description: Notificación no encontrada
  */
-router.put('/notifications/:id/read', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21']), markNotificationAsRead);
+router.put('/notifications/:id/read', authenticate, authorizeRoles(ALLOWED_ROLES), markNotificationAsRead);
 
 export default router;

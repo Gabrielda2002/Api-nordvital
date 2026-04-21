@@ -7,6 +7,8 @@ import { getDepartmentUser } from "@core/middlewares/get-department-user.middlew
 
 const router = Router();
 
+const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+
 /**
  * @swagger
  * components:
@@ -201,8 +203,8 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  *       404:
  *         description: Carpeta no encontrada
  */
-router.get('/sistema-calidad' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), getDepartmentUser, getSgcFoldersFiles);
-router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), getDepartmentUser, getSgcFoldersFiles);
+router.get('/sistema-calidad' , authenticate , authorizeRoles(ALLOWED_ROLES), getDepartmentUser, getSgcFoldersFiles);
+router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(ALLOWED_ROLES), getDepartmentUser, getSgcFoldersFiles);
 
 /**
  * @swagger
