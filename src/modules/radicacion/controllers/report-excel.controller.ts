@@ -1222,6 +1222,13 @@ export async function previewReportDemandInduced(
       },
       20
     );
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        message: "Data Demand Induced Not Found.",
+      });
+    }
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
