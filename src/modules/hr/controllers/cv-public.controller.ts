@@ -34,7 +34,7 @@ export async function servePublicCV(req: Request, res: Response, next: NextFunct
         const { cvFileName, originalName, action } = validation.payload!;
 
         // Construir ruta del CV en FilesEmails
-        const cvPath = path.resolve(__dirname, "..", 'uploads', 'FilesEmails', cvFileName);
+        const cvPath = path.resolve(__dirname, "..", '..', '..', 'uploads', 'FilesEmails', cvFileName);
         
         if (!fs.existsSync(cvPath)) {
             return res.status(404).json({ 
