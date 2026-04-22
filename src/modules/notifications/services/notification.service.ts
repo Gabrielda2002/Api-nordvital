@@ -5,6 +5,7 @@ import { Notification } from "../entities/notificaciones";
 import { Tickets } from "../../tickets/entities/tickets";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { PushService } from "./push.service";
+import Logger from "@core/utils/logger-wrapper";
 
 export class NotificationService {
   /**
@@ -24,12 +25,8 @@ export class NotificationService {
 
     await notification.save();
 
-    console.log("emitiendo notificacion ");
-    console.log(
-      `[Socket.io] Emitiendo notificación a sala user_${ticket.userId}:`,
-      notification
-    );
     io.to(`user_${ticket.userId}`).emit(`newNotification`, notification);
+    Logger.info(`[Socket.io] Notificación emitida a sala user_${ticket.userId}`);
 
     // Enviar notificación push
     try {
@@ -43,9 +40,8 @@ export class NotificationService {
           type: "ticket_closed",
         }
       );
-      console.log("[push] Notificación push enviada");
     } catch (error) {
-      console.log("[Error] enviando notificación push", error);
+      Logger.error("[PushService] Error enviando notificación push", error);
     }
 
     return notification;
@@ -69,24 +65,14 @@ export class NotificationService {
 
     await notification.save();
 
-    console.log("emitiendo notificacion ");
-    console.log(
-      `[Socket.io] Emitiendo notificación a sala user_${userId}:`,
-      notification
-    );
     io.to(`user_${userId}`).emit(`newNotification`, notification);
+    Logger.info(`[Socket.io] Notificación emitida a sala user_${userId}`);
 
     // Enviar notificación push
     try {
-      await PushService.sendPushNotification(
-        userId,
-        title,
-        message,
-        {}
-      );
-      console.log("[push] Notificación push enviada");
+      await PushService.sendPushNotification(userId, title, message, {});
     } catch (error) {
-      console.log("[Error] enviando notificación push", error);
+      Logger.error("[PushService] Error enviando notificación push", error);
     }
 
     return notification;
@@ -155,22 +141,11 @@ export class NotificationService {
         .getMany();
 
       if (!users.length) {
-        console.log("No users found for role", roleIds);
+        Logger.warn(`[NotificationService] No users found for roles: ${roleIds}`);
         return;
       }
 
-      console.log(
-        `[ENVIANDO NOTIFICACIONES A ${users.length} usuarios con el rol ${roleIds} const user of users]`
-      );
-
-      roleIds.forEach(r => {
-        io.to(`role_${r}`).emit("newNotification", {
-          title,
-          message,
-          referenceId,
-          referenceType,
-        });
-      })
+      Logger.info(`[NotificationService] Enviando notificaciones a ${users.length} usuarios con roles ${roleIds}`);
 
       for (const user of users) {
         const notification = new Notification();
@@ -183,13 +158,22 @@ export class NotificationService {
 
         await notification.save();
 
-        await PushService.sendPushNotification(user.id, title, message, {
-          ticketId: referenceId,
-          notificationId: notification.id,
-          type: referenceType,
-        });
+        io.to(`user_${user.id}`).emit("newNotification", notification);
+        Logger.info(`[Socket.io] Notificación emitida a sala user_${user.id}`);
+
+        try {
+          await PushService.sendPushNotification(user.id, title, message, {
+            ticketId: referenceId,
+            notificationId: notification.id,
+            type: referenceType,
+          });
+        } catch (pushError) {
+          Logger.error(`[PushService] Error enviando push al usuario ${user.id}`, pushError);
+        }
       }
-    } catch (error) { }
+    } catch (error) {
+      Logger.error("[NotificationService] Error en createNotificationForRole", error);
+    }
   }
 
   // eliminar notificaciones antiguas (mas de 90 dias)
