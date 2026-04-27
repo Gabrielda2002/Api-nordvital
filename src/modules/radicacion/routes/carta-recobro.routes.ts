@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { creatAuditRequestLetter, createRecoveryLetter, createRequestLetter, deleteRecoveryLetter, generatePdf, getAllRecoveryLetter, getRecoveryLetterById, getRequestLetter, getResponseLetter, saveDateImpress, updateRecoveryLetter } from "../controllers/carta-recobro.controller";
 import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -278,26 +279,26 @@ const router = Router();
  *         description: Fecha de impresión guardada exitosamente
  */
 
-router.get("/recover-letter", authenticate, authorizeRoles(["1"]), getAllRecoveryLetter)
+router.get("/recover-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllRecoveryLetter)
 
-router.get("/recover-letter/:id", authenticate, authorizeRoles(["1"]), getRecoveryLetterById)
+router.get("/recover-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getRecoveryLetterById)
 
-router.post("/recover-letter", authenticate, authorizeRoles(["1"]), createRecoveryLetter)
+router.post("/recover-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createRecoveryLetter)
 
-router.put("/recover-letter/:id", authenticate, authorizeRoles(["1"]), updateRecoveryLetter)
+router.put("/recover-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), updateRecoveryLetter)
 
-router.delete("/recover-letter/:id", authenticate, authorizeRoles(["1"]), deleteRecoveryLetter)
+router.delete("/recover-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), deleteRecoveryLetter)
 
-router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles(["1", "10", "6", "2"]), getDepartmentUser, getRequestLetter)
+router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), getDepartmentUser, getRequestLetter)
 
-router.get("/table-response-letter", authenticate, authorizeRoles(["1", "6", '2']),getDepartmentUser , getResponseLetter)
+router.get("/table-response-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),getDepartmentUser , getResponseLetter)
 
-router.post("/create-request-letter", authenticate, authorizeRoles(["1","10","6"]), createRequestLetter)
+router.post("/create-request-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), createRequestLetter)
 
-router.put("/create-audit-letter/:id", authenticate, authorizeRoles(["1"]), creatAuditRequestLetter)
+router.put("/create-audit-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), creatAuditRequestLetter)
 
-router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles(["1", "10", "6", '2']), generatePdf)
+router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), generatePdf)
 
-router.put('/save-date-print/:id', authenticate, authorizeRoles(["1"]), saveDateImpress);
+router.put('/save-date-print/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), saveDateImpress);
 
 export default router;

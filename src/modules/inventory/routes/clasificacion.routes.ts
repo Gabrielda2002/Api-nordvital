@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import { getAllClassifications } from "../controllers/clasificacion.controller";
 
 const router = Router();
@@ -40,6 +41,6 @@ const router = Router();
  *       404:
  *         description: No se encontraron clasificaciones
  */
-router.get('/clasificaciones', authenticate, authorizeRoles(['1', '6','4']), getAllClassifications);
+router.get('/clasificaciones', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG), getAllClassifications);
 
 export default router;

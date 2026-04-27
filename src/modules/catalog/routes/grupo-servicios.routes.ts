@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createGrupoServicios, deleteGrupoServicios, getAllGruposServicios, getGrupoServicios, getGrupoServiciosByName, updateByRadicacion, updateGrupoServicios } from "../controllers/grupo-servicios.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/", authenticate, authorizeRoles(['1', '2']), getAllGruposServicios);
+router.get("/", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllGruposServicios);
 
 /**
  * @swagger
@@ -43,7 +44,7 @@ router.get("/", authenticate, authorizeRoles(['1', '2']), getAllGruposServicios)
  *       404:
  *         description: Grupo de servicios no encontrado
  */
-router.get("/:id", authenticate, authorizeRoles(['1', '2']), validarId, getGrupoServicios);
+router.get("/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getGrupoServicios);
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.get("/:id", authenticate, authorizeRoles(['1', '2']), validarId, getGrupo
  *       400:
  *         description: Error en los datos enviados
  */
-router.post("/", authenticate, authorizeRoles(['1', '2']), createGrupoServicios);
+router.post("/", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createGrupoServicios);
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.post("/", authenticate, authorizeRoles(['1', '2']), createGrupoServicios)
  *       404:
  *         description: Grupo de servicios no encontrado
  */
-router.put("/:id", validarId, authenticate, authorizeRoles(['1', '2']), updateGrupoServicios);
+router.put("/:id", validarId, authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), updateGrupoServicios);
 
 /**
  * @swagger
@@ -124,7 +125,7 @@ router.put("/:id", validarId, authenticate, authorizeRoles(['1', '2']), updateGr
  *       404:
  *         description: Grupo de servicios no encontrado
  */
-router.delete("/:id", validarId, authenticate, authorizeRoles(['1']), deleteGrupoServicios);
+router.delete("/:id", validarId, authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), deleteGrupoServicios);
 
 /**
  * @swagger
@@ -150,7 +151,7 @@ router.delete("/:id", validarId, authenticate, authorizeRoles(['1']), deleteGrup
  *       404:
  *         description: No se encontraron grupos de servicios
  */
-router.post("/name", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getGrupoServiciosByName);
+router.post("/name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getGrupoServiciosByName);
 
 /**
  * @swagger
@@ -200,6 +201,6 @@ router.post("/name", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), 
  *       404:
  *         description: Radicación no encontrada
  */
-router.put('/:id/radicacion', authenticate, authorizeRoles(['1', '15', '3']), validarId, updateByRadicacion);
+router.put('/:id/radicacion', authenticate, authorizeRoles(ROLE_GROUPS.SURGERY_AUDIT), validarId, updateByRadicacion);
 
 export default router;

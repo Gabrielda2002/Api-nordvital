@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createIpsRemite, deleteIpsRemite, getAllIpsRemite, getIpsRemite, getIpsRemiteByName, updateIpsRemite, updateStatusIpsRemite } from "../controllers/ips-remite.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/IpsRemite'
  */
-router.get("/ips-remite", authenticate, authorizeRoles(['1']), getAllIpsRemite);
+router.get("/ips-remite", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllIpsRemite);
 
 /**
  * @swagger
@@ -50,7 +51,7 @@ router.get("/ips-remite", authenticate, authorizeRoles(['1']), getAllIpsRemite);
  *       404:
  *         description: IPS Remite no encontrada
  */
-router.get("/ips-remite/:id", authenticate, authorizeRoles(['1', '2']), validarId, getIpsRemite);
+router.get("/ips-remite/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getIpsRemite);
 
 /**
  * @swagger
@@ -76,7 +77,7 @@ router.get("/ips-remite/:id", authenticate, authorizeRoles(['1', '2']), validarI
  *       400:
  *         description: Error en la creación
  */
-router.post("/ips-remite", authenticate, authorizeRoles(['1', '2']), createIpsRemite);
+router.post("/ips-remite", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createIpsRemite);
 
 
 /**
@@ -110,7 +111,7 @@ router.post("/ips-remite", authenticate, authorizeRoles(['1', '2']), createIpsRe
  *       404:
  *         description: IPS Remite no encontrada
  */
-router.put("/ips-remite/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateIpsRemite);
+router.put("/ips-remite/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateIpsRemite);
 
 
 /**
@@ -133,7 +134,7 @@ router.put("/ips-remite/:id", authenticate, authorizeRoles(['1', '2']), validarI
  *       404:
  *         description: IPS Remite no encontrada
  */
-router.delete("/ips-remite/:id", authenticate, authorizeRoles(['1']), validarId, deleteIpsRemite);
+router.delete("/ips-remite/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteIpsRemite);
 
 /**
  * @swagger
@@ -159,7 +160,7 @@ router.delete("/ips-remite/:id", authenticate, authorizeRoles(['1']), validarId,
  *       404:
  *         description: No se encontraron resultados
  */
-router.post("/ips-remite-name", authenticate, authorizeRoles(['1', '3','10', '15', '6']), getIpsRemiteByName);
+router.post("/ips-remite-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getIpsRemiteByName);
 
 /**
  * @swagger
@@ -192,6 +193,6 @@ router.post("/ips-remite-name", authenticate, authorizeRoles(['1', '3','10', '15
  *       404:
  *         description: IPS Remite no encontrada
  */
-router.put("/update-status-ips-remite/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateStatusIpsRemite);
+router.put("/update-status-ips-remite/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateStatusIpsRemite);
 
 export default router;

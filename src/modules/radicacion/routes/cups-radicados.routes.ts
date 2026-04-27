@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createCupsRadicados, deleteCupsRadicados, getAllCupsRadicados, getCupsRadicados, updateAuditados, updateCupsRadicados } from "../controllers/cups-radicados.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/cups-radicados", authenticate, authorizeRoles(['1', '2', '3', '5']), getAllCupsRadicados);
+router.get("/cups-radicados", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), getAllCupsRadicados);
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ router.get("/cups-radicados", authenticate, authorizeRoles(['1', '2', '3', '5'])
  *       404:
  *         description: CUPS radicado no encontrado
  */
-router.get("/cups-radicados/:id", authenticate, authorizeRoles(['1', '2', '3', '5']), validarId, getCupsRadicados);
+router.get("/cups-radicados/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), validarId, getCupsRadicados);
 
 /**
  * @swagger
@@ -82,7 +83,7 @@ router.get("/cups-radicados/:id", authenticate, authorizeRoles(['1', '2', '3', '
  *       400:
  *         description: Datos inválidos
  */
-router.post("/cups-radicados", authenticate, authorizeRoles(['1','3','10','15', '6']), createCupsRadicados);
+router.post("/cups-radicados", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), createCupsRadicados);
 
 /**
  * @swagger
@@ -131,7 +132,7 @@ router.post("/cups-radicados", authenticate, authorizeRoles(['1','3','10','15', 
  *       404:
  *         description: CUPS radicado no encontrado
  */
-router.put("/cups-radicados/:id", authenticate, authorizeRoles(['1', '2', '3' , '5']), validarId, updateCupsRadicados);
+router.put("/cups-radicados/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), validarId, updateCupsRadicados);
 
 /**
  * @swagger
@@ -162,7 +163,7 @@ router.put("/cups-radicados/:id", authenticate, authorizeRoles(['1', '2', '3' , 
  *       404:
  *         description: CUPS radicado no encontrado
  */
-router.delete("/cups-radicados/:id", authenticate, authorizeRoles(['1']), validarId, deleteCupsRadicados);
+router.delete("/cups-radicados/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteCupsRadicados);
 
 /**
  * @swagger
@@ -208,6 +209,6 @@ router.delete("/cups-radicados/:id", authenticate, authorizeRoles(['1']), valida
  *       404:
  *         description: CUPS radicado no encontrado
  */
-router.put("/actualizar-cups/:id", authenticate, authorizeRoles(['1', '2', '3']), validarId, updateAuditados);
+router.put("/actualizar-cups/:id", authenticate, authorizeRoles(ROLE_GROUPS.AUDIT), validarId, updateAuditados);
 
 export default router;

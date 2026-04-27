@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createServicioGeneral, deleteServicioGeneral, getServicioContratado, getServicioGeneral, getServicioGeneralById, updateServicioGeneral } from "../controllers/servicios-generales.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ const router = Router();
  *       500:
  *         description: Error del servidor
  */
-router.get('/servicios-generales', authenticate, authorizeRoles(['1']), getServicioGeneral);
+router.get('/servicios-generales', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getServicioGeneral);
 
 /**
  * @swagger
@@ -57,7 +58,7 @@ router.get('/servicios-generales', authenticate, authorizeRoles(['1']), getServi
  *       404:
  *         description: Servicio no encontrado
  */
-router.get('/servicios-generales/:id', authenticate, authorizeRoles(['1']), validarId, getServicioGeneralById);
+router.get('/servicios-generales/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getServicioGeneralById);
 
 /**
  * @swagger
@@ -93,7 +94,7 @@ router.get('/servicios-generales/:id', authenticate, authorizeRoles(['1']), vali
  *       400:
  *         description: Datos inválidos
  */
-router.post('/servicios-generales', authenticate, authorizeRoles(['1']), createServicioGeneral);
+router.post('/servicios-generales', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createServicioGeneral);
 
 /**
  * @swagger
@@ -132,7 +133,7 @@ router.post('/servicios-generales', authenticate, authorizeRoles(['1']), createS
  *       404:
  *         description: Servicio no encontrado
  */
-router.put('/servicios-generales/:id', authenticate, authorizeRoles(['1']), validarId, updateServicioGeneral);
+router.put('/servicios-generales/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateServicioGeneral);
 
 /**
  * @swagger
@@ -154,7 +155,7 @@ router.put('/servicios-generales/:id', authenticate, authorizeRoles(['1']), vali
  *       404:
  *         description: Servicio no encontrado
  */
-router.delete('/servicios-generales/:id', authenticate, authorizeRoles(['1']), validarId, deleteServicioGeneral);
+router.delete('/servicios-generales/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteServicioGeneral);
 
 /**
  * @swagger
@@ -212,6 +213,6 @@ router.delete('/servicios-generales/:id', authenticate, authorizeRoles(['1']), v
  *       500:
  *         description: Error del servidor
  */
-router.post("/servicio-contratado", authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18']), getServicioContratado);
+router.post("/servicio-contratado", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]), getServicioContratado);
 
 export default router;

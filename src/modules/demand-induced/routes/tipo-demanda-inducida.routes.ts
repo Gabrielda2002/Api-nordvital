@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import {
   getAllTypeDemandInduced,
   getTypeDemandInducedByName,
@@ -46,7 +47,7 @@ const router = Router();
 router.get(
   "/tipo/demanda-inducida",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   getAllTypeDemandInduced
 );
 
@@ -85,7 +86,7 @@ router.get(
 router.post(
   "/tipo/demanda-inducida/buscar",
   authenticate,
-  authorizeRoles(["1", '19', '20', '21']),
+  authorizeRoles(ROLE_GROUPS.ADMIN_NURSING),
   getTypeDemandInducedByName
 );
 

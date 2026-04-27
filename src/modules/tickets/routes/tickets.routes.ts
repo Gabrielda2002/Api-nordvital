@@ -1,13 +1,13 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createTicket, deleteTicket, getAllTickets, getListTicketsByUserId, getTicketById, getTicketsTable, updateTicket } from "../controllers/tickets.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { multerTicketAttachment } from "@core/middlewares/multer-ticket.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21', '22', '23'];
 
 /**
  * @swagger
@@ -27,7 +27,7 @@ const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tickets', authenticate, authorizeRoles(['1']), getAllTickets)
+router.get('/tickets', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllTickets)
 
 /**
  * @swagger
@@ -54,7 +54,7 @@ router.get('/tickets', authenticate, authorizeRoles(['1']), getAllTickets)
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTicketById)
+router.get('/tickets/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getTicketById)
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.get('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, getTi
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/tickets', authenticate, authorizeRoles(ALLOWED_ROLES), multerTicketAttachment.single("file"), createTicket)
+router.post('/tickets', authenticate, authorizeRoles(ROLE_GROUPS.ALL), multerTicketAttachment.single("file"), createTicket)
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.post('/tickets', authenticate, authorizeRoles(ALLOWED_ROLES), multerTicke
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, updateTicket)
+router.put('/tickets/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateTicket)
 
 /**
  * @swagger
@@ -136,7 +136,7 @@ router.put('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, updat
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, deleteTicket)
+router.delete('/tickets/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteTicket)
 
 /**
  * @swagger
@@ -158,8 +158,8 @@ router.delete('/tickets/:id', authenticate, authorizeRoles(['1']), validarId, de
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tickets-table', authenticate, authorizeRoles(['1', '17']), getTicketsTable);
+router.get('/tickets-table', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), getTicketsTable);
 
-router.get('/tickets/user/:id', authenticate, authorizeRoles(ALLOWED_ROLES), validarId, getListTicketsByUserId);
+router.get('/tickets/user/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getListTicketsByUserId);
 
 export default router;

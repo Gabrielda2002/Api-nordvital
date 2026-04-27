@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import {
   getChecklistItems,
   getChecklistByFollowUp,
@@ -43,7 +44,7 @@ const router = Router();
 router.get(
   "/maintenance-checklist/items",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   getChecklistItems
 );
 
@@ -92,7 +93,7 @@ router.get(
 router.get(
   "/maintenance-checklist/seguimiento/:id",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   validarId,
   getChecklistByFollowUp
 );
@@ -144,7 +145,7 @@ router.get(
 router.put(
   "/maintenance-checklist/seguimiento/:id",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   validarId,
   saveChecklist
 );
@@ -190,7 +191,7 @@ router.put(
 router.patch(
   "/maintenance-checklist/result/:resultId/toggle",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   validarId,
   toggleChecklistItem
 );

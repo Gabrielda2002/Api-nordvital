@@ -1,10 +1,11 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { actOnPermissionStep, cancelPermissionRequest, createPermissionRequest, generatePermissionAttachmentAccessToken, getPermissionRequestById, listAllRequestsByUser, listPermissionRequests, serveSecurePermissionAttachment } from "../controllers/permission.controller";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { uploadAttachmentsPermissions } from "@core/middlewares/multer-permissions.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -165,7 +166,7 @@ router.get("/permisos/requests/:id", authenticate, getPermissionRequestById);
  *       403:
  *         description: El usuario no tiene permisos para esta acción
  */
-router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate,authorizeRoles(['1', '6', '20', '18']) , actOnPermissionStep);
+router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate,authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS) , actOnPermissionStep);
 
 /**
  * @swagger
@@ -186,7 +187,7 @@ router.post("/permissions/requests/:id/steps/:stepId/actions", authenticate,auth
  *       401:
  *         description: No autorizado
  */
-router.get('/list/requests', authenticate, authorizeRoles(['1', '18', '6', '20', '2']), listPermissionRequests);
+router.get('/list/requests', authenticate, authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS_FULL), listPermissionRequests);
 
 /**
  * @swagger
@@ -339,6 +340,6 @@ router.get('/secure-attachments/permissions/:token', serveSecurePermissionAttach
  *       404:
  *         description: Solicitud no encontrada
  */
-router.put("/permission/requests/:id/cancel", authenticate, authorizeRoles(['1', '6', '20', '18']), validarId, cancelPermissionRequest);
+router.put("/permission/requests/:id/cancel", authenticate, authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS), validarId, cancelPermissionRequest);
 
 export default router;

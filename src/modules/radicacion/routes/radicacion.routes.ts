@@ -1,10 +1,11 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRadicacion, createRequestService, getRadicacionByPatient, getRadicaciones, getRadicacionesAudit, getSurgeries } from "../controllers/radicacion.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import {upload} from "@core/middlewares/multer-support.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 
 const router = Router(); 
@@ -24,7 +25,7 @@ const router = Router();
  *       404:
  *         description: No hay radicaciones por auditar
  */
-router.get('/audit', authenticate, authorizeRoles(['1','3', '2']),getDepartmentUser, getRadicacionesAudit);
+router.get('/audit', authenticate, authorizeRoles(ROLE_GROUPS.AUDIT),getDepartmentUser, getRadicacionesAudit);
 
 /**
  * @swagger
@@ -39,7 +40,7 @@ router.get('/audit', authenticate, authorizeRoles(['1','3', '2']),getDepartmentU
  *       200:
  *         description: Lista de radicaciones auditadas
  */
-router.get('/all', authenticate, authorizeRoles(['1','3']),getDepartmentUser, getRadicaciones);
+router.get('/all', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR]),getDepartmentUser, getRadicaciones);
 
 /**
  * @swagger
@@ -80,7 +81,7 @@ router.get('/all', authenticate, authorizeRoles(['1','3']),getDepartmentUser, ge
  *       404:
  *         description: Radicación no encontrada
  */
-router.put('/:id',authenticate, authorizeRoles(['1','3']), validarId, authorizeRadicacion);
+router.put('/:id',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR]), validarId, authorizeRadicacion);
 
 /**
  * @swagger
@@ -97,7 +98,7 @@ router.put('/:id',authenticate, authorizeRoles(['1','3']), validarId, authorizeR
  *       404:
  *        description: No hay radicaciones de cirugías
  */
-router.get('/surgeries',authenticate, authorizeRoles(['1', '10', '3', '15', '2']), getSurgeries);
+router.get('/surgeries',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR, ROLE_IDS.AUDITOR, ROLE_IDS.CIRUGIA, ROLE_IDS.GERENTE]), getSurgeries);
 
 /**
  * @swagger
@@ -128,7 +129,7 @@ router.get('/surgeries',authenticate, authorizeRoles(['1', '10', '3', '15', '2']
  *       404:
  *         description: No se encontraron radicaciones para ese documento
  */
-router.post('/doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '6', '2']), getDepartmentUser, getRadicacionByPatient); 
+router.post('/doc-patient',authenticate, authorizeRoles(ROLE_GROUPS.RADICACION), getDepartmentUser, getRadicacionByPatient); 
 
 /**
  * @swagger
@@ -238,6 +239,6 @@ router.post('/doc-patient',authenticate, authorizeRoles(['1', '10', '3', '15', '
  *       500:
  *         description: Error del servidor
  */
-router.post('/', authenticate, authorizeRoles(['1', '10', '3', '15', '6']), upload.single('file'), createRequestService);
+router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), upload.single('file'), createRequestService);
 
 export default router;

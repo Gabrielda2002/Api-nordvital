@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createDepartment, deleteDepartment, getAllDepartments, getDepartment, updateDepartment } from "../controllers/departamentos.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -71,7 +72,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4', '2', '17']), getAllDepartments)
+router.get("/departamentos", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL), getAllDepartments)
 
 /**
  * @swagger
@@ -100,7 +101,7 @@ router.get("/departamentos", authenticate, authorizeRoles(['1', '6', '4', '2', '
  *       404:
  *         $ref: '#/components/responses/DepartamentoNotFound'
  */
-router.get("/departamentos/:id", authenticate, authorizeRoles(['1']), validarId, getDepartment)
+router.get("/departamentos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getDepartment)
 
 /**
  * @swagger
@@ -143,7 +144,7 @@ router.get("/departamentos/:id", authenticate, authorizeRoles(['1']), validarId,
  *       403:
  *         description: Prohibido - No tiene permisos suficientes
  */
-router.post("/departamentos", authenticate, authorizeRoles(['1', '17']), createDepartment)
+router.post("/departamentos", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), createDepartment)
 
 /**
  * @swagger
@@ -187,7 +188,7 @@ router.post("/departamentos", authenticate, authorizeRoles(['1', '17']), createD
  *       404:
  *         $ref: '#/components/responses/DepartamentoNotFound'
  */
-router.put("/departamentos/:id", authenticate, authorizeRoles(['1', '17']), validarId, updateDepartment)
+router.put("/departamentos/:id", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), validarId, updateDepartment)
 
 /**
  * @swagger
@@ -220,6 +221,6 @@ router.put("/departamentos/:id", authenticate, authorizeRoles(['1', '17']), vali
  *       404:
  *         $ref: '#/components/responses/DepartamentoNotFound'
  */
-router.delete("/departamentos/:id", authenticate, authorizeRoles(['1']), validarId, deleteDepartment)
+router.delete("/departamentos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteDepartment)
 
 export default router;

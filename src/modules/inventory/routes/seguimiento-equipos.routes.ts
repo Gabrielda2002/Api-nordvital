@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { createFollowEquipment, deleteFollowEquipment, getAllFollowEquipment, getFollowEquipment, updateFollowEquipment } from "../controllers/seguimiento-equipos.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron datos
  */
-router.get("/seguimiento-equipos", authenticate, authorizeRoles(['1']), getAllFollowEquipment);
+router.get("/seguimiento-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllFollowEquipment);
 
 /**
  * @swagger
@@ -43,7 +44,7 @@ router.get("/seguimiento-equipos", authenticate, authorizeRoles(['1']), getAllFo
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.get("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']), validarId, getFollowEquipment); 
+router.get("/seguimiento-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getFollowEquipment); 
 
 /**
  * @swagger
@@ -83,7 +84,7 @@ router.get("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']), vali
  *       400:
  *         description: Datos inválidos
  */
-router.post("/seguimiento-equipos", authenticate, authorizeRoles(['1']), createFollowEquipment);
+router.post("/seguimiento-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createFollowEquipment);
 
 /**
  * @swagger
@@ -124,7 +125,7 @@ router.post("/seguimiento-equipos", authenticate, authorizeRoles(['1']), createF
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.put("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']), validarId, updateFollowEquipment);
+router.put("/seguimiento-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateFollowEquipment);
 
 /**
  * @swagger
@@ -147,6 +148,6 @@ router.put("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']), vali
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.delete("/seguimiento-equipos/:id", authenticate, authorizeRoles(['1']), validarId, deleteFollowEquipment);
+router.delete("/seguimiento-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteFollowEquipment);
 
 export default router;

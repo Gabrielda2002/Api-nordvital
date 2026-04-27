@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { createDevice, deleteDevice, getAllDevices, getDevice, getDevicesBySede, getDevicesCountByHeadquarters, searchDevices, updateDevice } from "../controllers/dispositivos-red.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -78,7 +79,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/", authenticate, authorizeRoles(['1']), getAllDevices);
+router.get("/", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllDevices);
 
 /**
  * @swagger
@@ -105,7 +106,7 @@ router.get("/", authenticate, authorizeRoles(['1']), getAllDevices);
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.get("/:id", authenticate, authorizeRoles(['1']),validarId, getDevice);
+router.get("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, getDevice);
 
 /**
  * @swagger
@@ -127,7 +128,7 @@ router.get("/:id", authenticate, authorizeRoles(['1']),validarId, getDevice);
  *       400:
  *         description: Datos inválidos en la solicitud
  */
-router.post("/", authenticate, authorizeRoles(['1', '17']), createDevice);
+router.post("/", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), createDevice);
 
 /**
  * @swagger
@@ -156,7 +157,7 @@ router.post("/", authenticate, authorizeRoles(['1', '17']), createDevice);
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.put("/:id", authenticate, authorizeRoles(['1', '17']),validarId, updateDevice);
+router.put("/:id", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT),validarId, updateDevice);
 
 /**
  * @swagger
@@ -179,7 +180,7 @@ router.put("/:id", authenticate, authorizeRoles(['1', '17']),validarId, updateDe
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.delete("/:id", authenticate, authorizeRoles(['1']),validarId, deleteDevice);
+router.delete("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, deleteDevice);
 
 /**
  * @swagger
@@ -202,7 +203,7 @@ router.delete("/:id", authenticate, authorizeRoles(['1']),validarId, deleteDevic
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get("/sede/:id", authenticate, authorizeRoles(['1', '4', '2', '17']),validarId, getDevicesBySede);
+router.get("/sede/:id", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWERS),validarId, getDevicesBySede);
 
 /**
  * @swagger
@@ -231,7 +232,7 @@ router.get("/sede/:id", authenticate, authorizeRoles(['1', '4', '2', '17']),vali
  *       404:
  *         description: No se encontraron dispositivos
  */
-router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getDevicesCountByHeadquarters);
+router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getDevicesCountByHeadquarters);
 
 /**
  * @swagger
@@ -279,6 +280,6 @@ router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '2
  *       404:
  *         description: No se encontraron dispositivos que coincidan con la búsqueda
  */
-router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchDevices);
+router.get('/search', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), searchDevices);
 
 export default router;

@@ -1,14 +1,13 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createEvent, deleteEvent, getAllEvents, getEventById, updateEvent } from "../controllers/eventos.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23'];
 
-const ALLOWED_ROLES_EVENT_CREATION = ['1', '18'];
 
 /**
  * @swagger
@@ -32,7 +31,7 @@ const ALLOWED_ROLES_EVENT_CREATION = ['1', '18'];
  *       403:
  *         description: Prohibido - No tiene permisos
  */
-router.get("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES), getAllEvents)
+router.get("/eventos", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllEvents)
 
 /**
  * @swagger
@@ -59,7 +58,7 @@ router.get("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES), getAllEvents
  *       404:
  *         description: Evento no encontrado
  */
-router.get("/evento/:id", authenticate, authorizeRoles(['1']),validarId, getEventById )
+router.get("/evento/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, getEventById )
 
 /**
  * @swagger
@@ -85,7 +84,7 @@ router.get("/evento/:id", authenticate, authorizeRoles(['1']),validarId, getEven
  *       400:
  *         description: Datos inválidos
  */
-router.post("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREATION), createEvent )
+router.post("/eventos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]), createEvent )
 
 /**
  * @swagger
@@ -114,7 +113,7 @@ router.post("/eventos", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREATIO
  *       404:
  *         description: Evento no encontrado
  */
-router.put("/eventos/:id", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREATION),validarId, updateEvent )
+router.put("/eventos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]),validarId, updateEvent )
 
 /**
  * @swagger
@@ -137,6 +136,6 @@ router.put("/eventos/:id", authenticate, authorizeRoles(ALLOWED_ROLES_EVENT_CREA
  *       404:
  *         description: Evento no encontrado
  */
-router.delete("/eventos/:id", authenticate, authorizeRoles(['1']),validarId, deleteEvent )
+router.delete("/eventos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, deleteEvent )
 
 export default router;

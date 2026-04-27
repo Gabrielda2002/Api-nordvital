@@ -1,9 +1,10 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { autoInventory, createEquipment, deleteEquipment, getEquipmentAgeBySede, getEquipmentBySede, getEquipmentHeadquartersDistribution, getEquipmentLockStatistics, getEquipmentTypeDistribution, getEquipmentWarrantyStatistics, searchEquipmentGlobal, updateEquipment, verifyEquipmentExist } from "../controllers/equipos.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { uploadDocDelivery } from "@core/middlewares/multer-delivery.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -82,7 +83,7 @@ const router = Router();
  *       400:
  *         description: Datos inválidos
  */
-router.post("/", authenticate, authorizeRoles(['1']), uploadDocDelivery, createEquipment);
+router.post("/", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadDocDelivery, createEquipment);
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.post("/", authenticate, authorizeRoles(['1']), uploadDocDelivery, createE
  *       404:
  *         description: Equipo no encontrado
  */
-router.put("/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDelivery, updateEquipment);
+router.put("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, uploadDocDelivery, updateEquipment);
 
 /**
  * @swagger
@@ -132,7 +133,7 @@ router.put("/:id", authenticate, authorizeRoles(['1']), validarId, uploadDocDeli
  *       404:
  *         description: Equipo no encontrado
  */
-router.delete("/:id", authenticate, authorizeRoles(['1']), validarId, deleteEquipment);
+router.delete("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteEquipment);
 
 /**
  * @swagger
@@ -160,7 +161,7 @@ router.delete("/:id", authenticate, authorizeRoles(['1']), validarId, deleteEqui
  *       404:
  *         description: No se encontraron equipos
  */
-router.get("/sede/:id", authenticate, authorizeRoles(['1', '4','2', '17']), validarId, getEquipmentBySede);
+router.get("/sede/:id", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWERS), validarId, getEquipmentBySede);
 
 /**
  * @swagger
@@ -189,7 +190,7 @@ router.get("/sede/:id", authenticate, authorizeRoles(['1', '4','2', '17']), vali
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentTypeDistribution);
+router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentTypeDistribution);
 
 /**
  * @swagger
@@ -218,7 +219,7 @@ router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(['1', '2',
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentHeadquartersDistribution);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentHeadquartersDistribution);
 
 /**
  * @swagger
@@ -262,7 +263,7 @@ router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', 
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentAgeBySede);
+router.get('/statics/age/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentAgeBySede);
 
 /**
  * @swagger
@@ -302,7 +303,7 @@ router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), v
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getEquipmentWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentWarrantyStatistics);
 
 /**
  * @swagger
@@ -332,7 +333,7 @@ router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1',
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/withLock/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getEquipmentLockStatistics);
+router.get('/statics/withLock/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS),validarId, getEquipmentLockStatistics);
 
 /**
  * @swagger
@@ -380,7 +381,7 @@ router.get('/statics/withLock/:id', authenticate, authorizeRoles(['1', '2', '17'
  *       404:
  *         description: No se encontraron equipos que coincidan con la búsqueda
  */
-router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchEquipmentGlobal);
+router.get('/search', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), searchEquipmentGlobal);
 
 router.post("/equipos/auto-inventory", autoInventory);
 

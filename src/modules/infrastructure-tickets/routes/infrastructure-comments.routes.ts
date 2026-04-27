@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import {
     getAllInfrastructureComments,
     getInfrastructureCommentById,
@@ -12,9 +13,6 @@ import {
     getInfrastructureCommentsByTicket,
 } from "../controllers/infrastructure-comments.controller";
 
-const ALL_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
-const INFRA_MANAGEMENT = ['1', '22', '23'];
-const INFRA_ADMIN = ['1', '22'];
 
 const router = Router();
 
@@ -32,7 +30,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-comments", authenticate, authorizeRoles(INFRA_MANAGEMENT), getAllInfrastructureComments);
+router.get("/infrastructure-comments", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), getAllInfrastructureComments);
 
 /**
  * @swagger
@@ -57,7 +55,7 @@ router.get("/infrastructure-comments", authenticate, authorizeRoles(INFRA_MANAGE
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-comments/ticket/:id", authenticate, authorizeRoles(ALL_ROLES), validarId, getInfrastructureCommentsByTicket);
+router.get("/infrastructure-comments/ticket/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getInfrastructureCommentsByTicket);
 
 /**
  * @swagger
@@ -81,7 +79,7 @@ router.get("/infrastructure-comments/ticket/:id", authenticate, authorizeRoles(A
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-comments/:id", authenticate, authorizeRoles(INFRA_MANAGEMENT), validarId, getInfrastructureCommentById);
+router.get("/infrastructure-comments/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), validarId, getInfrastructureCommentById);
 
 /**
  * @swagger
@@ -116,7 +114,7 @@ router.get("/infrastructure-comments/:id", authenticate, authorizeRoles(INFRA_MA
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-comments", authenticate, authorizeRoles(ALL_ROLES), createInfrastructureComment);
+router.post("/infrastructure-comments", authenticate, authorizeRoles(ROLE_GROUPS.ALL), createInfrastructureComment);
 
 /**
  * @swagger
@@ -157,7 +155,7 @@ router.post("/infrastructure-comments", authenticate, authorizeRoles(ALL_ROLES),
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-comments/change-status", authenticate, authorizeRoles(INFRA_MANAGEMENT), createInfrastructureCommentAndChangeStatus);
+router.post("/infrastructure-comments/change-status", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), createInfrastructureCommentAndChangeStatus);
 
 /**
  * @swagger
@@ -181,7 +179,7 @@ router.post("/infrastructure-comments/change-status", authenticate, authorizeRol
  *       500:
  *         description: Error interno del servidor
  */
-router.put("/infrastructure-comments/:id", authenticate, authorizeRoles(INFRA_MANAGEMENT), validarId, updateInfrastructureComment);
+router.put("/infrastructure-comments/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), validarId, updateInfrastructureComment);
 
 /**
  * @swagger
@@ -205,6 +203,6 @@ router.put("/infrastructure-comments/:id", authenticate, authorizeRoles(INFRA_MA
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/infrastructure-comments/:id", authenticate, authorizeRoles(INFRA_ADMIN), validarId, deleteInfrastructureComment);
+router.delete("/infrastructure-comments/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_ADMIN), validarId, deleteInfrastructureComment);
 
 export default router;

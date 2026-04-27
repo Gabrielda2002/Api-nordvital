@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { createSoftware, deleteSoftware, getAllSoftware, getSoftware, updateSoftware } from "../controllers/software.controller";
 
 const router = Router();
@@ -26,7 +27,7 @@ const router = Router();
  *       404:
  *         description: No se encontró software
  */
-router.get("/software", authenticate, authorizeRoles(["1"]), getAllSoftware);
+router.get("/software", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllSoftware);
 
 /**
  * @swagger
@@ -52,7 +53,7 @@ router.get("/software", authenticate, authorizeRoles(["1"]), getAllSoftware);
  *       404:
  *         description: Software no encontrado
  */
-router.get("/software/:id", authenticate, authorizeRoles(["1"]),validarId , getSoftware);
+router.get("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId , getSoftware);
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ router.get("/software/:id", authenticate, authorizeRoles(["1"]),validarId , getS
  *       400:
  *         description: Datos inválidos
  */
-router.post("/software", authenticate, authorizeRoles(["1"]), createSoftware);
+router.post("/software", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createSoftware);
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.post("/software", authenticate, authorizeRoles(["1"]), createSoftware);
  *       404:
  *         description: Software no encontrado
  */
-router.put("/software/:id", authenticate, authorizeRoles(["1"]), validarId, updateSoftware);
+router.put("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateSoftware);
 
 /**
  * @swagger
@@ -124,6 +125,6 @@ router.put("/software/:id", authenticate, authorizeRoles(["1"]), validarId, upda
  *       404:
  *         description: Software no encontrado
  */
-router.delete("/software/:id", authenticate, authorizeRoles(["1"]), validarId, deleteSoftware);
+router.delete("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSoftware);
 
 export default router;

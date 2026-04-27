@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllSummaryActivity, getSummaryActivityByName } from "../controllers/resumen-seguimiento-actividad.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron resúmenes de seguimiento de actividad
  */
-router.get("/resumen/demanda-inducida", authenticate, authorizeRoles(['1']), getAllSummaryActivity);
+router.get("/resumen/demanda-inducida", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllSummaryActivity);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get("/resumen/demanda-inducida", authenticate, authorizeRoles(['1']), get
  *       404:
  *         description: No se encontraron resúmenes de seguimiento de actividad
  */
-router.post("/resumen/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getSummaryActivityByName);
+router.post("/resumen/demanda-inducida/buscar", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getSummaryActivityByName);
 
 export default router;

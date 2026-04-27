@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createServicioSolicitado, deleteServicioSolicitado, getAllServiciosSolicitados, getServicioSolicitado, getServiciosSolicitadosByCode, updateServicioSolicitado, updateServicioSolicitadoTable } from "../controllers/servicio-solicitado.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -26,7 +27,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/servicio-solicitado",authenticate, authorizeRoles(['1', '2', '5']), getAllServiciosSolicitados);
+router.get("/servicio-solicitado",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), getAllServiciosSolicitados);
 
 /**
  * @swagger
@@ -52,7 +53,7 @@ router.get("/servicio-solicitado",authenticate, authorizeRoles(['1', '2', '5']),
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.get("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,getServicioSolicitado);
+router.get("/servicio-solicitado/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), validarId ,getServicioSolicitado);
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ router.get("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5
  *       400:
  *         description: Datos inválidos
  */
-router.post("/servicio-solicitado",authenticate, authorizeRoles(['1', '2', '5']), createServicioSolicitado);
+router.post("/servicio-solicitado",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), createServicioSolicitado);
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.post("/servicio-solicitado",authenticate, authorizeRoles(['1', '2', '5'])
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.put("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateServicioSolicitado);
+router.put("/servicio-solicitado/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), validarId ,updateServicioSolicitado);
 
 /**
  * @swagger
@@ -124,7 +125,7 @@ router.put("/servicio-solicitado/:id",authenticate, authorizeRoles(['1', '2', '5
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), validarId ,deleteServicioSolicitado);
+router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId ,deleteServicioSolicitado);
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles(['1']), va
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.post("/servicio-solicitado-code",authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getServiciosSolicitadosByCode);
+router.post("/servicio-solicitado-code",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getServiciosSolicitadosByCode);
 
 /**
  * @swagger
@@ -182,6 +183,6 @@ router.post("/servicio-solicitado-code",authenticate, authorizeRoles(['1', '3', 
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.put("/servicio-solicitado-update-table/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateServicioSolicitadoTable);
+router.put("/servicio-solicitado-update-table/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), validarId ,updateServicioSolicitadoTable);
 
 export default router;

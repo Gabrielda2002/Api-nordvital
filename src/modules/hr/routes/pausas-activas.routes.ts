@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createActiveBrake, deleteActiveBrake, getActiveBrakeById, getAllActiveBrakes, updateActiveBrake } from "../controllers/pausas-activas.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -26,7 +27,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/active-brakes", authenticate, authorizeRoles(['1']), getAllActiveBrakes)
+router.get("/active-brakes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllActiveBrakes)
 
 /**
  * @swagger
@@ -53,7 +54,7 @@ router.get("/active-brakes", authenticate, authorizeRoles(['1']), getAllActiveBr
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.get("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, getActiveBrakeById)
+router.get("/active-brakes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getActiveBrakeById)
 
 /**
  * @swagger
@@ -87,7 +88,7 @@ router.get("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId,
  *       400:
  *         description: Error en la validación
  */
-router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']), createActiveBrake)
+router.post("/active-brakes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), createActiveBrake)
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.post("/active-brakes", authenticate, authorizeRoles(['1', '2', '3', '4', 
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.put("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, updateActiveBrake)
+router.put("/active-brakes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateActiveBrake)
 
 /**
  * @swagger
@@ -145,6 +146,6 @@ router.put("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId,
  *       404:
  *         description: Pausa activa no encontrada
  */
-router.delete("/active-brakes/:id", authenticate, authorizeRoles(['1']), validarId, deleteActiveBrake)
+router.delete("/active-brakes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteActiveBrake)
 
 export default router;

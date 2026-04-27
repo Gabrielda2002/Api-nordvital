@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createIpsPrimaria, deleteIpsPrimaria, getAllIpsPrimaria, getIpsPrimaria, getIpsPrimariaByName, updateIpsPrimaria, updateStatusIpsPrimaria } from "../controllers/ips-primaria.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 
 const router = Router();
@@ -34,7 +35,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get('/ips-primaria',authenticate, authorizeRoles(['1', '3', '10', '15', '6', '19', '20', '21']), getAllIpsPrimaria);
+router.get('/ips-primaria',authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURSING), getAllIpsPrimaria);
 
 /**
  * @swagger
@@ -56,7 +57,7 @@ router.get('/ips-primaria',authenticate, authorizeRoles(['1', '3', '10', '15', '
  *       404:
  *         description: IPS primaria no encontrada
  */
-router.get('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']),validarId ,getIpsPrimaria);
+router.get('/ips-primaria/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId ,getIpsPrimaria);
 
 /**
  * @swagger
@@ -83,7 +84,7 @@ router.get('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']),validarI
  *       400:
  *         description: Error en los datos proporcionados
  */
-router.post('/ips-primaria',authenticate, authorizeRoles(['1', '2']),createIpsPrimaria);
+router.post('/ips-primaria',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),createIpsPrimaria);
 
 /**
  * @swagger
@@ -116,7 +117,7 @@ router.post('/ips-primaria',authenticate, authorizeRoles(['1', '2']),createIpsPr
  *       404:
  *         description: IPS primaria no encontrada
  */
-router.put('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']), validarId ,updateIpsPrimaria);
+router.put('/ips-primaria/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId ,updateIpsPrimaria);
 
 /**
  * @swagger
@@ -138,7 +139,7 @@ router.put('/ips-primaria/:id',authenticate, authorizeRoles(['1', '2']), validar
  *       404:
  *         description: IPS primaria no encontrada
  */
-router.delete('/ips-primaria/:id',authenticate, authorizeRoles(['1']),validarId ,deleteIpsPrimaria);
+router.delete('/ips-primaria/:id',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId ,deleteIpsPrimaria);
 
 /**
  * @swagger
@@ -163,7 +164,7 @@ router.delete('/ips-primaria/:id',authenticate, authorizeRoles(['1']),validarId 
  *       404:
  *         description: No se encontraron IPS primarias
  */
-router.post('/ips-primaria-name',authenticate, authorizeRoles(['1', '2']), getIpsPrimariaByName);
+router.post('/ips-primaria-name',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getIpsPrimariaByName);
 
 /**
  * @swagger
@@ -196,6 +197,6 @@ router.post('/ips-primaria-name',authenticate, authorizeRoles(['1', '2']), getIp
  *       404:
  *         description: IPS primaria no encontrada
  */
-router.put('/update-status-ips-primaria/:id',authenticate, authorizeRoles(['1', '2']), validarId, updateStatusIpsPrimaria);
+router.put('/update-status-ips-primaria/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateStatusIpsPrimaria);
 
 export default router;

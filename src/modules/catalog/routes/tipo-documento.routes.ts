@@ -1,8 +1,9 @@
-import { Router  } from "express";
+﻿import { Router  } from "express";
 import { createDocumentType, deleteDocumentType, getAllDocumentType, getDocumentTypeById, updateDocumentType, updateStatusDocumentType } from "../controllers/tipo-documento.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 
 const router = Router();
@@ -47,7 +48,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get('/documento',authenticate, authorizeRoles(['1' , '3', '10', '15', '6','18', '19', '20', '21']), getAllDocumentType);
+router.get('/documento',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), getAllDocumentType);
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.get('/documento',authenticate, authorizeRoles(['1' , '3', '10', '15', '6'
  *       404:
  *         description: Tipo de documento no encontrado
  */
-router.get('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId, getDocumentTypeById);
+router.get('/documento/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getDocumentTypeById);
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ router.get('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId
  *       400:
  *         description: Error de validación
  */
-router.post('/documento',authenticate, authorizeRoles(['1' , '2']), createDocumentType);
+router.post('/documento',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createDocumentType);
 
 /**
  * @swagger
@@ -129,7 +130,7 @@ router.post('/documento',authenticate, authorizeRoles(['1' , '2']), createDocume
  *       404:
  *         description: Tipo de documento no encontrado
  */
-router.put('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId, updateDocumentType);
+router.put('/documento/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateDocumentType);
 
 /**
  * @swagger
@@ -151,7 +152,7 @@ router.put('/documento/:id',authenticate, authorizeRoles(['1' , '2']), validarId
  *       404:
  *         description: Tipo de documento no encontrado
  */
-router.delete('/documento/:id',authenticate, authorizeRoles(['1']), validarId, deleteDocumentType);
+router.delete('/documento/:id',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteDocumentType);
 
 /**
  * @swagger
@@ -184,6 +185,6 @@ router.delete('/documento/:id',authenticate, authorizeRoles(['1']), validarId, d
  *       404:
  *         description: Tipo de documento no encontrado
  */
-router.put("/update-status-documento/:id",authenticate, authorizeRoles(['1']), validarId, updateStatusDocumentType);
+router.put("/update-status-documento/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateStatusDocumentType);
 
 export default router;

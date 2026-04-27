@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import {
   getReportAssistants,
   getReportBiometric,
@@ -96,14 +97,14 @@ const router = Router();
 router.post(
   "/report/excel/radicacion/preview",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   previewReportServices
 );
 
 router.post(
   "/report/excel/radicacion",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   getReportServices
 );
 
@@ -172,14 +173,14 @@ router.post(
 router.post(
   "/report/excel/surgeries/preview",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   previewReportSurgerys
 );
 
 router.post(
   "/report/excel/surgeries",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   getReportSurgerys
 );
 
@@ -262,14 +263,14 @@ router.post(
 router.post(
   "/report/excel/assistants/preview",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   previewReportAssistants
 );
 
 router.post(
   "/report/excel/assistants",
   authenticate,
-  authorizeRoles(["1", "3", "6", "14", "15"]),
+  authorizeRoles(ROLE_GROUPS.REPORT_MANAGERS),
   getReportAssistants
 );
   
@@ -352,14 +353,14 @@ router.post(
 router.post(
   "/report/excel/breakes/preview",
   authenticate,
-  authorizeRoles(["1", "2", "6"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),
   previewReportBreakesActive
 );
 
 router.post(
   "/report/excel/breakes",
   authenticate,
-  authorizeRoles(["1", "2", "6"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),
   getReportBreakesActive
 );
 
@@ -442,14 +443,14 @@ router.post(
 router.post(
   "/report/excel/biometric/preview",
   authenticate,
-  authorizeRoles(["1", "2", "6", "18", "20"]),
+  authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS_FULL),
   previewReportBiometric
 );
 
 router.post(
   "/report/excel/biometric",
   authenticate,
-  authorizeRoles(["1", "2", "6", "18", "20"]),
+  authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS_FULL),
   getReportBiometric
 );
 
@@ -534,14 +535,14 @@ router.post(
 router.post(
   "/report/excel/tickets/preview",
   authenticate,
-  authorizeRoles(["1"]),
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   previewReportTickets
 );
 
 router.post(
   "/report/excel/tickets"
   , authenticate
-  , authorizeRoles(["1"])
+  , authorizeRoles([ROLE_IDS.ADMINISTRADOR])
   , getReportTickets
 )
 
@@ -631,14 +632,14 @@ router.post(
 router.post(
   "/report/excel/demand-induced/preview",
   authenticate,
-  authorizeRoles(["1", "19", "20", "21"]),
+  authorizeRoles(ROLE_GROUPS.ADMIN_NURSING),
   previewReportDemandInduced
 );
 
 router.post(
   "/report/excel/demand-induced"
   , authenticate
-  , authorizeRoles(["1", "19", "20", "21"])
+  , authorizeRoles(ROLE_GROUPS.ADMIN_NURSING)
   , getReportDemandInduced
 )
 
@@ -718,9 +719,9 @@ router.post(
  *       401:
  *         description: No autorizado
  */
-router.post("/report/excel/equipments/preview", authenticate, authorizeRoles(["1"]), previewReportEquipments);
+router.post("/report/excel/equipments/preview", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), previewReportEquipments);
 
-router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), getReportEquipments);
+router.post("/report/excel/equipments", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReportEquipments);
 
 /**
  * @swagger
@@ -798,9 +799,9 @@ router.post("/report/excel/equipments", authenticate, authorizeRoles(["1"]), get
  *       401:
  *         description: No autorizado
  */
-router.post("/report/excel/device-red/preview", authenticate, authorizeRoles(["1"]), previewReportRedDevice);
+router.post("/report/excel/device-red/preview", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), previewReportRedDevice);
 
-router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), getReportRedDevice);
+router.post("/report/excel/device-red", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReportRedDevice);
 
 /**
  * @swagger
@@ -878,9 +879,9 @@ router.post("/report/excel/device-red", authenticate, authorizeRoles(["1"]), get
  *       401:
  *         description: No autorizado
  */
-router.post("/report/excel/general-inventory/preview", authenticate, authorizeRoles(["1"]), previewReportGeneralInventory);
+router.post("/report/excel/general-inventory/preview", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), previewReportGeneralInventory);
 
-router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"]), getReportGeneralInventory);
+router.post("/report/excel/general-inventory", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReportGeneralInventory);
 
 /**
  * @swagger
@@ -958,9 +959,9 @@ router.post("/report/excel/general-inventory", authenticate, authorizeRoles(["1"
  *       401:
  *         description: No autorizado
  */
-router.post("/report/excel/tv/preview", authenticate, authorizeRoles(["1"]), previewReportTV);
+router.post("/report/excel/tv/preview", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), previewReportTV);
 
-router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV);
+router.post("/report/excel/tv", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReportTV);
 
 /**
  * @swagger
@@ -1038,8 +1039,8 @@ router.post("/report/excel/tv", authenticate, authorizeRoles(["1"]), getReportTV
  *       401:
  *         description: No autorizado
  */
-router.post("/report/excel/phones/preview", authenticate, authorizeRoles(["1"]), previewReportPhones);
+router.post("/report/excel/phones/preview", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), previewReportPhones);
 
-router.post("/report/excel/phones", authenticate, authorizeRoles(["1"]), getReportPhones);
+router.post("/report/excel/phones", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReportPhones);
 
 export default router;

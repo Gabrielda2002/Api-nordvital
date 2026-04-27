@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllRelationUser, getRelationUserByName } from "../controllers/relacion-usuario.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron relaciones de usuario
  */
-router.get("/relacion/demanda-inducida", authenticate, authorizeRoles(['1']), getAllRelationUser);
+router.get("/relacion/demanda-inducida", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllRelationUser);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get("/relacion/demanda-inducida", authenticate, authorizeRoles(['1']), ge
  *       404:
  *         description: No se encontraron relaciones de usuario
  */
-router.post("/relacion/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getRelationUserByName);
+router.post("/relacion/demanda-inducida/buscar", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getRelationUserByName);
 
 export default router;

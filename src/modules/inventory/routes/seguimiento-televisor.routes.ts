@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { createProcessTelevisor } from "../controllers/seguimiento-televisores.controller";
 
 /**
@@ -55,6 +56,6 @@ import { createProcessTelevisor } from "../controllers/seguimiento-televisores.c
 
 const router = Router();
 
-router.post('/seguimiento/televisor', authenticate, authorizeRoles(['1']), createProcessTelevisor);
+router.post('/seguimiento/televisor', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createProcessTelevisor);
 
 export default router;

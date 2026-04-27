@@ -1,8 +1,9 @@
-// src/routes/push_routes.ts
+﻿// src/routes/push_routes.ts
 import { Router } from "express";
 import { getVapidPublicKey, subscribe, unsubscribe, sendTestPush } from "../controllers/push-subscription.controller";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -87,6 +88,6 @@ router.post('/push/unsubscribe', authenticate, unsubscribe);
  *       200:
  *         description: Notificación de prueba enviada
  */
-router.post('/push/test/:userId', authenticate, authorizeRoles(['1']), sendTestPush);
+router.post('/push/test/:userId', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), sendTestPush);
 
 export default router;

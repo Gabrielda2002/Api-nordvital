@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createSeguimientoAuxiliar, deleteSeguimientoAuxiliar, getAllSeguimientosAuxiliares, getSeguimientoAuxiliar, updateSeguimientoAuxiliar } from "../controllers/seguimiento-auxiliar.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 
 const router = Router();
@@ -49,7 +50,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/SeguimientoAuxiliar'
  */
-router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '5']), getAllSeguimientosAuxiliares);
+router.get("/seguimientos-auxiliares",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), getAllSeguimientosAuxiliares);
 
 
 /**
@@ -76,7 +77,7 @@ router.get("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '5
  *       404:
  *         description: Seguimiento auxiliar no encontrado
  */
-router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,getSeguimientoAuxiliar);
+router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), validarId ,getSeguimientoAuxiliar);
 
 
 /**
@@ -110,7 +111,7 @@ router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2'
  *       400:
  *         description: Error en los datos proporcionados
  */
-router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '10', '6']), createSeguimientoAuxiliar);
+router.post("/seguimientos-auxiliares",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), createSeguimientoAuxiliar);
 
 
 /**
@@ -146,7 +147,7 @@ router.post("/seguimientos-auxiliares",authenticate, authorizeRoles(['1', '2', '
  *       404:
  *         description: Seguimiento auxiliar no encontrado
  */
-router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2', '5']), validarId ,updateSeguimientoAuxiliar);
+router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUXILIAR]), validarId ,updateSeguimientoAuxiliar);
 
 
 /**
@@ -169,7 +170,7 @@ router.put("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1', '2'
  *       404:
  *         description: Seguimiento auxiliar no encontrado
  */
-router.delete("/seguimientos-auxiliares/:id",authenticate, authorizeRoles(['1']), validarId ,deleteSeguimientoAuxiliar);
+router.delete("/seguimientos-auxiliares/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId ,deleteSeguimientoAuxiliar);
 
 
 export default router;

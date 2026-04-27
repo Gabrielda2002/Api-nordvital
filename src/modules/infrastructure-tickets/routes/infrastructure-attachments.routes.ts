@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { multerInfrastructureTicket } from "@core/middlewares/multer-infrastructure-ticket.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import {
     getInfrastructureTicketAttachments,
     uploadInfrastructureAttachment,
@@ -12,8 +13,6 @@ import {
     downloadInfrastructureAttachment,
 } from "../controllers/infrastructure-attachments.controller";
 
-const ALL_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
-const INFRA_MANAGEMENT = ['1', '22', '23'];
 
 const router = Router();
 
@@ -39,7 +38,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-attachments/ticket/:ticketId", authenticate, authorizeRoles(ALL_ROLES), getInfrastructureTicketAttachments);
+router.get("/infrastructure-attachments/ticket/:ticketId", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getInfrastructureTicketAttachments);
 
 /**
  * @swagger
@@ -90,7 +89,7 @@ router.get("/infrastructure-attachments/download/:token", downloadInfrastructure
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-attachments/:attachmentId", authenticate, authorizeRoles(ALL_ROLES), getInfrastructureAttachmentById);
+router.get("/infrastructure-attachments/:attachmentId", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getInfrastructureAttachmentById);
 
 /**
  * @swagger
@@ -114,7 +113,7 @@ router.get("/infrastructure-attachments/:attachmentId", authenticate, authorizeR
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-attachments/token/:id/access-token", authenticate, authorizeRoles(ALL_ROLES), validarId, generateInfrastructureAttachmentDownloadToken);
+router.post("/infrastructure-attachments/token/:id/access-token", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, generateInfrastructureAttachmentDownloadToken);
 
 /**
  * @swagger
@@ -157,7 +156,7 @@ router.post("/infrastructure-attachments/token/:id/access-token", authenticate, 
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-attachments/ticket/:ticketId", authenticate, authorizeRoles(INFRA_MANAGEMENT), multerInfrastructureTicket.single("file"), uploadInfrastructureAttachment);
+router.post("/infrastructure-attachments/ticket/:ticketId", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), multerInfrastructureTicket.single("file"), uploadInfrastructureAttachment);
 
 /**
  * @swagger
@@ -183,6 +182,6 @@ router.post("/infrastructure-attachments/ticket/:ticketId", authenticate, author
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/infrastructure-attachments/:attachmentId", authenticate, authorizeRoles(INFRA_MANAGEMENT), deleteInfrastructureAttachment);
+router.delete("/infrastructure-attachments/:attachmentId", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), deleteInfrastructureAttachment);
 
 export default router;

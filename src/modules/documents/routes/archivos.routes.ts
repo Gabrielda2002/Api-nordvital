@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { uploadSggc } from "@core/middlewares/multer-files.middleware";
@@ -6,10 +6,10 @@ import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFil
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { parseParentFolderId } from "@core/middlewares/parse-parent-folder-id";
 import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14
  *       404:
  *         description: No hay archivos registrados
  */
-router.get("/archivo", authenticate, authorizeRoles(ALLOWED_ROLES) , getAllFiles);
+router.get("/archivo", authenticate, authorizeRoles(ROLE_GROUPS.ALL) , getAllFiles);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ router.get("/archivo", authenticate, authorizeRoles(ALLOWED_ROLES) , getAllFiles
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/archivo/:id", authenticate, authorizeRoles(ALLOWED_ROLES),validarId ,getFileById);
+router.get("/archivo/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL),validarId ,getFileById);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.get("/archivo/:id", authenticate, authorizeRoles(ALLOWED_ROLES),validarId
  *       409:
  *         description: El archivo ya existe
  */
-router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, parseParentFolderId, createFile);
+router.post("/archivo", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS),uploadSggc, parseParentFolderId, createFile);
 
 /**
  * @swagger
@@ -157,7 +157,7 @@ router.post("/archivo", authenticate, authorizeRoles(['1','4']),uploadSggc, pars
  *       404:
  *         description: Archivo no encontrado
  */
-router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, updateFile);
+router.put("/archivo/:id", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS),validarId, updateFile);
 
 /**
  * @swagger
@@ -179,7 +179,7 @@ router.put("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, up
  *       404:
  *         description: Archivo no encontrado
  */
-router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId, deleteFile);
+router.delete("/archivo/:id", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS),validarId, deleteFile);
 
 /**
  * @swagger
@@ -206,7 +206,7 @@ router.delete("/archivo/:id", authenticate, authorizeRoles(['1','4']),validarId,
  *       404:
  *         description: Archivo no encontrado
  */
-router.get("/download-file/:id", authenticate, authorizeRoles(ALLOWED_ROLES),validarId, downloadFile);
+router.get("/download-file/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL),validarId, downloadFile);
 
 /**
  * @swagger
@@ -267,7 +267,7 @@ router.get("/download-file/:id", authenticate, authorizeRoles(ALLOWED_ROLES),val
  *       207:
  *         description: Operación parcialmente exitosa (algunos archivos movidos, otros con errores)
  */
-router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), validarId, moveFile);
+router.put("/archivos/:id/move", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, moveFile);
 
 /**
  * @swagger
@@ -318,7 +318,7 @@ router.put("/archivos/:id/move", authenticate, authorizeRoles(['1', '4']), valid
  *       403:
  *         description: Sin permisos para acceder al archivo
  */
-router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(ALLOWED_ROLES), validarId, generateFileAccessToken);
+router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, generateFileAccessToken);
 
 /**
  * @swagger

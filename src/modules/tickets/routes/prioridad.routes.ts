@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createPriority, deletePriority, getAllPriority, getPriorityById, updatePriority } from "../controllers/prioridad.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Prioridad'
  */
-router.get('/prioridades', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18', '19', '20', '21']), getAllPriority);
+router.get('/prioridades', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), getAllPriority);
 
 /**
  * @swagger
@@ -47,7 +48,7 @@ router.get('/prioridades', authenticate, authorizeRoles(['1','2','3','4','5','6'
  *       404:
  *         description: Prioridad no encontrada
  */
-router.get('/prioridades/:id', authenticate, authorizeRoles(['1']), validarId, getPriorityById);
+router.get('/prioridades/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getPriorityById);
 
 /**
  * @swagger
@@ -71,7 +72,7 @@ router.get('/prioridades/:id', authenticate, authorizeRoles(['1']), validarId, g
  *       400:
  *         description: Error en la solicitud
  */
-router.post('/prioridades', authenticate, authorizeRoles(['1']), createPriority);
+router.post('/prioridades', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createPriority);
 
 /**
  * @swagger
@@ -104,7 +105,7 @@ router.post('/prioridades', authenticate, authorizeRoles(['1']), createPriority)
  *       404:
  *         description: Prioridad no encontrada
  */
-router.put('/prioridades/:id', authenticate, authorizeRoles(['1']), updatePriority);
+router.put('/prioridades/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), updatePriority);
 
 /**
  * @swagger
@@ -125,6 +126,6 @@ router.put('/prioridades/:id', authenticate, authorizeRoles(['1']), updatePriori
  *       404:
  *         description: Prioridad no encontrada
  */
-router.delete('/prioridades/:id', authenticate, authorizeRoles(['1']), validarId, deletePriority);
+router.delete('/prioridades/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deletePriority);
 
 export default router;

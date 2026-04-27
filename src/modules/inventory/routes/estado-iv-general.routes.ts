@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { getAllStatusIVGeneral } from "../controllers/estado-iv-general.controller";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -40,6 +41,6 @@ const router = Router();
  *       404:
  *         description: No se encontraron estados
  */
-router.get('/estado/iv-general', authenticate, authorizeRoles(['1', '6', '4']), getAllStatusIVGeneral);
+router.get('/estado/iv-general', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG), getAllStatusIVGeneral);
 
 export default router;

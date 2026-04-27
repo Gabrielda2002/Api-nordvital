@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import {
     getAllInfrastructureCategories,
     getInfrastructureCategoryById,
@@ -10,8 +11,6 @@ import {
     deleteInfrastructureCategory,
 } from "../controllers/infrastructure-categories.controller";
 
-const INFRA_MANAGEMENT = ['1', '22', '23'];
-const INFRA_ADMIN = ['1', '22'];
 
 const router = Router();
 
@@ -38,7 +37,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-categories", authenticate, authorizeRoles(INFRA_MANAGEMENT), getAllInfrastructureCategories);
+router.post("/infrastructure-categories", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), getAllInfrastructureCategories);
 
 /**
  * @swagger
@@ -62,7 +61,7 @@ router.post("/infrastructure-categories", authenticate, authorizeRoles(INFRA_MAN
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-categories/:id", authenticate, authorizeRoles(INFRA_MANAGEMENT), validarId, getInfrastructureCategoryById);
+router.get("/infrastructure-categories/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), validarId, getInfrastructureCategoryById);
 
 /**
  * @swagger
@@ -95,7 +94,7 @@ router.get("/infrastructure-categories/:id", authenticate, authorizeRoles(INFRA_
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-categories/create", authenticate, authorizeRoles(INFRA_ADMIN), createInfrastructureCategory);
+router.post("/infrastructure-categories/create", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_ADMIN), createInfrastructureCategory);
 
 /**
  * @swagger
@@ -119,7 +118,7 @@ router.post("/infrastructure-categories/create", authenticate, authorizeRoles(IN
  *       500:
  *         description: Error interno del servidor
  */
-router.put("/infrastructure-categories/:id", authenticate, authorizeRoles(INFRA_ADMIN), validarId, updateInfrastructureCategory);
+router.put("/infrastructure-categories/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_ADMIN), validarId, updateInfrastructureCategory);
 
 /**
  * @swagger
@@ -143,6 +142,6 @@ router.put("/infrastructure-categories/:id", authenticate, authorizeRoles(INFRA_
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/infrastructure-categories/:id", authenticate, authorizeRoles(INFRA_ADMIN), validarId, deleteInfrastructureCategory);
+router.delete("/infrastructure-categories/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_ADMIN), validarId, deleteInfrastructureCategory);
 
 export default router;

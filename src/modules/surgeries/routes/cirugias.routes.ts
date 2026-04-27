@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createSurgery, deleteSurgery, getAllSurgery, getSurgery, updateSurgery } from "../controllers/cirugias.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 /**
  * @swagger
@@ -159,14 +160,14 @@ import { validarId } from "@core/middlewares/validate-type-id.middleware";
 
 const router = Router();
 
-router.get('/cirugias', authenticate, authorizeRoles(['1', '15']), getAllSurgery);
+router.get('/cirugias', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SURGERY), getAllSurgery);
 
-router.get('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, getSurgery);
+router.get('/cirugias/:id', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SURGERY), validarId, getSurgery);
 
-router.post('/cirugias', authenticate, authorizeRoles(['1', '15', '3']), createSurgery);
+router.post('/cirugias', authenticate, authorizeRoles(ROLE_GROUPS.SURGERY_AUDIT), createSurgery);
 
-router.put('/cirugias/:id', authenticate, authorizeRoles(['1', '15']), validarId, updateSurgery);
+router.put('/cirugias/:id', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SURGERY), validarId, updateSurgery);
 
-router.delete('/cirugias/:id', authenticate, authorizeRoles(['1']), validarId, deleteSurgery);
+router.delete('/cirugias/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSurgery);
 
 export default router;

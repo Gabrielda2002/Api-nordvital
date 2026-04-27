@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createSurveySatisfaction, deleteSurveySatisfaction, getAllSurveySatisfaction, getSurveySatisfaction, isTicketServey, updateSurveySatisfaction } from "../controllers/encuestas-satisfaccion.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/EncuestaSatisfaccion'
  */
-router.get('/encuestas-satisfaccion', authenticate, authorizeRoles(['1', '10']), getAllSurveySatisfaction);
+router.get('/encuestas-satisfaccion', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]), getAllSurveySatisfaction);
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ router.get('/encuestas-satisfaccion', authenticate, authorizeRoles(['1', '10']),
  *       404:
  *         description: Encuesta no encontrada
  */
-router.get('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10']), validarId, getSurveySatisfaction);
+router.get('/encuentas-satisfaccion/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]), validarId, getSurveySatisfaction);
 
 /**
  * @swagger
@@ -73,7 +74,7 @@ router.get('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10
  *       409:
  *         description: La encuesta ya existe
  */
-router.post('/encuestas-satisfaccion', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23']), createSurveySatisfaction);
+router.post('/encuestas-satisfaccion', authenticate, authorizeRoles(ROLE_GROUPS.ALL), createSurveySatisfaction);
 
 /**
  * @swagger
@@ -101,7 +102,7 @@ router.post('/encuestas-satisfaccion', authenticate, authorizeRoles(['1','2','3'
  *       404:
  *         description: Encuesta no encontrada
  */
-router.put('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10']), validarId, updateSurveySatisfaction);
+router.put('/encuentas-satisfaccion/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]), validarId, updateSurveySatisfaction);
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.put('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10
  *       404:
  *         description: Encuesta no encontrada
  */
-router.delete('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', '10']), validarId, deleteSurveySatisfaction);
+router.delete('/encuentas-satisfaccion/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]), validarId, deleteSurveySatisfaction);
 
 /**
  * @swagger
@@ -148,6 +149,6 @@ router.delete('/encuentas-satisfaccion/:id', authenticate, authorizeRoles(['1', 
  *       404:
  *         description: Ticket no encontrado
  */
-router.post('/validate/servey-ticket', authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']), isTicketServey);
+router.post('/validate/servey-ticket', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]), isTicketServey);
 
 export default router;

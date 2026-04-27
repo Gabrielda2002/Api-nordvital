@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createComponent, deleteComponent, getAllComponents, getComponent, updateComponent } from "../controllers/componentes.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -62,7 +63,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron componentes
  */
-router.get("/componentes", authenticate, authorizeRoles(["1"]), getAllComponents);
+router.get("/componentes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllComponents);
 
 /**
  * @swagger
@@ -89,7 +90,7 @@ router.get("/componentes", authenticate, authorizeRoles(["1"]), getAllComponents
  *       404:
  *         description: Componente no encontrado
  */
-router.get("/componentes/:id", authenticate, authorizeRoles(["1"]),validarId ,getComponent);
+router.get("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId ,getComponent);
 
 /**
  * @swagger
@@ -132,7 +133,7 @@ router.get("/componentes/:id", authenticate, authorizeRoles(["1"]),validarId ,ge
  *       400:
  *         description: Datos inválidos
  */
-router.post("/componentes", authenticate, authorizeRoles(["1"]), createComponent);
+router.post("/componentes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createComponent);
 
 /**
  * @swagger
@@ -165,7 +166,7 @@ router.post("/componentes", authenticate, authorizeRoles(["1"]), createComponent
  *       404:
  *         description: Componente no encontrado
  */
-router.put("/componentes/:id", authenticate, authorizeRoles(["1"]), validarId, updateComponent);
+router.put("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateComponent);
 
 /**
  * @swagger
@@ -188,6 +189,6 @@ router.put("/componentes/:id", authenticate, authorizeRoles(["1"]), validarId, u
  *       404:
  *         description: Componente no encontrado
  */
-router.delete("/componentes/:id", authenticate, authorizeRoles(["1"]), validarId, deleteComponent);
+router.delete("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteComponent);
 
 export default router;

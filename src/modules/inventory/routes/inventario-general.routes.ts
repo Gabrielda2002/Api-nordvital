@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, searchInventoryGeneral, updateInventoryGeneral } from "../controllers/inventario-general.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -28,7 +29,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/', authenticate, authorizeRoles(['1']), getAllInventarioGeneral);
+router.get('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllInventarioGeneral);
 
 /**
  * @swagger
@@ -59,7 +60,7 @@ router.get('/', authenticate, authorizeRoles(['1']), getAllInventarioGeneral);
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/sede/:id', authenticate, authorizeRoles(['1', '6', '4', '2', '17']), getAllInventoryGeneralByHeadquarters);
+router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL), getAllInventoryGeneralByHeadquarters);
 
 /**
  * @swagger
@@ -87,7 +88,7 @@ router.get('/sede/:id', authenticate, authorizeRoles(['1', '6', '4', '2', '17'])
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/', authenticate, authorizeRoles(['1','6', '17']), createInventoryGeneral);
+router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.SOPORTE]), createInventoryGeneral);
 
 /**
  * @swagger
@@ -124,7 +125,7 @@ router.post('/', authenticate, authorizeRoles(['1','6', '17']), createInventoryG
  *       500:
  *         description: Error interno del servidor.
  */
-router.put('/:id', authenticate, authorizeRoles(['1', '6', '17']), updateInventoryGeneral);
+router.put('/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.SOPORTE]), updateInventoryGeneral);
 
 /**
  * @swagger
@@ -144,7 +145,7 @@ router.put('/:id', authenticate, authorizeRoles(['1', '6', '17']), updateInvento
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '6', '2', '17']), validarId, getInvetoryGeneralWarrantyStatitics);
+router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInvetoryGeneralWarrantyStatitics);
 
 /**
  * @swagger
@@ -164,7 +165,7 @@ router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles(['
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/age/:id', authenticate, authorizeRoles(['1', '6', '2', '17']),validarId, getInventoryGeneralAgeStatistics);
+router.get('/statistics/age/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]),validarId, getInventoryGeneralAgeStatistics);
 
 /**
  * @swagger
@@ -193,7 +194,7 @@ router.get('/statistics/age/:id', authenticate, authorizeRoles(['1', '6', '2', '
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '6', '2', '17']), validarId, getInventoryGeneralByHeadquartersStatistics);
+router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInventoryGeneralByHeadquartersStatistics);
 
 /**
  * @swagger
@@ -243,6 +244,6 @@ router.get('/statistics/headquarters/:id', authenticate, authorizeRoles(['1', '6
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/search', authenticate, authorizeRoles(['1', '6', '2', '17']), searchInventoryGeneral);
+router.get('/search', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), searchInventoryGeneral);
 
 export default router;

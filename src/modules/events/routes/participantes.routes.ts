@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { createParticipant, getAllParticipants } from "../controllers/participantes.controller";
 
 const router = Router();
@@ -25,7 +26,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/participants', authenticate, authorizeRoles(['1']), getAllParticipants);
+router.get('/participants', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllParticipants);
 
 /**
  * @swagger

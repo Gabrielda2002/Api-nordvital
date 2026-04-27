@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createDiagnostico, deleteDiagnostico, getAllDiagnosticos, getDiagnosticoById, getDiagnosticosByName, updateDiagnostico } from "../controllers/diagnostico.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -33,7 +34,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron diagnósticos
  */
-router.get("/diagnosticos", authenticate, authorizeRoles(['1', '2']), getAllDiagnosticos);
+router.get("/diagnosticos", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllDiagnosticos);
 
 /**
  * @swagger
@@ -55,7 +56,7 @@ router.get("/diagnosticos", authenticate, authorizeRoles(['1', '2']), getAllDiag
  *       404:
  *         description: Diagnóstico no encontrado
  */
-router.get("/diagnosticos/:id", authenticate, authorizeRoles(['1', '2']), validarId, getDiagnosticoById);
+router.get("/diagnosticos/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getDiagnosticoById);
 
 /**
  * @swagger
@@ -85,7 +86,7 @@ router.get("/diagnosticos/:id", authenticate, authorizeRoles(['1', '2']), valida
  *       409:
  *         description: El diagnóstico ya existe
  */
-router.post("/diagnosticos", authenticate, authorizeRoles(['1', '2']), createDiagnostico);
+router.post("/diagnosticos", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createDiagnostico);
 
 /**
  * @swagger
@@ -118,7 +119,7 @@ router.post("/diagnosticos", authenticate, authorizeRoles(['1', '2']), createDia
  *       404:
  *         description: Diagnóstico no encontrado
  */
-router.put("/diagnosticos/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateDiagnostico);
+router.put("/diagnosticos/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateDiagnostico);
 
 /**
  * @swagger
@@ -140,7 +141,7 @@ router.put("/diagnosticos/:id", authenticate, authorizeRoles(['1', '2']), valida
  *       404:
  *         description: Diagnóstico no encontrado
  */
-router.delete("/diagnosticos/:id", authenticate, authorizeRoles(['1']), validarId, deleteDiagnostico);
+router.delete("/diagnosticos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteDiagnostico);
 
 /**
  * @swagger
@@ -167,6 +168,6 @@ router.delete("/diagnosticos/:id", authenticate, authorizeRoles(['1']), validarI
  *       404:
  *         description: No se encontraron diagnósticos
  */
-router.post("/diagnosticos-name", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getDiagnosticosByName);
+router.post("/diagnosticos-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getDiagnosticosByName);
 
 export default router;

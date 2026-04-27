@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllElementDemandInduced, getElementDemandInducedByName } from "../controllers/elemento-demanda-inducida.controller";
 
 const router = Router();
@@ -45,7 +46,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron elementos de demanda inducida
  */
-router.get("/elementos/demanda-inducida", authenticate, authorizeRoles(['1']), getAllElementDemandInduced);
+router.get("/elementos/demanda-inducida", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllElementDemandInduced);
 
 /**
  * @swagger
@@ -81,6 +82,6 @@ router.get("/elementos/demanda-inducida", authenticate, authorizeRoles(['1']), g
  *       404:
  *         description: No se encontraron elementos de demanda inducida
  */
-router.post("/elementos/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getElementDemandInducedByName);
+router.post("/elementos/demanda-inducida/buscar", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getElementDemandInducedByName);
 
 export default router;

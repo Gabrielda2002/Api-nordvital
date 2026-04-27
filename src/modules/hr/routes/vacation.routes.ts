@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import {
   initializeVacationSystem,
   getUsersPendingSetup,
@@ -11,6 +11,7 @@ import {
 } from "../controllers/vacation.controller";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.post("/initialize", authenticate, initializeVacationSystem);
  *       401:
  *         description: No autorizado
  */
-router.get("/pending-setup",authenticate ,authorizeRoles(['1', '6', '20', '18', '2']), getUsersPendingSetup);
+router.get("/pending-setup",authenticate ,authorizeRoles(ROLE_GROUPS.APPROVAL_MANAGERS_FULL), getUsersPendingSetup);
 
 /**
  * @swagger

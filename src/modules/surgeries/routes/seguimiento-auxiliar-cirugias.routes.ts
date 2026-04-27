@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createAuxiliarySurgery, deleteAuxiliarySurgery, getAllAuxiliarySurgeries, getAuxiliarySurgery, updateAuxiliarySurgery } from "../controllers/seguimiento-auxiliar-cirugias.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/SeguimientoAuxiliarCirugias'
  */
-router.get('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '2']), getAllAuxiliarySurgeries);
+router.get('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllAuxiliarySurgeries);
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ router.get('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.get('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1', '2']), validarId, getAuxiliarySurgery);
+router.get('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getAuxiliarySurgery);
 
 /**
  * @swagger
@@ -81,7 +82,7 @@ router.get('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1
  *       400:
  *         description: Error en los datos enviados
  */
-router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', '15', '3']), createAuxiliarySurgery);
+router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(ROLE_GROUPS.SURGERY_AUDIT), createAuxiliarySurgery);
 
 /**
  * @swagger
@@ -109,7 +110,7 @@ router.post('/seguimiento-auxiliar-cirugia', authenticate, authorizeRoles(['1', 
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.put('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateAuxiliarySurgery);
+router.put('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateAuxiliarySurgery);
 
 /**
  * @swagger
@@ -131,6 +132,6 @@ router.put('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.delete('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(['1', '2']), validarId, deleteAuxiliarySurgery);
+router.delete('/seguimiento-auxiliar-cirugia/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, deleteAuxiliarySurgery);
 
 export default router;

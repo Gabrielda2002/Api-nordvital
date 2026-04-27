@@ -1,9 +1,10 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createPhone, getCountPhonesByHeadquartersId, getPhoneAgeByHeadquartersId, getPhoneBySedeId, getPhoneWarrantyStatistics, searchPhone, updatePhone } from "../controllers/celular.controller";
 import { uploadDocDelivery } from "@core/middlewares/multer-delivery.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -56,7 +57,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/sede/:id', authenticate, authorizeRoles(['1','4', '2', '17']), getPhoneBySedeId);
+router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWERS), getPhoneBySedeId);
 
 /**
  * @swagger
@@ -141,7 +142,7 @@ router.get('/sede/:id', authenticate, authorizeRoles(['1','4', '2', '17']), getP
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/', authenticate, authorizeRoles(['1', '17']), uploadDocDelivery, createPhone);
+router.post('/', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), uploadDocDelivery, createPhone);
 
 /**
  * @swagger
@@ -202,7 +203,7 @@ router.post('/', authenticate, authorizeRoles(['1', '17']), uploadDocDelivery, c
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/:id', authenticate, authorizeRoles(['1', '17']), validarId, uploadDocDelivery, updatePhone);
+router.put('/:id', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), validarId, uploadDocDelivery, updatePhone);
 
 /**
  * @swagger
@@ -233,7 +234,7 @@ router.put('/:id', authenticate, authorizeRoles(['1', '17']), validarId, uploadD
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getCountPhonesByHeadquartersId);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getCountPhonesByHeadquartersId);
 
 /**
  * @swagger
@@ -277,7 +278,7 @@ router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', 
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneAgeByHeadquartersId)
+router.get('/statics/age/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getPhoneAgeByHeadquartersId)
 
 /**
  * @swagger
@@ -307,7 +308,7 @@ router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']), v
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getPhoneWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getPhoneWarrantyStatistics);
 
 /**
  * @swagger
@@ -357,6 +358,6 @@ router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1',
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchPhone);
+router.get('/search', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), searchPhone);
 
 export default router;

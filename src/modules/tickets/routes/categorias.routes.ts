@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../controllers/categorias.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -28,7 +29,7 @@ const router = Router();
  *       403:
  *         description: Prohibido.
  */
-router.post('/categories/:type', authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23']), getAllCategories);
+router.post('/categories/:type', authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllCategories);
 
 /**
  * @swagger
@@ -59,7 +60,7 @@ router.post('/categories/:type', authenticate, authorizeRoles(['1','2','3','4','
  *       403:
  *         description: Prohibido.
  */
-router.get('/categorias/:id', authenticate, authorizeRoles(['1']), validarId, getCategoryById);
+router.get('/categorias/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getCategoryById);
 
 /**
  * @swagger
@@ -93,7 +94,7 @@ router.get('/categorias/:id', authenticate, authorizeRoles(['1']), validarId, ge
  *       403:
  *         description: Prohibido.
  */
-router.post('/categorias', authenticate, authorizeRoles(['1']), createCategory);
+router.post('/categorias', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createCategory);
 
 /**
  * @swagger
@@ -136,7 +137,7 @@ router.post('/categorias', authenticate, authorizeRoles(['1']), createCategory);
  *       403:
  *         description: Prohibido.
  */
-router.put('/categorias/:id', authenticate, authorizeRoles(['1']), validarId, updateCategory);
+router.put('/categorias/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateCategory);
 
 /**
  * @swagger
@@ -163,6 +164,6 @@ router.put('/categorias/:id', authenticate, authorizeRoles(['1']), validarId, up
  *       403:
  *         description: Prohibido.
  */
-router.delete('/categorias/:id', authenticate, authorizeRoles(['1']), validarId, deleteCategory);
+router.delete('/categorias/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteCategory);
 
 export default router;

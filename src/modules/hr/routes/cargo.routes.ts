@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createPosition, getAllPosition, getPositionByName, updatePosition } from "../controllers/cargo.controller";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido.
  */
-router.get("/cargo", authenticate, authorizeRoles(["1"]), getAllPosition);
+router.get("/cargo", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllPosition);
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ router.get("/cargo", authenticate, authorizeRoles(["1"]), getAllPosition);
  *       403:
  *         description: Prohibido.
  */
-router.post("/cargo/name", authenticate, authorizeRoles(["1","18"]), getPositionByName);
+router.post("/cargo/name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]), getPositionByName);
 
 /**
  * @swagger
@@ -95,7 +96,7 @@ router.post("/cargo/name", authenticate, authorizeRoles(["1","18"]), getPosition
  *       403:
  *         description: Prohibido.
  */
-router.post("/cargo", authenticate, authorizeRoles(["1"]), createPosition);
+router.post("/cargo", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createPosition);
 
 /**
  * @swagger
@@ -138,6 +139,6 @@ router.post("/cargo", authenticate, authorizeRoles(["1"]), createPosition);
  *       403:
  *         description: Prohibido.
  */
-router.put("/cargo/:id", authenticate, authorizeRoles(["1"]), updatePosition);
+router.put("/cargo/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), updatePosition);
 
 export default router;

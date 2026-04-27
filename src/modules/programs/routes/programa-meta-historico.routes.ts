@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { createGoal, deleteGoal, getGoalsByPrograms } from "../controllers/programa-meta-historico.controller";
 
 const router = Router();
@@ -51,7 +52,7 @@ const router = Router();
  *       500:
  *         description: Error del servidor
  */
-router.get("/metas/programas", authenticate, authorizeRoles(["1",  '19', '20', '21']), getGoalsByPrograms);
+router.get("/metas/programas", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getGoalsByPrograms);
 
 /**
  * @swagger
@@ -106,7 +107,7 @@ router.get("/metas/programas", authenticate, authorizeRoles(["1",  '19', '20', '
  *       500:
  *         description: Error del servidor
  */
-router.post("/metas/programas", authenticate, authorizeRoles(["1", '20', '21']), createGoal);
+router.post("/metas/programas", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADORA_ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), createGoal);
 
 /**
  * @swagger
@@ -143,6 +144,6 @@ router.post("/metas/programas", authenticate, authorizeRoles(["1", '20', '21']),
  *       500:
  *         description: Error del servidor
  */
-router.delete("/metas/programas/:id", authenticate, authorizeRoles(["1", '20']), deleteGoal);
+router.delete("/metas/programas/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADORA_ENFERMERIA]), deleteGoal);
 
 export default router;

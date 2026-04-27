@@ -1,9 +1,10 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createNotaTecnica, deleteNotaTecnica, getAllNotaTecnica, getNotaTecnicaById, updateNotaTecnica, updateNotaTecnicaStatusFromExcel } from "../controllers/notas-tecnicas.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { uploadXlsx } from "@core/middlewares/upload-xlsx-PS";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -32,7 +33,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/NotaTecnica'
  */
-router.get('/notas-tecnicas', authenticate, authorizeRoles(['1']), getAllNotaTecnica);
+router.get('/notas-tecnicas', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllNotaTecnica);
 
 /**
  * @swagger
@@ -57,7 +58,7 @@ router.get('/notas-tecnicas', authenticate, authorizeRoles(['1']), getAllNotaTec
  *             schema:
  *               $ref: '#/components/schemas/NotaTecnica'
  */
-router.get('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId, getNotaTecnicaById);
+router.get('/notas-tecnicas/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getNotaTecnicaById);
 
 /**
  * @swagger
@@ -81,7 +82,7 @@ router.get('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId
  *             schema:
  *               $ref: '#/components/schemas/NotaTecnica'
  */
-router.post('/notas-tecnicas', authenticate, authorizeRoles(['1']), createNotaTecnica);
+router.post('/notas-tecnicas', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createNotaTecnica);
 
 /**
  * @swagger
@@ -112,7 +113,7 @@ router.post('/notas-tecnicas', authenticate, authorizeRoles(['1']), createNotaTe
  *             schema:
  *               $ref: '#/components/schemas/NotaTecnica'
  */
-router.put('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId, updateNotaTecnica);
+router.put('/notas-tecnicas/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateNotaTecnica);
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.put('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId
  *       200:
  *         description: Nota técnica eliminada
  */
-router.delete('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), validarId, deleteNotaTecnica);
+router.delete('/notas-tecnicas/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteNotaTecnica);
 
 /**
  * @swagger
@@ -189,6 +190,6 @@ router.delete('/notas-tecnicas/:id', authenticate, authorizeRoles(['1']), valida
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/notas/tecnicas/status', authenticate, authorizeRoles(['1']), uploadXlsx ,updateNotaTecnicaStatusFromExcel);
+router.put('/notas/tecnicas/status', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadXlsx ,updateNotaTecnicaStatusFromExcel);
 
 export default router;

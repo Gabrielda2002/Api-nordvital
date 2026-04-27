@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { createArea, getAllAreas, getAreaByName, updateArea } from "../controllers/area.controller";
 
 const router = Router();
@@ -27,7 +28,7 @@ const router = Router();
  *       403:
  *         description: Prohibido.
  */
-router.get("/area", authenticate, authorizeRoles(["1"]), getAllAreas);
+router.get("/area", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllAreas);
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ router.get("/area", authenticate, authorizeRoles(["1"]), getAllAreas);
  *       403:
  *         description: Prohibido.
  */
-router.post("/area/name", authenticate, authorizeRoles(["1"]), getAreaByName);
+router.post("/area/name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAreaByName);
 
 /**
  * @swagger
@@ -95,7 +96,7 @@ router.post("/area/name", authenticate, authorizeRoles(["1"]), getAreaByName);
  *       403:
  *         description: Prohibido.
  */
-router.post("/area", authenticate, authorizeRoles(["1"]), createArea);
+router.post("/area", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createArea);
 
 /**
  * @swagger
@@ -138,6 +139,6 @@ router.post("/area", authenticate, authorizeRoles(["1"]), createArea);
  *       403:
  *         description: Prohibido.
  */
-router.put("/area/:id", authenticate, authorizeRoles(["1"]), updateArea);
+router.put("/area/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), updateArea);
 
 export default router;

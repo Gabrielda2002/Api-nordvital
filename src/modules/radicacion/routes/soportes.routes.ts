@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createSoporte, deleteSoporte, getAllSorportes, getSoporteById, updateSoporte } from "../controllers/soportes.controller";
 import { generateSoporteAccessToken, serveSecureSoporte } from "../controllers/soportes-secure.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
@@ -6,6 +6,7 @@ import { upload } from "@core/middlewares/multer-support.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ const router = Router();
  *       404:
  *         description: No hay soportes registrados
  */
-router.get("/soportes", authenticate, authorizeRoles(['1', '2','3', '5']), getAllSorportes);
+router.get("/soportes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), getAllSorportes);
 
 /**
  * @swagger
@@ -55,7 +56,7 @@ router.get("/soportes", authenticate, authorizeRoles(['1', '2','3', '5']), getAl
  *       404:
  *         description: Soporte no encontrado
  */
-router.get("/soportes/:id", authenticate, authorizeRoles(['1', '2','3', '5']), validarId, getSoporteById);
+router.get("/soportes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), validarId, getSoporteById);
 
 /**
  * @swagger
@@ -87,7 +88,7 @@ router.get("/soportes/:id", authenticate, authorizeRoles(['1', '2','3', '5']), v
  *       409:
  *         description: El soporte ya existe
  */
-router.post("/soportes", authenticate, authorizeRoles(['1', '3','10', '15', '6']), upload.single('file'), createSoporte);
+router.post("/soportes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), upload.single('file'), createSoporte);
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.post("/soportes", authenticate, authorizeRoles(['1', '3','10', '15', '6']
  *       404:
  *         description: Soporte no encontrado
  */
-router.put("/soportes/:id", authenticate, authorizeRoles(['1', '2','3']), upload.single('file'), validarId, updateSoporte);
+router.put("/soportes/:id", authenticate, authorizeRoles(ROLE_GROUPS.AUDIT), upload.single('file'), validarId, updateSoporte);
 
 /**
  * @swagger
@@ -145,7 +146,7 @@ router.put("/soportes/:id", authenticate, authorizeRoles(['1', '2','3']), upload
  *       404:
  *         description: Soporte no encontrado
  */
-router.delete("/soportes/:id", authenticate, authorizeRoles(['1']), validarId, deleteSoporte);
+router.delete("/soportes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSoporte);
 
 /**
  * @swagger
@@ -177,7 +178,7 @@ router.delete("/soportes/:id", authenticate, authorizeRoles(['1']), validarId, d
  *       404:
  *         description: Soporte no encontrado
  */
-router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']), validarId, generateSoporteAccessToken);
+router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA]), validarId, generateSoporteAccessToken);
 
 /**
  * @swagger

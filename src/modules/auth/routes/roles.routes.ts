@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createRole, deleteRole, getAllRoles, getRole, updateRole } from "../controllers/roles.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -43,7 +44,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/roles",authenticate, authorizeRoles(['1', '2','18']), getAllRoles);
+router.get("/roles",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getAllRoles);
 
 /**
  * @swagger
@@ -70,7 +71,7 @@ router.get("/roles",authenticate, authorizeRoles(['1', '2','18']), getAllRoles);
  *       404:
  *         description: Rol no encontrado
  */
-router.get("/roles/:id",authenticate, authorizeRoles(['1', '2']), validarId ,getRole);
+router.get("/roles/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId ,getRole);
 
 /**
  * @swagger
@@ -98,7 +99,7 @@ router.get("/roles/:id",authenticate, authorizeRoles(['1', '2']), validarId ,get
  *       400:
  *         description: Error en la creación del rol
  */
-router.post("/roles",authenticate, authorizeRoles(['1', '2']), createRole);
+router.post("/roles",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createRole);
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.post("/roles",authenticate, authorizeRoles(['1', '2']), createRole);
  *       404:
  *         description: Rol no encontrado
  */
-router.put("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,updateRole);
+router.put("/roles/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId ,updateRole);
 
 /**
  * @swagger
@@ -156,6 +157,6 @@ router.put("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,updateRo
  *       404:
  *         description: Rol no encontrado
  */
-router.delete("/roles/:id",authenticate, authorizeRoles(['1']), validarId ,deleteRole);
+router.delete("/roles/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId ,deleteRole);
 
 export default router;

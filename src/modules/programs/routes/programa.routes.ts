@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllPrograms, getProgramByName } from "../controllers/programa.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron programas
  */
-router.get("/programas", authenticate, authorizeRoles(['1']), getAllPrograms);
+router.get("/programas", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllPrograms);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get("/programas", authenticate, authorizeRoles(['1']), getAllPrograms);
  *       404:
  *         description: No se encontraron programas
  */
-router.post("/programas/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getProgramByName);
+router.post("/programas/buscar", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getProgramByName);
 
 export default router;

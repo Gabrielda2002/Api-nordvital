@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createEstadosSeguimiento, deleteEstadosSeguimiento, getEstadosSeguimiento, getEstadosSeguimientos, updateEstadosSeguimiento } from "../controllers/estados-seguimiento.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -35,7 +36,7 @@ const router = Router();
  *       403:
  *         description: Forbidden - No tiene permisos
  */
-router.get("/estados-seguimientos", authenticate, authorizeRoles(['1', '2']), getEstadosSeguimientos);
+router.get("/estados-seguimientos", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getEstadosSeguimientos);
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.get("/estados-seguimientos", authenticate, authorizeRoles(['1', '2']), ge
  *       404:
  *         description: Estado de seguimiento no encontrado
  */
-router.get("/estados-seguimientos/:id", validarId, authenticate, authorizeRoles(['1', '2']), getEstadosSeguimiento);
+router.get("/estados-seguimientos/:id", validarId, authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getEstadosSeguimiento);
 
 /**
  * @swagger
@@ -95,7 +96,7 @@ router.get("/estados-seguimientos/:id", validarId, authenticate, authorizeRoles(
  *       400:
  *         description: Datos inválidos
  */
-router.post("/estados-seguimientos", authenticate, authorizeRoles(['1', '2']), createEstadosSeguimiento);
+router.post("/estados-seguimientos", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createEstadosSeguimiento);
 
 /**
  * @swagger
@@ -130,7 +131,7 @@ router.post("/estados-seguimientos", authenticate, authorizeRoles(['1', '2']), c
  *       404:
  *         description: Estado de seguimiento no encontrado
  */
-router.put("/estados-seguimientos/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateEstadosSeguimiento);
+router.put("/estados-seguimientos/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateEstadosSeguimiento);
 
 /**
  * @swagger
@@ -152,6 +153,6 @@ router.put("/estados-seguimientos/:id", authenticate, authorizeRoles(['1', '2'])
  *       404:
  *         description: Estado de seguimiento no encontrado
  */
-router.delete("/estados-seguimientos/:id", authenticate, authorizeRoles(['1']), validarId, deleteEstadosSeguimiento);
+router.delete("/estados-seguimientos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteEstadosSeguimiento);
 
 export default router;

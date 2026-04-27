@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { createProcessPhone } from "../controllers/seguimiento-celulares.controller";
 
 
@@ -54,6 +55,6 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/seguimiento/celulares',authenticate ,authorizeRoles(['1']), createProcessPhone);
+router.post('/seguimiento/celulares',authenticate ,authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createProcessPhone);
 
 export default router;

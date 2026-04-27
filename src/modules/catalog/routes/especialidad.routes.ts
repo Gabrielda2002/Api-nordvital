@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createEspecialidad, deleteEspecialidad, getAllEspecialidades, getEspecialidad, getEspecialidadesByName, updateEspecialidad, updateStatusEspecialidad } from "../controllers/especialidad.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -61,7 +62,7 @@ router.get("/especialidades", getAllEspecialidades);
  *       404:
  *         description: Especialidad no encontrada
  */
-router.get("/especialidades/:id", authenticate, authorizeRoles(['1', '2']), validarId, getEspecialidad);
+router.get("/especialidades/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getEspecialidad);
 
 /**
  * @swagger
@@ -86,7 +87,7 @@ router.get("/especialidades/:id", authenticate, authorizeRoles(['1', '2']), vali
  *       400:
  *         description: Datos inválidos
  */
-router.post("/especialidades", authenticate, authorizeRoles(['1', '2']), createEspecialidad);
+router.post("/especialidades", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createEspecialidad);
 
 /**
  * @swagger
@@ -119,7 +120,7 @@ router.post("/especialidades", authenticate, authorizeRoles(['1', '2']), createE
  *       404:
  *         description: Especialidad no encontrada
  */
-router.put("/especialidades/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateEspecialidad);
+router.put("/especialidades/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateEspecialidad);
 
 /**
  * @swagger
@@ -141,7 +142,7 @@ router.put("/especialidades/:id", authenticate, authorizeRoles(['1', '2']), vali
  *       404:
  *         description: Especialidad no encontrada
  */
-router.delete("/especialidades/:id", authenticate, authorizeRoles(['1']), validarId, deleteEspecialidad);
+router.delete("/especialidades/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteEspecialidad);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.delete("/especialidades/:id", authenticate, authorizeRoles(['1']), valida
  *       404:
  *         description: No se encontraron especialidades
  */
-router.post("/especialidades-name", authenticate, authorizeRoles(['1', '3','10','15', '6']), getEspecialidadesByName);
+router.post("/especialidades-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getEspecialidadesByName);
 
 /**
  * @swagger
@@ -199,6 +200,6 @@ router.post("/especialidades-name", authenticate, authorizeRoles(['1', '3','10',
  *       404:
  *         description: Especialidad no encontrada
  */
-router.put("/update-status-especialidad/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateStatusEspecialidad);
+router.put("/update-status-especialidad/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateStatusEspecialidad);
 
 export default router;

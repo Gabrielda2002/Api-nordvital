@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { multerInfrastructureTicket } from "@core/middlewares/multer-infrastructure-ticket.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import {
     getAllInfrastructureTickets,
     getInfrastructureTicketById,
@@ -13,9 +14,6 @@ import {
     getInfrastructureTicketsByUserId,
 } from "../controllers/infrastructure-tickets.controller";
 
-const ALL_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
-const INFRA_MANAGEMENT = ['1','22','23'];
-const INFRA_ADMIN = ['1','22'];
 
 const router = Router();
 
@@ -33,7 +31,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-tickets", authenticate, authorizeRoles(INFRA_MANAGEMENT), getAllInfrastructureTickets);
+router.get("/infrastructure-tickets", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), getAllInfrastructureTickets);
 
 /**
  * @swagger
@@ -49,7 +47,7 @@ router.get("/infrastructure-tickets", authenticate, authorizeRoles(INFRA_MANAGEM
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-tickets/table", authenticate, authorizeRoles(INFRA_MANAGEMENT), getInfrastructureTicketsTable);
+router.get("/infrastructure-tickets/table", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), getInfrastructureTicketsTable);
 
 /**
  * @swagger
@@ -74,7 +72,7 @@ router.get("/infrastructure-tickets/table", authenticate, authorizeRoles(INFRA_M
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-tickets/user/:id", authenticate, authorizeRoles(ALL_ROLES), validarId, getInfrastructureTicketsByUserId);
+router.get("/infrastructure-tickets/user/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getInfrastructureTicketsByUserId);
 
 /**
  * @swagger
@@ -99,7 +97,7 @@ router.get("/infrastructure-tickets/user/:id", authenticate, authorizeRoles(ALL_
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/infrastructure-tickets/:id", authenticate, authorizeRoles(INFRA_MANAGEMENT), validarId, getInfrastructureTicketById);
+router.get("/infrastructure-tickets/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), validarId, getInfrastructureTicketById);
 
 /**
  * @swagger
@@ -148,7 +146,7 @@ router.get("/infrastructure-tickets/:id", authenticate, authorizeRoles(INFRA_MAN
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-tickets", authenticate, authorizeRoles(ALL_ROLES), multerInfrastructureTicket.single("file"), createInfrastructureTicket);
+router.post("/infrastructure-tickets", authenticate, authorizeRoles(ROLE_GROUPS.ALL), multerInfrastructureTicket.single("file"), createInfrastructureTicket);
 
 /**
  * @swagger
@@ -172,7 +170,7 @@ router.post("/infrastructure-tickets", authenticate, authorizeRoles(ALL_ROLES), 
  *       500:
  *         description: Error interno del servidor
  */
-router.put("/infrastructure-tickets/:id", authenticate, authorizeRoles(INFRA_MANAGEMENT), validarId, updateInfrastructureTicket);
+router.put("/infrastructure-tickets/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), validarId, updateInfrastructureTicket);
 
 /**
  * @swagger
@@ -196,6 +194,6 @@ router.put("/infrastructure-tickets/:id", authenticate, authorizeRoles(INFRA_MAN
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/infrastructure-tickets/:id", authenticate, authorizeRoles(INFRA_ADMIN), validarId, deleteInfrastructureTicket);
+router.delete("/infrastructure-tickets/:id", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_ADMIN), validarId, deleteInfrastructureTicket);
 
 export default router;

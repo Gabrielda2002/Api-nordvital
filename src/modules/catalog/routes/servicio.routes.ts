@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createServicio, deleteServicio, getAllServicios, getServicioById, getServiciosByName, updateServicio, updateStatusServicio } from "../controllers/servicio.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router(); 
 
@@ -26,7 +27,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron servicios
  */
-router.get("/servicios", authenticate, authorizeRoles(['1', '2']), getAllServicios)
+router.get("/servicios", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllServicios)
 
 /**
  * @swagger
@@ -53,7 +54,7 @@ router.get("/servicios", authenticate, authorizeRoles(['1', '2']), getAllServici
  *       404:
  *         description: Servicio no encontrado
  */
-router.get("/servicios/:id", authenticate, authorizeRoles(['1', '2']), validarId, getServicioById)
+router.get("/servicios/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getServicioById)
 
 /**
  * @swagger
@@ -79,7 +80,7 @@ router.get("/servicios/:id", authenticate, authorizeRoles(['1', '2']), validarId
  *       400:
  *         description: Datos inválidos
  */
-router.post("/servicios", authenticate, authorizeRoles(['1', '2']), createServicio)
+router.post("/servicios", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createServicio)
 
 /**
  * @swagger
@@ -112,7 +113,7 @@ router.post("/servicios", authenticate, authorizeRoles(['1', '2']), createServic
  *       404:
  *         description: Servicio no encontrado
  */
-router.put("/servicios/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateServicio)
+router.put("/servicios/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateServicio)
 
 /**
  * @swagger
@@ -134,7 +135,7 @@ router.put("/servicios/:id", authenticate, authorizeRoles(['1', '2']), validarId
  *       404:
  *         description: Servicio no encontrado
  */
-router.delete("/servicios/:id", authenticate, authorizeRoles(['1']), validarId, deleteServicio)
+router.delete("/servicios/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteServicio)
 
 /**
  * @swagger
@@ -160,7 +161,7 @@ router.delete("/servicios/:id", authenticate, authorizeRoles(['1']), validarId, 
  *       400:
  *         description: Nombre no proporcionado
  */
-router.post("/servicios-name", authenticate, authorizeRoles(['1', '3', '10', '15', '6']), getServiciosByName)
+router.post("/servicios-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getServiciosByName)
 
 /**
  * @swagger
@@ -193,6 +194,6 @@ router.post("/servicios-name", authenticate, authorizeRoles(['1', '3', '10', '15
  *       404:
  *         description: Servicio no encontrado
  */
-router.put("/update-status-servicio/:id", validarId, authenticate, authorizeRoles(['1', '2']), updateStatusServicio);
+router.put("/update-status-servicio/:id", validarId, authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), updateStatusServicio);
 
 export default router;

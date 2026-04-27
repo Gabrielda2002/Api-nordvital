@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllResultCalls, getResultCallByName } from "../controllers/resultado-llamada.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron resultados de llamada
  */
-router.get("/resultado/demanda-inducida", authenticate, authorizeRoles(['1']), getAllResultCalls);
+router.get("/resultado/demanda-inducida", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllResultCalls);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get("/resultado/demanda-inducida", authenticate, authorizeRoles(['1']), g
  *       404:
  *         description: No se encontraron resultados de llamada
  */
-router.post("/resultado/demanda-inducida/buscar", authenticate, authorizeRoles(['1', '19', '20', '21']), getResultCallByName);
+router.post("/resultado/demanda-inducida/buscar", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getResultCallByName);
 
 export default router;

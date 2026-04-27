@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio, updateStatusConvenio } from "../controllers/convenio.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -44,7 +45,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Convenio'
  */
-router.get('/convenio', authenticate, authorizeRoles(['1', '3', '10', '15', '6',  '19', '20', '21']), getAllConvenio);
+router.get('/convenio', authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURSING), getAllConvenio);
 
 /**
  * @swagger
@@ -70,7 +71,7 @@ router.get('/convenio', authenticate, authorizeRoles(['1', '3', '10', '15', '6',
  *       404:
  *         description: Convenio no encontrado
  */
-router.get('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validarId, getConvenioById);
+router.get('/convenio/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getConvenioById);
 
 /**
  * @swagger
@@ -97,7 +98,7 @@ router.get('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *       400:
  *         description: Error en la validación
  */
-router.post('/convenio', authenticate, authorizeRoles(['1', '2']), createConvenio);
+router.post('/convenio', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createConvenio);
 
 /**
  * @swagger
@@ -128,7 +129,7 @@ router.post('/convenio', authenticate, authorizeRoles(['1', '2']), createConveni
  *       404:
  *         description: Convenio no encontrado
  */
-router.put('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateConvenio);
+router.put('/convenio/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateConvenio);
 
 /**
  * @swagger
@@ -150,7 +151,7 @@ router.put('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *       404:
  *         description: Convenio no encontrado
  */
-router.delete('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validarId, deleteConvenio);
+router.delete('/convenio/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, deleteConvenio);
 
 /**
  * @swagger
@@ -184,6 +185,6 @@ router.delete('/convenio/:id', authenticate, authorizeRoles(['1', '2']), validar
  *       404:
  *         description: Convenio no encontrado
  */
-router.put("/update-status-convenio/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateStatusConvenio);
+router.put("/update-status-convenio/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateStatusConvenio);
 
 export default router;

@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createMonitoringDevicesNetwork, deleteMonitoringDevicesNetwork, getAllMonitoringDevicesNetwork, getMonitoringDevicesNetwork, updateMonitoringDevicesNetwork } from "../controllers/seguimiento-dispositivos-red.controller";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron datos
  */
-router.get("/seguimiento-dispositivos-red", authenticate, authorizeRoles(['1']), getAllMonitoringDevicesNetwork);
+router.get("/seguimiento-dispositivos-red", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllMonitoringDevicesNetwork);
 
 /**
  * @swagger
@@ -62,7 +63,7 @@ router.get("/seguimiento-dispositivos-red", authenticate, authorizeRoles(['1']),
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.get("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles(['1']), validarId, getMonitoringDevicesNetwork);
+router.get("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getMonitoringDevicesNetwork);
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.get("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles(['1
  *       400:
  *         description: Error en los datos proporcionados
  */
-router.post("/seguimiento-dispositivos-red", authenticate, authorizeRoles(['1']), createMonitoringDevicesNetwork);
+router.post("/seguimiento-dispositivos-red", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createMonitoringDevicesNetwork);
 
 /**
  * @swagger
@@ -142,7 +143,7 @@ router.post("/seguimiento-dispositivos-red", authenticate, authorizeRoles(['1'])
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.put("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles(['1']), validarId, updateMonitoringDevicesNetwork);
+router.put("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateMonitoringDevicesNetwork);
 
 /**
  * @swagger
@@ -164,6 +165,6 @@ router.put("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles(['1
  *       404:
  *         description: Seguimiento no encontrado
  */
-router.delete("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles(['1']), validarId, deleteMonitoringDevicesNetwork);
+router.delete("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteMonitoringDevicesNetwork);
 
 export default router;

@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import { getRegisterEntriesByDocument } from "../controllers/registro-entrada.controller";
 
 const router = Router();
@@ -76,6 +77,6 @@ const router = Router();
  *       404:
  *         description: No se encontraron registros de entrada
  */
-router.post('/registro-entrada', authenticate, authorizeRoles(['1', '18', '2']), getRegisterEntriesByDocument);
+router.post('/registro-entrada', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getRegisterEntriesByDocument);
 
 export default router;

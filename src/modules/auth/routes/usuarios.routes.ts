@@ -1,13 +1,13 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createUsuario, deletePhoto, deleteUsuario, getAllUsuarios, getUsuario, getUsuariosTable, searchUsuarios, updatePassword, updatePasswordGeneric, updateUsuario, updateUsuarioBasicData, updateUsuarioTable, uploadPhoto } from "../controllers/usuario.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { uploadPhotoUser } from "@core/middlewares/multer-photo-user.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
 
 /**
  * @swagger
@@ -37,7 +37,7 @@ const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14
  *       403:
  *         description: Sin permisos (rol no permitido)
  */
-router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios);
+router.get('/usuarios', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllUsuarios);
 
 /**
  * @swagger
@@ -70,7 +70,7 @@ router.get('/usuarios', authenticate, authorizeRoles(['1', '2']), getAllUsuarios
  *       404:
  *         description: Usuario no encontrado
  */
-router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId, getUsuario);
+router.get('/usuarios/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getUsuario);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.get('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *       403:
  *         description: Sin permisos
  */
-router.post('/usuarios', authenticate, authorizeRoles(['1', '2', '18']), createUsuario);
+router.post('/usuarios', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), createUsuario);
 
 /**
  * @swagger
@@ -143,7 +143,7 @@ router.post('/usuarios', authenticate, authorizeRoles(['1', '2', '18']), createU
  *       404:
  *         description: Usuario no encontrado
  */
-router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateUsuario);
+router.put('/usuarios/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateUsuario);
 
 /**
  * @swagger
@@ -174,7 +174,7 @@ router.put('/usuarios/:id', authenticate, authorizeRoles(['1', '2']), validarId,
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteUsuario);
+router.delete('/usuarios/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteUsuario);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ router.delete('/usuarios/:id', authenticate, authorizeRoles(['1']), validarId, d
  *       200:
  *         description: Foto actualizada exitosamente
  */
-router.put('/upload-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
+router.put('/upload-photo/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), uploadPhotoUser.single('photo'), validarId, uploadPhoto);
 
 /**
  * @swagger
@@ -223,7 +223,7 @@ router.put('/upload-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), upl
  *       200:
  *         description: Foto eliminada exitosamente
  */
-router.delete('/delete-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), validarId, deletePhoto);
+router.delete('/delete-photo/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, deletePhoto);
 
 /**
  * @swagger
@@ -237,7 +237,7 @@ router.delete('/delete-photo/:id', authenticate, authorizeRoles(ALLOWED_ROLES), 
  *       200:
  *         description: Tabla de usuarios obtenida exitosamente
  */
-router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2', '18']), getUsuariosTable);
+router.get('/usuarios-table', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getUsuariosTable);
 
 /**
  * @swagger
@@ -271,7 +271,7 @@ router.get('/usuarios-table', authenticate, authorizeRoles(['1', '2', '18']), ge
  *       200:
  *         description: Datos actualizados exitosamente
  */
-router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(ALLOWED_ROLES), validarId, updateUsuarioBasicData);
+router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, updateUsuarioBasicData);
 
 /**
  * @swagger
@@ -301,7 +301,7 @@ router.put("/usuario-datos-basicos/:id", authenticate, authorizeRoles(ALLOWED_RO
  *       200:
  *         description: Contraseña actualizada exitosamente
  */
-router.put("/usuario-update-password/:id", authenticate, authorizeRoles(ALLOWED_ROLES), validarId, updatePassword);
+router.put("/usuario-update-password/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, updatePassword);
 
 /**
  * @swagger
@@ -331,7 +331,7 @@ router.put("/usuario-update-password/:id", authenticate, authorizeRoles(ALLOWED_
  *       200:
  *         description: Tabla de usuario actualizada exitosamente
  */
-router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1','18']), validarId, updateUsuarioTable);
+router.put("/usuario-update-table/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]), validarId, updateUsuarioTable);
 
 /**
  * @swagger
@@ -355,7 +355,7 @@ router.put("/usuario-update-table/:id", authenticate, authorizeRoles(['1','18'])
  *       200:
  *         description: Usuario encontrado
  */
-router.post("/search-user-by-name", authenticate, authorizeRoles(['1', '2', '6']), searchUsuarios);
+router.post("/search-user-by-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]), searchUsuarios);
 
 /**
  * @swagger
@@ -378,6 +378,6 @@ router.post("/search-user-by-name", authenticate, authorizeRoles(['1', '2', '6']
  *                   type: string
  *                   example: Contraseñas actualizadas correctamente
  */
-router.put('/update-password', authenticate, authorizeRoles(['1']), updatePasswordGeneric);
+router.put('/update-password', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), updatePasswordGeneric);
 
 export default router;

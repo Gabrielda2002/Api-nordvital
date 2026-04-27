@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createUnidadFuncional, deleteUnidadFuncional, getAllUnidadFuncional, getUnidadFuncionalById, updateUnidadFuncional } from "../controllers/unidad-funcional.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -28,7 +29,7 @@ const router = Router();
  *       403:
  *         description: Forbiden - No tiene permisos
  */
-router.get('/unidad-funcional',authenticate, authorizeRoles(['1' , '3']), getAllUnidadFuncional);
+router.get('/unidad-funcional',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR]), getAllUnidadFuncional);
 
 /**
  * @swagger
@@ -60,7 +61,7 @@ router.get('/unidad-funcional',authenticate, authorizeRoles(['1' , '3']), getAll
  *       409:
  *         description: La unidad funcional ya existe
  */
-router.post('/unidad-funcional',authenticate, authorizeRoles(['1' , '2']), createUnidadFuncional);
+router.post('/unidad-funcional',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createUnidadFuncional);
 
 /**
  * @swagger
@@ -86,7 +87,7 @@ router.post('/unidad-funcional',authenticate, authorizeRoles(['1' , '2']), creat
  *       404:
  *         description: Unidad funcional no encontrada
  */
-router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),validarId ,getUnidadFuncionalById);
+router.get('/unidad-funcional/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId ,getUnidadFuncionalById);
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.get('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),val
  *       404:
  *         description: Unidad funcional no encontrada
  */
-router.put('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),validarId ,updateUnidadFuncional);
+router.put('/unidad-funcional/:id',authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId ,updateUnidadFuncional);
 
 /**
  * @swagger
@@ -145,6 +146,6 @@ router.put('/unidad-funcional/:id',authenticate, authorizeRoles(['1' , '2']),val
  *       404:
  *         description: Unidad funcional no encontrada
  */
-router.delete('/unidad-funcional/:id',authenticate, authorizeRoles(['1']),validarId ,deleteUnidadFuncional);
+router.delete('/unidad-funcional/:id',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId ,deleteUnidadFuncional);
 
 export default router;

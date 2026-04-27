@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createComment, createCommentAndChangeTicketStatus, deleteComment, getAllComments, getCommentById, getCommentsByTicket, updateComment } from "../controllers/comentarios.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Comentarios'
  */
-router.get('/comentarios', authenticate, authorizeRoles(['1']), getAllComments);
+router.get('/comentarios', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllComments);
 
 /**
  * @swagger
@@ -47,7 +48,7 @@ router.get('/comentarios', authenticate, authorizeRoles(['1']), getAllComments);
  *       404:
  *         description: Comentario no encontrado
  */
-router.get('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, getCommentById);
+router.get('/comentarios/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getCommentById);
 
 /**
  * @swagger
@@ -71,7 +72,7 @@ router.get('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, g
  *       400:
  *         description: Error al crear comentario
  */
-router.post('/comentarios', authenticate, authorizeRoles(['1']), createComment);
+router.post('/comentarios', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createComment);
 
 /**
  * @swagger
@@ -104,7 +105,7 @@ router.post('/comentarios', authenticate, authorizeRoles(['1']), createComment);
  *       404:
  *         description: Comentario no encontrado
  */
-router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, updateComment);
+router.put('/comentarios/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateComment);
 
 /**
  * @swagger
@@ -125,7 +126,7 @@ router.put('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, u
  *       404:
  *         description: Comentario no encontrado
  */
-router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId, deleteComment);
+router.delete('/comentarios/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteComment);
 
 /**
  * @swagger
@@ -169,7 +170,7 @@ router.delete('/comentarios/:id', authenticate, authorizeRoles(['1']), validarId
  *       404:
  *         description: Ticket no encontrado
  */
-router.post('/comment-status', authenticate, authorizeRoles(['1', '17']), createCommentAndChangeTicketStatus);
+router.post('/comment-status', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), createCommentAndChangeTicketStatus);
 
 /**
  * @swagger
@@ -196,6 +197,6 @@ router.post('/comment-status', authenticate, authorizeRoles(['1', '17']), create
  *       404:
  *         description: Comentarios no encontrados
  */
-router.get('/comment/tickets/:id', authenticate, authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18']),validarId ,getCommentsByTicket);
+router.get('/comment/tickets/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]),validarId ,getCommentsByTicket);
 
 export default router;

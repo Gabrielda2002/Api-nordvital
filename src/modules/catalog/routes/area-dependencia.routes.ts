@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { getAllAreaDependency } from "../controllers/area-dependencia.controller";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -40,6 +41,6 @@ const router = Router();
  *       404:
  *         description: No se encontraron registros
  */
-router.get('/area-dependencia', authenticate, authorizeRoles(['1', '6', '4']), getAllAreaDependency);
+router.get('/area-dependencia', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG), getAllAreaDependency);
 
 export default router;

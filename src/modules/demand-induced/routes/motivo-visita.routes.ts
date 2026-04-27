@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 import { getAllReasonVisit, getReasonVisitByName } from "../controllers/motivo-visita.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron motivos de visita
  */
-router.get("/motivo-visita/demanda-inducida", authenticate, authorizeRoles(['1']), getAllReasonVisit);
+router.get("/motivo-visita/demanda-inducida", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllReasonVisit);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get("/motivo-visita/demanda-inducida", authenticate, authorizeRoles(['1']
  *       404:
  *         description: No se encontraron motivos de visita
  */
-router.post("/motivo-visita/demanda-inducida/buscar", authenticate, authorizeRoles(['1']), getReasonVisitByName);
+router.post("/motivo-visita/demanda-inducida/buscar", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getReasonVisitByName);
 
 export default router;

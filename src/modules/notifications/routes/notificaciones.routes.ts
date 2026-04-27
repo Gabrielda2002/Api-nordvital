@@ -1,12 +1,12 @@
-// src/routes/notification_routes.ts
+﻿// src/routes/notification_routes.ts
 import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import { getUserNotifications, markNotificationAsRead } from "../controllers/notificaciones.controller";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23'];
 
 /**
  * @swagger
@@ -25,7 +25,7 @@ const ALLOWED_ROLES = ['1','2','3','4','5','6','10','11','12','13','14','15','16
  *       200:
  *         description: Lista de notificaciones del usuario
  */
-router.get('/notifications/user/:userId', authenticate, authorizeRoles(ALLOWED_ROLES), getUserNotifications);
+router.get('/notifications/user/:userId', authenticate, authorizeRoles(ROLE_GROUPS.ALL), getUserNotifications);
 
 /**
  * @swagger
@@ -46,6 +46,6 @@ router.get('/notifications/user/:userId', authenticate, authorizeRoles(ALLOWED_R
  *       404:
  *         description: Notificación no encontrada
  */
-router.put('/notifications/:id/read', authenticate, authorizeRoles(ALLOWED_ROLES), markNotificationAsRead);
+router.put('/notifications/:id/read', authenticate, authorizeRoles(ROLE_GROUPS.ALL), markNotificationAsRead);
 
 export default router;

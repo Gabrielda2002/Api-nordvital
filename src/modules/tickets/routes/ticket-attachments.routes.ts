@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
@@ -11,6 +11,7 @@ import {
     downloadAttachment
 } from "../controllers/ticket-attachments.controller";
 import { multerTicketAttachment } from "@core/middlewares/multer-ticket.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -38,7 +39,7 @@ const router = Router();
 router.get(
     "/tickets/:ticketId/attachments",
     authenticate,
-    authorizeRoles(["1", "17"]),
+    authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT),
     validarId,
     getTicketAttachments
 );
@@ -87,7 +88,7 @@ router.get(
 router.post(
     "/tickets/:ticketId/attachments",
     authenticate,
-    authorizeRoles(["1", "17"]),
+    authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT),
     validarId,
     multerTicketAttachment.single("file"),
     uploadTicketAttachment
@@ -119,7 +120,7 @@ router.post(
 router.get(
     "/attachments/:attachmentId",
     authenticate,
-    authorizeRoles(["1", "17"]),
+    authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT),
     validarId,
     getTicketAttachmentById
 );
@@ -150,12 +151,12 @@ router.get(
 router.delete(
     "/attachments/:attachmentId",
     authenticate,
-    authorizeRoles(["1", "17"]),
+    authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT),
     validarId,
     deleteTicketAttachment
 );
 
-router.post('/attachments/tickets/:id/access-token', authenticate, authorizeRoles(["1", "17"]), validarId, generateAttachmentDownloadToken);
+router.post('/attachments/tickets/:id/access-token', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), validarId, generateAttachmentDownloadToken);
 
 router.get('/secure-download/:token', downloadAttachment);
 

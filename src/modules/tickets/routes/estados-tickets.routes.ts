@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createStatusTicket, deleteStatusTicket, getAllStatusTickets, getStatusTicketById, updateStatusTicket } from "../controllers/estados-tickets.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router()
 
@@ -22,7 +23,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/EstadosTickets'
  */
-router.get('/estados-tickets', authenticate, authorizeRoles, getAllStatusTickets);
+router.get('/estados-tickets', authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllStatusTickets);
 
 /**
  * @swagger
@@ -47,7 +48,7 @@ router.get('/estados-tickets', authenticate, authorizeRoles, getAllStatusTickets
  *       404:
  *         description: Estado de ticket no encontrado
  */
-router.get('/estados-tickets/:id', authenticate, authorizeRoles, validarId, getStatusTicketById);
+router.get('/estados-tickets/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getStatusTicketById);
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.get('/estados-tickets/:id', authenticate, authorizeRoles, validarId, getS
  *             schema:
  *               $ref: '#/components/schemas/EstadosTickets'
  */
-router.post('/estados-tickets', authenticate, authorizeRoles, createStatusTicket);
+router.post('/estados-tickets', authenticate, authorizeRoles(ROLE_GROUPS.ALL), createStatusTicket);
 
 /**
  * @swagger
@@ -100,7 +101,7 @@ router.post('/estados-tickets', authenticate, authorizeRoles, createStatusTicket
  *       404:
  *         description: Estado de ticket no encontrado
  */
-router.put('/estados-tickets/:id', authenticate, authorizeRoles, validarId, updateStatusTicket);
+router.put('/estados-tickets/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, updateStatusTicket);
 
 /**
  * @swagger
@@ -121,6 +122,6 @@ router.put('/estados-tickets/:id', authenticate, authorizeRoles, validarId, upda
  *       404:
  *         description: Estado de ticket no encontrado
  */
-router.delete('/estados-tickets/:id', authenticate, authorizeRoles, validarId, deleteStatusTicket);
+router.delete('/estados-tickets/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, deleteStatusTicket);
 
 export default router;

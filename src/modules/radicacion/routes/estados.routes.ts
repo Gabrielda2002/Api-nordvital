@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createEstados, deleteEstados, getAllEstados, getEstadosById, getStatusByName, updateEstados } from "../controllers/estados.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -41,7 +42,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Estado'
  */
-router.get("/estados", authenticate, authorizeRoles(['1', '2', '3', '6']), getAllEstados);
+router.get("/estados", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.COORDINADOR]), getAllEstados);
 
 /**
  * @swagger
@@ -67,7 +68,7 @@ router.get("/estados", authenticate, authorizeRoles(['1', '2', '3', '6']), getAl
  *       404:
  *         description: Estado no encontrado
  */
-router.get("/estados/:id", authenticate, authorizeRoles(['1', '2']), validarId, getEstadosById);
+router.get("/estados/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getEstadosById);
 
 /**
  * @swagger
@@ -94,7 +95,7 @@ router.get("/estados/:id", authenticate, authorizeRoles(['1', '2']), validarId, 
  *       400:
  *         description: Datos inválidos
  */
-router.post("/estados", authenticate, authorizeRoles(['1', '2']), createEstados);
+router.post("/estados", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createEstados);
 
 /**
  * @swagger
@@ -125,7 +126,7 @@ router.post("/estados", authenticate, authorizeRoles(['1', '2']), createEstados)
  *       404:
  *         description: Estado no encontrado
  */
-router.put("/estados/:id", authenticate, authorizeRoles(['1', '2']), validarId, updateEstados);
+router.put("/estados/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateEstados);
 
 /**
  * @swagger
@@ -147,7 +148,7 @@ router.put("/estados/:id", authenticate, authorizeRoles(['1', '2']), validarId, 
  *       404:
  *         description: Estado no encontrado
  */
-router.delete("/estados/:id", authenticate, authorizeRoles(['1']), validarId, deleteEstados);
+router.delete("/estados/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteEstados);
 
 /**
  * @swagger
@@ -181,6 +182,6 @@ router.delete("/estados/:id", authenticate, authorizeRoles(['1']), validarId, de
  *       404:
  *         description: No se encontraron estados
  */
-router.post("/status/name", authenticate, authorizeRoles(['1', '2']), getStatusByName);
+router.post("/status/name", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getStatusByName);
 
 export default router;

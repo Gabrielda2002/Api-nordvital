@@ -1,13 +1,13 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
 
 /**
  * @swagger
@@ -55,7 +55,7 @@ const ALLOWED_ROLES = ['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14
  *               items:
  *                 $ref: '#/components/schemas/Carpeta'
  */
-router.get('/carpetas',authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16']), getAllFolders);
+router.get('/carpetas',authenticate , authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO]), getAllFolders);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.get('/carpetas',authenticate , authorizeRoles(['1', '2', '3', '4', '5', '
  *       404:
  *         description: Carpeta no encontrada
  */
-router.get('/carpetas/:id',authenticate , authorizeRoles(['1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '16' ]), validarId, getFolderById);
+router.get('/carpetas/:id',authenticate , authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO]), validarId, getFolderById);
 
 /**
  * @swagger
@@ -116,7 +116,7 @@ router.get('/carpetas/:id',authenticate , authorizeRoles(['1', '2', '3', '4', '5
  *       404:
  *         description: Carpeta padre no encontrada
  */
-router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), getDepartmentUser, createFolder);
+router.post('/carpetas', authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), getDepartmentUser, createFolder);
 
 /**
  * @swagger
@@ -152,7 +152,7 @@ router.post('/carpetas', authenticate, authorizeRoles(['1', '4' ]), getDepartmen
  *       409:
  *         description: Ya existe una carpeta con ese nombre
  */
-router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '4' ]), validarId, updateFolder);
+router.put('/carpetas/:id',authenticate , authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, updateFolder);
 
 /**
  * @swagger
@@ -176,7 +176,7 @@ router.put('/carpetas/:id',authenticate , authorizeRoles(['1', '4' ]), validarId
  *       400:
  *         description: La carpeta tiene archivos o subcarpetas
  */
-router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validarId, deleteFolder);
+router.delete('/carpetas/:id',authenticate , authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, deleteFolder);
 
 /**
  * @swagger
@@ -203,8 +203,8 @@ router.delete('/carpetas/:id',authenticate , authorizeRoles(['1', '4']), validar
  *       404:
  *         description: Carpeta no encontrada
  */
-router.get('/sistema-calidad' , authenticate , authorizeRoles(ALLOWED_ROLES), getDepartmentUser, getSgcFoldersFiles);
-router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(ALLOWED_ROLES), getDepartmentUser, getSgcFoldersFiles);
+router.get('/sistema-calidad' , authenticate , authorizeRoles(ROLE_GROUPS.ALL), getDepartmentUser, getSgcFoldersFiles);
+router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(ROLE_GROUPS.ALL), getDepartmentUser, getSgcFoldersFiles);
 
 /**
  * @swagger
@@ -255,6 +255,6 @@ router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(ALLOWED_ROLES)
  *       409:
  *         description: Ya existe una carpeta con el mismo nombre en la nueva ubicación
  */
-router.put('/carpetas/:id/move', authenticate, authorizeRoles(['1', '4']), validarId, moveFolder);
+router.put('/carpetas/:id/move', authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, moveFolder);
 
 export default router;

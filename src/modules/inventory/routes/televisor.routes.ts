@@ -1,7 +1,8 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { createTelevisor, getTelevisorBySedeId, getTvAgeByHeadquarter, getTvHeadquartersDistribution, getTvWarrantyStatistics, searchTv, updateTelevisor } from "../controllers/televisor.controller";
 
 const router = Router();
@@ -60,7 +61,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/sede/:id', authenticate, authorizeRoles(['1', '4', '2', '17']), validarId, getTelevisorBySedeId);
+router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWERS), validarId, getTelevisorBySedeId);
 
 /**
  * @swagger
@@ -161,7 +162,7 @@ router.get('/sede/:id', authenticate, authorizeRoles(['1', '4', '2', '17']), val
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/', authenticate, authorizeRoles(['1']), createTelevisor);
+router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createTelevisor);
 
 /**
  * @swagger
@@ -221,7 +222,7 @@ router.post('/', authenticate, authorizeRoles(['1']), createTelevisor);
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/:id', authenticate, authorizeRoles(['1']), validarId, updateTelevisor);
+router.put('/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateTelevisor);
 
 /**
  * @swagger
@@ -252,7 +253,7 @@ router.put('/:id', authenticate, authorizeRoles(['1']), validarId, updateTelevis
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvHeadquartersDistribution);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getTvHeadquartersDistribution);
 
 /**
  * @swagger
@@ -296,7 +297,7 @@ router.get('/statics/headquarters/:id', authenticate, authorizeRoles(['1', '2', 
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']),validarId, getTvAgeByHeadquarter);
+router.get('/statics/age/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS),validarId, getTvAgeByHeadquarter);
 
 /**
  * @swagger
@@ -326,7 +327,7 @@ router.get('/statics/age/:id', authenticate, authorizeRoles(['1', '2', '17']),va
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1', '2', '17']), validarId, getTvWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getTvWarrantyStatistics);
 
 /**
  * @swagger
@@ -374,6 +375,6 @@ router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(['1',
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/search', authenticate, authorizeRoles(['1', '2', '17']), searchTv);
+router.get('/search', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), searchTv);
 
 export default router;

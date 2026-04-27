@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/sedes.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Sedes'
  */
-router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2','18']), getAllLugaresRadicacion);
+router.get("/lugares-radicacion", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getAllLugaresRadicacion);
 
 /**
  * @swagger
@@ -50,7 +51,7 @@ router.get("/lugares-radicacion", authenticate, authorizeRoles(['1', '2','18']),
  *       404:
  *         description: Lugar de radicación no encontrado
  */
-router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),validarId , getLugarRadicacion);
+router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId , getLugarRadicacion);
 
 /**
  * @swagger
@@ -72,7 +73,7 @@ router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),va
  *       400:
  *         description: Error en la creación
  */
-router.post("/lugares-radicacion",authenticate, authorizeRoles(['1', '2']), createLugarRadicacion);
+router.post("/lugares-radicacion",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createLugarRadicacion);
 
 /**
  * @swagger
@@ -105,7 +106,7 @@ router.post("/lugares-radicacion",authenticate, authorizeRoles(['1', '2']), crea
  *       404:
  *         description: Lugar de radicación no encontrado
  */
-router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),validarId ,updateLugarRadicacion);
+router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId ,updateLugarRadicacion);
 
 /**
  * @swagger
@@ -127,7 +128,7 @@ router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(['1', '2']),va
  *       404:
  *         description: Lugar de radicación no encontrado
  */
-router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),validarId ,deleteLugarRadicacion);
+router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId ,deleteLugarRadicacion);
 
 /**
  * @swagger
@@ -150,7 +151,7 @@ router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles(['1']),vali
  *       200:
  *         description: Lugares de radicación encontrados
  */
-router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1','2','3','4','5','6','10','11','12','13','14','15','16', '17', '18', '19', '20', '21', '22', '23']), getLugaresRadicacionByName);
+router.post("/lugares-radicacion-name",authenticate, authorizeRoles(ROLE_GROUPS.ALL), getLugaresRadicacionByName);
 
 /**
  * @swagger
@@ -183,7 +184,7 @@ router.post("/lugares-radicacion-name",authenticate, authorizeRoles(['1','2','3'
  *       404:
  *         description: Lugar de radicación no encontrado
  */
-router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),validarId , updateStatusLugarRadicacion);
+router.put("/update-lugar-status/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId , updateStatusLugarRadicacion);
 
 /**
  * @swagger
@@ -212,7 +213,7 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(['1', '2']),v
  *       404:
  *         description: No se encontraron lugares de radicación
  */
-router.get("/sede/departamento/:id",authenticate, authorizeRoles(['1', '6', '4','2', '17']),validarId , getLugaresRadicacionByDepartment);
+router.get("/sede/departamento/:id",authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL),validarId , getLugaresRadicacionByDepartment);
 
 router.get("/headquarters", getHeadquartersList);
 

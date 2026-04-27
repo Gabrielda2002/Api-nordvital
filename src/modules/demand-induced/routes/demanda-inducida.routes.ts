@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_GROUPS } from "@core/constants/roles";
 import { createDemandInduced, getAllDemandInduded, getEstadisticasDemandaInducida } from "../controllers/demanda-inducida.controller";
 
 const router = Router();
@@ -90,7 +91,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron demandas inducidas
  */
-router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21', '2']), getAllDemandInduded);
+router.get("/demanda/inducida", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING_MANAGEMENT), getAllDemandInduded);
 
 /**
  * @swagger
@@ -233,7 +234,7 @@ router.get("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', '21']), createDemandInduced);
+router.post("/demanda/inducida", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), createDemandInduced);
 
 /**
  * @swagger
@@ -347,6 +348,6 @@ router.post("/demanda/inducida", authenticate, authorizeRoles(['1', '19', '20', 
  *       500:
  *         description: Error del servidor
  */
-router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(['1', '19', '20', '21', '2']), getEstadisticasDemandaInducida);
+router.post("/demanda/inducida/estadistica", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING_MANAGEMENT), getEstadisticasDemandaInducida);
 
 export default router;

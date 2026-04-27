@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createAccessory, deleteAccessory, getAccessory, getAllAccessories, updateAccessory } from "../controllers/accesorios-equipos.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -55,7 +56,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/accesorios-equipos", authenticate, authorizeRoles(['1']), getAllAccessories);
+router.get("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllAccessories);
 
 /**
  * @swagger
@@ -82,7 +83,7 @@ router.get("/accesorios-equipos", authenticate, authorizeRoles(['1']), getAllAcc
  *       404:
  *         description: Accesorio no encontrado
  */
-router.get("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']), validarId, getAccessory);
+router.get("/accesorios-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getAccessory);
 
 /**
  * @swagger
@@ -128,7 +129,7 @@ router.get("/accesorios-equipos/:id", authenticate, authorizeRoles(['1']), valid
  *       400:
  *         description: Error de validación
  */
-router.post("/accesorios-equipos", authenticate, authorizeRoles(['1']),createAccessory);
+router.post("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),createAccessory);
 
 /**
  * @swagger
@@ -177,7 +178,7 @@ router.post("/accesorios-equipos", authenticate, authorizeRoles(['1']),createAcc
  *       400:
  *         description: Error de validación
  */
-router.put("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), validarId, updateAccessory);
+router.put("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateAccessory);
 
 /**
  * @swagger
@@ -197,6 +198,6 @@ router.put("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), valid
  *       200:
  *         description: Accesorio eliminado exitosamente
  */
-router.delete("/accesorios/equipos/:id", authenticate, authorizeRoles(['1']), validarId, deleteAccessory);
+router.delete("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteAccessory);
 
 export default router;

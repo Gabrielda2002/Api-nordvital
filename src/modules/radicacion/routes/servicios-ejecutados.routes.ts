@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { createServiciosEjecutados, deleteServiciosEjecutados, getAllServiciosEjecutados, updateServiciosEjecutados } from "../controllers/servicios-ejecutados.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *       500:   
  *         description: Error del servidor
  */
-router.get('/servicios-ejecutados', authenticate, authorizeRoles(['1']), getAllServiciosEjecutados);
+router.get('/servicios-ejecutados', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllServiciosEjecutados);
 
 /**
  * @swagger
@@ -53,7 +54,7 @@ router.get('/servicios-ejecutados', authenticate, authorizeRoles(['1']), getAllS
  *       500:
  *         description: Error del servidor
  */
-router.get('/servicios-ejecutados/:id', authenticate, authorizeRoles(['1']), validarId, getAllServiciosEjecutados);
+router.get('/servicios-ejecutados/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getAllServiciosEjecutados);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.get('/servicios-ejecutados/:id', authenticate, authorizeRoles(['1']), val
  *       500:
  *         description: Error del servidor
  */
-router.post('/servicios-ejecutados', authenticate, authorizeRoles(['1']), createServiciosEjecutados);
+router.post('/servicios-ejecutados', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createServiciosEjecutados);
 
 /**
  * @swagger
@@ -203,7 +204,7 @@ router.post('/servicios-ejecutados', authenticate, authorizeRoles(['1']), create
  *       500:
  *         description: Error del servidor
  */
-router.put('/servicios-ejecutados/:id', authenticate, authorizeRoles(['1']), validarId, updateServiciosEjecutados);
+router.put('/servicios-ejecutados/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateServiciosEjecutados);
 
 /**
  * @swagger
@@ -232,6 +233,6 @@ router.put('/servicios-ejecutados/:id', authenticate, authorizeRoles(['1']), val
  *       500:
  *         description: Error del servidor
  */
-router.delete('/servicios-ejecutados/:id', authenticate, authorizeRoles(['1']), validarId, deleteServiciosEjecutados);
+router.delete('/servicios-ejecutados/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteServiciosEjecutados);
 
 export default router;

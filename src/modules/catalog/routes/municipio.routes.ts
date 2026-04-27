@@ -1,9 +1,10 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { createMunicipio, deleteMunicipio, getAllMunicipios, getMunicipioById, updateMunicipio, updateStatusMunicipio } from "../controllers/municipio.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { Municipio } from "../entities/municipio";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos suficientes
  */
-router.get('/municipios', authenticate, authorizeRoles(['1', '2']), getAllMunicipios);
+router.get('/municipios', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllMunicipios);
 
 /**
  * @swagger
@@ -60,7 +61,7 @@ router.get('/municipios', authenticate, authorizeRoles(['1', '2']), getAllMunici
  *       404:
  *         description: Municipio no encontrado
  */
-router.get('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarId, getMunicipioById);
+router.get('/municipios/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getMunicipioById);
 
 /**
  * @swagger
@@ -101,7 +102,7 @@ router.get('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarI
  *       403:
  *         description: Prohibido - No tiene permisos suficientes
  */
-router.post('/municipios', authenticate, authorizeRoles(['1', '2']), createMunicipio);
+router.post('/municipios', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createMunicipio);
 
 /**
  * @swagger
@@ -153,7 +154,7 @@ router.post('/municipios', authenticate, authorizeRoles(['1', '2']), createMunic
  *       404:
  *         description: Municipio no encontrado
  */
-router.put('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarId, updateMunicipio);
+router.put('/municipios/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateMunicipio);
 
 /**
  * @swagger
@@ -188,7 +189,7 @@ router.put('/municipios/:id', authenticate, authorizeRoles(['1', '2']), validarI
  *       404:
  *         description: Municipio no encontrado
  */
-router.delete('/municipios/:id', authenticate, authorizeRoles(['1']), validarId, deleteMunicipio);
+router.delete('/municipios/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteMunicipio);
 
 /**
  * @swagger
@@ -233,6 +234,6 @@ router.delete('/municipios/:id', authenticate, authorizeRoles(['1']), validarId,
  *       404:
  *         description: Municipio no encontrado
  */
-router.put("/update-status-municipio/:id", authenticate, authorizeRoles(['1']), validarId, updateStatusMunicipio);
+router.put("/update-status-municipio/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateStatusMunicipio);
 
 export default router;

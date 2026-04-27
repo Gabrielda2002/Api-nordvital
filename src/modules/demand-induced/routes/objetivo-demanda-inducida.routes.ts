@@ -1,6 +1,7 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import { getAllObjetiveDemandInduced, getObjetiveDemandInducedByName } from "../controllers/objetivo-demanda-inducida.controller";
 
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: No se encontraron objetivos de demanda inducida
  */
-router.get('/objetivo/demanda-inducida', authenticate, authorizeRoles(['1']), getAllObjetiveDemandInduced);
+router.get('/objetivo/demanda-inducida', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllObjetiveDemandInduced);
 
 /**
  * @swagger
@@ -74,6 +75,6 @@ router.get('/objetivo/demanda-inducida', authenticate, authorizeRoles(['1']), ge
  *       404:
  *         description: No se encontraron objetivos de demanda inducida
  */
-router.post('/objetivo/demanda-inducida/buscar', authenticate, authorizeRoles(['1', '19', '20', '21']), getObjetiveDemandInducedByName);
+router.post('/objetivo/demanda-inducida/buscar', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_NURSING), getObjetiveDemandInducedByName);
 
 export default router;
