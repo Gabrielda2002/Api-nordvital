@@ -78,6 +78,12 @@ import {
   infrastructureAttachmentsRoutes,
 } from "./infrastructure-tickets";
 import {
+  sstTicketsRoutes,
+  sstCategoriesRoutes,
+  sstCommentsRoutes,
+  sstAttachmentsRoutes,
+} from "./sst-tickets";
+import {
   equiposRoutes,
   accesoriosEquiposRoutes,
   componentesRoutes,
@@ -203,6 +209,12 @@ router.use(infrastructureTicketsRoutes);
 router.use(infrastructureCategoriesRoutes);
 router.use(infrastructureCommentsRoutes);
 router.use(infrastructureAttachmentsRoutes);
+
+// SST module
+router.use(sstTicketsRoutes);
+router.use(sstCategoriesRoutes);
+router.use(sstCommentsRoutes);
+router.use(sstAttachmentsRoutes);
 
 // Inventory module
 router.use("/equipments", equiposRoutes);

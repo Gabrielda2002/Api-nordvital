@@ -36,6 +36,8 @@ export const ROLE_IDS = {
   LIDER_ENFERMERIA:           '21',
   COORDINADOR_INFRAESTRUCTURA:'22',
   AUXILIAR_INFRAESTRUCTURA:   '23',
+  COORDINADOR_SST:            '24',
+  AUXILIAR_SST:               '25',
 } as const;
 
 /**
@@ -192,6 +194,19 @@ export const ROLE_GROUPS = {
   INFRA_ADMIN: [
     ROLE_IDS.ADMINISTRADOR,
     ROLE_IDS.COORDINADOR_INFRAESTRUCTURA,
+  ],
+
+  /** SST completa (Administrador + ambos roles de SST) */
+  SST_MANAGEMENT: [
+    ROLE_IDS.ADMINISTRADOR,
+    ROLE_IDS.COORDINADOR_SST,
+    ROLE_IDS.AUXILIAR_SST,
+  ],
+
+  /** Administración de SST (Administrador + Coordinador SST) */
+  SST_ADMIN: [
+    ROLE_IDS.ADMINISTRADOR,
+    ROLE_IDS.COORDINADOR_SST,
   ],
 
   /** Radicación + enfermería completa (sin Gerente) */

@@ -55,6 +55,9 @@ import { Cargo } from "../../hr/entities/cargo";
 import { InfrastructureTicket } from "../../infrastructure-tickets/entities/infrastructure-ticket";
 import { InfrastructureComment } from "../../infrastructure-tickets/entities/infrastructure-comment";
 import { InfrastructureAttachment } from "../../infrastructure-tickets/entities/infrastructure-attachment";
+import { SstTicket } from "../../sst-tickets/entities/sst-ticket";
+import { SstComment } from "../../sst-tickets/entities/sst-comment";
+import { SstAttachment } from "../../sst-tickets/entities/sst-attachment";
 
 @Entity({ name: "usuario" })
 export class Usuarios extends BaseEntity {
@@ -284,4 +287,14 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => InfrastructureAttachment, (attachment) => attachment.uploaderRelation)
   infrastructureAttachmentsRelation: InfrastructureAttachment[];
+
+  // * Relaciones con módulo de tickets SST
+  @OneToMany(() => SstTicket, (ticket) => ticket.userRelation)
+  sstTicketsRelation: SstTicket[];
+
+  @OneToMany(() => SstComment, (comment) => comment.userRelation)
+  sstCommentsRelation: SstComment[];
+
+  @OneToMany(() => SstAttachment, (attachment) => attachment.uploaderRelation)
+  sstAttachmentsRelation: SstAttachment[];
 }
