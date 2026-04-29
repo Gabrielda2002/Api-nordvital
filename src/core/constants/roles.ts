@@ -8,7 +8,8 @@ export const GLOBAL_FOLDER_ACCESS_ROLES = [
   "Administrador",
   "Coordinador",
   "Coordinadora Enfermeria",
-  "Calidad"
+  "Calidad",
+  "RRHH"
 ];
 
 /**

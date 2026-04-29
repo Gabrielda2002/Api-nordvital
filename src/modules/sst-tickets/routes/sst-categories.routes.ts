@@ -27,7 +27,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/sst-categories", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllSstCategories);
+router.post("/sst-categories", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllSstCategories);
 
 /**
  * @swagger

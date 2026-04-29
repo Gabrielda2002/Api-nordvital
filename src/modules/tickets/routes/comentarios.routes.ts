@@ -197,6 +197,6 @@ router.post('/comment-status', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SU
  *       404:
  *         description: Comentarios no encontrados
  */
-router.get('/comment/tickets/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]),validarId ,getCommentsByTicket);
+router.get('/comment/tickets/:id', authenticate, authorizeRoles(ROLE_GROUPS.ALL),validarId ,getCommentsByTicket);
 
 export default router;

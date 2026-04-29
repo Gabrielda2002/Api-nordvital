@@ -53,7 +53,7 @@ router.get("/sst-comments", authenticate, authorizeRoles(ROLE_GROUPS.SST_MANAGEM
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/sst-comments/ticket/:ticketId", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getCommentsByTicketId);
+router.get("/sst-comments/ticket/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, getCommentsByTicketId);
 
 /**
  * @swagger

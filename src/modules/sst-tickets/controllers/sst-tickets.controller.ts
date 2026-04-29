@@ -85,12 +85,14 @@ export async function createSstTicket(req: Request, res: Response, next: NextFun
         ticket.description = description;
         ticket.userId = userId !== undefined && userId !== "" ? parseInt(String(userId)) : (undefined as any);
         ticket.categoryId = categoryId !== undefined && categoryId !== "" ? parseInt(String(categoryId)) : (undefined as any);
-        ticket.sedeId = headquartersId !== undefined && headquartersId !== "" ? parseInt(String(headquartersId)) : (undefined as any);
+        ticket.headquartersId = headquartersId !== undefined && headquartersId !== "" ? parseInt(String(headquartersId)) : (undefined as any);
         ticket.statusId = 1;
 
         if (locationDescription) {
             ticket.locationDescription = locationDescription;
         }
+
+        if(!categoryId) return res.status(404).json({ message: "Category not found" });
 
         const category = await queryRunner.manager.findOne(SstCategory, {
             where: { id: ticket.categoryId },
@@ -192,7 +194,7 @@ export async function updateSstTicket(req: Request, res: Response, next: NextFun
         if (userId !== undefined) ticket.userId = parseInt(String(userId));
         if (categoryId !== undefined) ticket.categoryId = parseInt(String(categoryId));
         if (statusId !== undefined) ticket.statusId = parseInt(String(statusId));
-        if (sedeId !== undefined) ticket.sedeId = parseInt(String(sedeId));
+        if (sedeId !== undefined) ticket.headquartersId = parseInt(String(sedeId));
         if (locationDescription !== undefined) ticket.locationDescription = locationDescription;
 
         if (priorityId !== undefined && priorityId !== null) {
@@ -254,7 +256,7 @@ export async function getSstTicketsTable(req: Request, res: Response, next: Next
             const zonedDate = t.createdAt ? toZonedTime(t.createdAt, timeZone) : null;
             const zonedDateUpdated = t.updatedAt ? toZonedTime(t.updatedAt, timeZone) : null;
 
-            return {
+            return {    
                 id: t.id,
                 title: t.title,
                 description: t.description,

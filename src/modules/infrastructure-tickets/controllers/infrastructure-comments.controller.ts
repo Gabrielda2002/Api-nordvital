@@ -167,8 +167,8 @@ export async function getInfrastructureCommentsByTicket(req: Request, res: Respo
             id: c.id,
             comment: c.comment,
             createdAt: c.createdAt,
-            userName: c.userRelation?.name || "N/A",
-            userLastName: c.userRelation?.lastName || "N/A",
+            responsable: c.userRelation?.name || "N/A",
+            lastName: c.userRelation?.lastName || "N/A",
         }));
 
         return res.json(formatted);

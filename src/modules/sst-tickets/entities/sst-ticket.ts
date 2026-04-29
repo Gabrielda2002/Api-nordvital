@@ -56,10 +56,10 @@ export class SstTicket extends BaseEntity {
     @IsNotEmpty({ message: "Priority ID is required" })
     priorityId: number;
 
-    @Column({ name: "sede_id", type: "int" })
-    @IsNumber({}, { message: "Sede ID must be a number" })
-    @IsNotEmpty({ message: "Sede ID is required" })
-    sedeId: number;
+    @Column({ name: "headquarters_id", type: "int" })
+    @IsNumber({}, { message: "Headquarters ID must be a number" })
+    @IsNotEmpty({ message: "Headquarters ID is required" })
+    headquartersId: number;
 
     @Column({ name: "location_description", type: "varchar", length: 255, nullable: true })
     @IsOptional()
@@ -90,7 +90,7 @@ export class SstTicket extends BaseEntity {
     priorityRelation: Prioridad;
 
     @ManyToOne(() => Sedes)
-    @JoinColumn({ name: "sede_id" })
+    @JoinColumn({ name: "headquarters_id" })
     sedeRelation: Sedes;
 
     @OneToMany(() => SstComment, (comment) => comment.ticketRelation)

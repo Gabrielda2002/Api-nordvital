@@ -92,7 +92,7 @@ export class CreateSstTicketsModule1777320927390 implements MigrationInterface {
                         default: 4,
                     },
                     {
-                        name: "sede_id",
+                        name: "headquarters_id",
                         type: "int",
                     },
                     {
@@ -164,8 +164,8 @@ export class CreateSstTicketsModule1777320927390 implements MigrationInterface {
         await queryRunner.createForeignKey(
             "sst_tickets",
             new TableForeignKey({
-                name: "fk_sst_ticket_sede",
-                columnNames: ["sede_id"],
+                name: "fk_sst_ticket_headquarters",
+                columnNames: ["headquarters_id"],
                 referencedTableName: "headquarters",
                 referencedColumnNames: ["id"],
                 onDelete: "CASCADE",

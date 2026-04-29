@@ -30,19 +30,28 @@ export async function getSstCommentById(req: Request, res: Response, next: NextF
 
 export async function getCommentsByTicketId(req: Request, res: Response, next: NextFunction) {
     try {
-        const { ticketId } = req.params;
+        const { id } = req.params;
+
 
         const comments = await SstComment.createQueryBuilder("comment")
             .leftJoinAndSelect("comment.userRelation", "user")
-            .where("comment.ticketId = :ticketId", { ticketId: parseInt(String(ticketId)) })
-            .orderBy("comment.createdAt", "ASC")
+            .where("comment.ticketId = :ticketId", { ticketId: parseInt(String(id)) })
+            .orderBy("comment.createdAt", "DESC")
             .getMany();
 
         if (comments.length === 0) {
             return res.status(404).json({ message: "No SST comments found for this ticket" });
         }
 
-        return res.json(comments);
+        const commentsFormatted = comments.map(c => ({
+            id: c.id,
+            comment: c.comment,
+            createdAt: c.createdAt,
+            responsable: c.userRelation?.name,
+            lastName: c.userRelation?.lastName,
+        }));
+
+        return res.json(commentsFormatted);
     } catch (error) {
         next(error);
     }
@@ -110,7 +119,7 @@ export async function createSstCommentAndChangeStatus(req: Request, res: Respons
     await queryRunner.startTransaction();
 
     try {
-        const { ticketId, userId, comment, status, quotationAmount } = req.body;
+        const { ticketId, userId, comment, status } = req.body;
 
         const newComment = new SstComment();
         newComment.ticketId = parseInt(String(ticketId));
