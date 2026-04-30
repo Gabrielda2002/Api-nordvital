@@ -36,7 +36,7 @@ export class CreateInfrastructureTicketsModule1776367728690 implements Migration
                 { name: "category_id", type: "int" },
                 { name: "status_id", type: "int" },
                 { name: "priority_id", type: "int", default: 4 },
-                { name: "sede_id", type: "int" },
+                { name: "headquarters_id", type: "int" },
                 { name: "location_description", type: "varchar", length: "255", isNullable: true },
                 { name: "quotation_amount", type: "decimal", precision: 12, scale: 2, isNullable: true },
                 { name: "created_at", type: "timestamp", precision: 6, default: "CURRENT_TIMESTAMP(6)" },
@@ -82,7 +82,7 @@ export class CreateInfrastructureTicketsModule1776367728690 implements Migration
 
         await queryRunner.createForeignKey("infrastructure_tickets", new TableForeignKey({
             name: "fk_infra_ticket_sede",
-            columnNames: ["sede_id"],
+            columnNames: ["headquarters_id"],
             referencedTableName: "headquarters",
             referencedColumnNames: ["id"],
             onDelete: "RESTRICT",

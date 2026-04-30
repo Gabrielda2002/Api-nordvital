@@ -56,10 +56,10 @@ export class InfrastructureTicket extends BaseEntity {
     @IsNotEmpty({ message: "Priority ID is required" })
     priorityId: number;
 
-    @Column({ name: "sede_id", type: "int" })
+    @Column({ name: "headquarters_id", type: "int" })
     @IsNumber({}, {message: "Sede ID must be a number" })
     @IsNotEmpty({ message: "Sede ID is required" })
-    sedeId: number;
+    headquartersId: number;
 
     @Column({ name: "location_description", type: "varchar", length: 255, nullable: true })
     @IsOptional()
@@ -94,7 +94,7 @@ export class InfrastructureTicket extends BaseEntity {
     priorityRelation: Prioridad;
 
     @ManyToOne(() => Sedes)
-    @JoinColumn({ name: "sede_id" })
+    @JoinColumn({ name: "headquarters_id" })
     sedeRelation: Sedes;
 
     @OneToMany(() => InfrastructureComment, (comment) => comment.ticketRelation)

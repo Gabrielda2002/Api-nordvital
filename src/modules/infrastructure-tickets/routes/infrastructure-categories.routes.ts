@@ -37,7 +37,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/infrastructure-categories", authenticate, authorizeRoles(ROLE_GROUPS.INFRA_MANAGEMENT), getAllInfrastructureCategories);
+router.post("/infrastructure-categories", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllInfrastructureCategories);
 
 /**
  * @swagger

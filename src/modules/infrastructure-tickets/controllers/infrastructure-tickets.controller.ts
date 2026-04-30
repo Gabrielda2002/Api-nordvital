@@ -86,7 +86,7 @@ export async function createInfrastructureTicket(req: Request, res: Response, ne
         ticket.description = description;
         ticket.userId = parseInt(String(userId));
         ticket.categoryId = parseInt(String(categoryId));
-        ticket.sedeId = parseInt(String(headquartersId));
+        ticket.headquartersId = parseInt(String(headquartersId));
         ticket.statusId = 1;
 
         if(!categoryId) {
@@ -215,7 +215,7 @@ export async function updateInfrastructureTicket(req: Request, res: Response, ne
         if (userId !== undefined) ticket.userId = parseInt(String(userId));
         if (categoryId !== undefined) ticket.categoryId = parseInt(String(categoryId));
         if (statusId !== undefined) ticket.statusId = parseInt(String(statusId));
-        if (sedeId !== undefined) ticket.sedeId = parseInt(String(sedeId));
+        if (sedeId !== undefined) ticket.headquartersId = parseInt(String(sedeId));
         if (locationDescription !== undefined) ticket.locationDescription = locationDescription;
         if (quotationAmount !== undefined) ticket.quotationAmount = parseFloat(String(quotationAmount));
 
