@@ -3,7 +3,7 @@ import { createServicioSolicitado, deleteServicioSolicitado, getAllServiciosSoli
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -150,7 +150,7 @@ router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles([ROLE_IDS.
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.post("/servicio-solicitado-code",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getServiciosSolicitadosByCode);
+router.post("/servicio-solicitado-code",authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getServiciosSolicitadosByCode);
 
 /**
  * @swagger

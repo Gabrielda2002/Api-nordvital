@@ -83,7 +83,7 @@ router.get("/cups-radicados/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIS
  *       400:
  *         description: Datos inválidos
  */
-router.post("/cups-radicados", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), createCupsRadicados);
+router.post("/cups-radicados", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), createCupsRadicados);
 
 /**
  * @swagger

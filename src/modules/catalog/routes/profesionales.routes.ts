@@ -1,7 +1,7 @@
 ﻿import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import {
   createProfesionales,
   getProfesionalByName,
@@ -59,7 +59,7 @@ const router = Router();
 router.post(
   "/profesionales/buscar",
   authenticate,
-  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]),
+  authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]),
   getProfesionalByName
 );
 
@@ -96,7 +96,7 @@ router.post(
 router.post(
   "/profesionales",
   authenticate,
-  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]),
+  authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]),
   createProfesionales
 );
 

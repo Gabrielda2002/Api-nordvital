@@ -2,7 +2,7 @@
 import { createInventoryTrackingGeneral, getAllInventoryTrackingGeneralByItem } from "../controllers/seguimiento-inventario-general.controller";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -35,7 +35,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR]), getAllInventoryTrackingGeneralByItem);
+router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES), getAllInventoryTrackingGeneralByItem);
 
 /**
  * @swagger
@@ -63,6 +63,6 @@ router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles([
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/seguimiento/inventario-general', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR]), createInventoryTrackingGeneral);
+router.post('/seguimiento/inventario-general', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES), createInventoryTrackingGeneral);
 
 export default router;

@@ -239,6 +239,6 @@ router.post('/doc-patient',authenticate, authorizeRoles(ROLE_GROUPS.RADICACION),
  *       500:
  *         description: Error del servidor
  */
-router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), upload.single('file'), createRequestService);
+router.post('/', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), upload.single('file'), createRequestService);
 
 export default router;

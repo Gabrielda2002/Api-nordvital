@@ -353,14 +353,13 @@ router.post(
 router.post(
   "/report/excel/breakes/preview",
   authenticate,
-  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),
-  previewReportBreakesActive
+  authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE]),
 );
 
 router.post(
   "/report/excel/breakes",
   authenticate,
-  authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),
+  authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE]),
   getReportBreakesActive
 );
 

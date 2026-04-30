@@ -3,7 +3,7 @@ import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { createServicioGeneral, deleteServicioGeneral, getServicioContratado, getServicioGeneral, getServicioGeneralById, updateServicioGeneral } from "../controllers/servicios-generales.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -213,6 +213,6 @@ router.delete('/servicios-generales/:id', authenticate, authorizeRoles([ROLE_IDS
  *       500:
  *         description: Error del servidor
  */
-router.post("/servicio-contratado", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]), getServicioContratado);
+router.post("/servicio-contratado", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH]), getServicioContratado);
 
 export default router;

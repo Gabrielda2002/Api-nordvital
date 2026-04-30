@@ -151,7 +151,7 @@ router.delete("/:id", validarId, authenticate, authorizeRoles([ROLE_IDS.ADMINIST
  *       404:
  *         description: No se encontraron grupos de servicios
  */
-router.post("/name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getGrupoServiciosByName);
+router.post("/name", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getGrupoServiciosByName);
 
 /**
  * @swagger

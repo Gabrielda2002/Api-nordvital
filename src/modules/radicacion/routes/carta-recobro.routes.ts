@@ -3,7 +3,7 @@ import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { creatAuditRequestLetter, createRecoveryLetter, createRequestLetter, deleteRecoveryLetter, generatePdf, getAllRecoveryLetter, getRecoveryLetterById, getRequestLetter, getResponseLetter, saveDateImpress, updateRecoveryLetter } from "../controllers/carta-recobro.controller";
 import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -289,15 +289,15 @@ router.put("/recover-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIS
 
 router.delete("/recover-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), deleteRecoveryLetter)
 
-router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), getDepartmentUser, getRequestLetter)
+router.get("/table-request-letter/:documentPatient", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR]), getDepartmentUser, getRequestLetter)
 
-router.get("/table-response-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]),getDepartmentUser , getResponseLetter)
+router.get("/table-response-letter", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE]),getDepartmentUser , getResponseLetter)
 
-router.post("/create-request-letter", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), createRequestLetter)
+router.post("/create-request-letter", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.RADICADOR]), createRequestLetter)
 
 router.put("/create-audit-letter/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), creatAuditRequestLetter)
 
-router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), generatePdf)
+router.get("/generate-pdf/:idRadicado", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR]), generatePdf)
 
 router.put('/save-date-print/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), saveDateImpress);
 

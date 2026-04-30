@@ -42,7 +42,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/Estado'
  */
-router.get("/estados", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.COORDINADOR]), getAllEstados);
+router.get("/estados", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR]), getAllEstados);
 
 /**
  * @swagger

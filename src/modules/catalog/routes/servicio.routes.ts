@@ -161,7 +161,7 @@ router.delete("/servicios/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTR
  *       400:
  *         description: Nombre no proporcionado
  */
-router.post("/servicios-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getServiciosByName)
+router.post("/servicios-name", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getServiciosByName)
 
 /**
  * @swagger

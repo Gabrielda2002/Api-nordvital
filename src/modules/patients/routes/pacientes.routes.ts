@@ -101,7 +101,7 @@ router.post("/patient", authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURS
  *       404:
  *         description: Paciente no encontrado
  */
-router.put("/pacientes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), validarId, updatePaciente);
+router.put("/pacientes/:id", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), validarId, updatePaciente);
 
 /**
  * @swagger

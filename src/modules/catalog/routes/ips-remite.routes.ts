@@ -160,7 +160,7 @@ router.delete("/ips-remite/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIST
  *       404:
  *         description: No se encontraron resultados
  */
-router.post("/ips-remite-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getIpsRemiteByName);
+router.post("/ips-remite-name", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getIpsRemiteByName);
 
 /**
  * @swagger

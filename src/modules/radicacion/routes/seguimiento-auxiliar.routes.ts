@@ -3,7 +3,7 @@ import { createSeguimientoAuxiliar, deleteSeguimientoAuxiliar, getAllSeguimiento
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 
 const router = Router();
@@ -111,7 +111,7 @@ router.get("/seguimientos-auxiliares/:id",authenticate, authorizeRoles([ROLE_IDS
  *       400:
  *         description: Error en los datos proporcionados
  */
-router.post("/seguimientos-auxiliares",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR, ROLE_IDS.COORDINADOR]), createSeguimientoAuxiliar);
+router.post("/seguimientos-auxiliares",authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.RADICADOR]), createSeguimientoAuxiliar);
 
 
 /**

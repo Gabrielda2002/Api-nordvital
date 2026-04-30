@@ -168,6 +168,6 @@ router.delete("/diagnosticos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINI
  *       404:
  *         description: No se encontraron diagnósticos
  */
-router.post("/diagnosticos-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), getDiagnosticosByName);
+router.post("/diagnosticos-name", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getDiagnosticosByName);
 
 export default router;

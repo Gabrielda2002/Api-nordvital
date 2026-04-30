@@ -48,7 +48,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get('/documento',authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), getAllDocumentType);
+router.get('/documento',authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.LIDER_ENFERMERIA]), getAllDocumentType);
 
 /**
  * @swagger

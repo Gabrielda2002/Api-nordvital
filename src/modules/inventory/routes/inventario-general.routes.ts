@@ -88,7 +88,7 @@ router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL)
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.SOPORTE]), createInventoryGeneral);
+router.post('/', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE]), createInventoryGeneral);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.
  *       500:
  *         description: Error interno del servidor.
  */
-router.put('/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.SOPORTE]), updateInventoryGeneral);
+router.put('/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE]), updateInventoryGeneral);
 
 /**
  * @swagger
@@ -145,7 +145,7 @@ router.put('/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_ID
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInvetoryGeneralWarrantyStatitics);
+router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInvetoryGeneralWarrantyStatitics);
 
 /**
  * @swagger
@@ -165,7 +165,7 @@ router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([R
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/age/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]),validarId, getInventoryGeneralAgeStatistics);
+router.get('/statistics/age/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]),validarId, getInventoryGeneralAgeStatistics);
 
 /**
  * @swagger
@@ -194,7 +194,7 @@ router.get('/statistics/age/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINIS
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInventoryGeneralByHeadquartersStatistics);
+router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInventoryGeneralByHeadquartersStatistics);
 
 /**
  * @swagger
@@ -244,6 +244,6 @@ router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([ROLE_ID
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/search', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.COORDINADOR, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), searchInventoryGeneral);
+router.get('/search', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), searchInventoryGeneral);
 
 export default router;

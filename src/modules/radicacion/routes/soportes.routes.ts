@@ -88,7 +88,7 @@ router.get("/soportes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR
  *       409:
  *         description: El soporte ya existe
  */
-router.post("/soportes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.COORDINADOR]), upload.single('file'), createSoporte);
+router.post("/soportes", authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), upload.single('file'), createSoporte);
 
 /**
  * @swagger
@@ -178,7 +178,7 @@ router.delete("/soportes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRA
  *       404:
  *         description: Soporte no encontrado
  */
-router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.COORDINADOR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA, ROLE_IDS.COORDINADORA_ENFERMERIA]), validarId, generateSoporteAccessToken);
+router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA]), validarId, generateSoporteAccessToken);
 
 /**
  * @swagger
