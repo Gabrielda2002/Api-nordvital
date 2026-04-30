@@ -169,9 +169,9 @@ export class VacationManagementService {
    * Notificar a RRHH sobre usuario pendiente de configuración
    */
   private async notifyHRForSetup(user: Usuarios, totalPeriods: number): Promise<void> {
-    // Notificar a todos los usuarios con rol RRHH (rol 3)
+    // Notificar a todos los usuarios con rol RRHH (rol 18)
     await NotificationService.createNotificationForRole(
-      [3], // Rol RRHH
+      [18], // Rol RRHH
       "Configuración de vacaciones pendiente",
       `El usuario ${user.name} ${user.lastName} requiere configuración inicial de vacaciones. Períodos generados: ${totalPeriods}`,
       user.id,

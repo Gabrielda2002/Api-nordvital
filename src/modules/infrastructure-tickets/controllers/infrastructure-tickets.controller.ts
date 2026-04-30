@@ -290,8 +290,8 @@ export async function getInfrastructureTicketsTable(req: Request, res: Response,
                 category: t.categoryRelation?.name || "N/A",
                 priority: t.priorityRelation?.name || "N/A",
                 status: t.statusRelation?.name || "N/A",
-                incidentSede: t.sedeRelation?.name || "N/A",
-                userSede: t.userRelation?.sedeRelation?.name || "N/A",
+                headquarter: t.sedeRelation?.name || "N/A",
+                userHeadquarters: t.userRelation?.sedeRelation?.name || "N/A",
                 municipio: t.userRelation?.sedeRelation?.municipioRelation?.name || "N/A",
                 attachments: t.attachmentsRelation
                     .filter((att) => !att.isInternal)
