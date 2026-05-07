@@ -294,7 +294,6 @@ export async function getSstTicketsByUserId(req: Request, res: Response, next: N
             .addSelect("ticket.title", "title")
             .addSelect("ticket.description", "description")
             .addSelect("ticket.locationDescription", "locationDescription")
-            .addSelect("ticket.quotationAmount", "quotationAmount")
             .addSelect("ticket.createdAt", "createdAt")
             .addSelect("ticket.updatedAt", "updatedAt")
             .addSelect("status.name", "status")

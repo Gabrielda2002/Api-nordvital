@@ -104,6 +104,7 @@ import {
   materialesRoutes,
   estadoIvGeneralRoutes,
 } from "./inventory";
+import { researchCenterRoutes } from "./research-center";
 
 const router = Router();
 
@@ -236,5 +237,8 @@ router.use(tipoActivoRoutes);
 router.use(clasificacionRoutes);
 router.use(materialesRoutes);
 router.use(estadoIvGeneralRoutes);
+
+// Research Center module (Public routes - NO auth required)
+router.use(researchCenterRoutes);
 
 export default router;
