@@ -5,42 +5,42 @@ export class CreateSstTicketsModule1777320927390 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         // 1. Roles
-        // await queryRunner.query(
-        //     `INSERT INTO \`rol\` (\`TipoRol\`) VALUES ('Coordinador SST'), ('Auxiliar SST')`
-        // );
+        await queryRunner.query(
+            `INSERT INTO \`rol\` (\`TipoRol\`) VALUES ('Coordinador SST'), ('Auxiliar SST')`
+        );
 
         // 2. sst_categories
-        // await queryRunner.createTable(
-        //     new Table({
-        //         name: "sst_categories",
-        //         columns: [
-        //             {
-        //                 name: "id",
-        //                 type: "int",
-        //                 isPrimary: true,
-        //                 isGenerated: true,
-        //                 generationStrategy: "increment",
-        //             },
-        //             {
-        //                 name: "name",
-        //                 type: "varchar",
-        //                 length: "255",
-        //                 isUnique: true,
-        //             },
-        //             {
-        //                 name: "description",
-        //                 type: "text",
-        //                 isNullable: true,
-        //             },
-        //             {
-        //                 name: "priority_id",
-        //                 type: "int",
-        //                 isNullable: true,
-        //             },
-        //         ],
-        //     }),
-        //     true
-        // );
+        await queryRunner.createTable(
+            new Table({
+                name: "sst_categories",
+                columns: [
+                    {
+                        name: "id",
+                        type: "int",
+                        isPrimary: true,
+                        isGenerated: true,
+                        generationStrategy: "increment",
+                    },
+                    {
+                        name: "name",
+                        type: "varchar",
+                        length: "255",
+                        isUnique: true,
+                    },
+                    {
+                        name: "description",
+                        type: "text",
+                        isNullable: true,
+                    },
+                    {
+                        name: "priority_id",
+                        type: "int",
+                        isNullable: true,
+                    },
+                ],
+            }),
+            true
+        );
 
         await queryRunner.createForeignKey(
             "sst_categories",
