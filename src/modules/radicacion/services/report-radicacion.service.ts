@@ -57,7 +57,7 @@ export async function getReportRadicacionRows(
   }
 
   if (dateStart && dateEnd) {
-    query.andWhere("radicacion.createdAt BETWEEN :dateStart AND :dateEnd", {
+    query.andWhere("cups.createdAt BETWEEN :dateStart AND :dateEnd", {
       dateStart,
       dateEnd,
     });
@@ -134,7 +134,13 @@ export async function getReportRadicacionRows(
           Descripcion_cups: cups.servicioRelation?.name || "N/A",
           Estado_cups: cups.statusRelation?.name || "N/A",
           Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
-          Fecha_actualizacion: cups.updatedAt || "N/A",
+          Fecha_actualizacion: cups.updatedAt
+            ? formatInTimeZone(
+                new Date(cups.updatedAt),
+                "America/Bogota",
+                "yyyy-MM-dd HH:mm:ss"
+              )
+            : "N/A",
           Observacion_seguimiento_auxiliar: observations,
         });
       });
