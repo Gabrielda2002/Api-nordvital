@@ -509,7 +509,8 @@ export const createRequestService = async (
       phoneNumber2,
       address,
       email,
-      agreement
+      agreement,
+      ipsPrimary
     } = req.body;
 
     const file = req.file;
@@ -541,6 +542,7 @@ export const createRequestService = async (
     patientExist.address = address;
     patientExist.email = email;
     patientExist.agreementId = parseInt(String(agreement));
+    patientExist.ipsPrimaryId = parseInt(String(ipsPrimary));
 
     const patientToValidate = Object.assign(new Pacientes(), {
       landline: patientExist.landline,
