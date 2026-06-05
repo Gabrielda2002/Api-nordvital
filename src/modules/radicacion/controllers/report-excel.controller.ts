@@ -87,6 +87,11 @@ export async function previewReportServices(
       cupsCode,
       specialty
     }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data Radicacion not found.",
+    });
+
     res.status(200).json({ total: data.length ,data });
   } catch (error) {
     next(error);
@@ -1134,6 +1139,11 @@ export async function previewReportSurgerys(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportSurgerysRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data Surgerys Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1149,6 +1159,11 @@ export async function previewReportAssistants(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportAssistantsRows({ dateStart, dateEnd }, 20);
+
+    if(!data || data.length === 0) return res.status(404).json({
+      message: "Data Assistants Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1164,6 +1179,11 @@ export async function previewReportBreakesActive(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportBreakesActiveRows({ dateStart, dateEnd }, 20);
+
+    if(!data || data.length === 0) return res.status(404).json({
+      message: "Data Breaks Active Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1179,6 +1199,11 @@ export async function previewReportBiometric(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportBiometricRows({ dateStart, dateEnd }, 20);
+
+      if(!data || data.length === 0) return res.status(404).json({
+        message: "Data Biometric Not Found.",
+      });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1194,6 +1219,11 @@ export async function previewReportTickets(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportTicketsRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data Tickets Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1244,6 +1274,11 @@ export async function previewReportEquipments(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportEquipmentsRows({ dateStart, dateEnd }, 20);
+
+      if (!data || data.length === 0) return res.status(404).json({
+        message: "Data Equipments Not Found.",
+      });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1259,6 +1294,11 @@ export async function previewReportRedDevice(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportRedDeviceRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data Red Device Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1274,6 +1314,11 @@ export async function previewReportGeneralInventory(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportGeneralInventoryRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data General Inventory Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1289,6 +1334,11 @@ export async function previewReportTV(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportTVRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data TV Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
@@ -1304,6 +1354,11 @@ export async function previewReportPhones(
   try {
     const { dateStart, dateEnd } = req.body;
     const data = await getReportPhonesRows({ dateStart, dateEnd }, 20);
+
+    if (!data || data.length === 0) return res.status(404).json({
+      message: "Data Phones Not Found.",
+    });
+
     res.status(200).json({ total: data.length, data });
   } catch (error) {
     next(error);
