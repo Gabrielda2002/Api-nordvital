@@ -3,6 +3,7 @@ import { Carpeta } from "../entities/carpeta";
 import * as fs from "fs";
 import { promises as fsPromises } from "fs";
 import path from "path";
+import { ZipArchive, ArchiverError } from "archiver";
 import { Archivos } from "../entities/archivos";
 import { IsNull, QueryRunner } from "typeorm";
 import { AppDataSource } from "@core/db/conexion";
@@ -548,5 +549,72 @@ async function updatteAllSubItemsPathsWithTransaction(
       newSubPath,
       section
     );
+  }
+}
+
+export async function downloadFolder(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const folderId = parseInt(String(id));
+
+    const folder = await Carpeta.findOneBy({ id: folderId });
+    if (!folder) {
+      return res.status(404).json({ message: "Carpeta no encontrada" });
+    }
+
+    const allFiles = await Archivos.createQueryBuilder("archivo")
+      .where("archivo.path LIKE :folderPath", { folderPath: `${folder.path}/%` })
+      .getMany();
+
+    const uploadsBase = path.resolve(__dirname, "..", "..", "..", "uploads");
+
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${folder.name}.zip"`
+    );
+
+    const archive = new ZipArchive({ zlib: { level: 6 } });
+
+    archive.on("error", (err: ArchiverError) => {
+      console.error("Error creating ZIP:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Error al crear el archivo ZIP" });
+      }
+    });
+
+    archive.on("warning", (err: ArchiverError) => {
+      console.warn("ZIP warning:", err);
+    });
+
+    archive.pipe(res);
+
+    let addedFiles = 0;
+
+    for (const file of allFiles) {
+      const absolutePath = path.join(uploadsBase, file.path);
+      if (fs.existsSync(absolutePath)) {
+        const zipEntryPath = path
+          .relative(folder.path, file.path)
+          .replace(/\\/g, "/");
+        archive.file(absolutePath, { name: zipEntryPath });
+        addedFiles++;
+      } else {
+        console.warn(`Archivo no encontrado en disco: ${absolutePath}`);
+      }
+    }
+
+    // Si la carpeta está vacía, agregar un directorio vacío
+    if (addedFiles === 0) {
+      archive.append("", { name: `${folder.name}/` });
+    }
+
+    await archive.finalize();
+  } catch (error) {
+    next(error);
   }
 }

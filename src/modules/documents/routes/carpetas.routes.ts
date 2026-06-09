@@ -1,7 +1,7 @@
 ﻿import { Router } from "express";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
-import { createFolder, deleteFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta.controller";
+import { createFolder, deleteFolder, downloadFolder, getAllFolders, getFolderById, getSgcFoldersFiles, moveFolder, updateFolder } from "../controllers/carpeta.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { getDepartmentUser } from "@core/middlewares/get-department-user.middleware";
 import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
@@ -256,5 +256,35 @@ router.get('/sistema-calidad/:id' , authenticate , authorizeRoles(ROLE_GROUPS.AL
  *         description: Ya existe una carpeta con el mismo nombre en la nueva ubicación
  */
 router.put('/carpetas/:id/move', authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, moveFolder);
+
+/**
+ * @swagger
+ * /carpetas/{id}/download:
+ *   get:
+ *     summary: Descarga una carpeta con su contenido en formato ZIP
+ *     tags: [Carpetas]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de la carpeta a descargar
+ *     responses:
+ *       200:
+ *         description: Archivo ZIP descargado
+ *         content:
+ *           application/zip:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Carpeta no encontrada
+ *       500:
+ *         description: Error al crear el archivo ZIP
+ */
+router.get('/carpetas/:id/download', authenticate, validarId, downloadFolder);
 
 export default router;
