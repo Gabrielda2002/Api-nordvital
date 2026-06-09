@@ -13,7 +13,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const user = await Usuarios.createQueryBuilder("usuario")
       .leftJoinAndSelect("usuario.sedeRelation", "sede")
       .leftJoinAndSelect("sede.municipioRelation", "municipio")
-      .leftJoinAndSelect("usuario.cargoRelation", "cargo")
+      .leftJoinAndSelect("usuario.positionRelation", "cargo")
       .leftJoinAndSelect("cargo.areaRelation", "area")
       .leftJoinAndSelect("usuario.rolesRelation", "rol")
       .where("usuario.dniNumber = :dniNumber", { dniNumber })
@@ -61,14 +61,14 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         photo: user.photo,
         phone: user.phoneNumber,
         municipality: user.sedeRelation?.municipioRelation?.name,
-        area: user.cargoRelation?.areaRelation?.name || "No asignada",
-        position: user.cargoRelation?.name,
+        area: user.positionRelation?.areaRelation?.name || "No asignada",
+        position: user.positionRelation?.name,
         headquarters: user.sedeRelation?.name,
         headquartersId: user?.sedeRelation?.id,
         contractType: user.contractType,
         dateStartContract: user.dateStartContract,
-        managerName: user.cargoRelation?.areaRelation?.managerRelation?.name || "No asignado",
-        managerLastName: user.cargoRelation?.areaRelation?.managerRelation?.lastName || "No asignado",
+        managerName: user.positionRelation?.areaRelation?.managerRelation?.name || "No asignado",
+        managerLastName: user.positionRelation?.areaRelation?.managerRelation?.lastName || "No asignado",
       },
       message: "Inicio de sesión exitoso",
     });

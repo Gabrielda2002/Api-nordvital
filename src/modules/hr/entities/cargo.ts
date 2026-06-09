@@ -20,12 +20,12 @@ import {
 import { Area } from "../../catalog/entities/area";
 import { Usuarios } from "../../auth/entities/usuarios";
 
-@Entity({ name: "cargo" })
+@Entity({ name: "position" })
 export class Cargo extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "nombre", unique: true })
+  @Column({ name: "name", unique: true })
   @IsString()
   @IsNotEmpty({ message: "El nombre del cargo es requerido" })
   @Length(2, 200, {
@@ -33,7 +33,7 @@ export class Cargo extends BaseEntity {
   })
   name: string;
 
-  @Column({ name: "descripcion", nullable: true })
+  @Column({ name: "description", nullable: true })
   @IsString()
   @IsOptional()
   @Length(0, 500, {
@@ -46,15 +46,15 @@ export class Cargo extends BaseEntity {
   @IsOptional()
   areaId: number;
 
-  @Column({ name: "estado", default: true })
+  @Column({ name: "status", default: true })
   @IsBoolean()
   @IsNotEmpty({ message: "El estado del cargo es requerido" })
   status: boolean;
 
-  @CreateDateColumn({ name: "fecha_creacion" })
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: "fecha_actualizacion" })
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
   // * Relación con área
@@ -63,6 +63,6 @@ export class Cargo extends BaseEntity {
   areaRelation: Area;
 
   // * Relación con usuarios que tienen este cargo
-  @OneToMany(() => Usuarios, (usuario) => usuario.cargoRelation)
+  @OneToMany(() => Usuarios, (usuario) => usuario.positionRelation)
   usersRelation: Usuarios[];
 }

@@ -18,8 +18,10 @@ export async function getReportBreakesActiveRows(
   const { dateStart, dateEnd } = filters;
 
   const query = PausasActivas.createQueryBuilder("pausas_activas")
-    .leftJoinAndSelect("pausas_activas.userRelation", "usuario")
-    .leftJoinAndSelect("usuario.sedeRelation", "sede")
+    .leftJoinAndSelect("pausas_activas.userRelation", "user")
+    .leftJoinAndSelect("user.positionRelation", "position")
+    .leftJoinAndSelect("position.areaRelation", "area")
+    .leftJoinAndSelect("user.sedeRelation", "sede")
     .orderBy("pausas_activas.createdAt", "DESC");
 
   if (dateStart && dateEnd) {
@@ -53,8 +55,8 @@ export async function getReportBreakesActiveRows(
       observacion: pausa.observation || "N/A",
       nombre_usuario: pausa.userRelation?.name || "N/A",
       apellidos_usuario: pausa.userRelation?.lastName || "N/A",
-      area: pausa.userRelation?.area || "N/A",
-      cargo: pausa.userRelation?.position || "N/A",
+      area: pausa.userRelation?.positionRelation?.areaRelation?.name || "N/A",
+      cargo: pausa.userRelation?.positionRelation?.name || "N/A",
       sede: pausa.userRelation?.sedeRelation?.name || "N/A",
       numero_documento: pausa.userRelation?.dniNumber || "N/A",
     });

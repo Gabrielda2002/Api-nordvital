@@ -18,7 +18,9 @@ export async function getReportBiometricRows(
   const { dateStart, dateEnd } = filters;
 
   const query = RegistroEntrada.createQueryBuilder("registro_entrada")
-    .leftJoinAndSelect("registro_entrada.userRelation", "usuario")
+    .leftJoinAndSelect("registro_entrada.userRelation", "users")
+    .leftJoinAndSelect("users.positionRelation", "position")
+    .leftJoinAndSelect("position.areaRelation", "area")
     .leftJoinAndSelect("registro_entrada.sedeRelation", "sede")
     .orderBy("registro_entrada.registerDate", "DESC");
 
@@ -52,7 +54,7 @@ export async function getReportBiometricRows(
       fecha_registro: fechaRegistro,
       hora_registro: r.hourRegister || "N/A",
       sede: r.sedeRelation?.name || "N/A",
-      area: r.userRelation?.area || "N/A",
+      area: r.userRelation?.positionRelation?.areaRelation?.name || "N/A",
     });
   });
 

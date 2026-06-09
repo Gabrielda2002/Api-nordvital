@@ -48,7 +48,7 @@ export class VacationManagementService {
     try {
       const allUsers = await this.ds.getRepository(Usuarios).find({
         where: { status: true },
-        relations: { cargoRelation: { areaRelation: true } },
+        relations: { positionRelation: { areaRelation: true } },
       });
 
       const errors: string[] = [];

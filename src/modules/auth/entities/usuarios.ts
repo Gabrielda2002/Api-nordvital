@@ -59,18 +59,18 @@ import { SstTicket } from "../../sst-tickets/entities/sst-ticket";
 import { SstComment } from "../../sst-tickets/entities/sst-comment";
 import { SstAttachment } from "../../sst-tickets/entities/sst-attachment";
 
-@Entity({ name: "usuario" })
+@Entity({ name: "users" })
 export class Usuarios extends BaseEntity {
   
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "cedula" })
+  @Column({ name: "identification" })
   @IsInt()
   @IsNotEmpty({ message: "El número de cédula es requerido" })
   dniNumber: number;
 
-  @Column({ name: "nombre" })
+  @Column({ name: "name" })
   @IsString()
   @IsNotEmpty({ message: "El nombre del usuario es requerido" })
   @Length(2, 150, {
@@ -78,7 +78,7 @@ export class Usuarios extends BaseEntity {
   })
   name: string;
 
-  @Column({ name: "apellido" })
+  @Column({ name: "lastname" })
   @IsString()
   @IsNotEmpty({ message: "El apellido del usuario es requerido" })
   @Length(2, 150, {
@@ -86,7 +86,7 @@ export class Usuarios extends BaseEntity {
   })
   lastName: string;
 
-  @Column({ name: "tipo_cedula_id" })
+  @Column({ name: "identification_type_id" })
   @IsInt()
   @IsNotEmpty({ message: "El tipo de cédula es requerido" })
   dniType: number;
@@ -99,7 +99,7 @@ export class Usuarios extends BaseEntity {
   })
   email: string;
 
-  @Column({ name: "contrasena" })
+  @Column({ name: "password" })
   @IsString()
   @IsNotEmpty({ message: "La contraseña del usuario es requerida" })
   @Length(8, 150, {
@@ -111,7 +111,7 @@ export class Usuarios extends BaseEntity {
   })
   password: string;
 
-  @Column({ name: "estado" })
+  @Column({ name: "status" })
   @IsBoolean()
   @IsNotEmpty({ message: "El estado del usuario es requerido" })
   status: boolean;
@@ -126,40 +126,34 @@ export class Usuarios extends BaseEntity {
   @IsOptional()
   photo: string;
 
-  @Column({ name: "area" })
-  area: string;
-
-  @Column({ name: "cargo" })
-  position: string;
-
-  @Column({ name: "sede_id" })
+  @Column({ name: "headquarter_id" })
   @IsInt()
   @IsNotEmpty({ message: "La sede es requerida" })
   headquarters: number;
 
-  @Column({ name: "celular" })
+  @Column({ name: "phone" })
   @IsInt()
   @IsNotEmpty({ message: "El número de celular es requerido" })
   phoneNumber: number;
 
-  @Column({ name: "cargo_id", nullable: true })
+  @Column({ name: "position_id", nullable: true })
   // @IsInt()
   @IsOptional()
   positionId: number;
 
-  @Column({ name: "tipo_contrato", nullable: true })
+  @Column({ name: "contract_type", nullable: true })
   @IsEnum(["FIJO", "INDEFINIDO", "POR OBRA O LABOR", "PRESTACION DE SERVICIOS"])
   @IsNotEmpty({ message: "El tipo de contrato es requerido" })
   contractType: string;
 
-  @Column({ name: "fecha_inicio_contrato", type: "date", nullable: true })
+  @Column({ name: "contract_start_date", type: "date", nullable: true })
   @IsOptional()
   dateStartContract: Date;
 
-  @UpdateDateColumn({ name: "fecha-actualizacion" })
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @CreateDateColumn({ name: "fecha-creacion" })
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
   // * relaciones con llaves foraneas
@@ -173,12 +167,12 @@ export class Usuarios extends BaseEntity {
     () => TipoDocumento,
     (tipoDocumento) => tipoDocumento.usuarioRelation
   )
-  @JoinColumn({ name: "tipo_cedula_id" })
+  @JoinColumn({ name: "identification_type_id" })
   typeDocumentRelation: TipoDocumento;
 
   // * relacion con sede
   @ManyToOne(() => Sedes, (sede) => sede.userRelation)
-  @JoinColumn({ name: "sede_id" })
+  @JoinColumn({ name: "headquarter_id" })
   sedeRelation: Sedes;
 
   // * relacion con carpeta
@@ -272,8 +266,8 @@ export class Usuarios extends BaseEntity {
 
   // * Relación con cargo
   @ManyToOne(() => Cargo, (cargo) => cargo.usersRelation, { nullable: true })
-  @JoinColumn({ name: "cargo_id" })
-  cargoRelation: Cargo;
+  @JoinColumn({ name: "position_id" })
+  positionRelation: Cargo;
 
   @OneToMany(() => Radicacion, (radicacion) => radicacion.auditUserRelation)
   auditRelation: Radicacion[];

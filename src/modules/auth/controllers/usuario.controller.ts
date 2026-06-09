@@ -298,7 +298,7 @@ export async function getUsuariosTable(
       .leftJoinAndSelect("usuarios.typeDocumentRelation", "documento")
       .leftJoinAndSelect("usuarios.rolesRelation", "roles")
       .leftJoinAndSelect("usuarios.sedeRelation", "sede")
-      .leftJoinAndSelect("usuarios.cargoRelation", "cargo")
+      .leftJoinAndSelect("usuarios.positionRelation", "cargo")
       .leftJoinAndSelect("sede.municipioRelation", "municipio")
       .getMany();
 
@@ -322,7 +322,7 @@ export async function getUsuariosTable(
       contractType: usuario.contractType || "N/A",
       dateStartContract: usuario.dateStartContract || "N/A",
       positionId: usuario.positionId || "N/A",
-      positionName: usuario.cargoRelation?.name || "N/A",
+      positionName: usuario.positionRelation?.name || "N/A",
     }));
 
     return res.json(usuarios);

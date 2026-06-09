@@ -79,12 +79,12 @@ function computeRequestedDays(input: CreatePermissionRequestDto): number {
 async function resolveBossUserId(requesterId: number): Promise<number | null> {
   // requester -> cargo -> area -> jefe_area_id
   const user = await Usuarios.createQueryBuilder("u")
-    .leftJoinAndSelect("u.cargoRelation", "cargo")
+    .leftJoinAndSelect("u.positionRelation", "cargo")
     .leftJoinAndSelect("cargo.areaRelation", "area")
     .where("u.id = :id", { id: requesterId })
     .getOne();
   if (!user) throw new Error("Requester user not found");
-  const managerId = user.cargoRelation?.areaRelation?.managerId ?? null;
+  const managerId = user.positionRelation?.areaRelation?.managerId ?? null;
   return managerId ?? null;
 }
 
@@ -236,7 +236,7 @@ export class PermissionService {
       if (!policy) return { success: false,  error: "No policy defined for this category", statusCode: 400};
 
       // Validate requester
-      const requester = await manager.getRepository(Usuarios).findOne({ where: { id: input.requesterId }, relations: { cargoRelation: { areaRelation: true } } });
+      const requester = await manager.getRepository(Usuarios).findOne({ where: { id: input.requesterId }, relations: { positionRelation: { areaRelation: true } } });
 
       if (!requester) return { success: false, error: "Requester user not found", statusCode: 404 };
 
@@ -340,7 +340,7 @@ export class PermissionService {
 // ? la idea es que RRHH vea todas, y jefes solo las de su área
 async listRequestsForUser(userId: number, isHR: boolean) {
 
-  const user = await this.ds.getRepository(Usuarios).findOne({ where: { id: userId }, relations: { cargoRelation: { areaRelation: true } } });
+  const user = await this.ds.getRepository(Usuarios).findOne({ where: { id: userId }, relations: { positionRelation: { areaRelation: true } } });
   if (!user) throw new Error("User not found");
 
   let requests: PermissionRequest[] = [];
