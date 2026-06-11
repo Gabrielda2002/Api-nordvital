@@ -1,19 +1,20 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsInt, IsString, Length } from "class-validator";
 import { Municipio } from "./municipio";
+import { Carpeta } from "@modules/documents/entities/carpeta";
 
-@Entity("departamentos")
+@Entity("departments")
 export class departamentos extends BaseEntity{
 
     @PrimaryGeneratedColumn({name: "id"})
     id: number
 
-    @Column({name: "nombre"})
+    @Column({name: "name"})
     @IsString()
     @Length(3, 50, {message: "El nombre del departamento debe tener entre $constraint1 y $constraint2 caracteres"})
     name: string
 
-    @Column({name: "codigo_departamento", nullable: true})
+    @Column({name: "code", nullable: true})
     @IsInt()
     code: number
 
@@ -28,7 +29,7 @@ export class departamentos extends BaseEntity{
     municipioRelation: Municipio[];
 
     // ? relacion con carpetas
-    @OneToMany(() => Municipio, (carpeta) => carpeta.departmentRelation)
-    folderRelation: Municipio[];
+    @OneToMany(() => Carpeta, (carpeta) => carpeta.departmentRelation)
+    folderRelation: Carpeta[];
 
 }

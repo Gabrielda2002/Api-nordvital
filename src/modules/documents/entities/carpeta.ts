@@ -1,17 +1,17 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { Archivos } from "./archivos";
 import { departamentos } from "../../catalog/entities/departamentos";
 
-@Entity({name: "carpetas"})
+@Entity({name: "folders"})
 export class Carpeta extends BaseEntity {
 
 
     @PrimaryGeneratedColumn({name:'id' })
     id: number;
 
-    @Column({name:'nombre'})
+    @Column({name:'name'})
     @IsNotEmpty({message: "El nombre de la carpeta no puede estar vacío"})
     name: string;
 
@@ -19,24 +19,28 @@ export class Carpeta extends BaseEntity {
     // @IsNotEmpty({message: "El id del usuario no puede estar vacío"})
     userId: number;
 
-    @Column({name:'carpeta_padre_id' , nullable: true})
+    @Column({name:'parent_folder_id' , nullable: true})
     parentFolderId: number | null;
 
-    @Column({name:'ruta', type: 'text'})
+    @Column({name:'path', type: 'text'})
     @IsNotEmpty({message: "La ruta de la carpeta no puede estar vacía"})
     path: string;
-
-    @CreateDateColumn({name:'createdAt'})
-    createdAt: Date;
-
-    @UpdateDateColumn({name:'updatedAt'})
-    updateAt: Date;
-
-    @Column({name: "seccion", default: "ssg"})
+    
+    @Column({name: "section", default: "ssg"})
     seccion: string;
-
-    @Column({ name: 'id_departamento', nullable: false, default: 1 })
+    
+    @Column({ name: 'department_id', nullable: false, default: 1 })
     idDepartment: number;
+
+    @Column({ name: "icon", nullable: false, type: "varchar", length: 50})
+    @IsString()
+    icon?: string;
+    
+    @CreateDateColumn({name:'created_at'})
+    createdAt: Date;
+    
+    @UpdateDateColumn({name:'updated_at'})
+    updateAt: Date;
 
     // * relacion con usuarios
     @ManyToOne(() => Usuarios, (usuario) => usuario.folderRelation )
@@ -45,7 +49,7 @@ export class Carpeta extends BaseEntity {
 
     // * relacion jerarquica de carpeta_padre_id con id
     @ManyToOne(() => Carpeta, (carpeta) => carpeta.childRelation)
-    @JoinColumn({name:'carpeta_padre_id'})
+    @JoinColumn({name:'parent_folder_id'})
     parentFolderRelation: Carpeta;
 
     @OneToMany(() => Carpeta, (carpeta) => carpeta.parentFolderRelation)
@@ -56,7 +60,7 @@ export class Carpeta extends BaseEntity {
     fileRelation: Archivos[];
 
     @ManyToOne(() => departamentos, (departamento) => departamento.folderRelation)
-    @JoinColumn({ name: 'id_departamento' })
-    departamentoRelation: departamentos;
+    @JoinColumn({ name: 'department_id' })
+    departmentRelation: departamentos;
 
 }

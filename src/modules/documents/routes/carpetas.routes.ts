@@ -285,6 +285,6 @@ router.put('/carpetas/:id/move', authenticate, authorizeRoles(ROLE_GROUPS.DOCUME
  *       500:
  *         description: Error al crear el archivo ZIP
  */
-router.get('/carpetas/:id/download', authenticate, validarId, downloadFolder);
+router.get('/carpetas/:id/download', authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS), validarId, downloadFolder);
 
 export default router;

@@ -2,25 +2,25 @@ import { IsNotEmpty } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Carpeta } from "./carpeta";
 
-@Entity({name: "archivos"})
+@Entity({name: "documents"})
 export class Archivos extends BaseEntity {
 
     @PrimaryGeneratedColumn({name: "id"})
     id: number;
 
-    @Column({name: "nombre"})
+    @Column({name: "name"})
     @IsNotEmpty({message: "El nombre del archivo no puede estar vacío"})
     name: string;
 
-    @Column({name: "ruta", type: 'text'})
+    @Column({name: "path", type: 'text'})
     @IsNotEmpty({message: "La ruta del archivo no puede estar vacía"})
     path: string;
 
-    @Column({name: "tamano"})
+    @Column({name: "size"})
     @IsNotEmpty({message: "El tamaño del archivo no puede estar vacío"})
     size: number;
 
-    @Column({name: "carpeta_id"})
+    @Column({name: "folder_id"})
     // @IsNotEmpty({message: "El id de la carpeta no puede estar vacío"})
     folderId: number;
 
@@ -28,10 +28,10 @@ export class Archivos extends BaseEntity {
     @IsNotEmpty({message: "El tipo de archivo no puede estar vacío"})
     mimeType: string;
 
-    @CreateDateColumn({name: "createdAt"})
+    @CreateDateColumn({name: "created_at"})
     createdAt: Date;
 
-    @UpdateDateColumn({name: "updatedAt"})
+    @UpdateDateColumn({name: "updated_at"})
     updateAt: Date;
 
     @Column({name: "name_saved"})
@@ -40,6 +40,6 @@ export class Archivos extends BaseEntity {
     // * relacion con carpetas
 
     @ManyToOne(() => Carpeta, (carpeta) => carpeta.fileRelation)
-    @JoinColumn({name: "carpeta_id"})
+    @JoinColumn({name: "folder_id"})
     folderRelation: Carpeta;    
 }
