@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, ValidateIf } from "class-validator";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { Archivos } from "./archivos";
@@ -32,9 +32,10 @@ export class Carpeta extends BaseEntity {
     @Column({ name: 'department_id', nullable: false, default: 1 })
     idDepartment: number;
 
-    @Column({ name: "icon", nullable: false, type: "varchar", length: 50})
+    @Column({ name: "icon", nullable: true, type: "varchar", length: 50})
+    @ValidateIf((o) => o.icon !== null && o.icon !== undefined)
     @IsString()
-    icon?: string;
+    icon?: string | null;
     
     @CreateDateColumn({name:'created_at'})
     createdAt: Date;

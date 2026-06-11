@@ -118,12 +118,39 @@ export async function updateFolder(
   
   try {
     const { id } = req.params;
-    const { name, parentFolderId } = req.body;
+    const { name, parentFolderId, icon } = req.body;
+
+    if (name === undefined && icon === undefined && parentFolderId === undefined) {
+      return res.status(400).json({
+        message: "(name, icon, parent folder id) is require"
+      });
+    }
 
     // Buscar la carpeta existente en la base de datos
     const folder = await Carpeta.findOneBy({ id: parseInt(String(id)) });
     if (!folder) {
       return res.status(404).json({ message: "Folder not found" });
+    }
+
+    const hasNameChange = name !== undefined && name !== folder.name;
+    const hasParentChange = parentFolderId !== undefined && parentFolderId !== folder.parentFolderId;
+    const hasIconChange = icon !== undefined;
+
+    if (!hasNameChange && !hasParentChange && hasIconChange) {
+      await queryRunner.startTransaction(); 
+      try {
+        
+        folder.icon = icon;
+
+        await validateEntity(folder);
+        await queryRunner.manager.save(folder)
+        await queryRunner.commitTransaction();
+        return res.status(200).json(folder)
+
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        throw error;
+      }
     }
 
     let newPath: string;
@@ -172,6 +199,7 @@ export async function updateFolder(
       folder.name = name;
       folder.parentFolderId = parentFolderId;
       folder.path = newPath;
+      folder.icon = icon
 
       await validateEntity(folder);
       await queryRunner.manager.save(folder);
