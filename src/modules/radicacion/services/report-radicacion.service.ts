@@ -133,6 +133,7 @@ export async function getReportRadicacionRows(
           Codigo_cups: cups.servicioRelation?.code || "N/A",
           Descripcion_cups: cups.servicioRelation?.name || "N/A",
           Estado_cups: cups.statusRelation?.name || "N/A",
+          Observacion_cups: cups.observation,
           Unidad_funcional: cups.functionalUnitRelation?.name || "N/A",
           Fecha_actualizacion: cups.updatedAt
             ? formatInTimeZone(
