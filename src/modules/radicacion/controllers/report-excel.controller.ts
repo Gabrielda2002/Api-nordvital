@@ -149,6 +149,7 @@ export async function getReportServices(
       { header: "Codigo CUPS", key: "Codigo_cups", width: 30 },
       { header: "Descripcion CUPS", key: "Descripcion_cups", width: 30 },
       { header: "Estado CUPS", key: "Estado_cups", width: 20 },
+      { header: "Observacion CUPS", key: "Observacion_cups", width: 20 },
       { header: "Unidad Funcional", key: "Unidad_funcional", width: 30 },
       {
         header: "Ultima Modificacion",
