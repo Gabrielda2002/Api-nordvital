@@ -189,7 +189,7 @@ router.use(areaEpsRoutes);
 router.use(areaRoutes);
 router.use(servicioRoutes);
 router.use(servicioSolicitadoRoutes);
-router.use(profesionalesRoutes);
+router.use('/professional',profesionalesRoutes);
 router.use(relacionUsuarioRoutes);
 
 // Radicacion module

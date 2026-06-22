@@ -29,7 +29,7 @@ const router = Router();
 
 /**
  * @swagger
- * /profesional:
+ * /professional:
  *   get:
  *     summary: Obtiene todos los profesionales
  *     security:
@@ -48,7 +48,7 @@ const router = Router();
  *         description: No se encontraron profesionales
  */
 router.get(
-  '/profesional',
+  '',
   authenticate, 
   authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   getAllProfessional
@@ -56,7 +56,7 @@ router.get(
 
 /**
  * @swagger
- * /profesionales/buscar:
+ * /professional/buscar:
  *   post:
  *     summary: Busca profesionales por nombre
  *     security:
@@ -87,7 +87,7 @@ router.get(
  *         description: No se encontraron profesionales
  */
 router.post(
-  "/profesionales/buscar",
+  "/buscar",
   authenticate,
   authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]),
   getProfesionalByName
@@ -95,7 +95,7 @@ router.post(
 
 /**
  * @swagger
- * /profesionales:
+ * /professional:
  *   post:
  *     summary: Crea un nuevo profesional
  *     security:
@@ -124,7 +124,7 @@ router.post(
  *         description: El profesional ya existe o error de validación
  */
 router.post(
-  "/profesionales",
+  "",
   authenticate,
   authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]),
   createProfesionales
@@ -132,7 +132,7 @@ router.post(
 
 /**
  * @swagger
- * /profesional/{id}:
+ * /professional/{id}:
  *   put:
  *     summary: Actualiza un profesional
  *     security:
@@ -168,11 +168,11 @@ router.post(
  *         description: Profesional no encontrado o error de validación
  */
 router.put(
-  "/profesional/:id",
+  "/:id",
   authenticate,
   authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
   validarId,
-  updateProfessional
+updateProfessional
 );
 
 export default router;
