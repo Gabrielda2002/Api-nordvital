@@ -4,8 +4,11 @@ import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 import {
   createProfesionales,
+  getAllProfessional,
   getProfesionalByName,
+  updateProfessional,
 } from "../controllers/profesionales.controller";
+import { validarId } from "@core/middlewares/validate-type-id.middleware";
 
 const router = Router();
 
@@ -23,6 +26,33 @@ const router = Router();
  *           type: string
  *           description: Nombre del profesional
  */
+
+/**
+ * @swagger
+ * /profesional:
+ *   get:
+ *     summary: Obtiene todos los profesionales
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Profesionales]
+ *     responses:
+ *       200:
+ *         description: Lista de profesionales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Profesional'
+ *       404:
+ *         description: No se encontraron profesionales
+ */
+router.get(
+  '/profesional',
+  authenticate, 
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
+  getAllProfessional
+)
 
 /**
  * @swagger
@@ -98,6 +128,51 @@ router.post(
   authenticate,
   authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]),
   createProfesionales
+);
+
+/**
+ * @swagger
+ * /profesional/{id}:
+ *   put:
+ *     summary: Actualiza un profesional
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Profesionales]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del profesional
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre del profesional
+ *     responses:
+ *       200:
+ *         description: Profesional actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Profesional'
+ *       400:
+ *         description: Profesional no encontrado o error de validación
+ */
+router.put(
+  "/profesional/:id",
+  authenticate,
+  authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
+  validarId,
+  updateProfessional
 );
 
 export default router;

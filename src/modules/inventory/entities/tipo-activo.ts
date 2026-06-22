@@ -8,6 +8,7 @@ import {
     OneToMany 
 } from "typeorm";
 import { InventarioGeneral } from "./inventario-general";
+import { IsNotEmpty, IsString } from "class-validator";
 
 @Entity("tipo_activo")
 export class TipoActivo extends BaseEntity {
@@ -15,6 +16,8 @@ export class TipoActivo extends BaseEntity {
     id: number;
 
     @Column({ name: "nombre", type: "varchar", length: 150 })
+    @IsString()
+    @IsNotEmpty()
     name: string;
 
     @CreateDateColumn({ name: "created_at" })

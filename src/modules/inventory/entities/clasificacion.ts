@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { InventarioGeneral } from "./inventario-general";
 import { Activo } from "./activos";
+import { IsNotEmpty, IsString } from "class-validator";
 
 @Entity("clasificacion")
 export class Clasificacion extends BaseEntity {
@@ -16,6 +17,8 @@ export class Clasificacion extends BaseEntity {
     id: number;
 
     @Column({ name: "nombre", type: "varchar", length: 150 })
+    @IsString()
+    @IsNotEmpty()
     name: string;
 
     @CreateDateColumn({ name: "created_at" })
