@@ -3,7 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, IsNull, JoinColumn, ManyT
 import { Radicacion } from "./radicacion";
 import { Usuarios } from "../../auth/entities/usuarios";
 
-@Entity({ name: "revovery_latters" })
+@Entity({ name: "recovery_letters" })
 export class CartaRecobro extends BaseEntity {
 
     @PrimaryGeneratedColumn({name: "id"})
@@ -44,15 +44,15 @@ export class CartaRecobro extends BaseEntity {
 
     // ? relaciones
     @ManyToOne(() => Radicacion, radicacion => radicacion.cartaRelation)
-    @JoinColumn({name: "id_radicado"})
+    @JoinColumn({name: "radicacion_id"})
     radicacionRelation: Radicacion;
 
     @ManyToOne(() => Usuarios, usuario => usuario.cartaUserRequestRelation)
-    @JoinColumn({name: "id_usuario_solicita"})
+    @JoinColumn({name: "user_request_id"})
     userRequestRelation: Usuarios;
 
     @ManyToOne(() => Usuarios, usuario => usuario.cartaUserAuditRelation)
-    @JoinColumn({name: "id_usuario_audita"})
+    @JoinColumn({name: "user_audit_id"})
     userAuditRelation: Usuarios;
 
 }
