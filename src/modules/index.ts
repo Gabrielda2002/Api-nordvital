@@ -120,7 +120,7 @@ router.use(moodleRoutes);
 router.use(emailRoutes);
 
 // Events module
-router.use(eventosRoutes);
+router.use('/events', eventosRoutes);
 router.use(participantesRoutes);
 
 // Documents module

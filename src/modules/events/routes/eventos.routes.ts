@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @swagger
- * /eventos:
+ * /events:
  *   get:
  *     summary: Obtiene todos los eventos
  *     tags: [Eventos]
@@ -31,11 +31,11 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos
  */
-router.get("/eventos", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllEvents)
+router.get("", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllEvents);
 
 /**
  * @swagger
- * /evento/{id}:
+ * /events/{id}:
  *   get:
  *     summary: Obtiene un evento por ID
  *     tags: [Eventos]
@@ -58,11 +58,11 @@ router.get("/eventos", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getAllEven
  *       404:
  *         description: Evento no encontrado
  */
-router.get("/evento/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, getEventById )
+router.get("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getEventById);
 
 /**
  * @swagger
- * /eventos:
+ * /events:
  *   post:
  *     summary: Crea un nuevo evento
  *     tags: [Eventos]
@@ -84,11 +84,11 @@ router.get("/evento/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR])
  *       400:
  *         description: Datos inválidos
  */
-router.post("/eventos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]), createEvent )
+router.post("", authenticate, authorizeRoles([...ROLE_GROUPS.SST_MANAGEMENT, ROLE_IDS.RRHH]), createEvent);
 
 /**
  * @swagger
- * /eventos/{id}:
+ * /events/{id}:
  *   put:
  *     summary: Actualiza un evento existente
  *     tags: [Eventos]
@@ -113,11 +113,11 @@ router.post("/eventos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, RO
  *       404:
  *         description: Evento no encontrado
  */
-router.put("/eventos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RRHH]),validarId, updateEvent )
+router.put("/:id", authenticate, authorizeRoles([...ROLE_GROUPS.SST_MANAGEMENT, ROLE_IDS.RRHH]), validarId, updateEvent);
 
 /**
  * @swagger
- * /eventos/{id}:
+ * /events/{id}:
  *   delete:
  *     summary: Elimina un evento
  *     tags: [Eventos]
@@ -136,6 +136,6 @@ router.put("/eventos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR,
  *       404:
  *         description: Evento no encontrado
  */
-router.delete("/eventos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId, deleteEvent )
+router.delete("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteEvent);
 
 export default router;

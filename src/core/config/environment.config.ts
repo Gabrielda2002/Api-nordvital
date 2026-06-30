@@ -62,7 +62,8 @@ class EnvironmentConfig {
       "https://www.app.nordvitalips.com",
       "https://app.nordvitalips.com",
       "http://localhost:4321",
-      "http://localhost:8080", // Moodle dev
+      "http://localhost:8080",
+      "http://localhost:4173"
     ],
   };
 
