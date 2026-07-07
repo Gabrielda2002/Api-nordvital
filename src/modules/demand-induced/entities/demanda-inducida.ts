@@ -21,6 +21,7 @@ import { Pacientes } from "../../patients/entities/pacientes";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { Programa } from "../../programs/entities/programa";
 import { Professional } from "@core/types/Professional.type";
+import { Sedes } from "../../catalog/entities/sedes";
 
 enum AreaDificultad {
   IPS = "IPS",
@@ -155,6 +156,9 @@ export class DemandaInducida extends BaseEntity {
   @Column({ name: "persona_seguimiento_id", nullable: true })
   personaSeguimientoId: number;
 
+  @Column({ name: "headquarters_id" })
+  headquartersId: number;
+
   @Column({ name: "programa_id", type: "int", nullable: true })
   programaId: number;
 
@@ -281,4 +285,8 @@ export class DemandaInducida extends BaseEntity {
   @ManyToOne(() => Programa, (programa) => programa.demandaInducidaRelation)
   @JoinColumn({ name: "programa_id" })
   programaRelation: Programa;
+
+  @ManyToOne(() => Sedes, (sede) => sede.demandaInducidaRelation)
+  @JoinColumn({ name: "headquarters_id" })
+  headquartersRelation: Sedes;
 }

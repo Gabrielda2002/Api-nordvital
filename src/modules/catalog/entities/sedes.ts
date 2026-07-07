@@ -12,6 +12,7 @@ import { Equipos } from "../../inventory/entities/equipos";
 import { Televisor } from "../../inventory/entities/televisor";
 import { Celular } from "../../inventory/entities/celular";
 import { ProgramaMetaHistorico } from "../../programs/entities/programa-meta-historico";
+import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
 @Entity("headquarters")
 export class Sedes extends BaseEntity{
@@ -92,4 +93,7 @@ export class Sedes extends BaseEntity{
     // Relación con programa meta historico
     @OneToMany(() => ProgramaMetaHistorico, (programaMeta) => programaMeta.headquartersRelation)
     programaMetaHistoricoRelation: ProgramaMetaHistorico[]
+
+    @OneToMany(() => DemandaInducida, (demandaInducida) => demandaInducida.headquartersRelation)
+    demandaInducidaRelation: DemandaInducida[]
 }

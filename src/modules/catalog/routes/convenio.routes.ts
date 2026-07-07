@@ -1,5 +1,5 @@
 ﻿import { Router } from "express";
-import { createConvenio, deleteConvenio, getAllConvenio, getConvenioById, updateConvenio, updateStatusConvenio } from "../controllers/convenio.controller";
+import { createConvenio, deleteConvenio, getAgreementByName, getAllConvenio, getConvenioById, updateConvenio, updateStatusConvenio } from "../controllers/convenio.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
@@ -186,5 +186,7 @@ router.delete('/convenio/:id', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEME
  *         description: Convenio no encontrado
  */
 router.put("/update-status-convenio/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateStatusConvenio);
+
+router.post('/agreement/search', authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURSING), getAgreementByName);
 
 export default router;

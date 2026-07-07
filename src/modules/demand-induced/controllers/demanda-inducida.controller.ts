@@ -42,6 +42,7 @@ export const getAllDemandInduded = async (
         "personaSeguimiento"
       )
       .leftJoinAndSelect("personaSeguimiento.sedeRelation", "sedePersonaSeguimiento")
+      .leftJoinAndSelect("demandInduced.headquartersRelation", "headquarters")
       .where("MONTH(demandInduced.createdAt) = :currentMonth", {
         currentMonth: currentMonth,
       })
@@ -100,7 +101,7 @@ export const getAllDemandInduded = async (
         `${d.personaSeguimientoRelation?.name} ${d.personaSeguimientoRelation?.lastName}` ||
         "N/A",
       areaPersonProcess: d.areaPersonaRelation?.name || "N/A",
-      headquartersPersonProcess: d.personaSeguimientoRelation?.sedeRelation?.name || "N/A",
+      headquartersPersonProcess: d.headquartersRelation?.name || "N/A",
       programPerson: d.programaRelation?.name || "N/A",
       assignmentDate: d.fechaCita || "N/A",
       profetional: d.profesional || "N/A",
@@ -156,6 +157,7 @@ export const createDemandInduced = async (
       idPatient,
       profetional,
       idUser,
+      headquartersId,
     } = req.body;
 
     if (idPatient === undefined || idPatient === null) {
@@ -236,6 +238,7 @@ export const createDemandInduced = async (
     demandInduced.programaId = parseInt(String(programPerson));
     demandInduced.fechaCita = assignmentDate || null;
     demandInduced.personaSeguimientoId = parseInt(String(idUser));
+    demandInduced.headquartersId = parseInt(String(headquartersId));
 
     const errorsDemandInduced = await validate(demandInduced);
 
