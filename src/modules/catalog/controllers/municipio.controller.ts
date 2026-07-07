@@ -5,8 +5,22 @@ import { Validate, validate } from "class-validator";
 export async function getAllMunicipios(req: Request, res: Response, next: NextFunction) {
     try {
         
-        const municipios = await Municipio.find();
-        return res.json(municipios);
+        const municipios = await Municipio.createQueryBuilder('m')
+        .innerJoinAndSelect('m.departmentRelation', 'd')  
+        .getMany();
+
+        const municipioFormatted =  municipios.map((m) => ({
+            id: m.id,
+            name: m.name,
+            status: m.status,
+            municipalityCode: m.municipalityCode,
+            departmentId: m.departmentId,
+            departmentName: m?.departmentRelation?.name,
+            createdAt: m.createdAt,
+            updatedAt: m.updatedAt
+        }))
+        
+        return res.status(200).json(municipioFormatted);
 
     } catch (error) {
         next(error);
@@ -45,7 +59,7 @@ export async function createMunicipio(req: Request, res: Response, next: NextFun
         const municipio = new Municipio();
         municipio.name = name;
         municipio.status = true;
-        municipio.municipalityCode = municipioCode;
+        municipio.municipalityCode = parseInt(municipioCode);
         municipio.departmentId = Number(department);
 
         const errors = await validate(municipio);
@@ -128,7 +142,7 @@ export async function updateStatusMunicipio(req: Request, res: Response, next: N
     try {
         
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, name, municipioCode, department } = req.body;
 
         const municipio = await Municipio.findOneBy({ id: parseInt(String(id)) });
 
@@ -137,6 +151,9 @@ export async function updateStatusMunicipio(req: Request, res: Response, next: N
         }
 
         municipio.status = status == "1";
+        municipio.name = name;
+        municipio.municipalityCode = parseInt(municipioCode);
+        municipio.departmentId = parseInt(department);
 
         const errors = await validate(municipio);
 
