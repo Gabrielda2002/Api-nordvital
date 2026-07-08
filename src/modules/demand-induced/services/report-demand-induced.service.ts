@@ -52,6 +52,7 @@ export async function getReportDemandInducedRows(
       "usuario_seguimiento"
     )
     .leftJoinAndSelect("demandas_inducidas.programaRelation", "programa")
+    .leftJoinAndSelect("demandas_inducidas.headquartersRelation", "h")
     .orderBy("demandas_inducidas.createdAt", "ASC");
 
   if (convenio) {
@@ -75,7 +76,7 @@ export async function getReportDemandInducedRows(
   }
 
   if (headquarter) {
-    query.andWhere("usuario_seguimiento.headquarters = :headquarter", {
+    query.andWhere("h.id = :headquarter", {
       headquarter,
     });
   }
@@ -153,7 +154,8 @@ export async function getReportDemandInducedRows(
             "dd/MM/yyyy"
           )
         : "",
-      Profesional: d.profesional || "",
+      profesional: d.profesional || "",
+      headquarter: d.headquartersRelation?.name || "",
     });
   });
 
