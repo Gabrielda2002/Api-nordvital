@@ -3,7 +3,7 @@ import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
-import { create, getAllByAssetId, update } from "../controllers/activos.controller";
+import { create, getAll, getAllByAssetId, update } from "../controllers/activos.controller";
 
 const router = Router();
 
@@ -53,6 +53,8 @@ const router = Router();
  *         description: No se encontraron activos
  */
 router.get('/activos/:id', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES),validarId ,getAllByAssetId);
+
+router.get('/activos', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES), getAll);
 
 /**
  * @swagger

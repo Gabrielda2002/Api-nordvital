@@ -21,9 +21,34 @@ export async function getAllByAssetId(req: Request, res: Response, next: NextFun
       name: a.name,
     }));
 
-    res.status(200).json(formattedActivos);
+    return res.status(200).json(formattedActivos);
   } catch (error) {
     next(error);
+  }
+}
+
+export async function getAll(req: Request, res: Response, next: NextFunction) {
+  try {
+    
+    const activos = await Activo.createQueryBuilder('a')
+    .innerJoinAndSelect('a.clasificacion','c')
+    .getMany();
+
+    if (!activos) {
+      return res.status(404).json({message: "Assets not found"})
+    }
+
+    const formated = activos.map((a) => ({
+      id: a?.id,
+      name: a?.name,
+      classificationName: a?.clasificacion?.name,
+      classificationId: a?.classificationId
+    }))
+
+    return res.status(200).json(formated);
+
+  } catch (error) {
+    next(error)
   }
 }
 
