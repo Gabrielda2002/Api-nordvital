@@ -16,3 +16,5 @@ export { default as servicioRoutes } from "./routes/servicio.routes";
 export { default as servicioSolicitadoRoutes } from "./routes/servicio-solicitado.routes";
 export { default as profesionalesRoutes } from "./routes/profesionales.routes";
 export { default as relacionUsuarioRoutes } from "./routes/relacion-usuario.routes";
+export { default as poblacionEspecialRoutes } from "./routes/poblacion-especial.routes";
+export { default as servicioAtencionRoutes } from "./routes/servicio-atencion.routes";

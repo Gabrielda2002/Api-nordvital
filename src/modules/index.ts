@@ -57,6 +57,8 @@ import {
   servicioSolicitadoRoutes,
   profesionalesRoutes,
   relacionUsuarioRoutes,
+  poblacionEspecialRoutes,
+  servicioAtencionRoutes,
 } from "./catalog";
 import {
   radicacionRoutes,
@@ -105,6 +107,7 @@ import {
   estadoIvGeneralRoutes,
 } from "./inventory";
 import { researchCenterRoutes } from "./research-center";
+import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
 
 const router = Router();
 
@@ -240,5 +243,14 @@ router.use(estadoIvGeneralRoutes);
 
 // Research Center module (Public routes - NO auth required)
 router.use(researchCenterRoutes);
+
+// Surveys module
+router.use(encuestaSatisfaccionRoutes);
+
+// Catalog - Poblaciones especiales
+router.use(poblacionEspecialRoutes);
+
+// Catalog - Servicios de atención
+router.use(servicioAtencionRoutes);
 
 export default router;
