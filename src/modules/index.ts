@@ -108,6 +108,12 @@ import {
 } from "./inventory";
 import { researchCenterRoutes } from "./research-center";
 import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
+import pqrsdfRoutes from "./pqrsdf/routes/pqrsdf.routes";
+import {
+    areaPqrsRoutes,
+    tipoPoblacionPqrsRoutes,
+    motivoGeneralPqrsRoutes,
+} from "./catalog";
 
 const router = Router();
 
@@ -247,10 +253,18 @@ router.use(researchCenterRoutes);
 // Surveys module
 router.use(encuestaSatisfaccionRoutes);
 
+// PQRSDF module
+router.use(pqrsdfRoutes);
+
 // Catalog - Poblaciones especiales
 router.use(poblacionEspecialRoutes);
 
 // Catalog - Servicios de atención
 router.use(servicioAtencionRoutes);
+
+// Catalog - PQRSDF
+router.use(areaPqrsRoutes);
+router.use(tipoPoblacionPqrsRoutes);
+router.use(motivoGeneralPqrsRoutes);
 
 export default router;

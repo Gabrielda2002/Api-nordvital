@@ -1,0 +1,218 @@
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, ValidateIf } from "class-validator";
+import { Pacientes } from "../../patients/entities/pacientes";
+import { Usuarios } from "../../auth/entities/usuarios";
+import { AreaPqrs } from "../../catalog/entities/area-pqrs";
+import { TipoPoblacionPqrs } from "../../catalog/entities/tipo-poblacion-pqrs";
+import { MotivoGeneralPqrs } from "../../catalog/entities/motivo-general-pqrs";
+
+export enum PresentadoPor {
+    USUARIO_AFECTADO = "USUARIO_AFECTADO",
+    FAMILIAR = "FAMILIAR",
+    ASEGURADOR = "ASEGURADOR",
+}
+
+export enum ClasificacionPqrs {
+    PETICION = "PETICION",
+    QUEJA = "QUEJA",
+    RECLAMO = "RECLAMO",
+    DENUNCIA = "DENUNCIA",
+    SUGERENCIA = "SUGERENCIA",
+    FELICITACION = "FELICITACION",
+}
+
+export enum Instancia {
+    SUPERSALUD = "SUPERSALUD",
+    EPS = "EPS",
+    SECRETARIA_SALUD = "SECRETARIA_SALUD",
+    IPS = "IPS",
+    OTRO = "OTRO",
+}
+
+export enum MedioRecepcion {
+    PAGINA_WEB = "PAGINA_WEB",
+    WHATSAPP = "WHATSAPP",
+    SALA = "SALA",
+    BUZON = "BUZON",
+}
+
+export enum MedioNotificacion {
+    CORREO_ELECTRONICO = "CORREO_ELECTRONICO",
+    PERSONALMENTE = "PERSONALMENTE",
+    WHATSAPP = "WHATSAPP",
+}
+
+export enum EstadoPqrs {
+    ABIERTO = "ABIERTO",
+    EN_GESTION = "EN_GESTION",
+    CERRADO = "CERRADO",
+}
+
+export enum AtributoAfectado {
+    OPORTUNIDAD = "OPORTUNIDAD",
+    ACCESIBILIDAD = "ACCESIBILIDAD",
+    CONTINUIDAD = "CONTINUIDAD",
+    PERTINENCIA = "PERTINENCIA",
+    CALIDEZ = "CALIDEZ",
+    OTRO = "OTRO",
+}
+
+@Entity("pqrsdf")
+export class Pqrsdf extends BaseEntity {
+
+    @PrimaryGeneratedColumn({ name: "id", type: "int", unsigned: true, comment: "Identificador único de la PQRSDF" })
+    id: number;
+
+    @Column({ name: "patient_id", type: "int", comment: "Paciente afectado (nombre, documento, contacto y asegurador se derivan del paciente)" })
+    @IsInt()
+    @IsNotEmpty({ message: "El paciente no puede estar vacío" })
+    patientId: number;
+
+    @Column({ name: "population_type_id", type: "int", comment: "TIPO DE POBLACION" })
+    @IsInt()
+    @IsNotEmpty({ message: "El tipo de población no puede estar vacío" })
+    populationTypeId: number;
+
+    @Column({ name: "presented_by", type: "enum", enum: PresentadoPor, comment: "PQRSDF presentada por" })
+    @IsEnum(PresentadoPor, { message: "El valor de 'presentado por' no es válido" })
+    presentedBy: PresentadoPor;
+
+    @Column({ name: "presenter_name", nullable: true, type: "varchar", length: 150, comment: "Nombre de quien presenta la PQRSDF (obligatorio si no es el usuario afectado)" })
+    @ValidateIf((o) => o.presentedBy !== null && o.presentedBy !== undefined && o.presentedBy !== PresentadoPor.USUARIO_AFECTADO)
+    @IsString()
+    @IsNotEmpty({ message: "El nombre de quien presenta la PQRSDF es obligatorio cuando no es el usuario afectado" })
+    @Length(3, 150, { message: "El nombre de quien presenta la PQRSDF debe tener entre $constraint1 y $constraint2 caracteres" })
+    presenterName?: string;
+
+    @Column({ name: "classification", type: "enum", enum: ClasificacionPqrs, comment: "CLASIFICACION DE PQRD" })
+    @IsEnum(ClasificacionPqrs, { message: "La clasificación de la PQRSDF no es válida" })
+    classification: ClasificacionPqrs;
+
+    @Column({ name: "instance", type: "enum", enum: Instancia, comment: "INSTANCIA" })
+    @IsEnum(Instancia, { message: "La instancia de la PQRSDF no es válida" })
+    instance: Instancia;
+
+    @Column({ name: "reception_medium", type: "enum", enum: MedioRecepcion, comment: "MEDIO DE RECEPCION DE PQRDSF" })
+    @IsEnum(MedioRecepcion, { message: "El medio de recepción de la PQRSDF no es válido" })
+    receptionMedium: MedioRecepcion;
+
+    @Column({ name: "filing_number", type: "int", comment: "NUMERO DE RADICADO (secuencial autogenerado por el sistema)" })
+    @IsInt()
+    @IsNotEmpty({ message: "El número de radicado no puede estar vacío" })
+    filingNumber: number;
+
+    @Column({ name: "origin_area_id", type: "int", comment: "AREA DONDE SE ORIGINO EL EVENTO" })
+    @IsInt()
+    @IsNotEmpty({ message: "El área de origen no puede estar vacía" })
+    originAreaId: number;
+
+    @Column({ name: "general_reason_id", type: "int", comment: "MOTIVO GENERAL" })
+    @IsInt()
+    @IsNotEmpty({ message: "El motivo general no puede estar vacío" })
+    generalReasonId: number;
+
+    @Column({ name: "specific_reason", nullable: true, type: "varchar", length: 250, comment: "MOTIVO ESPECIFICO" })
+    @IsOptional()
+    @IsString()
+    @Length(1, 250, { message: "El motivo específico debe tener entre $constraint1 y $constraint2 caracteres" })
+    specificReason?: string;
+
+    @Column({ name: "generation_area_id", type: "int", comment: "AREA DONDE SE GENERA PQRDSF" })
+    @IsInt()
+    @IsNotEmpty({ message: "El área de generación no puede estar vacía" })
+    generationAreaId: number;
+
+    @Column({ name: "description", type: "text", comment: "DESCRIPCION DE PQRDSF" })
+    @IsNotEmpty({ message: "La descripción de la PQRSDF no puede estar vacía" })
+    @IsString()
+    description: string;
+
+    @Column({ name: "pqrs_date", type: "date", comment: "FECHA DE LA PQRDSF" })
+    @IsNotEmpty({ message: "La fecha de la PQRSDF no puede estar vacía" })
+    pqrsDate: Date;
+
+    @Column({ name: "received_date", type: "date", comment: "FECHA DE RECIBIDO PQRDSF" })
+    @IsNotEmpty({ message: "La fecha de recibido no puede estar vacía" })
+    receivedDate: Date;
+
+    @Column({ name: "resolution_area_id", nullable: true, type: "int", comment: "AREA CON LA CUAL SE RESOLVIO EL EVENTO" })
+    @IsOptional()
+    @IsInt()
+    resolutionAreaId?: number;
+
+    @Column({ name: "response_date", nullable: true, type: "date", comment: "FECHA DE RESPUESTA PQRDSF" })
+    @IsOptional()
+    responseDate?: Date;
+
+    @Column({ name: "response_summary", nullable: true, type: "text", comment: "RESUMEN DE LA RESPUESTA" })
+    @IsOptional()
+    @IsString()
+    responseSummary?: string;
+
+    @Column({ name: "notification_medium", nullable: true, type: "enum", enum: MedioNotificacion, comment: "MEDIO DE NOTIFICACION DE RESPUESTA" })
+    @IsOptional()
+    @IsEnum(MedioNotificacion, { message: "El medio de notificación no es válido" })
+    notificationMedium?: MedioNotificacion;
+
+    @Column({ name: "affected_attribute", nullable: true, type: "enum", enum: AtributoAfectado, comment: "ATRIBUTO AFECTADO" })
+    @IsOptional()
+    @IsEnum(AtributoAfectado, { message: "El atributo afectado no es válido" })
+    affectedAttribute?: AtributoAfectado;
+
+    @Column({ name: "improvement_action", nullable: true, type: "tinyint", width: 1, comment: "ACCION DE MEJORA (1=SI, 0=NO)" })
+    @IsOptional()
+    @IsBoolean({ message: "La acción de mejora debe ser un valor booleano" })
+    improvementAction?: boolean;
+
+    @Column({ name: "status", type: "enum", enum: EstadoPqrs, default: EstadoPqrs.ABIERTO, comment: "ESTADO" })
+    @IsEnum(EstadoPqrs, { message: "El estado de la PQRSDF no es válido" })
+    status: EstadoPqrs;
+
+    @Column({ name: "created_by", type: "int", comment: "Usuario que registra la PQRSDF" })
+    @IsInt()
+    @IsNotEmpty({ message: "El usuario que registra la PQRSDF no puede estar vacío" })
+    createdBy: number;
+
+    @CreateDateColumn({ name: "created_at" })
+    createdAt: Date;
+
+    @UpdateDateColumn({ name: "updated_at" })
+    updatedAt: Date;
+
+    // * relaciones
+
+    // ? relacion con paciente
+    @ManyToOne(() => Pacientes)
+    @JoinColumn({ name: "patient_id" })
+    patientRelation: Pacientes;
+
+    // ? relacion con tipo de poblacion
+    @ManyToOne(() => TipoPoblacionPqrs)
+    @JoinColumn({ name: "population_type_id" })
+    populationTypeRelation: TipoPoblacionPqrs;
+
+    // ? relacion con area de origen
+    @ManyToOne(() => AreaPqrs)
+    @JoinColumn({ name: "origin_area_id" })
+    originAreaRelation: AreaPqrs;
+
+    // ? relacion con motivo general
+    @ManyToOne(() => MotivoGeneralPqrs)
+    @JoinColumn({ name: "general_reason_id" })
+    generalReasonRelation: MotivoGeneralPqrs;
+
+    // ? relacion con area de generacion
+    @ManyToOne(() => AreaPqrs)
+    @JoinColumn({ name: "generation_area_id" })
+    generationAreaRelation: AreaPqrs;
+
+    // ? relacion con area de resolucion
+    @ManyToOne(() => AreaPqrs)
+    @JoinColumn({ name: "resolution_area_id" })
+    resolutionAreaRelation: AreaPqrs;
+
+    // ? relacion con el usuario que registra
+    @ManyToOne(() => Usuarios)
+    @JoinColumn({ name: "created_by" })
+    userRelation: Usuarios;
+}

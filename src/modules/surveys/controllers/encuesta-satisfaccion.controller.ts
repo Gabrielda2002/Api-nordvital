@@ -6,6 +6,7 @@ import { id } from "date-fns/locale/id";
 async function findOneWithRelations(id: number): Promise<EncuestaSatisfaccion | null> {
     return EncuestaSatisfaccion.createQueryBuilder("survey")
         .leftJoinAndSelect("survey.patientRelation", "patient")
+        .leftJoinAndSelect("patient.documentRelation", "type")
         .leftJoinAndSelect("survey.municipioRelation", "municipio")
         .leftJoinAndSelect("survey.specialPopulationRelation", "specialPopulation")
         .leftJoinAndSelect("survey.attentionServiceRelation", "attentionService")
@@ -81,6 +82,8 @@ export async function getAllSurveys(req: Request, res: Response, next: NextFunct
 
         const qb = await EncuestaSatisfaccion.createQueryBuilder("survey")
             .leftJoinAndSelect("survey.patientRelation", "patient")
+            .leftJoinAndSelect("patient.documentRelation", "type")
+            .leftJoinAndSelect("patient.convenioRelation", "agreement")
             .leftJoinAndSelect("survey.municipioRelation", "municipio")
             .leftJoinAndSelect("survey.specialPopulationRelation", "specialPopulation")
             .leftJoinAndSelect("survey.attentionServiceRelation", "attentionService")
@@ -90,14 +93,28 @@ export async function getAllSurveys(req: Request, res: Response, next: NextFunct
 
         const surveyFormat = qb.map((s) => ({
             id: s.id,
-            patientName: s.patientRelation?.name,
+            patientId: s.patientId,
+            patientName: s.patientRelation.name,
             patientDocument: s.patientRelation?.documentNumber,
+            patientTypeDocument: s.patientRelation?.documentRelation?.name,
+            patientAgreement: s.patientRelation?.convenioRelation?.name,
             municipality: s.municipioRelation?.name,
+            documentPatient: s.patientRelation?.documentNumber,
             attentionService: s.attentionServiceRelation?.name,
             specialPopulation: s.specialPopulationRelation?.name,
+            timelyAppointment: s.timelyAppointment,
+            punctualCare: s.punctualCare,
+            professionalInterest: s.professionalInterest,
+            clearRecommendations: s.clearRecommendations,
+            signageHelped: s.signageHelped,
+            adequateFacilities: s.adequateFacilities,
+            cleanFacilities: s.cleanFacilities,
+            professionalCareRating: s.professionalCareRating,
+            customerServiceRating: s.customerServiceRating,
             globalExperience: s.globalExperience,
             wouldRecommend: s.wouldRecommend,
             createdAt: s.createdAt,
+            updatedAt: s.updatedAt,
             registeredBy: s.userRelation
                 ? `${s.userRelation.name} ${s.userRelation.lastName}`
                 : null,
@@ -120,7 +137,39 @@ export async function getSurvey(req: Request, res: Response, next: NextFunction)
             return res.status(404).json({ message: "Encuesta de satisfacción no encontrada" });
         }
 
-        return res.json(survey);
+        const surveyFormat = {
+            id: survey.id,
+            patientId: survey.patientId,
+            patientName: survey.patientRelation.name,
+            patientDocument: survey.patientRelation?.documentNumber,
+            patientTypeDocument: survey .patientRelation?.documentRelation?.name,
+            patientAgreement: survey.patientRelation?.convenioRelation?.name,
+            municipalityId: survey.municipalityId,
+            municipality: survey.municipioRelation?.name,
+            documentPatient: survey.patientRelation?.documentNumber,
+            attentionServiceId: survey.attentionServiceId,
+            attentionService: survey.attentionServiceRelation?.name,
+            specialPopulationId: survey.specialPopulationId,
+            specialPopulation: survey.specialPopulationRelation?.name,
+            timelyAppointment: survey.timelyAppointment,
+            punctualCare: survey.punctualCare,
+            professionalInterest: survey.professionalInterest,
+            clearRecommendations: survey.clearRecommendations,
+            signageHelped: survey.signageHelped,
+            adequateFacilities: survey.adequateFacilities,
+            cleanFacilities: survey.cleanFacilities,
+            professionalCareRating: survey.professionalCareRating,
+            customerServiceRating: survey.customerServiceRating,
+            globalExperience: survey.globalExperience,
+            wouldRecommend: survey.wouldRecommend,
+            createdAt: survey.createdAt,
+            updatedAt: survey.updatedAt,
+            registeredBy: survey.userRelation
+                ? `${survey.userRelation.name} ${survey.userRelation.lastName}`
+                : null,
+        };
+
+        return res.json(surveyFormat);
     } catch (error) {
         next(error);
     }
