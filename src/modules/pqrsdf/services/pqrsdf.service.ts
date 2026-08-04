@@ -25,6 +25,7 @@ export type CreatePqrsdfInput = {
     affectedAttribute?: string;
     improvementAction?: boolean;
     filingNumber: Number;
+    status?: string;
 };
 
 export type UpdatePqrsdfInput = CreatePqrsdfInput;
@@ -39,19 +40,6 @@ export type PqrsdfFilters = {
     originAreaId?: string;
 };
 
-export type FormattedPqrsdf = {
-    id: number;
-    filingNumber: number;
-    patientName: string | null;
-    patientDocument: string | null;
-    classification: string;
-    status: string;
-    pqrsDate: Date | null;
-    originAreaName: string | null;
-    presenterName: string | null;
-    createdAt: Date;
-};
-
 export class PqrsdfService {
     constructor(private readonly ds: DataSource = AppDataSource) {}
 
@@ -63,6 +51,7 @@ export class PqrsdfService {
         return this.getRepository()
             .createQueryBuilder("pqrsdf")
             .leftJoinAndSelect("pqrsdf.patientRelation", "patient")
+            .leftJoinAndSelect("patient.convenioRelation", "agreement")
             .leftJoinAndSelect("pqrsdf.populationTypeRelation", "populationType")
             .leftJoinAndSelect("pqrsdf.originAreaRelation", "originArea")
             .leftJoinAndSelect("pqrsdf.generalReasonRelation", "generalReason")
@@ -85,23 +74,8 @@ export class PqrsdfService {
             .orderBy("pqrsdf.createdAt", "DESC");
     }
 
-    /**
-     * Auto-generate the next sequential filing number.
-     * Queries the current MAX(filing_number) and returns +1.
-     * NOTE: Not transaction-safe under extreme concurrency but sufficient for current needs.
-     */
-    private async generateFilingNumber(): Promise<number> {
-        const result = await this.getRepository()
-            .createQueryBuilder("pqrsdf")
-            .select("MAX(pqrsdf.filingNumber)", "max")
-            .getRawOne();
-        const currentMax = result?.max ? parseInt(result.max, 10) : 0;
-        return currentMax + 1;
-    }
-
     async create(data: CreatePqrsdfInput, userId: number): Promise<Pqrsdf> {
         const repo = this.getRepository();
-        const filingNumber = await this.generateFilingNumber();
 
         const pqrsdf = repo.create({
             patientId: data.patientId,
@@ -111,7 +85,7 @@ export class PqrsdfService {
             classification: data.classification,
             instance: data.instance,
             receptionMedium: data.receptionMedium,
-            filingNumber,
+            filingNumber: data.filingNumber,
             originAreaId: data.originAreaId,
             generalReasonId: data.generalReasonId,
             specificReason: data.specificReason,
@@ -208,6 +182,7 @@ export class PqrsdfService {
         existing.notificationMedium = data.notificationMedium as MedioNotificacion;
         existing.affectedAttribute = data.affectedAttribute as AtributoAfectado;
         existing.improvementAction = data.improvementAction;
+        existing.status = data.status as EstadoPqrs;
 
         await repo.save(existing);
 
@@ -223,18 +198,80 @@ export class PqrsdfService {
         return !!result.affected && result.affected > 0;
     }
 
-    formatList(pqrsdfArray: Pqrsdf[]): FormattedPqrsdf[] {
+    formatList(pqrsdfArray: Pqrsdf[] | Pqrsdf) {
+
+        if (Array.isArray(pqrsdfArray)) {
         return pqrsdfArray.map((p) => ({
             id: p.id,
             filingNumber: p.filingNumber,
-            patientName: p.patientRelation?.name ?? null,
-            patientDocument: p.patientRelation?.documentNumber ?? null,
+            patientId: p.patientId,
+            patientName: p.patientRelation?.name,
+            patientDocument: p.patientRelation?.documentNumber,
+            patientPhone: p.patientRelation.phoneNumber,
+            patientEmail: p.patientRelation.email,
+            populationType: p.populationTypeRelation?.name,
+            patientAgreement: p.patientRelation?.convenioRelation?.name,
+            presentedBy: p.presentedBy,
+            presenterName: p.presenterName,
             classification: p.classification,
+            instance: p.instance,
+            receptionMedium: p.receptionMedium,
+            generalReason: p.generalReasonRelation?.name,
+            specificReason: p.specificReason,
+            originAreaName: p.originAreaRelation?.name,
+            description: p.description,
+            receivedDate: p.receivedDate,
+            resolutionAreaName: p.resolutionAreaRelation?.name,
+            responseDate: p.responseDate,
+            responseSummary: p.responseSummary,
+            notificationMedium: p.notificationMedium,
+            affectedAttribute: p.affectedAttribute,
+            improvementAction: p.improvementAction,
             status: p.status,
-            pqrsDate: p.pqrsDate ?? null,
-            originAreaName: p.originAreaRelation?.name ?? null,
-            presenterName: p.presenterName ?? "Usuario Afectado",
+            pqrsDate: p.pqrsDate,
+            createdBy: p.userRelation?.name,
             createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
         }));
+    }else {
+        return {
+            id: pqrsdfArray.id,
+            patientId: pqrsdfArray.patientId,
+            filingNumber: pqrsdfArray.filingNumber,
+            patientName: pqrsdfArray.patientRelation?.name,
+            patientDocument: pqrsdfArray.patientRelation?.documentNumber,
+            patientPhone: pqrsdfArray.patientRelation.phoneNumber,
+            patientEmail: pqrsdfArray.patientRelation.email,
+            populationTypeId: pqrsdfArray.populationTypeId,
+            populationType: pqrsdfArray.populationTypeRelation?.name,
+            patientAgreement: pqrsdfArray.patientRelation?.convenioRelation?.name,
+            presentedBy: pqrsdfArray.presentedBy,
+            presenterName: pqrsdfArray.presenterName,
+            classification: pqrsdfArray.classification,
+            instance: pqrsdfArray.instance,
+            receptionMedium: pqrsdfArray.receptionMedium,
+            generalReasonId: pqrsdfArray.generalReasonId,
+            generalReason: pqrsdfArray.generalReasonRelation?.name,
+            specificReason: pqrsdfArray.specificReason,
+            generationAreaId: pqrsdfArray.generationAreaId,
+            generationAreaName: pqrsdfArray.generationAreaRelation?.name,
+            originAreaId: pqrsdfArray.originAreaId,
+            originAreaName: pqrsdfArray.originAreaRelation?.name,
+            description: pqrsdfArray.description,
+            receivedDate: pqrsdfArray.receivedDate,
+            resolutionAreaId: pqrsdfArray.resolutionAreaId,
+            resolutionAreaName: pqrsdfArray.resolutionAreaRelation?.name,
+            responseDate: pqrsdfArray.responseDate,
+            responseSummary: pqrsdfArray.responseSummary,
+            notificationMedium: pqrsdfArray.notificationMedium,
+            affectedAttribute: pqrsdfArray.affectedAttribute,
+            improvementAction: pqrsdfArray.improvementAction,
+            status: pqrsdfArray.status,
+            pqrsDate: pqrsdfArray.pqrsDate,
+            createdBy: pqrsdfArray.userRelation?.name,
+            createdAt: pqrsdfArray.createdAt,
+            updatedAt: pqrsdfArray.updatedAt,
+        }
+    }
     }
 }

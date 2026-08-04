@@ -24,12 +24,6 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             description,
             pqrsDate,
             receivedDate,
-            resolutionAreaId,
-            responseDate,
-            responseSummary,
-            notificationMedium,
-            affectedAttribute,
-            improvementAction,
             filingNumber
         } = req.body;
 
@@ -49,12 +43,6 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.description = description;
         pqrsdf.pqrsDate = new Date(pqrsDate);
         pqrsdf.receivedDate = new Date(receivedDate);
-        pqrsdf.resolutionAreaId = resolutionAreaId ? parseInt(String(resolutionAreaId)) : undefined;
-        pqrsdf.responseDate = responseDate ? new Date(responseDate) : undefined;
-        pqrsdf.responseSummary = responseSummary;
-        pqrsdf.notificationMedium = notificationMedium;
-        pqrsdf.affectedAttribute = affectedAttribute;
-        pqrsdf.improvementAction = improvementAction;
         pqrsdf.createdBy = userId;
         pqrsdf.status = EstadoPqrs.ABIERTO
         pqrsdf.filingNumber = Number(filingNumber)
@@ -133,7 +121,9 @@ export async function getPqrsdf(req: Request, res: Response, next: NextFunction)
             return res.status(404).json({ message: "PQRSDF no encontrada" });
         }
 
-        return res.json(pqrsdf);
+        const formatted = service.formatList(pqrsdf);
+
+        return res.json(formatted);
     } catch (error) {
         next(error);
     }
@@ -163,6 +153,7 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             notificationMedium,
             affectedAttribute,
             improvementAction,
+            status,
         } = req.body;
 
         const existing = await service.findOne(parseInt(String(id)));
@@ -187,14 +178,15 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.description = description
         pqrsdf.pqrsDate = pqrsDate
         pqrsdf.receivedDate = receivedDate
-        pqrsdf.resolutionAreaId = resolutionAreaId
+        pqrsdf.resolutionAreaId = parseInt  (resolutionAreaId)
         pqrsdf.responseDate = responseDate
         pqrsdf.responseSummary = responseSummary
         pqrsdf.notificationMedium = notificationMedium
         pqrsdf.affectedAttribute = affectedAttribute
-        pqrsdf.improvementAction = improvementAction
+        pqrsdf.improvementAction = improvementAction === 1 ? true : false;
         pqrsdf.createdBy = existing.createdBy;
         pqrsdf.filingNumber = existing.filingNumber;
+        pqrsdf.status = status;
 
         const errors = await validate(pqrsdf);
 
@@ -229,7 +221,8 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             notificationMedium: pqrsdf.notificationMedium,
             affectedAttribute: pqrsdf.affectedAttribute,
             improvementAction: pqrsdf.improvementAction,
-            filingNumber: pqrsdf.filingNumber
+            filingNumber: pqrsdf.filingNumber,
+            status: pqrsdf.status
         });
 
         return res.json(updated);
