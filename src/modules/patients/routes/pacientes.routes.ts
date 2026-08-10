@@ -151,7 +151,7 @@ router.delete("/pacientes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTR
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURSING), getPacientesByDocument);
+router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.SEARCH_PATIENTS), getPacientesByDocument);
 
 /**
  * @swagger

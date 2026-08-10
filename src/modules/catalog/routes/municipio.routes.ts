@@ -30,7 +30,7 @@ const router = Router();
  *       403:
  *         description: Prohibido - No tiene permisos suficientes
  */
-router.get('/municipios', authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), getAllMunicipios);
+router.get('/municipios', authenticate, authorizeRoles(ROLE_GROUPS.SIAU), getAllMunicipios);
 
 /**
  * @swagger

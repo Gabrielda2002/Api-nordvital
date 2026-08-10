@@ -3,7 +3,7 @@ import { createSurvey, deleteSurvey, getAllSurveys, getSurvey, updateSurvey } fr
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
-import { ROLE_IDS } from "@core/constants/roles";
+import { ROLE_GROUPS, ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
@@ -40,7 +40,7 @@ const router = Router();
  *       200:
  *         description: Lista de encuestas de satisfacción
  */
-router.get("/surveys/satisfaction", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), getAllSurveys);
+router.get("/surveys/satisfaction", authenticate, authorizeRoles(ROLE_GROUPS.SIAU), getAllSurveys);
 
 /**
  * @swagger
@@ -63,7 +63,7 @@ router.get("/surveys/satisfaction", authenticate, authorizeRoles([ROLE_IDS.ADMIN
  *       404:
  *         description: Encuesta no encontrada
  */
-router.get("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), validarId, getSurvey);
+router.get("/surveys/satisfaction/:id", authenticate, authorizeRoles(ROLE_GROUPS.SIAU), validarId, getSurvey);
 
 /**
  * @swagger
@@ -85,7 +85,7 @@ router.get("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.A
  *       400:
  *         description: Error de validación
  */
-router.post("/surveys/satisfaction", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), createSurvey);
+router.post("/surveys/satisfaction", authenticate, authorizeRoles(ROLE_GROUPS.SIAU), createSurvey);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.post("/surveys/satisfaction", authenticate, authorizeRoles([ROLE_IDS.ADMI
  *       404:
  *         description: Encuesta no encontrada
  */
-router.put("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), validarId, updateSurvey);
+router.put("/surveys/satisfaction/:id", authenticate, authorizeRoles(ROLE_GROUPS.SIAU), validarId, updateSurvey);
 
 /**
  * @swagger
@@ -135,6 +135,6 @@ router.put("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.A
  *       404:
  *         description: Encuesta no encontrada
  */
-router.delete("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), validarId, deleteSurvey);
+router.delete("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSurvey);
 
 export default router;
