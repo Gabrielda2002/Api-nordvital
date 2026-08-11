@@ -1,7 +1,7 @@
-import { DataSource, Between, Like } from "typeorm";
+import { DataSource } from "typeorm";
 import { AppDataSource } from "@core/db/conexion";
 import { Pqrsdf, EstadoPqrs, PresentadoPor, ClasificacionPqrs, Instancia, MedioRecepcion, MedioNotificacion, AtributoAfectado } from "../entities/pqrsdf";
-import Logger from "@core/utils/logger-wrapper";
+import { PqrsdfRiskPolicy } from "../../catalog/entities/pqrsdf-risk-policy";
 
 export type CreatePqrsdfInput = {
     patientId: number;
@@ -24,11 +24,12 @@ export type CreatePqrsdfInput = {
     notificationMedium?: string;
     affectedAttribute?: string;
     improvementAction?: boolean;
-    filingNumber: Number;
+    filingNumber: number;
+    riskCode: string;
     status?: string;
 };
 
-export type UpdatePqrsdfInput = CreatePqrsdfInput;
+export type UpdatePqrsdfInput = Omit<CreatePqrsdfInput, "riskCode">;
 
 export type PqrsdfFilters = {
     startDate?: string;
@@ -42,6 +43,31 @@ export type PqrsdfFilters = {
 
 export class PqrsdfService {
     constructor(private readonly ds: DataSource = AppDataSource) {}
+
+    static computeSlaDeadlineFromSnapshot(
+        durationValue: number,
+        durationUnit: "HOURS" | "DAYS",
+        createdAt: Date,
+    ): Date {
+        const hours = durationUnit === "DAYS" ? durationValue * 24 : durationValue;
+        return new Date(createdAt.getTime() + hours * 60 * 60 * 1000);
+    }
+
+    static computeSlaDeadline(policy: PqrsdfRiskPolicy, createdAt: Date): Date {
+        return PqrsdfService.computeSlaDeadlineFromSnapshot(
+            policy.slaDurationValue,
+            policy.slaDurationUnit,
+            createdAt,
+        );
+    }
+
+    static computeSlaOverdue(slaDeadlineAt: Date, referenceDate: Date): boolean {
+        return referenceDate > slaDeadlineAt;
+    }
+
+    static computeSlaOverdueSeconds(slaDeadlineAt: Date, referenceDate: Date): number {
+        return Math.max(0, Math.floor((referenceDate.getTime() - slaDeadlineAt.getTime()) / 1000));
+    }
 
     private getRepository() {
         return this.ds.getRepository(Pqrsdf);
@@ -58,6 +84,7 @@ export class PqrsdfService {
             .leftJoinAndSelect("pqrsdf.generationAreaRelation", "generationArea")
             .leftJoinAndSelect("pqrsdf.resolutionAreaRelation", "resolutionArea")
             .leftJoinAndSelect("pqrsdf.userRelation", "user")
+            .leftJoinAndSelect("pqrsdf.riskRelation", "risk")
             .where("pqrsdf.id = :id", { id });
     }
 
@@ -71,11 +98,47 @@ export class PqrsdfService {
             .leftJoinAndSelect("pqrsdf.generationAreaRelation", "generationArea")
             .leftJoinAndSelect("pqrsdf.resolutionAreaRelation", "resolutionArea")
             .leftJoinAndSelect("pqrsdf.userRelation", "user")
+            .leftJoinAndSelect("pqrsdf.riskRelation", "risk")
             .orderBy("pqrsdf.createdAt", "DESC");
+    }
+
+    private async refreshOverdue(entity: Pqrsdf): Promise<void> {
+        if (!entity.slaDeadlineAt) return;
+
+        const isAlreadyOverdue = entity.slaOverdue;
+        const isClosed = entity.status === EstadoPqrs.CERRADO;
+
+        if (isClosed && isAlreadyOverdue) return;
+
+        const now = new Date();
+        const isNowOverdue = PqrsdfService.computeSlaOverdue(entity.slaDeadlineAt, now);
+
+        if (!isNowOverdue && !isAlreadyOverdue) return;
+
+        if (isNowOverdue) {
+            const seconds = PqrsdfService.computeSlaOverdueSeconds(entity.slaDeadlineAt, now);
+            if (!isAlreadyOverdue || seconds > (entity.slaOverdueSeconds ?? 0)) {
+                entity.slaOverdue = true;
+                entity.slaOverdueSeconds = seconds;
+                if (!isClosed) {
+                    await this.getRepository().save(entity);
+                }
+            }
+        }
     }
 
     async create(data: CreatePqrsdfInput, userId: number): Promise<Pqrsdf> {
         const repo = this.getRepository();
+        const riskCode = data.riskCode;
+
+        const policy = await this.ds.getRepository(PqrsdfRiskPolicy).findOneBy({ code: riskCode, active: true });
+
+        if (!policy) {
+            if (await this.ds.getRepository(PqrsdfRiskPolicy).findOneBy({ code: riskCode })) {
+                throw new Error(`La política de riesgo "${riskCode}" está inactiva`);
+            }
+            throw new Error(`Código de riesgo "${riskCode}" no es válido. Use uno de: VITAL, PRIORIZADO, SIMPLE, GENERAL`);
+        }
 
         const pqrsdf = repo.create({
             patientId: data.patientId,
@@ -99,16 +162,22 @@ export class PqrsdfService {
             notificationMedium: data.notificationMedium,
             affectedAttribute: data.affectedAttribute,
             improvementAction: data.improvementAction,
-            // status: EstadoPqrs.ABIERTO,
+            riskId: policy.id,
+            slaDurationValue: policy.slaDurationValue,
+            slaDurationUnit: policy.slaDurationUnit,
+            slaBusinessDays: policy.businessDays,
             createdBy: userId,
         } as Pqrsdf);
 
-        await repo.save(pqrsdf);
-        const saved = await this.buildFindOneQuery(pqrsdf.id).getOne();
-        if (!saved) {
+        const saved = await repo.save(pqrsdf);
+        saved.slaDeadlineAt = PqrsdfService.computeSlaDeadline(policy, saved.createdAt);
+        await repo.save(saved);
+
+        const result = await this.buildFindOneQuery(saved.id).getOne();
+        if (!result) {
             throw new Error("PQRSDF no encontrada después de crearla");
         }
-        return saved;
+        return result;
     }
 
     async findAll(filters?: PqrsdfFilters): Promise<Pqrsdf[]> {
@@ -151,7 +220,11 @@ export class PqrsdfService {
     }
 
     async findOne(id: number): Promise<Pqrsdf | null> {
-        return this.buildFindOneQuery(id).getOne();
+        const entity = await this.buildFindOneQuery(id).getOne();
+        if (entity) {
+            await this.refreshOverdue(entity);
+        }
+        return entity;
     }
 
     async update(id: number, data: UpdatePqrsdfInput): Promise<Pqrsdf> {
@@ -182,7 +255,23 @@ export class PqrsdfService {
         existing.notificationMedium = data.notificationMedium as MedioNotificacion;
         existing.affectedAttribute = data.affectedAttribute as AtributoAfectado;
         existing.improvementAction = data.improvementAction;
-        existing.status = data.status as EstadoPqrs;
+        
+        const newStatus = data.status as EstadoPqrs;
+        const wasAlreadyClosed = existing.status === EstadoPqrs.CERRADO;
+
+        existing.status = newStatus;
+
+        if (newStatus === EstadoPqrs.CERRADO && !wasAlreadyClosed) {
+            existing.slaClosedAt = new Date();
+            if (existing.slaDeadlineAt) {
+                const now = new Date();
+                const isOverdue = PqrsdfService.computeSlaOverdue(existing.slaDeadlineAt, now);
+                existing.slaOverdue = isOverdue;
+                if (isOverdue) {
+                    existing.slaOverdueSeconds = PqrsdfService.computeSlaOverdueSeconds(existing.slaDeadlineAt, now);
+                }
+            }
+        }
 
         await repo.save(existing);
 
@@ -190,6 +279,8 @@ export class PqrsdfService {
         if (!updated) {
             throw new Error("PQRSDF no encontrada después de actualizarla");
         }
+
+        await this.refreshOverdue(updated);
         return updated;
     }
 
@@ -207,8 +298,8 @@ export class PqrsdfService {
             patientId: p.patientId,
             patientName: p.patientRelation?.name,
             patientDocument: p.patientRelation?.documentNumber,
-            patientPhone: p.patientRelation.phoneNumber,
-            patientEmail: p.patientRelation.email,
+            patientPhone: p.patientRelation?.phoneNumber,
+            patientEmail: p.patientRelation?.email,
             populationType: p.populationTypeRelation?.name,
             patientAgreement: p.patientRelation?.convenioRelation?.name,
             presentedBy: p.presentedBy,
@@ -227,7 +318,16 @@ export class PqrsdfService {
             notificationMedium: p.notificationMedium,
             affectedAttribute: p.affectedAttribute,
             improvementAction: p.improvementAction,
+            riskCode: p.riskRelation?.code,
+            riskName: p.riskRelation?.name,
             status: p.status,
+            slaDurationValue: p.slaDurationValue,
+            slaDurationUnit: p.slaDurationUnit,
+            slaBusinessDays: p.slaBusinessDays,
+            slaDeadlineAt: p.slaDeadlineAt,
+            slaClosedAt: p.slaClosedAt,
+            slaOverdue: p.slaOverdue,
+            slaOverdueSeconds: p.slaOverdueSeconds,
             pqrsDate: p.pqrsDate,
             createdBy: p.userRelation?.name,
             createdAt: p.createdAt,
@@ -240,8 +340,8 @@ export class PqrsdfService {
             filingNumber: pqrsdfArray.filingNumber,
             patientName: pqrsdfArray.patientRelation?.name,
             patientDocument: pqrsdfArray.patientRelation?.documentNumber,
-            patientPhone: pqrsdfArray.patientRelation.phoneNumber,
-            patientEmail: pqrsdfArray.patientRelation.email,
+            patientPhone: pqrsdfArray.patientRelation?.phoneNumber,
+            patientEmail: pqrsdfArray.patientRelation?.email,
             populationTypeId: pqrsdfArray.populationTypeId,
             populationType: pqrsdfArray.populationTypeRelation?.name,
             patientAgreement: pqrsdfArray.patientRelation?.convenioRelation?.name,
@@ -266,7 +366,16 @@ export class PqrsdfService {
             notificationMedium: pqrsdfArray.notificationMedium,
             affectedAttribute: pqrsdfArray.affectedAttribute,
             improvementAction: pqrsdfArray.improvementAction,
+            riskCode: pqrsdfArray.riskRelation?.code,
+            riskName: pqrsdfArray.riskRelation?.name,
             status: pqrsdfArray.status,
+            slaDurationValue: pqrsdfArray.slaDurationValue,
+            slaDurationUnit: pqrsdfArray.slaDurationUnit,
+            slaBusinessDays: pqrsdfArray.slaBusinessDays,
+            slaDeadlineAt: pqrsdfArray.slaDeadlineAt,
+            slaClosedAt: pqrsdfArray.slaClosedAt,
+            slaOverdue: pqrsdfArray.slaOverdue,
+            slaOverdueSeconds: pqrsdfArray.slaOverdueSeconds,
             pqrsDate: pqrsdfArray.pqrsDate,
             createdBy: pqrsdfArray.userRelation?.name,
             createdAt: pqrsdfArray.createdAt,

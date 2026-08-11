@@ -24,7 +24,8 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             description,
             pqrsDate,
             receivedDate,
-            filingNumber
+            filingNumber,
+             riskCode,
         } = req.body;
 
         const pqrsdf = new Pqrsdf();
@@ -44,8 +45,9 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.pqrsDate = new Date(pqrsDate);
         pqrsdf.receivedDate = new Date(receivedDate);
         pqrsdf.createdBy = userId;
-        pqrsdf.status = EstadoPqrs.ABIERTO
+        pqrsdf.status = EstadoPqrs.ABIERTO;
         pqrsdf.filingNumber = Number(filingNumber)
+        pqrsdf.riskId = 1;
 
         const errors = await validate(pqrsdf);
 
@@ -79,7 +81,8 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             notificationMedium: pqrsdf.notificationMedium,
             affectedAttribute: pqrsdf.affectedAttribute,
             improvementAction: pqrsdf.improvementAction,
-            filingNumber: pqrsdf.filingNumber
+            filingNumber: pqrsdf.filingNumber,
+            riskCode,
         }, userId);
 
         return res.status(201).json(created);
@@ -178,15 +181,16 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.description = description
         pqrsdf.pqrsDate = pqrsDate
         pqrsdf.receivedDate = receivedDate
-        pqrsdf.resolutionAreaId = parseInt  (resolutionAreaId)
+        pqrsdf.resolutionAreaId = resolutionAreaId != null ? parseInt(String(resolutionAreaId)) : undefined;
         pqrsdf.responseDate = responseDate
         pqrsdf.responseSummary = responseSummary
         pqrsdf.notificationMedium = notificationMedium
         pqrsdf.affectedAttribute = affectedAttribute
-        pqrsdf.improvementAction = improvementAction === 1 ? true : false;
+        pqrsdf.improvementAction = Boolean(improvementAction);
         pqrsdf.createdBy = existing.createdBy;
         pqrsdf.filingNumber = existing.filingNumber;
         pqrsdf.status = status;
+        pqrsdf.riskId = existing.riskId;
 
         const errors = await validate(pqrsdf);
 
@@ -222,7 +226,8 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             affectedAttribute: pqrsdf.affectedAttribute,
             improvementAction: pqrsdf.improvementAction,
             filingNumber: pqrsdf.filingNumber,
-            status: pqrsdf.status
+            status: pqrsdf.status,
+            // risk is immutable after create. The existing risk_id is preserved.
         });
 
         return res.json(updated);

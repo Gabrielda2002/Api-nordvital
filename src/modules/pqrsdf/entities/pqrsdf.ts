@@ -5,6 +5,7 @@ import { Usuarios } from "../../auth/entities/usuarios";
 import { AreaPqrs } from "../../catalog/entities/area-pqrs";
 import { TipoPoblacionPqrs } from "../../catalog/entities/tipo-poblacion-pqrs";
 import { MotivoGeneralPqrs } from "../../catalog/entities/motivo-general-pqrs";
+import { PqrsdfRiskPolicy } from "../../catalog/entities/pqrsdf-risk-policy";
 
 export enum PresentadoPor {
     USUARIO_AFECTADO = "USUARIO_AFECTADO",
@@ -164,9 +165,35 @@ export class Pqrsdf extends BaseEntity {
     @IsBoolean({ message: "La acción de mejora debe ser un valor booleano" })
     improvementAction?: boolean;
 
+    @Column({ name: "risk_id", type: "int", comment: "FK a pqrsdf_risk_policies — política de riesgo con SLA", default: 1 })
+    @IsInt()
+    @IsNotEmpty({ message: "El riesgo no puede estar vacío" })
+    riskId: number;
+
     @Column({ name: "status", type: "enum", enum: EstadoPqrs, default: EstadoPqrs.ABIERTO, comment: "ESTADO" })
     @IsEnum(EstadoPqrs, { message: "El estado de la PQRSDF no es válido" })
     status: EstadoPqrs;
+
+    @Column({ name: "sla_duration_value", type: "int", nullable: true, comment: "Snapshot del valor de duración SLA aplicado al crear la PQRSDF" })
+    slaDurationValue: number | null;
+
+    @Column({ name: "sla_duration_unit", type: "enum", enum: ["HOURS", "DAYS"], nullable: true, comment: "Snapshot de la unidad de duración SLA aplicada" })
+    slaDurationUnit: "HOURS" | "DAYS" | null;
+
+    @Column({ name: "sla_business_days", type: "tinyint", width: 1, nullable: true, comment: "Snapshot del flag business_days de la política al crear la PQRSDF" })
+    slaBusinessDays: boolean | null;
+
+    @Column({ name: "sla_deadline_at", type: "datetime", nullable: true, comment: "Fecha y hora límite calculada para cumplir el SLA según el riesgo" })
+    slaDeadlineAt: Date | null;
+
+    @Column({ name: "sla_closed_at", type: "datetime", nullable: true, comment: "Fecha y hora en que se cerró la PQRSDF respecto al SLA" })
+    slaClosedAt: Date | null;
+
+    @Column({ name: "sla_overdue", type: "boolean", default: false, comment: "Indica si la PQRSDF está vencida (true) o a tiempo (false). Se actualiza en lecturas y escrituras." })
+    slaOverdue: boolean;
+
+    @Column({ name: "sla_overdue_seconds", type: "int", nullable: true, comment: "Segundos transcurridos desde que venció el SLA. NULL si no ha vencido. Se preserva al cerrar." })
+    slaOverdueSeconds: number | null;
 
     @Column({ name: "created_by", type: "int", comment: "Usuario que registra la PQRSDF" })
     @IsInt()
@@ -178,8 +205,6 @@ export class Pqrsdf extends BaseEntity {
 
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date;
-
-    // * relaciones
 
     // ? relacion con paciente
     @ManyToOne(() => Pacientes)
@@ -215,4 +240,9 @@ export class Pqrsdf extends BaseEntity {
     @ManyToOne(() => Usuarios)
     @JoinColumn({ name: "created_by" })
     userRelation: Usuarios;
+
+    // ? relacion con politica de riesgo (catalogo)
+    @ManyToOne(() => PqrsdfRiskPolicy)
+    @JoinColumn({ name: "risk_id" })
+    riskRelation: PqrsdfRiskPolicy;
 }
