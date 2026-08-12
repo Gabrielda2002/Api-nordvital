@@ -81,6 +81,34 @@ router.get("/pqrsdf", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE
  *     responses:
  *       200:
  *         description: PQRSDF encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 improvementActionDetails:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Detalle de la acción de mejora
+ *                 statusHistory:
+ *                   type: array
+ *                   description: Historial cronológico de estados (solo en el detalle)
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       status:
+ *                         type: string
+ *                         enum: [ABIERTO, EN_GESTION, CERRADO]
+ *                       note:
+ *                         type: string
+ *                         nullable: true
+ *                       actor:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Nombre del usuario que realizó la transición
+ *                       timestamp:
+ *                         type: string
+ *                         format: date-time
  *       404:
  *         description: PQRSDF no encontrada
  */
@@ -99,7 +127,19 @@ router.get("/pqrsdf/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, 
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Pqrsdf'
+ *             allOf:
+ *               - $ref: '#/components/schemas/Pqrsdf'
+ *               - type: object
+ *                 properties:
+ *                   note:
+ *                     type: string
+ *                     description: Nota opcional de la creación (se registra en el historial de estados)
+ *                   improvementAction:
+ *                     type: boolean
+ *                     description: Acción de mejora
+ *                   improvementActionDetails:
+ *                     type: string
+ *                     description: Detalle de la acción de mejora (obligatorio cuando improvementAction=true)
  *     responses:
  *       201:
  *         description: PQRSDF creada
@@ -127,10 +167,21 @@ router.post("/pqrsdf", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROL
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Pqrsdf'
+ *             allOf:
+ *               - $ref: '#/components/schemas/Pqrsdf'
+ *               - type: object
+ *                 properties:
+ *                   note:
+ *                     type: string
+ *                     description: Nota obligatoria cuando cambia el estado (se registra en el historial)
+ *                   improvementActionDetails:
+ *                     type: string
+ *                     description: Detalle de la acción de mejora (obligatorio cuando improvementAction=true)
  *     responses:
  *       200:
  *         description: PQRSDF actualizada
+ *       400:
+ *         description: Error de validación
  *       404:
  *         description: PQRSDF no encontrada
  */

@@ -58,6 +58,7 @@ import { InfrastructureAttachment } from "../../infrastructure-tickets/entities/
 import { SstTicket } from "../../sst-tickets/entities/sst-ticket";
 import { SstComment } from "../../sst-tickets/entities/sst-comment";
 import { SstAttachment } from "../../sst-tickets/entities/sst-attachment";
+import { PqrsdfStatusHistory } from "../../pqrsdf/entities/pqrsdf-status-history";
 
 @Entity({ name: "users" })
 export class Usuarios extends BaseEntity {
@@ -291,4 +292,8 @@ export class Usuarios extends BaseEntity {
 
   @OneToMany(() => SstAttachment, (attachment) => attachment.uploaderRelation)
   sstAttachmentsRelation: SstAttachment[];
+
+  // * Relación con el historial de estados PQRSDF (actor de cada transición)
+  @OneToMany(() => PqrsdfStatusHistory, (history) => history.actorRelation)
+  pqrsdfStatusHistoryRelation: PqrsdfStatusHistory[];
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --require ts-node/register --require tsconfig-paths/register --test src/modules/pqrsdf/services/pqrsdf-sla.test.ts",
+    "test": "node --require ts-node/register --require tsconfig-paths/register --test src/modules/pqrsdf/services/pqrsdf-sla.test.ts src/modules/pqrsdf/services/pqrsdf-status-history.test.ts",
     "dev": "set NODE_OPTIONS=--max-old-space-size=4096 && ts-node-dev --respawn --files --require tsconfig-paths/register --ignore-watch node_modules src/index.ts",
     "dev:fast": "set NODE_OPTIONS=--max-old-space-size=4096 && ts-node-dev --respawn --transpile-only --require tsconfig-paths/register --ignore-watch node_modules src/index.ts",
     "build": "rimraf dist/core dist/migrations dist/modules dist/routes dist/templates dist/app.js dist/index.js dist/swagger-options.js .tsbuildinfo && tsc && tsc-alias && copyfiles -u 1 src/templates/**/* dist/",

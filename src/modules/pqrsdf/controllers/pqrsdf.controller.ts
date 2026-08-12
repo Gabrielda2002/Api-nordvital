@@ -25,6 +25,9 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             pqrsDate,
             receivedDate,
             filingNumber,
+            responseSummary,
+            improvementAction,
+            improvementActionDetails,
              riskCode,
         } = req.body;
 
@@ -48,6 +51,8 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.status = EstadoPqrs.ABIERTO;
         pqrsdf.filingNumber = Number(filingNumber)
         pqrsdf.riskId = 1;
+        pqrsdf.improvementAction = improvementAction;
+        pqrsdf.improvementActionDetails = improvementActionDetails;
 
         const errors = await validate(pqrsdf);
 
@@ -77,10 +82,11 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             receivedDate: pqrsdf.receivedDate,
             resolutionAreaId: pqrsdf.resolutionAreaId,
             responseDate: pqrsdf.responseDate,
-            responseSummary: pqrsdf.responseSummary,
             notificationMedium: pqrsdf.notificationMedium,
             affectedAttribute: pqrsdf.affectedAttribute,
             improvementAction: pqrsdf.improvementAction,
+            improvementActionDetails: pqrsdf.improvementActionDetails,
+            responseSummary,
             filingNumber: pqrsdf.filingNumber,
             riskCode,
         }, userId);
@@ -135,6 +141,7 @@ export async function getPqrsdf(req: Request, res: Response, next: NextFunction)
 export async function updatePqrsdf(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
+        const userId = req.user?.id;
         const {
             patientId,
             populationTypeId,
@@ -152,10 +159,11 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             receivedDate,
             resolutionAreaId,
             responseDate,
-            responseSummary,
             notificationMedium,
             affectedAttribute,
             improvementAction,
+            improvementActionDetails,
+            responseSummary,
             status,
         } = req.body;
 
@@ -183,10 +191,10 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.receivedDate = receivedDate
         pqrsdf.resolutionAreaId = resolutionAreaId != null ? parseInt(String(resolutionAreaId)) : undefined;
         pqrsdf.responseDate = responseDate
-        pqrsdf.responseSummary = responseSummary
         pqrsdf.notificationMedium = notificationMedium
         pqrsdf.affectedAttribute = affectedAttribute
         pqrsdf.improvementAction = Boolean(improvementAction);
+        pqrsdf.improvementActionDetails = improvementActionDetails;
         pqrsdf.createdBy = existing.createdBy;
         pqrsdf.filingNumber = existing.filingNumber;
         pqrsdf.status = status;
@@ -203,7 +211,6 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             return res.status(400).json({ message: "Error de validación", messages });
         }
 
-
         const updated = await service.update(parseInt(String(id)), {
             patientId: pqrsdf.patientId,
             populationTypeId: pqrsdf.populationTypeId,
@@ -219,16 +226,17 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             description: pqrsdf.description,
             pqrsDate: pqrsdf.pqrsDate,
             receivedDate: pqrsdf.receivedDate,
-            resolutionAreaId: pqrsdf.resolutionAreaId,
+            resolutionAreaId: pqrsdf.resolutionAreaId ? pqrsdf.resolutionAreaId : undefined,
             responseDate: pqrsdf.responseDate,
-            responseSummary: pqrsdf.responseSummary,
-            notificationMedium: pqrsdf.notificationMedium,
-            affectedAttribute: pqrsdf.affectedAttribute,
+            notificationMedium: pqrsdf.notificationMedium ? pqrsdf.notificationMedium : undefined,
+            affectedAttribute: pqrsdf.affectedAttribute ? pqrsdf.affectedAttribute : undefined,
             improvementAction: pqrsdf.improvementAction,
+            improvementActionDetails: pqrsdf.improvementActionDetails,
+            responseSummary,
             filingNumber: pqrsdf.filingNumber,
             status: pqrsdf.status,
             // risk is immutable after create. The existing risk_id is preserved.
-        });
+        }, userId);
 
         return res.json(updated);
     } catch (error) {

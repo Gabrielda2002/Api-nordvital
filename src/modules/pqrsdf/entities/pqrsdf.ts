@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, ValidateIf } from "class-validator";
 import { Pacientes } from "../../patients/entities/pacientes";
 import { Usuarios } from "../../auth/entities/usuarios";
@@ -6,6 +6,7 @@ import { AreaPqrs } from "../../catalog/entities/area-pqrs";
 import { TipoPoblacionPqrs } from "../../catalog/entities/tipo-poblacion-pqrs";
 import { MotivoGeneralPqrs } from "../../catalog/entities/motivo-general-pqrs";
 import { PqrsdfRiskPolicy } from "../../catalog/entities/pqrsdf-risk-policy";
+import { PqrsdfStatusHistory } from "./pqrsdf-status-history";
 
 export enum PresentadoPor {
     USUARIO_AFECTADO = "USUARIO_AFECTADO",
@@ -145,17 +146,14 @@ export class Pqrsdf extends BaseEntity {
     @IsOptional()
     responseDate?: Date;
 
-    @Column({ name: "response_summary", nullable: true, type: "text", comment: "RESUMEN DE LA RESPUESTA" })
-    @IsOptional()
-    @IsString()
-    responseSummary?: string;
-
     @Column({ name: "notification_medium", nullable: true, type: "enum", enum: MedioNotificacion, comment: "MEDIO DE NOTIFICACION DE RESPUESTA" })
+    @ValidateIf((o) => o.status === EstadoPqrs.CERRADO)
     @IsOptional()
     @IsEnum(MedioNotificacion, { message: "El medio de notificación no es válido" })
     notificationMedium?: MedioNotificacion;
 
     @Column({ name: "affected_attribute", nullable: true, type: "enum", enum: AtributoAfectado, comment: "ATRIBUTO AFECTADO" })
+    @ValidateIf((o) => o.status === EstadoPqrs.CERRADO)
     @IsOptional()
     @IsEnum(AtributoAfectado, { message: "El atributo afectado no es válido" })
     affectedAttribute?: AtributoAfectado;
@@ -164,6 +162,11 @@ export class Pqrsdf extends BaseEntity {
     @IsOptional()
     @IsBoolean({ message: "La acción de mejora debe ser un valor booleano" })
     improvementAction?: boolean;
+
+    @Column({ name: "improvement_action_details", nullable: true, type: "text", comment: "DETALLE DE LA ACCION DE MEJORA (obligatorio cuando improvement_action=1)" })
+    @ValidateIf((o) => o.improvementAction === true)
+    @IsString()
+    improvementActionDetails?: string;
 
     @Column({ name: "risk_id", type: "int", comment: "FK a pqrsdf_risk_policies — política de riesgo con SLA", default: 1 })
     @IsInt()
@@ -245,4 +248,8 @@ export class Pqrsdf extends BaseEntity {
     @ManyToOne(() => PqrsdfRiskPolicy)
     @JoinColumn({ name: "risk_id" })
     riskRelation: PqrsdfRiskPolicy;
+
+    // ? relacion con el historial de estados (append-only)
+    @OneToMany(() => PqrsdfStatusHistory, (history) => history.pqrsdfRelation)
+    statusHistoryRelation: PqrsdfStatusHistory[];
 }
