@@ -7,6 +7,7 @@ import { TipoPoblacionPqrs } from "../../catalog/entities/tipo-poblacion-pqrs";
 import { MotivoGeneralPqrs } from "../../catalog/entities/motivo-general-pqrs";
 import { PqrsdfRiskPolicy } from "../../catalog/entities/pqrsdf-risk-policy";
 import { PqrsdfStatusHistory } from "./pqrsdf-status-history";
+import { PqrsdfComment } from "./pqrsdf-comment";
 
 export enum PresentadoPor {
     USUARIO_AFECTADO = "USUARIO_AFECTADO",
@@ -252,4 +253,8 @@ export class Pqrsdf extends BaseEntity {
     // ? relacion con el historial de estados (append-only)
     @OneToMany(() => PqrsdfStatusHistory, (history) => history.pqrsdfRelation)
     statusHistoryRelation: PqrsdfStatusHistory[];
+
+    // ? relacion con los comentarios de la PQRSDF (append-only)
+    @OneToMany(() => PqrsdfComment, (comment) => comment.pqrsdfRelation)
+    commentsRelation: PqrsdfComment[];
 }
