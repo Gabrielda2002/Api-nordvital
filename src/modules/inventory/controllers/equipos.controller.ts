@@ -203,7 +203,7 @@ export async function updateEquipment(
       deliveryDate,
       inventoryNumber,
       dhcp,
-      managerId,
+      manager,
       lock,
       codeLock,
       sedeId
@@ -242,7 +242,7 @@ export async function updateEquipment(
     equipment.warranty = warranty == "true";
     equipment.deliveryDate = deliveryDate;
     equipment.dhcp = dhcp == "true";
-    equipment.idUsuario = managerId || null;
+    equipment.idUsuario = manager || null;
     equipment.lock = lock == "true";
     equipment.lockKey = codeLock || null;
     equipment.inventoryNumber = inventoryNumber;
