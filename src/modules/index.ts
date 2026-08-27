@@ -109,6 +109,7 @@ import {
 import { researchCenterRoutes } from "./research-center";
 import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
 import pqrsdfRoutes from "./pqrsdf/routes/pqrsdf.routes";
+import pqrsdfReportRoutes from "./pqrsdf/routes/report-pqrsdf.routes";
 import {
     areaPqrsRoutes,
     tipoPoblacionPqrsRoutes,
@@ -254,6 +255,7 @@ router.use(researchCenterRoutes);
 router.use(encuestaSatisfaccionRoutes);
 
 // PQRSDF module
+router.use(pqrsdfReportRoutes);
 router.use(pqrsdfRoutes);
 
 // Catalog - Poblaciones especiales
