@@ -69,7 +69,7 @@ const router = Router();
  *       200:
  *         description: Lista de PQRSDF
  */
-router.get("/pqrsdf", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), getAllPqrsdf);
+router.get("/pqrsdf", authenticate, authorizeRoles(ROLE_GROUPS.PQRSDF_COLLABORATORS), getAllPqrsdf);
 
 /**
  * @swagger
@@ -120,7 +120,7 @@ router.get("/pqrsdf", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE
  *       404:
  *         description: PQRSDF no encontrada
  */
-router.get("/pqrsdf/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.SIAU, ROLE_IDS.CALIDAD]), validarId, getPqrsdf);
+router.get("/pqrsdf/:id", authenticate, authorizeRoles(ROLE_GROUPS.PQRSDF_COLLABORATORS), validarId, getPqrsdf);
 
 /**
  * @swagger
