@@ -42,7 +42,7 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.receptionMedium = receptionMedium;
         pqrsdf.originAreaId = parseInt(String(originAreaId));
         pqrsdf.generalReasonId = parseInt(String(generalReasonId));
-        pqrsdf.specificReasonId = specificReasonId != null ? parseInt(String(specificReasonId)) : undefined;
+        pqrsdf.specificReasonId = parseInt(String(specificReasonId));
         pqrsdf.generationAreaId = parseInt(String(generationAreaId));
         pqrsdf.description = description;
         pqrsdf.pqrsDate = new Date(pqrsDate);
