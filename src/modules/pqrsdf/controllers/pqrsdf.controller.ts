@@ -19,7 +19,7 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             receptionMedium,
             originAreaId,
             generalReasonId,
-            specificReason,
+            specificReasonId,
             generationAreaId,
             description,    
             pqrsDate,
@@ -42,7 +42,7 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.receptionMedium = receptionMedium;
         pqrsdf.originAreaId = parseInt(String(originAreaId));
         pqrsdf.generalReasonId = parseInt(String(generalReasonId));
-        pqrsdf.specificReason = specificReason;
+        pqrsdf.specificReasonId = specificReasonId != null ? parseInt(String(specificReasonId)) : undefined;
         pqrsdf.generationAreaId = parseInt(String(generationAreaId));
         pqrsdf.description = description;
         pqrsdf.pqrsDate = new Date(pqrsDate);
@@ -75,7 +75,7 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
             receptionMedium: pqrsdf.receptionMedium,
             originAreaId: pqrsdf.originAreaId,
             generalReasonId: pqrsdf.generalReasonId,
-            specificReason: pqrsdf.specificReason,
+            specificReasonId: pqrsdf.specificReasonId,
             generationAreaId: pqrsdf.generationAreaId,
             description: pqrsdf.description,
             pqrsDate: pqrsdf.pqrsDate,
@@ -152,7 +152,7 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             receptionMedium,
             originAreaId,
             generalReasonId,
-            specificReason,
+            specificReasonId,
             generationAreaId,
             description,
             pqrsDate,
@@ -184,7 +184,7 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.receptionMedium = receptionMedium
         pqrsdf.originAreaId = originAreaId
         pqrsdf.generalReasonId = generalReasonId
-        pqrsdf.specificReason = specificReason
+        pqrsdf.specificReasonId = specificReasonId != null ? parseInt(String(specificReasonId)) : undefined
         pqrsdf.generationAreaId = generationAreaId
         pqrsdf.description = description
         pqrsdf.pqrsDate = pqrsDate
@@ -221,7 +221,7 @@ export async function updatePqrsdf(req: Request, res: Response, next: NextFuncti
             receptionMedium: pqrsdf.receptionMedium,
             originAreaId: pqrsdf.originAreaId,
             generalReasonId: pqrsdf.generalReasonId,
-            specificReason: pqrsdf.specificReason,
+            specificReasonId: pqrsdf.specificReasonId,
             generationAreaId: pqrsdf.generationAreaId,
             description: pqrsdf.description,
             pqrsDate: pqrsdf.pqrsDate,

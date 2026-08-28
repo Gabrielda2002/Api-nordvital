@@ -6,6 +6,7 @@ import { AreaPqrs } from "../../catalog/entities/area-pqrs";
 import { TipoPoblacionPqrs } from "../../catalog/entities/tipo-poblacion-pqrs";
 import { MotivoGeneralPqrs } from "../../catalog/entities/motivo-general-pqrs";
 import { PqrsdfRiskPolicy } from "../../catalog/entities/pqrsdf-risk-policy";
+import { ServiciosSolicitados } from "../../catalog/entities/servicios-solicitados";
 import { PqrsdfStatusHistory } from "./pqrsdf-status-history";
 import { PqrsdfComment } from "./pqrsdf-comment";
 
@@ -114,11 +115,10 @@ export class Pqrsdf extends BaseEntity {
     @IsNotEmpty({ message: "El motivo general no puede estar vacío" })
     generalReasonId: number;
 
-    @Column({ name: "specific_reason", nullable: true, type: "varchar", length: 250, comment: "MOTIVO ESPECIFICO" })
+    @Column({ name: "specific_reason_id", nullable: true, type: "int", comment: "MOTIVO ESPECIFICO (FK a requested_services)" })
     @IsOptional()
-    @IsString()
-    @Length(1, 250, { message: "El motivo específico debe tener entre $constraint1 y $constraint2 caracteres" })
-    specificReason?: string;
+    @IsInt()
+    specificReasonId?: number;
 
     @Column({ name: "generation_area_id", type: "int", comment: "AREA DONDE SE GENERA PQRDSF" })
     @IsInt()
@@ -229,6 +229,11 @@ export class Pqrsdf extends BaseEntity {
     @ManyToOne(() => MotivoGeneralPqrs)
     @JoinColumn({ name: "general_reason_id" })
     generalReasonRelation: MotivoGeneralPqrs;
+
+    // ? relacion con el servicio solicitado (motivo especifico)
+    @ManyToOne(() => ServiciosSolicitados)
+    @JoinColumn({ name: "specific_reason_id" })
+    specificReasonRelation: ServiciosSolicitados;
 
     // ? relacion con area de generacion
     @ManyToOne(() => AreaPqrs)

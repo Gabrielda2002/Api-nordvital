@@ -14,7 +14,7 @@ export type CreatePqrsdfInput = {
     receptionMedium: string;
     originAreaId: number;
     generalReasonId: number;
-    specificReason?: string;
+    specificReasonId?: number;
     generationAreaId: number;
     description: string;
     pqrsDate: Date;
@@ -89,10 +89,12 @@ export class PqrsdfService {
         return this.getRepository()
             .createQueryBuilder("pqrsdf")
             .leftJoinAndSelect("pqrsdf.patientRelation", "patient")
+            .leftJoinAndSelect("patient.documentRelation", "document")
             .leftJoinAndSelect("patient.convenioRelation", "agreement")
             .leftJoinAndSelect("pqrsdf.populationTypeRelation", "populationType")
             .leftJoinAndSelect("pqrsdf.originAreaRelation", "originArea")
             .leftJoinAndSelect("pqrsdf.generalReasonRelation", "generalReason")
+            .leftJoinAndSelect("pqrsdf.specificReasonRelation", "specificReason")
             .leftJoinAndSelect("pqrsdf.generationAreaRelation", "generationArea")
             .leftJoinAndSelect("pqrsdf.resolutionAreaRelation", "resolutionArea")
             .leftJoinAndSelect("pqrsdf.userRelation", "user")
@@ -104,9 +106,12 @@ export class PqrsdfService {
         return this.getRepository()
             .createQueryBuilder("pqrsdf")
             .leftJoinAndSelect("pqrsdf.patientRelation", "patient")
+            .leftJoinAndSelect("patient.documentRelation", "type_document")
+            .leftJoinAndSelect("patient.convenioRelation", "agreement")
             .leftJoinAndSelect("pqrsdf.populationTypeRelation", "populationType")
             .leftJoinAndSelect("pqrsdf.originAreaRelation", "originArea")
             .leftJoinAndSelect("pqrsdf.generalReasonRelation", "generalReason")
+            .leftJoinAndSelect("pqrsdf.specificReasonRelation", "specificReason")
             .leftJoinAndSelect("pqrsdf.generationAreaRelation", "generationArea")
             .leftJoinAndSelect("pqrsdf.resolutionAreaRelation", "resolutionArea")
             .leftJoinAndSelect("pqrsdf.userRelation", "user")
@@ -165,7 +170,7 @@ export class PqrsdfService {
                 filingNumber: data.filingNumber,
                 originAreaId: data.originAreaId,
                 generalReasonId: data.generalReasonId,
-                specificReason: data.specificReason,
+                specificReasonId: data.specificReasonId,
                 generationAreaId: data.generationAreaId,
                 description: data.description,
                 pqrsDate: data.pqrsDate,
@@ -278,7 +283,7 @@ export class PqrsdfService {
             existing.receptionMedium = data.receptionMedium as MedioRecepcion;
             existing.originAreaId = data.originAreaId;
             existing.generalReasonId = data.generalReasonId;
-            existing.specificReason = data.specificReason;
+            existing.specificReasonId = data.specificReasonId;
             existing.generationAreaId = data.generationAreaId;
             existing.description = data.description;
             existing.pqrsDate = new Date(data.pqrsDate);
@@ -315,7 +320,6 @@ export class PqrsdfService {
 
             await repo.save(existing);
 
-            if (statusChanged) {
                 const historyRepo = manager.getRepository(PqrsdfStatusHistory);
                 await historyRepo.save(
                     historyRepo.create({
@@ -325,7 +329,6 @@ export class PqrsdfService {
                         actorId: userId,
                     } as PqrsdfStatusHistory),
                 );
-            }
         });
 
         const updated = await this.buildFindOneQuery(id).getOne();
@@ -353,15 +356,17 @@ export class PqrsdfService {
                 patientDocument: p.patientRelation?.documentNumber,
                 patientPhone: p.patientRelation?.phoneNumber,
                 patientEmail: p.patientRelation?.email,
-                populationType: p.populationTypeRelation?.name,
+                patientTypeDocument: p.patientRelation?.documentRelation?.name,
                 patientAgreement: p.patientRelation?.convenioRelation?.name,
+                populationType: p.populationTypeRelation?.name,
                 presentedBy: p.presentedBy,
                 presenterName: p.presenterName,
                 classification: p.classification,
                 instance: p.instance,
                 receptionMedium: p.receptionMedium,
                 generalReason: p.generalReasonRelation?.name,
-                specificReason: p.specificReason,
+                specificReasonId: p.specificReasonId,
+                specificReason: p.specificReasonRelation?.name,
                 originAreaName: p.originAreaRelation?.name,
                 description: p.description,
                 receivedDate: p.receivedDate,
@@ -395,6 +400,7 @@ export class PqrsdfService {
                 patientDocument: pqrsdfArray.patientRelation?.documentNumber,
                 patientPhone: pqrsdfArray.patientRelation?.phoneNumber,
                 patientEmail: pqrsdfArray.patientRelation?.email,
+                patientTypeDocument: pqrsdfArray.patientRelation?.documentRelation?.name,
                 populationTypeId: pqrsdfArray.populationTypeId,
                 populationType: pqrsdfArray.populationTypeRelation?.name,
                 patientAgreement: pqrsdfArray.patientRelation?.convenioRelation?.name,
@@ -405,7 +411,8 @@ export class PqrsdfService {
                 receptionMedium: pqrsdfArray.receptionMedium,
                 generalReasonId: pqrsdfArray.generalReasonId,
                 generalReason: pqrsdfArray.generalReasonRelation?.name,
-                specificReason: pqrsdfArray.specificReason,
+                specificReasonId: pqrsdfArray.specificReasonId,
+                specificReason: pqrsdfArray.specificReasonRelation?.name,
                 generationAreaId: pqrsdfArray.generationAreaId,
                 generationAreaName: pqrsdfArray.generationAreaRelation?.name,
                 originAreaId: pqrsdfArray.originAreaId,
