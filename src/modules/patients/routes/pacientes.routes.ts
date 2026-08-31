@@ -1,9 +1,10 @@
 ﻿import { Router } from "express";
-import { createPatient, deletePaciente, getAllPacientes, getPaciente, getPacientesByDocument, updatePaciente, updatePacienteTable } from "../controllers/pacientes.controller";
+import { confirmarCargaMasivaPacientes, createPatient, deletePaciente, getAllPacientes, getPaciente, getPacientesByDocument, updatePaciente, updatePacienteTable, validarCargaMasivaPacientes } from "../controllers/pacientes.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
+import { uploadCsv } from "@core/middlewares/upload-csv.middleware";
 
 const router = Router();
 
@@ -150,7 +151,7 @@ router.delete("/pacientes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTR
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.RADICACION_NURSING), getPacientesByDocument);
+router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.SEARCH_PATIENTS), getPacientesByDocument);
 
 /**
  * @swagger
@@ -179,5 +180,99 @@ router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.RAD
  *         description: Paciente no encontrado
  */
 router.put("/table/patient/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.AUXILIAR]), validarId, updatePacienteTable);
+
+/**
+ * @swagger
+ * /pacientes/carga-masiva/validar:
+ *   post:
+ *     summary: Valida un archivo CSV para carga masiva de pacientes
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo CSV con datos de pacientes
+ *     responses:
+ *       200:
+ *         description: Resultado de la validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 totalRows:
+ *                   type: integer
+ *                 validRows:
+ *                   type: integer
+ *                 invalidRows:
+ *                   type: integer
+ *                 duplicateRows:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 alreadyExistsRows:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Error en el archivo
+ */
+router.post("/pacientes/carga-masiva/validar", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadCsv, validarCargaMasivaPacientes);
+
+/**
+ * @swagger
+ * /pacientes/carga-masiva/confirmar:
+ *   post:
+ *     summary: Confirma la carga masiva de pacientes desde un archivo CSV
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo CSV con datos de pacientes previamente validado
+ *     responses:
+ *       200:
+ *         description: Carga confirmada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 inserted:
+ *                   type: integer
+ *       400:
+ *         description: Error al confirmar la carga
+ */
+router.post("/pacientes/carga-masiva/confirmar", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadCsv, confirmarCargaMasivaPacientes);
 
 export default router;

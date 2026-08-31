@@ -16,3 +16,8 @@ export { default as servicioRoutes } from "./routes/servicio.routes";
 export { default as servicioSolicitadoRoutes } from "./routes/servicio-solicitado.routes";
 export { default as profesionalesRoutes } from "./routes/profesionales.routes";
 export { default as relacionUsuarioRoutes } from "./routes/relacion-usuario.routes";
+export { default as poblacionEspecialRoutes } from "./routes/poblacion-especial.routes";
+export { default as servicioAtencionRoutes } from "./routes/servicio-atencion.routes";
+export { default as areaPqrsRoutes } from "./routes/area-pqrs.routes";
+export { default as tipoPoblacionPqrsRoutes } from "./routes/tipo-poblacion-pqrs.routes";
+export { default as motivoGeneralPqrsRoutes } from "./routes/motivo-general-pqrs.routes";

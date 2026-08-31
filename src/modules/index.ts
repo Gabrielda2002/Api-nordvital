@@ -57,6 +57,8 @@ import {
   servicioSolicitadoRoutes,
   profesionalesRoutes,
   relacionUsuarioRoutes,
+  poblacionEspecialRoutes,
+  servicioAtencionRoutes,
 } from "./catalog";
 import {
   radicacionRoutes,
@@ -105,6 +107,14 @@ import {
   estadoIvGeneralRoutes,
 } from "./inventory";
 import { researchCenterRoutes } from "./research-center";
+import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
+import pqrsdfRoutes from "./pqrsdf/routes/pqrsdf.routes";
+import pqrsdfReportRoutes from "./pqrsdf/routes/report-pqrsdf.routes";
+import {
+    areaPqrsRoutes,
+    tipoPoblacionPqrsRoutes,
+    motivoGeneralPqrsRoutes,
+} from "./catalog";
 
 const router = Router();
 
@@ -240,5 +250,23 @@ router.use(estadoIvGeneralRoutes);
 
 // Research Center module (Public routes - NO auth required)
 router.use(researchCenterRoutes);
+
+// Surveys module
+router.use(encuestaSatisfaccionRoutes);
+
+// PQRSDF module
+router.use(pqrsdfReportRoutes);
+router.use(pqrsdfRoutes);
+
+// Catalog - Poblaciones especiales
+router.use(poblacionEspecialRoutes);
+
+// Catalog - Servicios de atención
+router.use(servicioAtencionRoutes);
+
+// Catalog - PQRSDF
+router.use(areaPqrsRoutes);
+router.use(tipoPoblacionPqrsRoutes);
+router.use(motivoGeneralPqrsRoutes);
 
 export default router;

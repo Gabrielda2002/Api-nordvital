@@ -150,7 +150,7 @@ router.delete("/servicio-solicitado/:id",authenticate, authorizeRoles([ROLE_IDS.
  *       404:
  *         description: Servicio solicitado no encontrado
  */
-router.post("/servicio-solicitado-code",authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA]), getServiciosSolicitadosByCode);
+router.post("/servicio-solicitado-code",authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.AUDITOR, ROLE_IDS.RADICADOR, ROLE_IDS.CIRUGIA, ROLE_IDS.SIAU]), getServiciosSolicitadosByCode);
 
 /**
  * @swagger

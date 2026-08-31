@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
+import { PacientesCsvService } from "../services/pacientes-csv.service";
+import Logger from "@core/utils/logger-wrapper";
 
 export async function getAllPacientes(
   req: Request,
@@ -277,6 +279,71 @@ export async function updatePacienteTable(
     await paciente.save();
 
     return res.json(paciente);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function validarCargaMasivaPacientes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const file = (req as any).file;
+    if (!file) {
+      return res.status(400).json({
+        ok: false,
+        message: "No se ha proporcionado ningún archivo CSV.",
+      });
+    }
+
+    const result = await PacientesCsvService.validate(file.buffer);
+
+    Logger.info("Validacion de carga masiva de pacientes", {
+      userId: (req as any).user?.id || "desconocido",
+      fileName: file.originalname,
+      totalRows: result.totalRows,
+      validRows: result.validRows,
+    });
+    
+    const hasErrors = result.invalidRows > 0 || result.duplicateRows.length > 0 || result.alreadyExistsRows.length > 0 || result.rows.some(row => row.errors.length > 0);
+
+    if (hasErrors) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function confirmarCargaMasivaPacientes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const file = (req as any).file;
+    if (!file) {
+      return res.status(400).json({
+        ok: false,
+        message: "No se ha proporcionado ningún archivo CSV.",
+      });
+    }
+
+    const userId = (req as any).user?.id;
+    const result = await PacientesCsvService.confirmInsert(
+      file.buffer,
+      userId
+    );
+
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
   } catch (error) {
     next(error);
   }
