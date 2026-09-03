@@ -60,7 +60,8 @@ export async function createPatient(
       email,
       address,
       agreement,
-      ipsPrimaria
+      ipsPrimaria,
+      regime
     } = req.body;
 
     const normalizedDocumentNumber = String(documentNumber).trim();
@@ -90,6 +91,7 @@ export async function createPatient(
     paciente.agreementId = parseInt(String(agreement));
     paciente.ipsPrimaryId = parseInt(String(ipsPrimaria));
     paciente.status = true;
+    paciente.regime = regime;
 
     const errors = await validate(paciente);
 
@@ -236,7 +238,8 @@ export async function updatePacienteTable(
       email,
       address,
       agreement,
-      ipsPrimaria
+      ipsPrimaria,
+      regime
     } = req.body;
 
     const paciente = await Pacientes.findOneBy({ id: parseInt(String(id)) });
@@ -263,6 +266,7 @@ export async function updatePacienteTable(
     paciente.agreementId = parseInt(String(agreement));
     paciente.ipsPrimaryId = parseInt(String(ipsPrimaria));
     paciente.status = true;
+    paciente.regime = regime;
 
     const errors = await validate(paciente);
 

@@ -2,10 +2,15 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { Convenio } from "../../catalog/entities/convenio";
 import { TipoDocumento } from "../../catalog/entities/tipo-documento";
 import { IpsPrimaria } from "../../catalog/entities/ips-primaria";
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, isEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, Matches, MaxLength, ValidateIf } from "class-validator";
 import { Radicacion } from "../../radicacion/entities/radicacion";
 import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
+
+export enum Regime  {
+    Contributivo = "Contributivo",
+    Subsidiado = "Subsidiado"
+}
 
 @Entity("patients")
 export class Pacientes extends BaseEntity {
@@ -67,6 +72,11 @@ export class Pacientes extends BaseEntity {
     @IsInt()
     @IsNotEmpty({message: "El campo ipsPrimaria no puede estar vacio"})
     ipsPrimaryId: number;
+
+    @Column({ name: "regime", type: "enum", enum: Regime, nullable: true})
+    @IsEnum(Regime, { message: "Regimen debe ser valido"})
+    @IsOptional()
+    regime: Regime;
 
     @Column({name: "status", type: "tinyint"})
     @IsBoolean()

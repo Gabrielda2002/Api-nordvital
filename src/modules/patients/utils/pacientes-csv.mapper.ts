@@ -2,6 +2,7 @@ import { TipoDocumento } from "../../catalog/entities/tipo-documento";
 import { Convenio } from "../../catalog/entities/convenio";
 import { IpsPrimaria } from "../../catalog/entities/ips-primaria";
 import { CatalogMaps, CsvRowInput, CsvRowError } from "../dto/carga-masiva-pacientes.dto";
+import { Regime } from "../entities/pacientes";
 
 export async function loadCatalogMaps(): Promise<CatalogMaps> {
   const [tiposDocumento, convenios, ipsPrimarias] = await Promise.all([
@@ -121,6 +122,13 @@ export function validateRow(
       column: "celular",
       message: "Los números de contacto no pueden ser iguales entre sí",
     });
+  }
+
+  const regime = (row.regimen ?? "").trim();
+  if (!regime) {
+    errors.push({ column: "regimen", message: "El regimen es obligatorio"})
+  }else if (!Object.values(Regime).includes(regime as Regime)){
+    errors.push({ column: "regimen", message: "El regimen debe ser igual a Contributivo | Subsidiado"})
   }
 
   return errors;

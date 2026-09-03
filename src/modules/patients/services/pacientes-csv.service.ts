@@ -15,7 +15,7 @@ import {
   validateRow,
   checkDuplicateDocuments,
 } from "../utils/pacientes-csv.mapper";
-import { Pacientes } from "../entities/pacientes";
+import { Pacientes, Regime } from "../entities/pacientes";
 
 const EXPECTED_HEADERS = [...CSV_HEADERS];
 
@@ -215,6 +215,7 @@ export class PacientesCsvService {
             row.ips_primaria.toUpperCase().trim()
           )!;
           paciente.status = true;
+          paciente.regime = row.regimen.trim() as Regime;
 
           return paciente;
         });

@@ -1,3 +1,5 @@
+import { Regime } from "../entities/pacientes";
+
 export interface CsvRowInput {
   tipo_documento: string;
   numero_documento: string;
@@ -9,6 +11,7 @@ export interface CsvRowInput {
   direccion: string;
   convenio: string;
   ips_primaria: string;
+  regimen: Regime
 }
 
 export interface CsvRowError {
@@ -58,6 +61,7 @@ export const CSV_HEADERS = [
   "direccion",
   "convenio",
   "ips_primaria",
+  "regimen"
 ] as const;
 
 export const MAX_ROWS = 500;

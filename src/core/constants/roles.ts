@@ -64,6 +64,7 @@ export const ROLE_GROUPS = {
     ROLE_IDS.CIRUGIA,
     ROLE_IDS.COORDINADOR,
     ROLE_IDS.GERENTE,
+    ROLE_IDS.SIAU
   ],
 
   // Auditar y cirugias
