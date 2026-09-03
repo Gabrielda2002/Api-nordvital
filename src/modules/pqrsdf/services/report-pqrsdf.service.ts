@@ -33,6 +33,7 @@ export async function getReportPqrsdfRows(
   } = filters;
 
   const query = Pqrsdf.createQueryBuilder("pqrsdf")
+    .leftJoinAndSelect("pqrsdf.specificReasonRelation", "sr")
     .leftJoinAndSelect("pqrsdf.patientRelation", "patient")
     .leftJoinAndSelect("patient.convenioRelation", "agreement")
     .leftJoinAndSelect("pqrsdf.resolutionAreaRelation", "resolutionArea")
@@ -99,10 +100,10 @@ export async function getReportPqrsdfRows(
     Nombre_del_paciente: p.patientRelation?.name || "N/A",
     Documento: p.patientRelation?.documentNumber || "N/A",
     Asegurador_EPS: p.patientRelation?.convenioRelation?.name || "N/A",
-    Ente: "N/A",
-    Regimen: "N/A",
+    Ente: p.instance || "N/A",
+    Regimen: p.patientRelation?.regime || "N/A",
     Novedad_presentada_por: p.presentedBy || "N/A",
-    Notifica_EPS: "N/A",
+    Notifica_EPS: p.notificationMedium || "N/A",
     PQRS: p.classification || "N/A",
     Medio: p.receptionMedium || "N/A",
     Numero_de_radicado: p.filingNumber ?? "N/A",
@@ -121,10 +122,10 @@ export async function getReportPqrsdfRows(
           "yyyy-MM-dd"
         )
       : "N/A",
-    Oportunidad_desde_radicacion: "N/A",
+    Oportunidad_desde_radicacion: p.pqrsDate || "N/A",
     Oportunidad_desde_hallazgo: "N/A",
-    Via_utilizada_para_la_respuesta: p.notificationMedium || "N/A",
-    Servicio: "N/A",
+    Via_utilizada_para_la_respuesta: p.receptionMedium || "N/A",
+    Servicio: p.specificReasonRelation?.name || "N/A",
     Respuesta: lastNotes.get(p.id) || "N/A",
     Area_con_la_cual_se_resolvio_el_evento:
       p.resolutionAreaRelation?.name || "N/A",
