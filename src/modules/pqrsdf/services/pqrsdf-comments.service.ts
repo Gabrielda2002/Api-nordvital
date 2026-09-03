@@ -85,6 +85,7 @@ export class PqrsdfCommentService {
         return this.ds.getRepository(PqrsdfComment)
             .createQueryBuilder("comment")
             .leftJoinAndSelect("comment.authorRelation", "author")
+            .leftJoinAndSelect("author.positionRelation", "position")
             .leftJoinAndSelect("comment.attachmentsRelation", "attachment")
             .where("comment.pqrsdfId = :pqrsdfId", { pqrsdfId })
             .orderBy("comment.createdAt", "ASC")

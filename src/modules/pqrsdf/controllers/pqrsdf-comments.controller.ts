@@ -49,7 +49,8 @@ export async function getPqrsdfComments(req: Request, res: Response, next: NextF
 
         const formatted = comments.map((comment) => ({
             id: comment.id,
-            author: comment.authorRelation?.name ?? null,
+            author: `${comment.authorRelation?.name} ${comment.authorRelation?.lastName}`,
+            position: comment.authorRelation?.positionRelation?.name,
             comment: comment.comment,
             createdAt: comment.createdAt,
             attachment: (comment.attachmentsRelation ?? []).length > 0
