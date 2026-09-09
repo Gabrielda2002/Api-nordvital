@@ -90,6 +90,24 @@ export async function getReportPqrsdf(
 
     worksheet.columns = COLUMNS;
 
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 10 };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF2F5496" },
+      };
+      cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+    headerRow.height = 30;
+
     rows.forEach((row) => worksheet.addRow(row));
 
     const fileName = `Reporte_PQRSDF_${randomBytes(4).toString("hex")}.xlsx`;

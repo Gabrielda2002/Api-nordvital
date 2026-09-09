@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { createSurvey, deleteSurvey, getAllSurveys, getSurvey, updateSurvey } from "../controllers/encuesta-satisfaccion.controller";
+import { getReportSatisfaction, previewReportSatisfaction } from "../controllers/report-satisfaction.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
@@ -136,5 +137,101 @@ router.put("/surveys/satisfaction/:id", authenticate, authorizeRoles(ROLE_GROUPS
  *         description: Encuesta no encontrada
  */
 router.delete("/surveys/satisfaction/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSurvey);
+
+/**
+ * @swagger
+ * /surveys/satisfaction/report:
+ *   post:
+ *     summary: Descarga reporte de encuestas de satisfacción en Excel
+ *     tags: [EncuestasSatisfaccionPacientes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Archivo Excel generado exitosamente
+ *         content:
+ *           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: No se encontraron encuestas en el rango especificado
+ *       500:
+ *         description: Error del servidor
+ */
+router.post(
+  "/surveys/satisfaction/report",
+  authenticate,
+  authorizeRoles(ROLE_GROUPS.SIAU),
+  getReportSatisfaction
+);
+
+/**
+ * @swagger
+ * /surveys/satisfaction/report/preview:
+ *   post:
+ *     summary: Vista previa JSON del reporte de encuestas de satisfacción (mismos filtros que el Excel)
+ *     tags: [EncuestasSatisfaccionPacientes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               dateStart:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de inicio del filtro
+ *               dateEnd:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de fin del filtro
+ *     responses:
+ *       200:
+ *         description: Filas del reporte y total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: No se encontraron encuestas
+ *       500:
+ *         description: Error del servidor
+ */
+router.post(
+  "/surveys/satisfaction/report/preview",
+  authenticate,
+  authorizeRoles(ROLE_GROUPS.SIAU),
+  previewReportSatisfaction
+);
 
 export default router;
