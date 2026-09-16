@@ -904,7 +904,7 @@ export const options = {
         },
         Evento: {
           type: "object",
-          required: ["title", "dateStart", "dateEnd", "color"],
+          required: ["title", "dateStart", "dateEnd", "color", "description", "timeStart", "timeEnd"],
           properties: {
             id: {
               type: "integer",
@@ -931,6 +931,26 @@ export const options = {
             description: {
               type: "string",
               description: "Descripción del evento",
+            },
+            timeStart: {
+              type: "string",
+              description: "Hora de inicio del evento (formato HH:mm:ss)",
+            },
+            timeEnd: {
+              type: "string",
+              description: "Hora de fin del evento (formato HH:mm:ss)",
+            },
+            place: {
+              type: "string",
+              maxLength: 100,
+              nullable: true,
+              description: "Lugar donde se realiza el evento",
+            },
+            authorId: {
+              type: "integer",
+              nullable: true,
+              readOnly: true,
+              description: "ID del usuario autor del evento (tomado del token de autenticación)",
             },
           },
         },

@@ -1,13 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { Eventos } from "../entities/eventos";
-import { validate } from "class-validator";
 import { parseISO } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import { Eventos } from "../entities/eventos";
+import { validateEntity } from "@core/utils/validation-helper";
+import { NotFoundError } from "@core/utils/custom-errors";
+import Logger from "@core/utils/logger-wrapper";
 
 export async function getAllEvents(req: Request, res: Response, next: NextFunction){
     try {
         
-        const eventos = await Eventos.find();
+        const eventos = await Eventos.find({
+            relations: { authorRelation: true }
+        });
         return res.json(eventos);
 
     } catch (error) {
@@ -24,7 +28,7 @@ export async function getEventById(req: Request, res: Response, next: NextFuncti
         .getOne();
 
         if (!evento) {
-            return res.status(404).json({ message: "Evento no encontrado" });
+            throw new NotFoundError("Event not found");
         }
 
         return res.json(evento);
@@ -36,7 +40,7 @@ export async function getEventById(req: Request, res: Response, next: NextFuncti
 
 export async function createEvent(req: Request, res: Response, next: NextFunction){
     try {
-        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd, place } = req.body;
 
 
         const evento = new Eventos();
@@ -47,25 +51,16 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
         evento.description = description;
         evento.timeStart = timeStart;
         evento.timeEnd = timeEnd;
+        evento.place = place;
+        evento.authorId = req.user?.id as number;
 
-        const errors = await validate(evento);
-
-        if (errors.length > 0) {
-
-            const errorsMessage = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-
-            return res.status(400).json({ message: "Error creating evento", errors: errorsMessage });
-        }
+        await validateEntity(evento);
 
         await evento.save();
 
-        console.log("Fecha original:", dateStart);
-        console.log("Fecha guardada:", evento.dateStart);
+        Logger.info("Event created", { eventId: evento.id, authorId: evento.authorId });
 
-        return res.json(evento);
+        return res.status(201).json(evento);
 
     } catch (error) {
         next(error);
@@ -75,14 +70,14 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 export async function updateEvent(req: Request, res: Response, next: NextFunction){
     try {
         const { id } = req.params;
-        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd } = req.body;
+        const { title, dateStart, dateEnd, color, description, timeStart, timeEnd, place } = req.body;
 
         const evento = await Eventos.createQueryBuilder("eventos")
         .where("eventos.id = :id", { id })
         .getOne();
 
         if (!evento) {
-            return res.status(404).json({ message: "Evento no encontrado" });
+            throw new NotFoundError("Event not found");
         }
 
         const timeZone = "America/Bogota";
@@ -94,23 +89,13 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         evento.description = description;
         evento.timeStart = timeStart;
         evento.timeEnd = timeEnd;
+        evento.place = place;
 
-        const errors = await validate(evento);
-
-        if (errors.length > 0) {
-
-            const errorsMessage = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-
-            return res.status(400).json({ message: "Error updating evento", errors: errorsMessage });
-        }
+        await validateEntity(evento);
 
         await evento.save();
 
-        console.log("Fecha original:", dateStart);
-        console.log("Fecha guardada:", evento.dateStart);
+        Logger.info("Event updated", { eventId: evento.id, authorId: evento.authorId });
 
         return res.json(evento);
 
@@ -128,12 +113,12 @@ export async function deleteEvent(req: Request, res: Response, next: NextFunctio
         .getOne();
 
         if (!evento) {
-            return res.status(404).json({ message: "Evento no encontrado" });
+            throw new NotFoundError("Event not found");
         }
 
         await evento.remove();
 
-        return res.json({ message: "Evento eliminado" });
+        return res.json({ message: "Event deleted" });
 
     } catch (error) {
         next(error);

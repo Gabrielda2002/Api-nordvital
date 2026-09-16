@@ -75,7 +75,7 @@ router.get("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), valid
  *           schema:
  *             $ref: '#/components/schemas/Evento'
  *     responses:
- *       200:
+ *       201:
  *         description: Evento creado
  *         content:
  *           application/json:
