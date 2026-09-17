@@ -1,3 +1,8 @@
+import { ALL_REPORTS } from "./modules/reports/registry/all-reports";
+import { buildSwaggerPaths } from "./modules/reports/core/swagger-builder";
+
+const reportPaths = buildSwaggerPaths(ALL_REPORTS);
+
 export const options = {
   definition: {
     openapi: "3.0.0",
@@ -2506,6 +2511,7 @@ export const options = {
         description: "Endpoints para la gestión de resúmenes de seguimiento de actividad",
       },
     ],
+    paths: reportPaths,
   },
   apis: ["./src/modules/**/routes/*.ts"],
 };
