@@ -12,6 +12,7 @@ import { phonesReport } from "@modules/inventory/descriptors/report-phones.descr
 import { generalInventoryReport } from "@modules/inventory/descriptors/report-general-inventory.descriptor";
 import { deviceRedReport } from "@modules/inventory/descriptors/report-device-red.descriptor";
 import { equipmentsReport } from "@modules/inventory/descriptors/report-equipments.descriptor";
+import { demandInducedReport } from "@modules/demand-induced/descriptors/report-demand-induced.descriptor";
 
 export const ALL_REPORTS: ReportDescriptor<any>[] = [
     pqrsdfReport,
@@ -27,4 +28,5 @@ export const ALL_REPORTS: ReportDescriptor<any>[] = [
     generalInventoryReport,
     deviceRedReport,
     equipmentsReport,
+    demandInducedReport,
 ];

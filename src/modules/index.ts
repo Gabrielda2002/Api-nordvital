@@ -71,7 +71,6 @@ import {
   cartaRecobroRoutes,
   serviciosEjecutadosRoutes,
   serviciosGeneralesRoutes,
-  reportExcelRoutes,
 } from "./radicacion";
 import {
   infrastructureTicketsRoutes,
@@ -109,7 +108,7 @@ import {
 import { researchCenterRoutes } from "./research-center";
 import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
 import pqrsdfRoutes from "./pqrsdf/routes/pqrsdf.routes";
-import pqrsdfReportRoutes from "./pqrsdf/routes/report-pqrsdf.routes";
+import { reportsRoutes } from "./reports";
 import {
     areaPqrsRoutes,
     tipoPoblacionPqrsRoutes,
@@ -213,7 +212,9 @@ router.use(notasTecnicasRoutes);
 router.use(cartaRecobroRoutes);
 router.use(serviciosEjecutadosRoutes);
 router.use(serviciosGeneralesRoutes);
-router.use(reportExcelRoutes);
+
+// Reports module (Excel registry)
+router.use(reportsRoutes);
 
 // Infrastructure Tickets module
 router.use(infrastructureTicketsRoutes);
@@ -255,7 +256,6 @@ router.use(researchCenterRoutes);
 router.use(encuestaSatisfaccionRoutes);
 
 // PQRSDF module
-router.use(pqrsdfReportRoutes);
 router.use(pqrsdfRoutes);
 
 // Catalog - Poblaciones especiales

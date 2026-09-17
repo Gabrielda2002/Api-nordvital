@@ -8,4 +8,3 @@ export { default as notasTecnicasRoutes } from "./routes/notas-tecnicas.routes";
 export { default as cartaRecobroRoutes } from "./routes/carta-recobro.routes";
 export { default as serviciosEjecutadosRoutes } from "./routes/servicios-ejecutados.routes";
 export { default as serviciosGeneralesRoutes } from "./routes/servicios-generales.routes";
-export { default as reportExcelRoutes } from "./routes/report-excel.routes";
