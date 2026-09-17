@@ -1,0 +1,56 @@
+import type { ReportDescriptor } from "@modules/reports/core/types";
+import { ROLE_IDS } from "@core/constants/roles";
+import {
+  getReportPhonesRows,
+  type ReportPhonesFilters,
+} from "../services/report-phones.service";
+
+export const phonesReport: ReportDescriptor<ReportPhonesFilters> = {
+  name: "phones",
+  roles: [ROLE_IDS.ADMINISTRADOR],
+  sheet: "Teléfonos",
+  fileBase: "report_phones",
+  columns: [
+    { key: "createdAt", label: "Fecha de creación", width: 20 },
+    { key: "name", label: "Nombre", width: 20 },
+    { key: "brand", label: "Marca", width: 20 },
+    { key: "model", label: "Modelo", width: 20 },
+    { key: "serial", label: "Número de serie", width: 20 },
+    { key: "imei", label: "Emei", width: 20 },
+    { key: "operativeSystem", label: "Sistema operativo", width: 20 },
+    { key: "version", label: "Versión", width: 20 },
+    { key: "storage", label: "Almacenamiento", width: 20 },
+    { key: "storageRam", label: "RAM", width: 20 },
+    { key: "phoneNumber", label: "Número de teléfono", width: 20 },
+    { key: "operator", label: "Operador", width: 20 },
+    { key: "typePlan", label: "Tipo de plan", width: 20 },
+    { key: "dueDataPlan", label: "Fecha de vencimiento del plan", width: 20 },
+    { key: "macWifi", label: "MAC WiFi", width: 20 },
+    { key: "addressBluetooth", label: "Dirección Bluetooth", width: 20 },
+    { key: "purchaseDate", label: "Fecha de compra", width: 20 },
+    { key: "warrantyTime", label: "Tiempo de garantía", width: 20 },
+    { key: "warranty", label: "Garantía", width: 20 },
+    { key: "deliveryDate", label: "Fecha de entrega", width: 20 },
+    { key: "inventoryNumber", label: "Número de inventario", width: 20 },
+    { key: "responsable", label: "Responsable", width: 20 },
+    { key: "caseProtector", label: "Protector de carcasa", width: 20 },
+    { key: "temperedGlass", label: "Vidrio templado", width: 20 },
+    { key: "observarion", label: "Observaciones", width: 20 },
+    { key: "status", label: "Estado", width: 20 },
+    { key: "headquarters", label: "Sede", width: 20 },
+    { key: "acquisitionValue", label: "Valor de adquisición", width: 20 },
+    { key: "updatedAt", label: "Fecha de actualización", width: 20 },
+  ],
+  header: { kind: "simple", style: "primary" },
+  fetchRows: getReportPhonesRows,
+  onEmpty: "empty-sheet",
+  previewNotFoundMessage: "Data Phones Not Found.",
+  swagger: {
+    summary: "Descarga reporte de teléfonos en Excel",
+    previewSummary: "Vista previa JSON del reporte de teléfonos",
+    filters: {
+      dateStart: { type: "string", format: "date", description: "Fecha de inicio del filtro" },
+      dateEnd: { type: "string", format: "date", description: "Fecha de fin del filtro" },
+    },
+  },
+};

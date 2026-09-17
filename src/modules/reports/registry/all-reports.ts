@@ -7,6 +7,11 @@ import { biometricReport } from "@modules/hr/descriptors/report-biometric.descri
 import { ticketsReport } from "@modules/tickets/descriptors/report-tickets.descriptor";
 import { surgerysReport } from "@modules/surgeries/descriptors/report-surgerys.descriptor";
 import { radicacionReport } from "@modules/radicacion/descriptors/report-radicacion.descriptor";
+import { tvReport } from "@modules/inventory/descriptors/report-tv.descriptor";
+import { phonesReport } from "@modules/inventory/descriptors/report-phones.descriptor";
+import { generalInventoryReport } from "@modules/inventory/descriptors/report-general-inventory.descriptor";
+import { deviceRedReport } from "@modules/inventory/descriptors/report-device-red.descriptor";
+import { equipmentsReport } from "@modules/inventory/descriptors/report-equipments.descriptor";
 
 export const ALL_REPORTS: ReportDescriptor<any>[] = [
     pqrsdfReport,
@@ -17,4 +22,9 @@ export const ALL_REPORTS: ReportDescriptor<any>[] = [
     ticketsReport,
     surgerysReport,
     radicacionReport,
+    tvReport,
+    phonesReport,
+    generalInventoryReport,
+    deviceRedReport,
+    equipmentsReport,
 ];

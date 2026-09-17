@@ -1,0 +1,56 @@
+import type { ReportDescriptor } from "@modules/reports/core/types";
+import { ROLE_IDS } from "@core/constants/roles";
+import {
+  getReportTVRows,
+  type ReportTVFilters,
+} from "../services/report-tv.service";
+
+export const tvReport: ReportDescriptor<ReportTVFilters> = {
+  name: "tv",
+  roles: [ROLE_IDS.ADMINISTRADOR],
+  sheet: "Televisores",
+  fileBase: "report_tv",
+  columns: [
+    { key: "createdAt", label: "Fecha de creación", width: 20 },
+    { key: "name", label: "Nombre", width: 20 },
+    { key: "location", label: "Ubicación", width: 20 },
+    { key: "headquarters", label: "Sede", width: 30 },
+    { key: "responsible", label: "Responsable", width: 30 },
+    { key: "brand", label: "Marca", width: 20 },
+    { key: "model", label: "Modelo", width: 20 },
+    { key: "serial", label: "Número de serie", width: 30 },
+    { key: "screenSize", label: "Tamaño de pantalla", width: 20 },
+    { key: "screenType", label: "Tipo de pantalla", width: 20 },
+    { key: "resolution", label: "Resolución", width: 20 },
+    { key: "smartTv", label: "Smart TV", width: 15 },
+    { key: "operativeSystem", label: "Sistema operativo", width: 15 },
+    { key: "addressIp", label: "Dirección IP", width: 15 },
+    { key: "mac", label: "MAC", width: 15 },
+    { key: "numHdmi", label: "Número de HDMI", width: 15 },
+    { key: "numUSB", label: "Número de USB", width: 15 },
+    { key: "connectivity", label: "Conectividad", width: 15 },
+    { key: "purchaseDate", label: "Fecha de compra", width: 15 },
+    { key: "warrantyTime", label: "Tiempo de garantía", width: 15 },
+    { key: "warranty", label: "Garantía", width: 15 },
+    { key: "deliveryDate", label: "Fecha de entrega", width: 15 },
+    { key: "otherData", label: "Otros datos", width: 30 },
+    { key: "status", label: "Estado", width: 15 },
+    { key: "inventoryNumber", label: "Número de inventario", width: 20 },
+    { key: "acquisitionValue", label: "Valor de adquisición", width: 20 },
+    { key: "controlRemote", label: "Control remoto", width: 20 },
+    { key: "utility", label: "Utilidad", width: 20 },
+    { key: "updatedAt", label: "Fecha de actualización", width: 20 },
+  ],
+  header: { kind: "simple", style: "primary" },
+  fetchRows: getReportTVRows,
+  onEmpty: "empty-sheet",
+  previewNotFoundMessage: "Data TV Not Found.",
+  swagger: {
+    summary: "Descarga reporte de televisores en Excel",
+    previewSummary: "Vista previa JSON del reporte de televisores",
+    filters: {
+      dateStart: { type: "string", format: "date", description: "Fecha de inicio del filtro" },
+      dateEnd: { type: "string", format: "date", description: "Fecha de fin del filtro" },
+    },
+  },
+};
