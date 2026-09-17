@@ -1,8 +1,14 @@
 import type { ReportDescriptor } from "../core/types";
 import { pqrsdfReport } from "@modules/pqrsdf/descriptors/report-pqrsdf.descriptor";
 import { satisfactionReport } from "@modules/surveys/descriptors/report-satisfaction.descriptor";
+import { assistantsReport } from "@modules/hr/descriptors/report-assistants.descriptor";
+import { breakesActiveReport } from "@modules/hr/descriptors/report-breakes-active.descriptor";
+import { biometricReport } from "@modules/hr/descriptors/report-biometric.descriptor";
 
 export const ALL_REPORTS: ReportDescriptor<any>[] = [
     pqrsdfReport,
     satisfactionReport,
+    assistantsReport,
+    breakesActiveReport,
+    biometricReport,
 ];
