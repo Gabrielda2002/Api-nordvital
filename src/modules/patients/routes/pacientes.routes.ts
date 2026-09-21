@@ -185,7 +185,7 @@ router.put("/table/patient/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIST
  * @swagger
  * /pacientes/carga-masiva/validar:
  *   post:
- *     summary: Valida un archivo CSV para carga masiva de pacientes
+ *     summary: Valida un archivo CSV para carga masiva de pacientes (crear o actualizar)
  *     tags: [Pacientes]
  *     security:
  *       - bearerAuth: []
@@ -202,6 +202,11 @@ router.put("/table/patient/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIST
  *                 type: string
  *                 format: binary
  *                 description: Archivo CSV con datos de pacientes
+ *               accion:
+ *                 type: string
+ *                 enum: [crear, actualizar]
+ *                 default: crear
+ *                 description: "crear: inserta pacientes nuevos (requiere las 11 columnas). actualizar: actualiza por numero_documento usando solo las columnas a modificar."
  *     responses:
  *       200:
  *         description: Resultado de la validación
@@ -226,6 +231,18 @@ router.put("/table/patient/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINIST
  *                   type: array
  *                   items:
  *                     type: string
+ *                 notFoundRows:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 ambiguousRows:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 columns:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *                 rows:
  *                   type: array
  *                   items:
@@ -239,7 +256,7 @@ router.post("/pacientes/carga-masiva/validar", authenticate, authorizeRoles([ROL
  * @swagger
  * /pacientes/carga-masiva/confirmar:
  *   post:
- *     summary: Confirma la carga masiva de pacientes desde un archivo CSV
+ *     summary: Confirma la carga masiva de pacientes desde un archivo CSV (crear o actualizar)
  *     tags: [Pacientes]
  *     security:
  *       - bearerAuth: []
@@ -256,6 +273,11 @@ router.post("/pacientes/carga-masiva/validar", authenticate, authorizeRoles([ROL
  *                 type: string
  *                 format: binary
  *                 description: Archivo CSV con datos de pacientes previamente validado
+ *               accion:
+ *                 type: string
+ *                 enum: [crear, actualizar]
+ *                 default: crear
+ *                 description: "crear: inserta pacientes nuevos. actualizar: actualiza pacientes existentes por numero_documento."
  *     responses:
  *       200:
  *         description: Carga confirmada exitosamente
@@ -269,6 +291,8 @@ router.post("/pacientes/carga-masiva/validar", authenticate, authorizeRoles([ROL
  *                 message:
  *                   type: string
  *                 inserted:
+ *                   type: integer
+ *                 updated:
  *                   type: integer
  *       400:
  *         description: Error al confirmar la carga

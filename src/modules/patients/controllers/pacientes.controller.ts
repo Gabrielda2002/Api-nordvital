@@ -2,7 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import { Pacientes } from "../entities/pacientes";
 import { validate } from "class-validator";
 import { PacientesCsvService } from "../services/pacientes-csv.service";
+import { CargaAccion, CARGA_ACCIONES } from "../dto/carga-masiva-pacientes.dto";
 import Logger from "@core/utils/logger-wrapper";
+
+function parseCargaAccion(value: unknown): CargaAccion | null {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    return "crear";
+  }
+
+  const normalized = String(value).trim().toLowerCase() as CargaAccion;
+  return CARGA_ACCIONES.includes(normalized) ? normalized : null;
+}
 
 export async function getAllPacientes(
   req: Request,
@@ -302,16 +312,31 @@ export async function validarCargaMasivaPacientes(
       });
     }
 
-    const result = await PacientesCsvService.validate(file.buffer);
+    const accion = parseCargaAccion((req as any).body?.accion);
+    if (!accion) {
+      return res.status(400).json({
+        ok: false,
+        message: `La acción "${(req as any).body?.accion}" no es válida. Use "crear" o "actualizar".`,
+      });
+    }
+
+    const result = await PacientesCsvService.validate(file.buffer, accion);
 
     Logger.info("Validacion de carga masiva de pacientes", {
       userId: (req as any).user?.id || "desconocido",
       fileName: file.originalname,
+      accion,
       totalRows: result.totalRows,
       validRows: result.validRows,
     });
-    
-    const hasErrors = result.invalidRows > 0 || result.duplicateRows.length > 0 || result.alreadyExistsRows.length > 0 || result.rows.some(row => row.errors.length > 0);
+
+    const hasErrors =
+      result.invalidRows > 0 ||
+      result.duplicateRows.length > 0 ||
+      result.rows.some((row) => row.errors.length > 0) ||
+      ("alreadyExistsRows" in result && result.alreadyExistsRows.length > 0) ||
+      ("notFoundRows" in result && result.notFoundRows.length > 0) ||
+      ("ambiguousRows" in result && result.ambiguousRows.length > 0);
 
     if (hasErrors) {
       return res.status(400).json(result);
@@ -337,9 +362,18 @@ export async function confirmarCargaMasivaPacientes(
       });
     }
 
+    const accion = parseCargaAccion((req as any).body?.accion);
+    if (!accion) {
+      return res.status(400).json({
+        ok: false,
+        message: `La acción "${(req as any).body?.accion}" no es válida. Use "crear" o "actualizar".`,
+      });
+    }
+
     const userId = (req as any).user?.id;
-    const result = await PacientesCsvService.confirmInsert(
+    const result = await PacientesCsvService.confirm(
       file.buffer,
+      accion,
       userId
     );
 
