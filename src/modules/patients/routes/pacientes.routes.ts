@@ -1,5 +1,5 @@
 ﻿import { Router } from "express";
-import { confirmarCargaMasivaPacientes, createPatient, deletePaciente, getAllPacientes, getPaciente, getPacientesByDocument, updatePaciente, updatePacienteTable, validarCargaMasivaPacientes } from "../controllers/pacientes.controller";
+import { confirmarCargaMasivaPacientes, createPatient, deletePaciente, getAllPacientes, getPaciente, getPatientByDocument, updatePaciente, updatePacienteTable, validarCargaMasivaPacientes } from "../controllers/pacientes.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
@@ -145,13 +145,18 @@ router.delete("/pacientes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTR
  *             properties:
  *               documentNumber:
  *                 type: integer
+ *               documentType:
+ *                 type: integer
+ *                 description: Opcional. ID del tipo de documento; si se envía, se agrega a la búsqueda.
  *     responses:
  *       200:
  *         description: Paciente encontrado
+ *       400:
+ *         description: Tipo de documento inválido
  *       404:
  *         description: Paciente no encontrado
  */
-router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.SEARCH_PATIENTS), getPacientesByDocument);
+router.post("/pacientes-documento", authenticate, authorizeRoles(ROLE_GROUPS.SEARCH_PATIENTS), getPatientByDocument);
 
 /**
  * @swagger

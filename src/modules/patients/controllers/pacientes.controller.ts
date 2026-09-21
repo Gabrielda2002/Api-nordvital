@@ -206,20 +206,42 @@ export async function deletePaciente(
   }
 }
 
-export async function getPacientesByDocument(
+export async function getPatientByDocument(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { documentNumber } = req.body;
+    const { documentNumber, documentType } = req.body;
     const normalizedDocumentNumber = String(documentNumber).trim();
-    const paciente = await Pacientes.createQueryBuilder("pacientes")
-    .where("pacientes.documentNumber = :documentNumber", { documentNumber: normalizedDocumentNumber })
-    .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
-    .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
-    .leftJoinAndSelect("pacientes.documentRelation", "documentRelation")
-    .getOne();
+
+    const query = Pacientes.createQueryBuilder("pacientes")
+      .where("pacientes.documentNumber = :documentNumber", {
+        documentNumber: normalizedDocumentNumber,
+      })
+      .leftJoinAndSelect("pacientes.convenioRelation", "convenioRelation")
+      .leftJoinAndSelect("pacientes.ipsPrimariaRelation", "ipsPrimariaRelation")
+      .leftJoinAndSelect("pacientes.documentRelation", "documentRelation");
+
+    if (
+      documentType !== undefined &&
+      documentType !== null &&
+      String(documentType).trim() !== ""
+    ) {
+      const parsedDocumentType = Number(documentType);
+
+      if (!Number.isInteger(parsedDocumentType) || parsedDocumentType <= 0) {
+        return res.status(400).json({
+          message: "El tipo de documento debe ser un ID válido",
+        });
+      }
+
+      query.andWhere("pacientes.documentTypeId = :documentType", {
+        documentType: parsedDocumentType,
+      });
+    }
+
+    const paciente = await query.getOne();
 
     if (!paciente) {
       return res.status(404).json({ message: "Paciente not found" });
