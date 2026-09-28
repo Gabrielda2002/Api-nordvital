@@ -9,6 +9,8 @@ import { Between, LessThan, MoreThan } from "typeorm";
 import { saveFileToDisk } from "@core/middlewares/multer-delivery.middleware";
 import { updateFileAndRecord } from "@core/utils/file-manager";
 import Logger from "@core/utils/logger-wrapper";
+import { validateEntity } from "@core/utils/validation-helper";
+import { ConflictError, NotFoundError } from "@core/utils/custom-errors";
 
 export async function createEquipment(
   req: Request,
@@ -55,9 +57,7 @@ export async function createEquipment(
     });
 
     if (serialExist) {
-      return res.status(409).json({
-        message: "El número de serie ya existe",
-      });
+      throw new ConflictError("Serial number already exists");
     }
 
     // Crear y configurar el equipo
@@ -82,17 +82,7 @@ export async function createEquipment(
     equipment.lock = lock === "true";
     equipment.lockKey = codeLock || null;
 
-    const errors = await validate(equipment);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      // Revertir la transacción si hay errores de validación
-      await queryRunner.rollbackTransaction();
-      return res.status(400).json({ message });
-    }
+    await validateEntity(equipment);
 
     // Procesar el documento si existe
     if (file) {
@@ -110,13 +100,10 @@ export async function createEquipment(
       });
 
       if (docExist) {
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
+        if (filePath && fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
         }
-        await queryRunner.rollbackTransaction();
-        return res.status(409).json({
-          message: "El documento ya existe",
-        });
+        throw new ConflictError("Document already exists");
       }
 
       const document = Soportes.create({
@@ -127,19 +114,7 @@ export async function createEquipment(
         nameSaved: savedFile.filename,
       });
 
-      const errorsDoc = await validate(document);
-
-      if (errorsDoc.length > 0) {
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-        const message = errorsDoc.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({ message });
-      }
+      await validateEntity(document);
 
       // Guardar el documento dentro de la transacción
       await queryRunner.manager.save(document);
@@ -155,14 +130,16 @@ export async function createEquipment(
 
     return res.status(200).json(equipment);
   } catch (error) {
-    await queryRunner.rollbackTransaction();
+    if (queryRunner.isTransactionActive) {
+      await queryRunner.rollbackTransaction();
+    }
 
     if (filePath && fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);
-        console.log("Archivo eliminado:", filePath);
-      } catch (error) {
-        console.log("Error al eliminar el archivo:", error);
+        Logger.debug(`File removed after error: ${filePath}`);
+      } catch (cleanupError) {
+        Logger.error("Failed to remove file after error", cleanupError);
       }
     }
 
@@ -208,24 +185,19 @@ export async function updateEquipment(
       codeLock,
       sedeId
     } = req.body;
-    console.log(req.body)
 
     const serialExist = await Equipos.findOneBy({
       serial: serial,
     });
 
     if (serialExist && serialExist.id !== parseInt(String(id))) {
-      return res.status(409).json({
-        message: "El número de serie ya existe",
-      });
+      throw new ConflictError("Serial number already exists");
     }
 
     const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!equipment) {
-      return res.status(404).json({
-        message: "Equipo no encontrado",
-      });
+      throw new NotFoundError("Equipment not found");
     }
 
     equipment.name = name;
@@ -248,16 +220,7 @@ export async function updateEquipment(
     equipment.inventoryNumber = inventoryNumber;
     equipment.sedeId = parseInt(String(sedeId));
 
-    const errors = await validate(equipment);
-
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      await queryRunner.rollbackTransaction();
-      return res.status(400).json({ message });
-    }
+    await validateEntity(equipment);
 
     const file = req.file;
     let documentId: number | null = equipment.docId;
@@ -273,17 +236,14 @@ export async function updateEquipment(
           file.originalname,
           path.extname(file.originalname)
         );
-  
-         const docExistByName = await Soportes.findOneBy({ name: fileNameWithoutExt.normalize("NFC") });
-        
+
+        const docExistByName = await Soportes.findOneBy({ name: fileNameWithoutExt.normalize("NFC") });
+
         if (docExistByName) {
-          if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path);
+          if (filePath && fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
           }
-          await queryRunner.rollbackTransaction();
-          return res.status(409).json({
-            message: "El documento ya existe",
-          });
+          throw new ConflictError("Document already exists");
         }
         // si ya existe un documento, se actualiza sus datos con el nuevo
         if (documentId) {
@@ -305,7 +265,7 @@ export async function updateEquipment(
         }
 
         if (!documentId) {
-          
+
           // validar si el documento existe
 
           const newDoc = Soportes.create({
@@ -316,32 +276,16 @@ export async function updateEquipment(
             nameSaved: savedFile.filename,
           });
 
-          const errorsDoc = await validate(newDoc);
-  
-          if (errorsDoc.length > 0) {
+          await validateEntity(newDoc);
 
-            if (fs.existsSync(file.path)) {
-              fs.unlinkSync(file.path);
-            }
-
-            const message = errorsDoc.map((err) => ({
-              property: err.property,
-              constraints: err.constraints,
-            }));
-
-            await queryRunner.rollbackTransaction();
-            return res.status(400).json({ message });
-
-          }
-          
           await queryRunner.manager.save(newDoc);
-    
+
           documentId = newDoc.id;
-    
+
         }
-  
-        equipment.docId = documentId;      
-        
+
+        equipment.docId = documentId;
+
       } catch (error) {
         if (filePath && fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
@@ -355,14 +299,16 @@ export async function updateEquipment(
 
     return res.status(200).json(equipment);
   } catch (error) {
-    await queryRunner.rollbackTransaction();
+    if (queryRunner.isTransactionActive) {
+      await queryRunner.rollbackTransaction();
+    }
 
     if (filePath && fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);
-        console.log('Archivo eliminado debido a errror: ', filePath);
-      } catch (error) {
-        console.log('Error al eliminar el archivo:', error);
+        Logger.debug(`File removed after error: ${filePath}`);
+      } catch (cleanupError) {
+        Logger.error("Failed to remove file after error", cleanupError);
       }
     }
 
@@ -382,9 +328,7 @@ export async function deleteEquipment(
     const equipment = await Equipos.findOneBy({ id: parseInt(String(id)) });
 
     if (!equipment) {
-      return res.status(404).json({
-        message: "Equipo no encontrado",
-      });
+      throw new NotFoundError("Equipment not found")
     }
 
     await equipment.remove();
@@ -416,9 +360,7 @@ export async function getEquipmentBySede(
       .getMany();
 
     if (!equipment) {
-      return res.status(404).json({
-        message: "Equipo no encontrado",
-      });
+      throw new NotFoundError("Equipment not found")
     }
 
     const equipmentFormatted = equipment.map((e) => ({
@@ -460,7 +402,7 @@ export async function getEquipmentBySede(
         brand: a.brand || "N/A",
         model: a.model || "N/A",
         serial: a.serial || "N/A",
-        description: a.otherData || "N/A",
+        otherData: a.otherData || "N/A",
         status: a.status || "N/A",
         inventoryNumber: a.inventoryNumber || "N/A",
       })),
@@ -470,7 +412,7 @@ export async function getEquipmentBySede(
         brand: c.brand || "N/A",
         capacity: c.capacity || "N/A",
         speed: c.speed || "N/A",
-        description: c.otherData || "N/A",
+        otherData: c.otherData || "N/A",
         model: c.model || "N/A",
         serial: c.serial || "N/A",
       })),
@@ -512,9 +454,7 @@ export async function getEquipmentTypeDistribution(
       .getRawMany();
 
     if (!equipment) {
-      return res.status(404).json({
-        message: "No se encontraron equipos",
-      });
+      throw new NotFoundError("Equipment not found")
     }
 
     return res.json(equipment);
@@ -543,9 +483,7 @@ export async function getEquipmentHeadquartersDistribution(
       .getRawMany();
 
     if (!equipment) {
-      return res.status(404).json({
-        message: "No se encontraron equipos",
-      });
+      throw new NotFoundError("Equipment is not found")
     }
 
     return res.json(equipment);
@@ -1061,8 +999,8 @@ export async function autoInventory(
     await queryRunner.commitTransaction();
 
     return res.status(existingEquipment ? 200 : 201).json({
-      message: existingEquipment 
-        ? "Equipo actualizado exitosamente" 
+      message: existingEquipment
+        ? "Equipo actualizado exitosamente"
         : "Equipo creado exitosamente",
       action: existingEquipment ? "updated" : "created",
       equipment: {
@@ -1085,7 +1023,7 @@ export async function autoInventory(
 
 export async function verifyEquipmentExist(req: Request, res: Response, next: NextFunction) {
   try {
-    
+
     const { serial } = req.body;
 
     if (!serial) {

@@ -88,7 +88,7 @@ export class Componentes extends BaseEntity {
   @Length(3, 200, {
     message: "El estado debe tener entre $constraint1 y $constraint2 caracteres",
   })
-  state: string;
+  state: string = "Activo";
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;

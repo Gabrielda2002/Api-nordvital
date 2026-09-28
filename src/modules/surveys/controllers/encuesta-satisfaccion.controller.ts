@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { EncuestaSatisfaccion } from "../entities/encuesta-satisfaccion";
 import { validate } from "class-validator";
-import { id } from "date-fns/locale/id";
 
 async function findOneWithRelations(id: number): Promise<EncuestaSatisfaccion | null> {
     return EncuestaSatisfaccion.createQueryBuilder("survey")

@@ -110,7 +110,7 @@ export async function updateAccessory(
   try {
     const { id } = req.params;
 
-    const { name, brand, model, serial, description, status, inventoryNumber } =
+    const { name, brand, model, serial, otherData, status, inventoryNumber } =
       req.body;
 
     const existSerial = await AccesoriosEquipos.createQueryBuilder()
@@ -136,7 +136,7 @@ export async function updateAccessory(
     accessory.brand = brand;
     accessory.model = model;
     accessory.serial = serial;
-    accessory.otherData = description;
+    accessory.otherData = otherData;
     accessory.status = status;
     accessory.inventoryNumber = inventoryNumber;
 
