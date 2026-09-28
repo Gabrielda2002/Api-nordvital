@@ -104,12 +104,6 @@ export class Celular extends BaseEntity {
     @Length(12, 17, {message: "La dirección Bluetooth debe tener entre $constraint1 y $constraint2 caracteres"})
     addressBluetooth: string;
 
-    // @Column({name: "id_corporativo", nullable: true})
-    // @IsString()
-    // @IsOptional()
-    // @Length(3, 255, {message: "El ID corporativo debe tener entre $constraint1 y $constraint2 caracteres"})
-    // idCorporativo: string;
-
     @Column({name: "fecha_compra"})
     @IsNotEmpty({message: "La fecha de compra es requerida"})
     purchaseDate: Date;

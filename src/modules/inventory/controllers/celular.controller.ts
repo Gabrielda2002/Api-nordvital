@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import { Celular } from "../entities/celular";
 import { Soportes } from "../../radicacion/entities/soportes";
 import path from "path";
-import { ifError } from "assert";
-import { validate } from "class-validator";
 import fs from "fs";
 import { saveFileToDisk } from "@core/middlewares/multer-delivery.middleware";
 import { updateFileAndRecord } from "@core/utils/file-manager";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, MoreThan } from "typeorm";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import Logger from "@core/utils/logger-wrapper";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -30,9 +31,7 @@ export async function getPhoneBySedeId(
       .getMany();
 
     if (phones.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron celulares para esta sede" });
+      throw new NotFoundError("No phones found for this headquarters");
     }
 
     const phonesWithDetails = phones.map((p) => ({
@@ -131,15 +130,13 @@ export async function createPhone(
       sedeId,
     } = req.body;
 
-    console.log(req.body);
-
     const file = req.file;
     let actaId: number | null = null;
 
     // Validamos el objeto del teléfono primero antes de guardar cualquier archivo
     const newPhone = new Celular();
-    newPhone.name = name.toUpperCase();
-    newPhone.brand = brand.toUpperCase();
+    newPhone.name = String(name || "").toUpperCase();
+    newPhone.brand = String(brand || "").toUpperCase();
     newPhone.model = model;
     newPhone.serial = serial;
     newPhone.imei = imei;
@@ -165,21 +162,8 @@ export async function createPhone(
     newPhone.status = status;
     newPhone.acquisitionValue = parseInt(acquisitionValue, 10);
     newPhone.sedeId = parseInt(String(sedeId));
-    newPhone.brand = brand;
 
-    const errorsPhone = await validate(newPhone);
-
-    if (errorsPhone.length > 0) {
-      const errorMessages = errorsPhone?.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      await queryRunner.rollbackTransaction();
-      return res.status(400).json({
-        message: "Error al crear el celular",
-        errors: errorMessages,
-      });
-    }
+    await validateEntity(newPhone);
 
     if (file) {
       const savedFile = saveFileToDisk(file.buffer, file.originalname);
@@ -199,8 +183,7 @@ export async function createPhone(
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({ message: "El archivo ya existe" });
+        throw new ConflictError("Document already exists");
       }
 
       
@@ -212,21 +195,7 @@ export async function createPhone(
         nameSaved: savedFile.filename,
       });
 
-      const errorsActa = await validate(acta);
-      if (errorsActa.length > 0) {
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-        const errorMessages = errorsActa?.map((err) => ({
-          property: err.property,
-          constraints: err.constraints,
-        }));
-        await queryRunner.rollbackTransaction();
-        return res.status(400).json({
-          message: "Error al crear el acta",
-          errors: errorMessages,
-        });
-      }
+      await validateEntity(acta);
 
       await queryRunner.manager.save(acta);
       newPhone.actaId = acta.id;
@@ -238,15 +207,16 @@ export async function createPhone(
     return res.status(201).json(newPhone);
 
   } catch (error) {
-
-    await queryRunner.rollbackTransaction();
+    if (queryRunner.isTransactionActive) {
+      await queryRunner.rollbackTransaction();
+    }
 
     if (filePath && fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);
-        console.log(`Archivo eliminado debido a error: ${filePath}`);
-      } catch (err) {
-        console.error(`Error al eliminar archivo: ${err}`);
+        Logger.debug(`File removed after error: ${filePath}`);
+      } catch (cleanupError) {
+        Logger.error("Failed to remove file after error", cleanupError);
       }
     }
 
@@ -276,8 +246,7 @@ export async function updatePhone(
     const phone = await Celular.findOneBy({ id: parseInt(String(id)) });
 
     if (!phone) {
-      await queryRunner.rollbackTransaction();
-      return res.status(404).json({ message: "Celular no encontrado" });
+      throw new NotFoundError("Phone not found");
     }
 
     const {
@@ -310,8 +279,8 @@ export async function updatePhone(
       sedeId,
     } = req.body;
 
-    phone.name = name.toUpperCase();
-    phone.brand = brand.toUpperCase();
+    phone.name = String(name || "").toUpperCase();
+    phone.brand = String(brand || "").toUpperCase();
     phone.model = model;
     phone.serial = serial;
     phone.imei = imei;
@@ -338,19 +307,7 @@ export async function updatePhone(
     phone.acquisitionValue = Number(acquisitionValue);
     phone.sedeId = parseInt(String(sedeId));
 
-    const errorsPhone = await validate(phone);
-
-    if (errorsPhone.length > 0) {
-      const errorMessages = errorsPhone?.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      await queryRunner.rollbackTransaction();
-      return res.status(400).json({
-        message: "Error al actualizar el celular",
-        errors: errorMessages,
-      });
-    }
+    await validateEntity(phone);
 
     const file = req.file;
     let actaId: number | null = phone.actaId;
@@ -371,11 +328,10 @@ export async function updatePhone(
           name: fileNameWithoutExt.normalize("NFC")})
 
           if (docExistsByName) {
-            if (fs.existsSync(filePath )) {
+            if (fs.existsSync(filePath)) {
               fs.unlinkSync(filePath);
             }
-            await queryRunner.rollbackTransaction();
-            return res.status(400).json({ message: "El archivo ya existe" });
+            throw new ConflictError("Document already exists");
           }
 
         // Si ya existe un acta vinculada al teléfono, actualizamos ese registro
@@ -405,12 +361,11 @@ export async function updatePhone(
           });
 
           if (docExists) {
-            // Si existe, eliminamos el archivo que acabamos de guardar
+            // Remove the file we just saved, since the record already exists
             if (fs.existsSync(filePath)) {
               fs.unlinkSync(filePath);
             }
-            await queryRunner.rollbackTransaction();
-            return res.status(400).json({ message: "El archivo ya existe" });
+            throw new ConflictError("Document already exists");
           }
 
           const acta = Soportes.create({
@@ -421,23 +376,7 @@ export async function updatePhone(
             nameSaved: savedFile.filename,
           });
 
-          const errorsActa = await validate(acta);
-
-          if (errorsActa.length > 0) {
-            // Si hay errores en la validación del acta, eliminamos el archivo
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-            }
-            const errorMessages = errorsActa?.map((err) => ({
-              property: err.property,
-              constraints: err.constraints,
-            }));
-            await queryRunner.rollbackTransaction();
-            return res.status(400).json({
-              message: "Error al crear el acta",
-              errors: errorMessages,
-            });
-          }
+          await validateEntity(acta);
 
           await queryRunner.manager.save(acta);
           actaId = acta.id;
@@ -459,14 +398,16 @@ export async function updatePhone(
     return res.status(200).json(phone);
 
   } catch (error) {
-    await queryRunner.rollbackTransaction();
+    if (queryRunner.isTransactionActive) {
+      await queryRunner.rollbackTransaction();
+    }
 
     if (filePath && fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);
-        console.log(`Archivo eliminado debido a error: ${filePath}`);
-      } catch (err) {
-        console.error(`Error al eliminar archivo: ${err}`);
+        Logger.debug(`File removed after error: ${filePath}`);
+      } catch (cleanupError) {
+        Logger.error("Failed to remove file after error", cleanupError);
       }
     }
 
@@ -491,8 +432,8 @@ export async function getCountPhonesByHeadquartersId(req: Request, res: Response
     .orderBy('count', 'DESC')
     .getRawMany();
 
-    if (!phoneCount) {
-      return res.status(404).json({ message: "No se encontraron celulares" });
+    if (phoneCount.length === 0) {
+      throw new NotFoundError("No phone data found");
     }
 
     return res.status(200).json(phoneCount);
@@ -546,8 +487,8 @@ export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, n
     });
 
     const averageAgeInDays = totalAge / phoneAge.length || 0;
-    const averageAgeInMoths = averageAgeInDays / 30;
-    const averageAgeInYears = averageAgeInDays / 12;
+    const averageAgeInMonths = averageAgeInDays / 30;
+    const averageAgeInYears = averageAgeInMonths / 12;
 
     return res.json({
       distribution: [
@@ -558,7 +499,7 @@ export async function getPhoneAgeByHeadquartersId(req: Request, res: Response, n
       ],
       averageAge: {
         days: Math.round(averageAgeInDays),
-        months: Math.round(averageAgeInMoths),
+        months: Math.round(averageAgeInMonths),
         years: averageAgeInYears.toFixed(1)
       },
       total: totalPhones
@@ -588,7 +529,7 @@ export async function getPhoneWarrantyStatistics(req: Request, res: Response, ne
     });
 
     const expiringWarranties = phonesWithWarranty.filter( p => {
-      const warrantyMonths = parseInt(p.warrantyTime.match(/\d+/)?.[0] || "0");
+      const warrantyMonths = parseInt(p.warrantyTime?.match(/\d+/)?.[0] || "0");
 
       if (warrantyMonths > 0) {
         const expirationDate = addMonths(
@@ -604,7 +545,7 @@ export async function getPhoneWarrantyStatistics(req: Request, res: Response, ne
     return res.json({
       total: totalPhones,
       inWarranty: phonesInWarranty,
-      percentage: ((phonesInWarranty / totalPhones) * 100).toFixed(2),
+      percentage: totalPhones > 0 ? ((phonesInWarranty / totalPhones) * 100).toFixed(2) : "0.00",
       expiringSoon: {
         count: expiringWarranties.length,
         phones: expiringWarranties
@@ -626,9 +567,7 @@ export async function searchPhone(
     const { query } = req.query;
 
     if (!query || typeof query !== "string" || query.trim().length < 2) {
-      return res.status(400).json({
-        message: "La consulta debe ser una cadena de al menos 2 caracteres",
-      });
+      throw new BadRequestError("Query must be a string of at least 2 characters");
     }
 
     const searchTerm = `%${query.trim().toLowerCase()}%`;
@@ -648,6 +587,8 @@ export async function searchPhone(
         `(
           LOWER(celular.name) LIKE :searchTerm OR
           LOWER(celular.serial) LIKE :searchTerm OR
+          celular.numero_telefonico LIKE :searchTerm OR
+          celular.numero_inventario LIKE :searchTerm OR
           LOWER(responsable.name) LIKE :searchTerm
         )`, { searchTerm }
       )
@@ -656,9 +597,7 @@ export async function searchPhone(
       .getMany();
 
     if (phones.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron celulares para esta sede" });
+       throw new NotFoundError("Phones not found")
     }
 
     const phonesWithDetails = phones.map((p) => ({

@@ -139,6 +139,8 @@ router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWE
  *               $ref: '#/components/schemas/Celular'
  *       400:
  *         description: Datos inválidos
+ *       409:
+ *         description: El archivo ya existe
  *       500:
  *         description: Error interno del servidor
  */
@@ -198,8 +200,12 @@ router.post('/', authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), upload
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Celular'
+ *       400:
+ *         description: Datos inválidos
  *       404:
  *         description: Celular no encontrado
+ *       409:
+ *         description: El archivo ya existe
  *       500:
  *         description: Error interno del servidor
  */
