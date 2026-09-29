@@ -5,18 +5,7 @@ import { addMonths, differenceInDays, subYears } from "date-fns";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
 import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
-
-/**
- * Parses an optional numeric field.
- *
- * Keeps the current value when nothing usable was provided (`undefined`, `null`
- * or an empty string) and preserves a legitimate `0`, which the previous
- * `Number(value) || current` silently discarded.
- */
-const optionalNumber = (incoming: unknown, current: number): number =>
-  incoming === undefined || incoming === null || incoming === ""
-    ? current
-    : Number(incoming);
+import { optionalNumber } from "@core/utils/number-helper";
 
 export async function getTelevisorBySedeId(
   req: Request,

@@ -5,6 +5,7 @@ import { Between, LessThan, MoreThan } from "typeorm";
 import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
+import { optionalNumber } from "@core/utils/number-helper";
 
 export async function getAllInventarioGeneral(
   req: Request,
@@ -90,6 +91,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       classificationId: i.classificationId,
       headquartersId: i.headquartersId,
       headquarters: i.headquartersRelation?.name,
+      responsibleId: i.responsibleId,
       responsible: i.responsibleRelation?.name,
       classification: i.classificationRelation?.name,
       asset: i.assetRelation?.name, 
@@ -223,27 +225,63 @@ export async function updateInventoryGeneral(
       throw new NotFoundError("Record not found");
     }
 
-    inventarioGeneral.name = name;
-    inventarioGeneral.brand = brand;
-    inventarioGeneral.model = model;
-    inventarioGeneral.serialNumber = serialNumber;
-    inventarioGeneral.location = location;
-    inventarioGeneral.quantity = quantity;
-    inventarioGeneral.otherDetails = otherDetails;
-    inventarioGeneral.acquisitionDate = acquisitionDate;
-    inventarioGeneral.purchaseValue = purchaseValue;
-    inventarioGeneral.warranty = parseBooleanFlag(warranty);
-    inventarioGeneral.warrantyPeriod = warrantyPeriod;
-    inventarioGeneral.inventoryNumber = inventoryNumber;
-    inventarioGeneral.classificationId = parseInt(String(classificationId));
-    inventarioGeneral.headquartersId = parseInt(String(headquartersId));
-    inventarioGeneral.statusId = parseInt(String(statusId)); 
-    inventarioGeneral.assetId = parseInt(String(assetId));
-    inventarioGeneral.materialId = parseInt(String(materialId));
-    inventarioGeneral.areaTypeId = parseInt(String(areaTypeId));
-    inventarioGeneral.assetTypeId = parseInt(String(assetTypeId));
-    inventarioGeneral.responsibleId = parseInt(String(responsibleId));
-    inventarioGeneral.dependencyAreaId = parseInt(String(dependencyAreaId));
+    // `??` / optionalNumber keep the stored value when the field was not sent,
+    // so a partial payload no longer overwrites the record with undefined/NaN.
+    inventarioGeneral.name = name ?? inventarioGeneral.name;
+    inventarioGeneral.brand = brand ?? inventarioGeneral.brand;
+    inventarioGeneral.model = model ?? inventarioGeneral.model;
+    inventarioGeneral.serialNumber =
+      serialNumber ?? inventarioGeneral.serialNumber;
+    inventarioGeneral.location = location ?? inventarioGeneral.location;
+    inventarioGeneral.quantity = optionalNumber(
+      quantity,
+      inventarioGeneral.quantity
+    );
+    inventarioGeneral.otherDetails = otherDetails ?? inventarioGeneral.otherDetails;
+    inventarioGeneral.acquisitionDate =
+      acquisitionDate ?? inventarioGeneral.acquisitionDate;
+    inventarioGeneral.purchaseValue = optionalNumber(
+      purchaseValue,
+      inventarioGeneral.purchaseValue
+    );
+    inventarioGeneral.warranty =
+      warranty === undefined || warranty === null
+        ? inventarioGeneral.warranty
+        : parseBooleanFlag(warranty);
+    inventarioGeneral.warrantyPeriod =
+      warrantyPeriod ?? inventarioGeneral.warrantyPeriod;
+    inventarioGeneral.inventoryNumber =
+      inventoryNumber ?? inventarioGeneral.inventoryNumber;
+    inventarioGeneral.classificationId = optionalNumber(
+      classificationId,
+      inventarioGeneral.classificationId
+    );
+    inventarioGeneral.headquartersId = optionalNumber(
+      headquartersId,
+      inventarioGeneral.headquartersId
+    );
+    inventarioGeneral.statusId = optionalNumber(statusId, inventarioGeneral.statusId);
+    inventarioGeneral.assetId = optionalNumber(assetId, inventarioGeneral.assetId);
+    inventarioGeneral.materialId = optionalNumber(
+      materialId,
+      inventarioGeneral.materialId
+    );
+    inventarioGeneral.areaTypeId = optionalNumber(
+      areaTypeId,
+      inventarioGeneral.areaTypeId
+    );
+    inventarioGeneral.assetTypeId = optionalNumber(
+      assetTypeId,
+      inventarioGeneral.assetTypeId
+    );
+    inventarioGeneral.responsibleId = optionalNumber(
+      responsibleId,
+      inventarioGeneral.responsibleId
+    );
+    inventarioGeneral.dependencyAreaId = optionalNumber(
+      dependencyAreaId,
+      inventarioGeneral.dependencyAreaId
+    );
 
     await validateEntity(inventarioGeneral);
 

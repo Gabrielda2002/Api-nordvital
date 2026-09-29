@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
+import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min, ValidateIf } from "class-validator";
 import { Sedes } from "../../catalog/entities/sedes";
 import { Usuarios } from "../../auth/entities/usuarios";
 import { Soportes } from "../../radicacion/entities/soportes";
@@ -107,6 +107,7 @@ export class Televisor extends BaseEntity {
     purchaseDate: Date;
 
     @Column({name: "tiempo_garantia"})
+    @ValidateIf((w) => w.warranty === true)
     @IsString()
     @IsNotEmpty({message: "El tiempo de garantía es requerido"})
     @Length(2, 100, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
