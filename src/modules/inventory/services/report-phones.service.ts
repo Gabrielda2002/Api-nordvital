@@ -58,7 +58,7 @@ export async function getReportPhonesRows(
       warranty: c.warranty ? "Si" : "No",
       deliveryDate: c.deliveryDate || "",
       inventoryNumber: c.inventoryNumber || "",
-      responsable: c.responsable || "",
+      responsable: c.responsible || "",
       caseProtector: c.caseProtector ? "Si" : "No",
       temperedGlass: c.temperedGlass ? "Si" : "No",
       observation: c.observation || "",

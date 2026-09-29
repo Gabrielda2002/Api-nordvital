@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { EncuestasSatisfaccion } from "../entities/encuestas-satisfaccion";
 import { validate } from "class-validator";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getAllSurveySatisfaction(req: Request, res: Response, next: NextFunction){
     try {
@@ -43,9 +44,9 @@ export async function createSurveySatisfaction(req: Request, res: Response, next
         encuestaSatisfaccion.tiempoRespuesta = parseInt(String(tiempoRespuesta));
         encuestaSatisfaccion.conocimientoTecnico = parseInt(String(conocimientoTecnico));
         encuestaSatisfaccion.amabilidadSoporte = parseInt(String(amabilidadSoporte));
-        encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "1" ? true : false;
+        encuestaSatisfaccion.solucionEfectiva = parseBooleanFlag(solucionEfectiva);
         encuestaSatisfaccion.comentario = comentario;
-        encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "1" ? true : false;
+        encuestaSatisfaccion.recomendariaServicio = parseBooleanFlag(recomendariaServicio);
 
         const errors = await validate(encuestaSatisfaccion);
 
@@ -83,9 +84,9 @@ export async function updateSurveySatisfaction(req: Request, res: Response, next
         encuestaSatisfaccion.tiempoRespuesta = parseInt(String(tiempoRespuesta));
         encuestaSatisfaccion.conocimientoTecnico = parseInt(String(conocimientoTecnico));
         encuestaSatisfaccion.amabilidadSoporte = parseInt(String(amabilidadSoporte));
-        encuestaSatisfaccion.solucionEfectiva = solucionEfectiva === "true" ? true : false;
+        encuestaSatisfaccion.solucionEfectiva = parseBooleanFlag(solucionEfectiva);
         encuestaSatisfaccion.comentario = comentario;
-        encuestaSatisfaccion.recomendariaServicio = recomendariaServicio === "true" ? true : false;
+        encuestaSatisfaccion.recomendariaServicio = parseBooleanFlag(recomendariaServicio);
 
         const errors = await validate(encuestaSatisfaccion);
 

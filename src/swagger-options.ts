@@ -298,7 +298,7 @@ export const options = {
               type: "string",
               description: "Número de inventario",
             },
-            responsable: {
+            responsible: {
               type: "integer",
               description: "ID del responsable",
             },
@@ -638,6 +638,39 @@ export const options = {
               description: "Descripción del evento",
             },
             responsible: {
+              type: "integer",
+              description: "ID del responsable",
+            },
+          },
+        },
+        SeguimientoDispositivosRedRequest: {
+          type: "object",
+          required: [
+            "itemId",
+            "typeEvent",
+            "eventDate",
+            "description",
+            "managerId",
+          ],
+          properties: {
+            itemId: {
+              type: "integer",
+              description: "ID del dispositivo de red",
+            },
+            typeEvent: {
+              type: "string",
+              description: "Tipo de evento",
+            },
+            eventDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha del evento",
+            },
+            description: {
+              type: "string",
+              description: "Descripción del evento",
+            },
+            managerId: {
               type: "integer",
               description: "ID del responsable",
             },
@@ -1606,7 +1639,7 @@ export const options = {
               type: "integer",
               description: "ID del tipo de activo",
             },
-            responsableId: {
+            responsibleId: {
               type: "integer",
               description: "ID del responsable del activo",
             },
@@ -1633,7 +1666,7 @@ export const options = {
             "eventDate",
             "typeEvent",
             "description",
-            "responsable",
+            "responsible",
           ],
           properties: {
             id: {
@@ -1657,7 +1690,7 @@ export const options = {
               type: "string",
               description: "Descripción del evento",
             },
-            responsable: {
+            responsible: {
               type: "integer",
               description: "ID del responsable del evento",
             },
@@ -1786,7 +1819,7 @@ export const options = {
             "eventDate",
             "eventType",
             "description",
-            "responsable",
+            "responsible",
           ],
           properties: {
             id: {
@@ -1810,7 +1843,7 @@ export const options = {
               type: "string",
               description: "Descripción del evento",
             },
-            responsable: {
+            responsible: {
               type: "integer",
               description: "ID del usuario responsable del evento",
             },
@@ -1828,7 +1861,7 @@ export const options = {
             "eventDate",
             "eventType",
             "description",
-            "responsable",
+            "responsible",
           ],
           properties: {
             id: {
@@ -1852,7 +1885,7 @@ export const options = {
               type: "string",
               description: "Descripción del evento",
             },
-            responsable: {
+            responsible: {
               type: "integer",
               description: "ID del usuario responsable del evento",
             },
@@ -1860,6 +1893,39 @@ export const options = {
               type: "string",
               format: "date-time",
               description: "Fecha de creación del registro",
+            },
+          },
+        },
+        InventoryTrackingRequest: {
+          type: "object",
+          required: [
+            "itemId",
+            "eventDate",
+            "typeEvent",
+            "description",
+            "managerId",
+          ],
+          properties: {
+            itemId: {
+              type: "integer",
+              description: "ID del item relacionado (celular, televisor o item de inventario)",
+            },
+            eventDate: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha del evento",
+            },
+            typeEvent: {
+              type: "string",
+              description: "Tipo de evento realizado",
+            },
+            description: {
+              type: "string",
+              description: "Descripción del evento",
+            },
+            managerId: {
+              type: "integer",
+              description: "ID del usuario responsable del evento",
             },
           },
         },

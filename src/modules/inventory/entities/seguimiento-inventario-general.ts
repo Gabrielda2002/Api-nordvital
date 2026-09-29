@@ -24,7 +24,7 @@ export class SeguimientoInventarioGeneral extends BaseEntity {
 
   @Column({ name: "fecha_evento", type: "date" })
   @IsNotEmpty({ message: "La fecha del evento es requerida" })
-  fecha_evento: Date;
+  eventDate: Date;
 
   @Column({ name: "tipo_evento", length: 200 })
   @IsString()
@@ -42,7 +42,7 @@ export class SeguimientoInventarioGeneral extends BaseEntity {
   @Column({ name: "responsable" })
   @IsNotEmpty({ message: "El responsable es requerido" })
   @IsNumber()
-  responsable: number;
+  responsible: number;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

@@ -11,6 +11,7 @@ import { updateFileAndRecord } from "@core/utils/file-manager";
 import Logger from "@core/utils/logger-wrapper";
 import { validateEntity } from "@core/utils/validation-helper";
 import { ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function createEquipment(
   req: Request,
@@ -30,7 +31,6 @@ export async function createEquipment(
     const {
       sedeId,
       name,
-      area,
       typeEquipment,
       brand,
       model,
@@ -74,12 +74,12 @@ export async function createEquipment(
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime || "Sin garantía";
-    equipment.warranty = warranty === "true";
+    equipment.warranty = parseBooleanFlag(warranty);
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
-    equipment.dhcp = dhcp === "true";
-    equipment.idUsuario = managerId || null;
-    equipment.lock = lock === "true";
+    equipment.dhcp = parseBooleanFlag(dhcp);
+    equipment.idUsuario = managerId;
+    equipment.lock = parseBooleanFlag(lock);
     equipment.lockKey = codeLock || null;
 
     await validateEntity(equipment);
@@ -180,7 +180,7 @@ export async function updateEquipment(
       deliveryDate,
       inventoryNumber,
       dhcp,
-      manager,
+      managerId,
       lock,
       codeLock,
       sedeId
@@ -211,11 +211,11 @@ export async function updateEquipment(
     equipment.mac = mac;
     equipment.purchaseDate = purchaseDate;
     equipment.warrantyTime = warrantyTime;
-    equipment.warranty = warranty == "true";
+    equipment.warranty = parseBooleanFlag(warranty);
     equipment.deliveryDate = deliveryDate;
-    equipment.dhcp = dhcp == "true";
-    equipment.idUsuario = manager || null;
-    equipment.lock = lock == "true";
+    equipment.dhcp = parseBooleanFlag(dhcp);
+    equipment.idUsuario = managerId ?? equipment.idUsuario;
+    equipment.lock = parseBooleanFlag(lock);
     equipment.lockKey = codeLock || null;
     equipment.inventoryNumber = inventoryNumber;
     equipment.sedeId = parseInt(String(sedeId));
@@ -383,9 +383,9 @@ export async function getEquipmentBySede(
       dhcp: e.dhcp === true ? true : false,
       lock: e.lock === false ? false : true,
       lockKey: e.lockKey || "N/A",
-      createAt: e.createAt || "N/A",
+    createAt: e.createAt || "N/A",
       updateAt: e.updateAt || "N/A",
-      idUser: e.userRelation?.id || "N/A",
+      idUser: e.userRelation?.id,
       nameUser: e.userRelation?.name || "N/A",
       lastNameUser: e.userRelation?.lastName || "N/A",
       monitoring: e.seguimientoEquipos?.map((s) => ({
@@ -694,10 +694,10 @@ export async function searchEquipmentGlobal(
         mac: e.mac || "N/A",
         purchaseDate: e.purchaseDate || "N/A",
         warrantyTime: e.warrantyTime || "N/A",
-        warranty: e.warranty || "N/A",
+        warranty: e.warranty ?? "N/A",
         deliveryDate: e.deliveryDate || "N/A",
         inventoryNumberEquipment: e.inventoryNumber || "N/A",
-        dhcp: e.dhcp || "N/A",
+        dhcp: e.dhcp ?? "N/A",
         lock: e.lock === false ? false : true,
         lockKey: e.lockKey || "N/A",
         createAt: e.createAt || "N/A",

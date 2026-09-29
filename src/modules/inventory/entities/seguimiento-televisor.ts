@@ -45,7 +45,7 @@ export class SeguimientoTelevisor extends BaseEntity {
   @Column({ name: "responsable" })
   @IsInt()
   @IsNotEmpty({ message: "El responsable es requerido" })
-  responsable: number;
+  responsible: number;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

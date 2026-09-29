@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PacientesCoosalud } from "../entities/pacientes-coosalud";
 import * as ExcelJS from "exceljs";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getAllPatientsCoosalud(
   req: Request,
@@ -318,7 +319,7 @@ export async function updatePatientsStatusFromExcel(
       // Una vez verificado que todo funciona, puedes descomentar esta parte para actualizar la base de datos
       await PacientesCoosalud.createQueryBuilder()
         .update(PacientesCoosalud)
-        .set({ estado: `${inactivar === 'true' ? 'Inactivo' : 'Activo'}` })
+        .set({ estado: `${parseBooleanFlag(inactivar) ? 'Inactivo' : 'Activo'}` })
         .where("hstIdnNumeroIdentificacion IN (:...cedulas)", { cedulas })
         .execute();
 

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { VacationManagementService } from "../services/vacation-management.service";
 import { ValidationError, validate } from "class-validator";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 const vacationService = new VacationManagementService();
 
@@ -203,7 +204,7 @@ export const getUserVacationNotifications = async (
 ) => {
   try {
     const userId = (req as any).user?.id;
-    const unreadOnly = String(req.query.unreadOnly) === "true";
+    const unreadOnly = parseBooleanFlag(req.query.unreadOnly);
 
     if (!userId) {
       return res.status(401).json({

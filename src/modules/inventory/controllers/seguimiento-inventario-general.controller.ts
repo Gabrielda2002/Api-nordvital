@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { SeguimientoInventarioGeneral } from "../entities/seguimiento-inventario-general";
-import { validate } from "class-validator";
+import { NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllInventoryTrackingGeneralByItem(req: Request, res: Response, next: NextFunction){
     try {
@@ -10,14 +11,14 @@ export async function getAllInventoryTrackingGeneralByItem(req: Request, res: Re
         const seguimientoInventarioGeneral = await SeguimientoInventarioGeneral.createQueryBuilder("seguimiento")
             .leftJoinAndSelect("seguimiento.usuario", "usuario")
             .where("seguimiento.itemId = :id", { id: Number(id) })
-            .orderBy("seguimiento.fecha_evento", "DESC")
+            .orderBy("seguimiento.eventDate", "DESC")
             .getMany();
 
         if (seguimientoInventarioGeneral.length === 0) {
-            return res.status(404).json({ message: "No se encontraron registros." });
+            throw new NotFoundError("No tracking records found");
         }
 
-        res.status(200).json(seguimientoInventarioGeneral);
+        return res.status(200).json(seguimientoInventarioGeneral);
 
     } catch (error) {
         next(error);
@@ -27,23 +28,16 @@ export async function getAllInventoryTrackingGeneralByItem(req: Request, res: Re
 // crear seguimiento inventario general
 export async function createInventoryTrackingGeneral(req: Request, res: Response, next: NextFunction) {
     try {
-        const { itemId, eventDate, typeEvent, description, responsable } = req.body;
+        const { itemId, eventDate, typeEvent, description, managerId } = req.body;
 
         const seguimientoInventarioGeneral = new SeguimientoInventarioGeneral();
         seguimientoInventarioGeneral.itemId = parseInt(String(itemId));
-        seguimientoInventarioGeneral.fecha_evento = eventDate;
+        seguimientoInventarioGeneral.eventDate = eventDate;
         seguimientoInventarioGeneral.typeEvent = typeEvent;
         seguimientoInventarioGeneral.description = description;
-        seguimientoInventarioGeneral.responsable = parseInt(String(responsable));
+        seguimientoInventarioGeneral.responsible = parseInt(String(managerId));
 
-        const errors = await validate(seguimientoInventarioGeneral);
-        if (errors.length > 0) {
-            const errorMessages = errors.map((error) => ({
-                property: error.property,
-                constraints: error.constraints,
-            }));
-            return res.status(400).json({ message: "Validation failed", errors: errorMessages });
-        }
+        await validateEntity(seguimientoInventarioGeneral);
 
         await seguimientoInventarioGeneral.save();
 

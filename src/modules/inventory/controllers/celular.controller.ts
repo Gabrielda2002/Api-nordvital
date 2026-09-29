@@ -10,6 +10,7 @@ import { Between, MoreThan } from "typeorm";
 import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import Logger from "@core/utils/logger-wrapper";
 import { validateEntity } from "@core/utils/validation-helper";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -152,12 +153,12 @@ export async function createPhone(
     newPhone.addressBluetooth = addressBluetooth;
     newPhone.purchaseDate = purchaseDate;
     newPhone.warrantyTime = warrantyTime || 'No Aplica';
-    newPhone.warranty = warranty == "true" ? true : false;
+    newPhone.warranty = parseBooleanFlag(warranty);
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
-    newPhone.responsable = parseInt(String(responsable));
-    newPhone.caseProtector = caseProtector == "true" ? true : false;
-    newPhone.temperedGlass = tenperedGlass == "true" ? true : false;
+    newPhone.responsible = parseInt(String(responsable));
+    newPhone.caseProtector = parseBooleanFlag(caseProtector);
+    newPhone.temperedGlass = parseBooleanFlag(tenperedGlass);
     newPhone.observation = observations;
     newPhone.status = status;
     newPhone.acquisitionValue = parseInt(acquisitionValue, 10);
@@ -296,12 +297,12 @@ export async function updatePhone(
     phone.addressBluetooth = addressBluetooth;
     phone.purchaseDate = purchaseDate;
     phone.warrantyTime = warrantyTime || 'No Aplica';
-    phone.warranty = warranty === 'true' ? true : false;
+    phone.warranty = parseBooleanFlag(warranty);
     phone.deliveryDate = deliveryDate;
     phone.inventoryNumber = inventoryNumber;
-    phone.responsable = parseInt(String(responsable));
-    phone.caseProtector = caseProtector === 'true' ? true : false;
-    phone.temperedGlass = tenperedGlass === 'true' ? true : false;
+    phone.responsible = parseInt(String(responsable));
+    phone.caseProtector = parseBooleanFlag(caseProtector);
+    phone.temperedGlass = parseBooleanFlag(tenperedGlass);
     phone.observation = observations;
     phone.status = status;
     phone.acquisitionValue = Number(acquisitionValue);

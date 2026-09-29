@@ -17,7 +17,7 @@ import { TipoArea } from "../../catalog/entities/tipo-area";
 import { AreaDependencia } from "../../catalog/entities/area-dependencia";
 import { TipoActivo } from "./tipo-activo";
 import { Usuarios } from "../../auth/entities/usuarios";
-import { IsOptional, IsString, Length } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { Sedes } from "../../catalog/entities/sedes";
 import { SeguimientoInventarioGeneral } from "./seguimiento-inventario-general";
 
@@ -54,6 +54,8 @@ export class InventarioGeneral extends BaseEntity {
     quantity: number;
 
     @Column({ name: "otros_detalles", type: "text" })
+    @IsString()
+    @IsNotEmpty({ message: "The other details are required." })
     otherDetails: string;
 
     @Column({ name: "fecha_adquisicion", type: "date", nullable: true })
@@ -99,7 +101,7 @@ export class InventarioGeneral extends BaseEntity {
     assetTypeId: number;
 
     @Column({ name: "id_responsable", type: "int" })
-    responsableId: number;
+    responsibleId: number;
 
     @Column({ name: "sede_id", type: "int" })
     headquartersId: number;

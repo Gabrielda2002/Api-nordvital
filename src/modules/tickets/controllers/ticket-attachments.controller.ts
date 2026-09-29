@@ -7,6 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { FileTokenService } from "../../documents/services/file-token.service";
 import Logger from "@core/utils/logger-wrapper";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 /**
  * Get all attachments for a ticket
@@ -82,7 +83,7 @@ export async function uploadTicketAttachment(req: Request, res: Response, next: 
         attachment.fileNameSaved = file.filename;
         attachment.uploadedByUserId = userId;
         attachment.attachmentType = attachmentType;
-        attachment.isInternal = isInternal === "true" || isInternal === true;
+        attachment.isInternal = parseBooleanFlag(isInternal);
 
         // Validate
         const errors = await validate(attachment);

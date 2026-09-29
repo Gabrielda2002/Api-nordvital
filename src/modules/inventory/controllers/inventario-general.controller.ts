@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { InventarioGeneral } from "../entities/inventario-general";
-import { validate } from "class-validator";
 import { addMonths, differenceInDays, subYears } from "date-fns";
 import { Between, LessThan, MoreThan } from "typeorm";
+import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getAllInventarioGeneral(
   req: Request,
@@ -11,10 +13,12 @@ export async function getAllInventarioGeneral(
 ) {
   try {
     const inventarioGeneral = await InventarioGeneral.find();
+
     if (inventarioGeneral.length === 0) {
-      return res.status(404).json({ message: "No se encontraron registros." });
+      throw new NotFoundError("No records found");
     }
-    res.status(200).json(inventarioGeneral);
+
+    return res.status(200).json(inventarioGeneral);
   } catch (error) {
     next(error);
   }
@@ -31,9 +35,10 @@ export async function getInventarioGeneralById(
       id: Number(id),
     });
     if (!inventarioGeneral) {
-      return res.status(404).json({ message: "Registro no encontrado." });
+      throw new NotFoundError("Record not found");
     }
-    res.status(200).json(inventarioGeneral);
+
+    return res.status(200).json(inventarioGeneral);
   } catch (error) {
     next(error);
   }
@@ -49,7 +54,7 @@ export async function getAllInventoryGeneralByHeadquarters(
 
     const query = await InventarioGeneral.createQueryBuilder("inventario")
       .leftJoinAndSelect("inventario.headquartersRelation", "sede")
-      .leftJoinAndSelect('inventario.responsibleRelation', 'responsable')
+      .leftJoinAndSelect('inventario.responsibleRelation', 'responsible')
       .leftJoinAndSelect('inventario.classificationRelation', 'clasificacion')
       .leftJoinAndSelect('inventario.assetRelation', 'activo')
       .leftJoinAndSelect('inventario.materialRelation', 'material')
@@ -63,7 +68,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       .getMany();
 
     if (query.length === 0) {
-      return res.status(404).json({ message: "No se encontraron registros." });
+      throw new NotFoundError("No records found");
     }
 
     const inventarioGeneralFormated = query.map((i) => ({
@@ -85,7 +90,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       classificationId: i.classificationId,
       headquartersId: i.headquartersId,
       headquarters: i.headquartersRelation?.name,
-      responsable: i.responsibleRelation?.name,
+      responsible: i.responsibleRelation?.name,
       classification: i.classificationRelation?.name,
       asset: i.assetRelation?.name, 
       assetId: i.assetId,
@@ -101,7 +106,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       dependencyArea: i.dependencyAreaRelation?.name,
       monitoring: i.seguimiento.map((s) => ({
         id: s.id,
-        eventDate: s.fecha_evento,
+        eventDate: s.eventDate,
         typeEvent: s.typeEvent,
         description: s.description,
         responsableName: s.usuario?.name,
@@ -109,7 +114,7 @@ export async function getAllInventoryGeneralByHeadquarters(
       })),
     }));
 
-    res.status(200).json(inventarioGeneralFormated);
+    return res.status(200).json(inventarioGeneralFormated);
   } catch (error) {
     next(error);
   }
@@ -141,7 +146,7 @@ export async function createInventoryGeneral(
       materialId,
       areaTypeId,
       assetTypeId,
-      responsableId,
+      responsibleId,
       dependencyAreaId,
     } = req.body;
 
@@ -155,7 +160,7 @@ export async function createInventoryGeneral(
     newInventarioGeneral.otherDetails = otherDetails;
     newInventarioGeneral.acquisitionDate = acquisitionDate;
     newInventarioGeneral.purchaseValue = purchaseValue;
-    newInventarioGeneral.warranty = warranty === "true" ? true : false;
+    newInventarioGeneral.warranty = parseBooleanFlag(warranty);
     newInventarioGeneral.warrantyPeriod = warrantyPeriod;
     newInventarioGeneral.inventoryNumber = inventoryNumber;
     newInventarioGeneral.classificationId = parseInt(String(classificationId));
@@ -165,23 +170,14 @@ export async function createInventoryGeneral(
     newInventarioGeneral.materialId = parseInt(String(materialId));
     newInventarioGeneral.areaTypeId = parseInt(String(areaTypeId));
     newInventarioGeneral.assetTypeId = parseInt(String(assetTypeId));
-    newInventarioGeneral.responsableId = parseInt(String(responsableId));
+    newInventarioGeneral.responsibleId = parseInt(String(responsibleId));
     newInventarioGeneral.dependencyAreaId = parseInt(String(dependencyAreaId));
 
-    const errors = await validate(newInventarioGeneral);
-    if (errors.length > 0) {
-      const messages = errors.map((e) => ({
-        property: e.property,
-        constraints: e.constraints,
-      }));
-      return res
-        .status(400)
-        .json({ message: "Validation failed", errors: messages });
-    }
+    await validateEntity(newInventarioGeneral);
 
     await newInventarioGeneral.save();
 
-    res.status(201).json(newInventarioGeneral);
+    return res.status(201).json(newInventarioGeneral);
   } catch (error) {
     next(error);
   }
@@ -215,7 +211,7 @@ export async function updateInventoryGeneral(
       materialId,
       areaTypeId,
       assetTypeId,
-      responsableId,
+      responsibleId,
       dependencyAreaId,
     } = req.body;
 
@@ -224,7 +220,7 @@ export async function updateInventoryGeneral(
     });
 
     if (!inventarioGeneral) {
-      return res.status(404).json({ message: "Registro no encontrado." });
+      throw new NotFoundError("Record not found");
     }
 
     inventarioGeneral.name = name;
@@ -236,7 +232,7 @@ export async function updateInventoryGeneral(
     inventarioGeneral.otherDetails = otherDetails;
     inventarioGeneral.acquisitionDate = acquisitionDate;
     inventarioGeneral.purchaseValue = purchaseValue;
-    inventarioGeneral.warranty = warranty === "1" ? true : false;
+    inventarioGeneral.warranty = parseBooleanFlag(warranty);
     inventarioGeneral.warrantyPeriod = warrantyPeriod;
     inventarioGeneral.inventoryNumber = inventoryNumber;
     inventarioGeneral.classificationId = parseInt(String(classificationId));
@@ -246,23 +242,14 @@ export async function updateInventoryGeneral(
     inventarioGeneral.materialId = parseInt(String(materialId));
     inventarioGeneral.areaTypeId = parseInt(String(areaTypeId));
     inventarioGeneral.assetTypeId = parseInt(String(assetTypeId));
-    inventarioGeneral.responsableId = parseInt(String(responsableId));
+    inventarioGeneral.responsibleId = parseInt(String(responsibleId));
     inventarioGeneral.dependencyAreaId = parseInt(String(dependencyAreaId));
 
-    const errors = await validate(inventarioGeneral);
-    if (errors.length > 0) {
-      const messages = errors.map((e) => ({
-        property: e.property,
-        constraints: e.constraints,
-      }));
-      return res
-        .status(400)
-        .json({ message: "Validation failed", errors: messages });
-    }
+    await validateEntity(inventarioGeneral);
 
     await InventarioGeneral.save(inventarioGeneral);
     
-    res.status(200).json(inventarioGeneral);
+    return res.status(200).json(inventarioGeneral);
   }
   catch (error) {
     next(error);
@@ -289,7 +276,7 @@ export async function getInvetoryGeneralWarrantyStatitics(
         });
     
         const expiringWarranties = generalWithWarranty.filter(e => {
-          const warrantyMonths = parseInt(e.warrantyPeriod.match(/\d+/)?.[0] || '0');
+          const warrantyMonths = parseInt(e.warrantyPeriod?.match(/\d+/)?.[0] || '0');
           if (warrantyMonths > 0) {
             const expirationDate = addMonths(new Date(e.acquisitionDate), warrantyMonths);
             const expiresSoon =  expirationDate > new Date() && expirationDate < addMonths(new Date(), 3);
@@ -301,7 +288,7 @@ export async function getInvetoryGeneralWarrantyStatitics(
         return res.json({
           total: totalIvGeneral,
           inWarranty: generalInWarranty,
-          percentage: ((generalInWarranty / totalIvGeneral) * 100).toFixed(2),
+          percentage: totalIvGeneral > 0 ? ((generalInWarranty / totalIvGeneral) * 100).toFixed(2) : "0.00",
           expiringSoon: {
             count: expiringWarranties.length,
             equiment: expiringWarranties
@@ -394,10 +381,10 @@ export async function getInventoryGeneralByHeadquartersStatistics(req: Request, 
       .getRawMany();
 
     if (headquarters.length === 0) {
-      return res.status(404).json({ message: "No se encontraron registros." });
+      throw new NotFoundError("No records found");
     }
 
-    res.status(200).json(headquarters);
+    return res.status(200).json(headquarters);
 
   } catch (error) {
     next(error);
@@ -415,16 +402,14 @@ export async function searchInventoryGeneral(
     const { query } = req.query;
 
     if (!query || typeof query !== 'string' || query.trim().length < 2) {
-      return res.status(400).json({
-        message: "La consulta debe tener al menos 2 caracteres.",
-      });
+      throw new BadRequestError("Query must be at least 2 characters long");
     }
 
     const searchTerm = `%${query.trim().toLowerCase()}%`;
 
     const ItemsGeneral = await InventarioGeneral.createQueryBuilder("inventario")
       .leftJoinAndSelect("inventario.headquartersRelation", "sede")
-      .leftJoinAndSelect('inventario.responsibleRelation', 'responsable')
+      .leftJoinAndSelect('inventario.responsibleRelation', 'responsible')
       .leftJoinAndSelect('inventario.classificationRelation', 'clasificacion')
       .leftJoinAndSelect('inventario.assetRelation', 'activo')
       .leftJoinAndSelect('inventario.materialRelation', 'material')
@@ -441,7 +426,7 @@ export async function searchInventoryGeneral(
         `(
           LOWER(inventario.name) LIKE :searchTerm OR
           LOWER(inventario.serialNumber) LIKE :searchTerm OR
-          LOWER(responsable.name) LIKE :searchTerm OR
+          LOWER(responsible.name) LIKE :searchTerm OR
           LOWER(inventario.inventoryNumber) LIKE :searchTerm
         )`, 
         { searchTerm }
@@ -451,7 +436,7 @@ export async function searchInventoryGeneral(
       .getMany();
 
     if (ItemsGeneral.length === 0) {
-      return res.status(404).json({ message: "No se encontraron registros." });
+      throw new NotFoundError("No records found");
     }
 
     const inventarioGeneralFormated = ItemsGeneral.map((i) => ({
@@ -473,7 +458,7 @@ export async function searchInventoryGeneral(
         updatedAt: i.updatedAt,
         classificationId: i.classificationId,
         headquarters: i.headquartersRelation?.name,
-        responsable: i.responsibleRelation?.name,
+        responsible: i.responsibleRelation?.name,
         classification: i.classificationRelation?.name,
         asset: i.assetRelation?.name, 
         assetId: i.assetId,
@@ -489,7 +474,7 @@ export async function searchInventoryGeneral(
         dependencyArea: i.dependencyAreaRelation?.name,
         seguimiento: i.seguimiento.map((s) => ({
           id: s.id,
-          eventDate: s.fecha_evento,
+          eventDate: s.eventDate,
           typeEvent: s.typeEvent,
           description: s.description,
           responsableName: s.usuario?.name,
@@ -499,10 +484,10 @@ export async function searchInventoryGeneral(
       departmentId: i.headquartersRelation?.municipioRelation?.departmentRelation?.id || 0,
       departmentRelationName: i.headquartersRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: i.headquartersRelation?.name || "N/A",
-      sedeId: i.headquartersRelation.id || 0
+      sedeId: i.headquartersRelation?.id || 0
     }));
 
-    res.status(200).json(inventarioGeneralFormated);
+    return res.status(200).json(inventarioGeneralFormated);
 
   } catch (error) {
     next(error);

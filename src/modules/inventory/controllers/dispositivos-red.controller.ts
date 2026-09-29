@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { dispositivosRed } from "../entities/dispositivos-red";
-import { validate } from "class-validator";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllDevices(
   req: Request,
@@ -10,10 +11,8 @@ export async function getAllDevices(
   try {
     const devices = await dispositivosRed.find();
 
-    if (devices.length < 0) {
-      return res.status(404).json({
-        message: "No se encontraron dispositivos",
-      });
+    if (devices.length === 0) {
+      throw new NotFoundError("No devices found");
     }
 
     return res.json(devices);
@@ -28,13 +27,10 @@ export async function getDevice(
   next: NextFunction
 ) {
   try {
-    const id = String(req.params.id);
-    const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
+    const device = await dispositivosRed.findOneBy({ id: parseInt(String(req.params.id)) });
 
     if (!device) {
-      return res.status(404).json({
-        message: "Dispositivo no encontrado",
-      });
+      throw new NotFoundError("Device not found");
     }
 
     return res.json(device);
@@ -49,7 +45,6 @@ export async function createDevice(
   next: NextFunction
 ) {
   try {
-    console.log(req.body)
     const {
       sedeId,
       name,
@@ -68,9 +63,7 @@ export async function createDevice(
     });
 
     if (serialExist) {
-      return res.status(409).json({
-        message: "El número de serie ya existe",
-      });
+      throw new ConflictError("Serial number already exists");
     }
 
     const device = new dispositivosRed();
@@ -85,14 +78,7 @@ export async function createDevice(
     device.status = status;
     device.inventoryNumber = inventoryNumber;
 
-    const errors = await validate(device);
-    if (errors.length > 0) {
-      const message = errors.map((err) => ({
-        property: err.property,
-        constraints: err.constraints,
-      }));
-      return res.status(400).json({ message });
-    }
+    await validateEntity(device);
 
     await device.save();
 
@@ -126,9 +112,7 @@ export async function updateDevice(
     const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
-      return res.status(404).json({
-        message: "Dispositivo no encontrado",
-      });
+      throw new NotFoundError("Device not found");
     }
 
     device.name = name;
@@ -142,13 +126,7 @@ export async function updateDevice(
     device.inventoryNumber = inventoryNumber;
     device.sedeId = parseInt(String(sedeId));
 
-    const errors = await validate(device);
-    if (errors.length > 0) {
-      const message = errors.map(err => (
-        Object.values(err.constraints || {}).join(', ')
-      ));
-      return res.status(400).json({ message: message });
-    }
+    await validateEntity(device);
 
     await device.save();
 
@@ -169,9 +147,7 @@ export async function deleteDevice(
     const device = await dispositivosRed.findOneBy({ id: parseInt(String(id)) });
 
     if (!device) {
-      return res.status(404).json({
-        message: "Dispositivo no encontrado",
-      });
+      throw new NotFoundError("Device not found");
     }
 
     await device.remove();
@@ -202,10 +178,8 @@ export async function getDevicesBySede(
       .where("dispositivosRed.sedeId = :sedeId", { sedeId: parseInt(String(id)) })
       .getMany();
 
-    if (devices.length < 0) {
-      return res.status(404).json({
-        message: "No se encontraron dispositivos",
-      });
+    if (devices.length === 0) {
+      throw new NotFoundError("No devices found for this headquarters");
     }
 
     const deviceDataFormatted = devices.map((d) => ({
@@ -255,10 +229,8 @@ export async function getDevicesCountByHeadquarters(
       .groupBy("place.name")
       .getRawMany();
 
-    if (devices.length < 0) {
-      return res.status(404).json({
-        message: "No se encontraron dispositivos",
-      });
+    if (devices.length === 0) {
+      throw new NotFoundError("No device data found");
     }
 
     const deviceDataFormatted = devices.map((d) => ({
@@ -281,12 +253,9 @@ export async function searchDevices(
 ) {
   try {
     const { query } = req.query;
-    console.log("Query:", query);
 
     if (!query || typeof query !== "string" || query.trim().length < 2) {
-      return res.status(400).json({
-        message: "La consulta debe ser una cadena de al menos 2 caracteres",
-      });
+      throw new BadRequestError("Query must be a string of at least 2 characters");
     }
 
     const searchTerm = `%${query.trim().toLowerCase()}%`;
@@ -312,10 +281,8 @@ export async function searchDevices(
       .limit(50)
       .getMany();
 
-    if (devices.length < 0) {
-      return res.status(404).json({
-        message: "No se encontraron dispositivos",
-      });
+    if (devices.length === 0) {
+      throw new NotFoundError("No devices found");
     }
 
     const deviceDataFormatted = devices.map((d) => ({
@@ -343,7 +310,7 @@ export async function searchDevices(
       departmentId: d.placeRelation?.municipioRelation?.departmentRelation?.id || 0,
       departmentRelationName: d.placeRelation?.municipioRelation?.departmentRelation?.name || "N/A",
       sedeName: d.placeRelation?.name || "N/A",
-      sedeId: d.placeRelation.id || 0
+      sedeId: d.placeRelation?.id || 0
     }));
 
     return res.json(deviceDataFormatted);

@@ -23,21 +23,7 @@ const router = Router();
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   deviceId:
- *                     type: integer
- *                   eventType:
- *                     type: string
- *                   dateEvent:
- *                     type: string
- *                     format: date
- *                   description:
- *                     type: string
- *                   responsible:
- *                     type: integer
+ *                 $ref: '#/components/schemas/SeguimientoDispositivosRed'
  *       404:
  *         description: No se encontraron datos
  */
@@ -60,6 +46,10 @@ router.get("/seguimiento-dispositivos-red", authenticate, authorizeRoles([ROLE_I
  *     responses:
  *       200:
  *         description: Seguimiento encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SeguimientoDispositivosRed'
  *       404:
  *         description: Seguimiento no encontrado
  */
@@ -78,25 +68,7 @@ router.get("/seguimiento-dispositivos-red/:id", authenticate, authorizeRoles([RO
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - equipmentId
- *               - eventType
- *               - eventDate
- *               - description
- *               - responsible
- *             properties:
- *               equipmentId:
- *                 type: integer
- *               eventType:
- *                 type: string
- *               eventDate:
- *                 type: string
- *                 format: date
- *               description:
- *                 type: string
- *               responsible:
- *                 type: integer
+ *             $ref: '#/components/schemas/SeguimientoDispositivosRedRequest'
  *     responses:
  *       200:
  *         description: Seguimiento creado exitosamente
@@ -124,22 +96,12 @@ router.post("/seguimiento-dispositivos-red", authenticate, authorizeRoles([ROLE_
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               equipmentId:
- *                 type: integer
- *               eventType:
- *                 type: string
- *               eventDate:
- *                 type: string
- *                 format: date
- *               description:
- *                 type: string
- *               responsible:
- *                 type: integer
+ *             $ref: '#/components/schemas/SeguimientoDispositivosRedRequest'
  *     responses:
  *       200:
  *         description: Seguimiento actualizado exitosamente
+ *       400:
+ *         description: Error en los datos proporcionados
  *       404:
  *         description: Seguimiento no encontrado
  */

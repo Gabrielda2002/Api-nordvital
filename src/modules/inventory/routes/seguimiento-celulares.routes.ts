@@ -19,30 +19,7 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - itemId
- *               - eventDate
- *               - typeEvent
- *               - description
- *               - responsable
- *             properties:
- *               itemId:
- *                 type: integer
- *                 description: ID del celular relacionado
- *               eventDate:
- *                 type: string
- *                 format: date-time
- *                 description: Fecha del evento
- *               typeEvent:
- *                 type: string
- *                 description: Tipo de evento realizado
- *               description:
- *                 type: string
- *                 description: Descripción del evento
- *               responsable:
- *                 type: integer
- *                 description: ID del usuario responsable del evento
+ *             $ref: '#/components/schemas/InventoryTrackingRequest'
  *     responses:
  *       201:
  *         description: Evento de seguimiento registrado con éxito

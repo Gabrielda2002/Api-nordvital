@@ -59,25 +59,7 @@ router.get("/seguimiento-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.AD
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - equipmentId
- *               - eventDate
- *               - eventType
- *               - description
- *               - responsible
- *             properties:
- *               equipmentId:
- *                 type: integer
- *               eventDate:
- *                 type: string
- *                 format: date
- *               eventType:
- *                 type: string
- *               description:
- *                 type: string
- *               responsible:
- *                 type: integer
+ *             $ref: '#/components/schemas/InventoryTrackingRequest'
  *     responses:
  *       200:
  *         description: Seguimiento creado exitosamente
@@ -106,19 +88,7 @@ router.post("/seguimiento-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMIN
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               equipmentId:
- *                 type: integer
- *               eventDate:
- *                 type: string
- *                 format: date
- *               eventType:
- *                 type: string
- *               description:
- *                 type: string
- *               responsible:
- *                 type: integer
+ *             $ref: '#/components/schemas/InventoryTrackingRequest'
  *     responses:
  *       200:
  *         description: Seguimiento actualizado exitosamente

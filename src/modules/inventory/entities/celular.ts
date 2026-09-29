@@ -132,7 +132,7 @@ export class Celular extends BaseEntity {
     @Column({name: "responsable", nullable: true})
     @IsInt()
     @IsOptional()
-    responsable: number;
+    responsible: number;
 
     @Column({name: "acta_id", nullable: true})
     @IsInt()

@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { AccesoriosEquipos } from "./accesorios-equipos";
 import { seguimientoEquipos } from "./seguimiento-equipos";
-import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from "class-validator";
+import { IsBoolean, IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min, ValidateIf } from "class-validator";
 import { Componentes } from "./componentes";
 import { Software } from "./software";
 import { Usuarios } from "../../auth/entities/usuarios";
@@ -59,8 +59,9 @@ export class Equipos extends BaseEntity {
     operationalSystem: string
 
     @Column({name: "direccion_ip", nullable: true})
+    @ValidateIf((d) => d.chp === false)
     @IsString()
-    @IsOptional({message: "La dirección ip es opcional"})
+    @IsNotEmpty({message: "La dirección ip es obligatoria"})
     @Length(3, 200, {message: "La dirección ip debe tener entre $constraint1 y $constraint2 caracteres"})
     addressIp: string
 
@@ -75,6 +76,7 @@ export class Equipos extends BaseEntity {
     purchaseDate: Date
 
     @Column({name: "tiempo_garantia"})
+    @ValidateIf((w) => w.warramty === true)
     @IsString()
     @IsNotEmpty({message: "El tiempo de garantía es requerido"})
     @Length(3, 200, {message: "El tiempo de garantía debe tener entre $constraint1 y $constraint2 caracteres"})
@@ -100,6 +102,7 @@ export class Equipos extends BaseEntity {
     dhcp: boolean;
 
     @Column({name: "id_usuario", nullable: true})
+    @IsNotEmpty({ message: "El responsable es obligatorio"})
     idUsuario: number | null;
 
     @Column({name: "candado"})
@@ -108,7 +111,8 @@ export class Equipos extends BaseEntity {
     lock: boolean
 
     @Column({name: "clave_candado", nullable: true, type: "varchar"})
-    @IsOptional({message: "La clave del candado es opcional"})
+    @ValidateIf((c) => c.lock === true)
+    @IsNotEmpty({message: "La clave del candado es obligatoria"})
     lockKey: string | null;
 
     @Column({name: "acta_id", nullable: true})

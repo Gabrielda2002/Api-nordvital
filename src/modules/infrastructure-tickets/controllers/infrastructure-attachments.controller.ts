@@ -6,6 +6,7 @@ import { InfrastructureAttachment } from "../entities/infrastructure-attachment"
 import { InfrastructureTicket } from "../entities/infrastructure-ticket";
 import { FileTokenService } from "../../documents/services/file-token.service";
 import Logger from "@core/utils/logger-wrapper";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getInfrastructureTicketAttachments(req: Request, res: Response, next: NextFunction) {
     try {
@@ -70,7 +71,7 @@ export async function uploadInfrastructureAttachment(req: Request, res: Response
         attachment.fileNameSaved = file.filename;
         attachment.uploadedByUserId = userId;
         attachment.attachmentType = attachmentType;
-        attachment.isInternal = isInternal === "true" || isInternal === true;
+        attachment.isInternal = parseBooleanFlag(isInternal);
 
         const errors = await validate(attachment);
         if (errors.length > 0) {

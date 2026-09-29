@@ -127,6 +127,8 @@ router.get("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),valida
  *         description: Dispositivo creado exitosamente
  *       400:
  *         description: Datos inválidos en la solicitud
+ *       409:
+ *         description: El número de serie ya existe
  */
 router.post("/", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), createDevice);
 
@@ -154,6 +156,8 @@ router.post("/", authenticate, authorizeRoles(ROLE_GROUPS.ADMIN_SUPPORT), create
  *     responses:
  *       200:
  *         description: Dispositivo actualizado exitosamente
+ *       400:
+ *         description: Datos inválidos en la solicitud
  *       404:
  *         description: Dispositivo no encontrado
  */

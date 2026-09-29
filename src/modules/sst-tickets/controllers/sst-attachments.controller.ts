@@ -6,6 +6,7 @@ import { SstTicket } from "../entities/sst-ticket";
 import { FileTokenService } from "../../documents/services/file-token.service";
 import { validateEntity } from "@core/utils/validation-helper";
 import Logger from "@core/utils/logger-wrapper";
+import { parseBooleanFlag } from "@core/utils/boolean-helper";
 
 export async function getSstTicketAttachments(req: Request, res: Response, next: NextFunction) {
     try {
@@ -70,7 +71,7 @@ export async function uploadSstAttachment(req: Request, res: Response, next: Nex
         attachment.fileNameSaved = file.filename;
         attachment.uploadedByUserId = userId;
         attachment.attachmentType = attachmentType;
-        attachment.isInternal = isInternal === "true" || isInternal === true;
+        attachment.isInternal = parseBooleanFlag(isInternal);
 
         await validateEntity(attachment);
         await attachment.save();

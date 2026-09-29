@@ -50,7 +50,7 @@ router.get('/seguimuento/inventario-general/:id', authenticate, authorizeRoles(R
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/SeguimientoInventarioGeneral'
+ *             $ref: '#/components/schemas/InventoryTrackingRequest'
  *     responses:
  *       201:
  *         description: Registro de seguimiento creado exitosamente.

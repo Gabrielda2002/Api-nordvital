@@ -2,17 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import { seguimientoEquipos } from "../entities/seguimiento-equipos";
 import { MaintenanceChecklistItem } from "../entities/maintenance-checklist-item";
 import { MaintenanceChecklistResult } from "../entities/maintenance-checklist-result";
-import { validate } from "class-validator";
+import { NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
         
         const data = await seguimientoEquipos.find()
 
-        if (data.length < 0)  {
-            return res.status(404).json({
-                message: "No se encontraron datos"
-            })
+        if (data.length === 0) {
+            throw new NotFoundError("No data found");
         }
 
         return res.json(data)
@@ -32,9 +31,7 @@ export async function getFollowEquipment(req: Request, res: Response, next: Next
         })
 
         if (!data) {
-            return res.status(404).json({
-                message: "Dato no encontrado"
-            })
+            throw new NotFoundError("Data not found");
         }
 
         return res.json(data)
@@ -55,14 +52,7 @@ export async function createFollowEquipment(req: Request, res: Response, next: N
         data.description = description
         data.responsible = parseInt(String(managerId))
 
-        const errors = await validate(data)
-
-        if (errors.length > 0) {
-            const message = errors.map(err => (
-                Object.values(err.constraints || {}).join(", ")
-            ))
-            return res.status(400).json({message})
-        }
+        await validateEntity(data);
 
         await data.save()
 
@@ -93,31 +83,21 @@ export async function createFollowEquipment(req: Request, res: Response, next: N
 export async function updateFollowEquipment(req: Request, res: Response, next: NextFunction){
     try {
         const id = String(req.params.id)
-        const { equipmentId, eventDate, eventType, description, responsible } = req.body
+        const { itemId, eventDate, typeEvent, description, managerId } = req.body
 
         const data = await seguimientoEquipos.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
-            return res.status(404).json({
-                message: "Dato no encontrado"
-            })
+            throw new NotFoundError("Data not found");
         }
 
-        data.equipmentId = parseInt(String(equipmentId))
+        data.equipmentId = parseInt(String(itemId))
         data.eventDate = eventDate
-        data.eventType = eventType
+        data.eventType = typeEvent
         data.description = description
-        data.responsible = parseInt(String(responsible))
+        data.responsible = parseInt(String(managerId))
 
-        const errors = await validate(data)
-
-        if (errors.length > 0) {
-            const message = errors.map((err) => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-            return res.status(400).json({message})
-        }
+        await validateEntity(data);
 
         await data.save()
 
@@ -133,9 +113,7 @@ export async function deleteFollowEquipment(req: Request, res: Response, next: N
         const data = await seguimientoEquipos.findOneBy({id: parseInt(String(id))})
 
         if (!data) {
-            return res.status(404).json({
-                message: "Dato no encontrado"
-            })
+            throw new NotFoundError("Data not found");
         }
 
         await data.remove()

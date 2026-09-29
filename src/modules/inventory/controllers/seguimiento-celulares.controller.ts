@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { SeguimientoCelular } from "../entities/seguimiento-celular";
-import { validate } from "class-validator";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function createProcessPhone(req: Request, res: Response, next: NextFunction) {
     try {
@@ -10,7 +10,7 @@ export async function createProcessPhone(req: Request, res: Response, next: Next
             eventDate,
             typeEvent,
             description,
-            responsable
+            managerId
         } = req.body;
 
         const processPhone = new SeguimientoCelular();
@@ -18,19 +18,9 @@ export async function createProcessPhone(req: Request, res: Response, next: Next
         processPhone.eventDate = new Date(eventDate);
         processPhone.eventType = typeEvent;
         processPhone.description = description;
-        processPhone.responsable = parseInt(String(responsable));
+        processPhone.responsible = parseInt(String(managerId));
         
-        const errors = await validate(processPhone);
-        if (errors.length > 0) {
-            const errorMessages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }));
-            return res.status(400).json({
-                message: "Validation failed",
-                errors: errorMessages
-            });
-        }
+        await validateEntity(processPhone);
 
         const newProcessPhone = await processPhone.save();
 
