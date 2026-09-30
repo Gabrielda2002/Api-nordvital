@@ -214,7 +214,7 @@ export async function updateEquipment(
     equipment.warranty = parseBooleanFlag(warranty);
     equipment.deliveryDate = deliveryDate;
     equipment.dhcp = parseBooleanFlag(dhcp);
-    equipment.idUsuario = managerId ?? equipment.idUsuario;
+    equipment.idUsuario = parseInt(managerId) ?? equipment.idUsuario;
     equipment.lock = parseBooleanFlag(lock);
     equipment.lockKey = codeLock || null;
     equipment.inventoryNumber = inventoryNumber;

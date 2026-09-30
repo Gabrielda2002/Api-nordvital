@@ -101,8 +101,9 @@ export class Equipos extends BaseEntity {
     @IsBoolean()
     dhcp: boolean;
 
-    @Column({name: "id_usuario", nullable: true})
+    @Column({name: "id_usuario", nullable: true, type: "int"})
     @IsNotEmpty({ message: "El responsable es obligatorio"})
+    @IsInt({message: "Responsable requerido."})
     idUsuario: number | null;
 
     @Column({name: "candado"})
