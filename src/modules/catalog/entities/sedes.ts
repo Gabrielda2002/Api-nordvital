@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, M
 import { Radicacion } from "../../radicacion/entities/radicacion";
 import { NotasTecnicas } from "../../radicacion/entities/notas-tecnicas";
 import { ServiciosEjecutados } from "../../radicacion/entities/servicios-ejecutados";
-import { IsBoolean, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { dispositivosRed } from "../../inventory/entities/dispositivos-red";
 import { Municipio } from "./municipio";
 import { Usuarios } from "../../auth/entities/usuarios";
@@ -39,6 +39,18 @@ export class Sedes extends BaseEntity{
 
     @Column({name: "municipality_id", type: "int"})
     municipalityId: number
+
+    @Column({
+        name: "license_code",
+        type: "varchar",
+        length: 20,
+        nullable: true,
+        comment: "Código de habilitación de la sede (REPS). Sus primeros 5 dígitos son el código Divipola del municipio.",
+    })
+    @IsOptional()
+    @IsString()
+    @Length(5, 20, { message: "El código de habilitación debe tener entre $constraint1 y $constraint2 caracteres" })
+    licenseCode?: string
 
     @UpdateDateColumn({ name: "updated_at" })
     updatedAt: Date
