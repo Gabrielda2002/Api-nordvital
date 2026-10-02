@@ -78,7 +78,7 @@ export async function createEquipment(
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
     equipment.dhcp = parseBooleanFlag(dhcp);
-    equipment.idUsuario = managerId;
+    equipment.idUsuario = parseInt(managerId);
     equipment.lock = parseBooleanFlag(lock);
     equipment.lockKey = codeLock || null;
 
