@@ -1,5 +1,5 @@
 ﻿import { Router } from "express";
-import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateLugarRadicacion, updateStatusLugarRadicacion } from "../controllers/sedes.controller";
+import { createLugarRadicacion, deleteLugarRadicacion, getAllLugaresRadicacion, getHeadquartersList, getLugaresRadicacionByDepartment, getLugaresRadicacionByName, getLugarRadicacion, updateHeadquarters } from "../controllers/sedes.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
@@ -9,29 +9,144 @@ const router = Router();
 
 /**
  * @swagger
- * /lugares-radicacion:
+ * /headquarters:
  *   get:
- *     summary: Obtiene todos los lugares de radicación
+ *     summary: Obtiene todas las sedes
  *     tags: [Lugares de Radicación]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de lugares de radicación
+ *         description: Lista de sedes con municipio, departamento y código de habilitación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SedesListItem'
+ *       404:
+ *         description: No se encontraron sedes
+ */
+router.get("", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getAllLugaresRadicacion);
+
+/**
+ * @swagger
+ * /headquarters/headquarters:
+ *   get:
+ *     summary: Obtiene el listado básico de sedes (id y nombre)
+ *     description: Endpoint público, no requiere autenticación.
+ *     tags: [Lugares de Radicación]
+ *     responses:
+ *       200:
+ *         description: Lista básica de sedes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: ID de la sede
+ *                   name:
+ *                     type: string
+ *                     description: Nombre de la sede
+ */
+router.get("/headquarters", getHeadquartersList);
+
+/**
+ * @swagger
+ * /headquarters/{id}:
+ *   get:
+ *     summary: Obtiene una sede por ID
+ *     tags: [Lugares de Radicación]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Sede encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Sedes'
+ *       404:
+ *         description: Sede no encontrada
+ */
+router.get("/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, getLugarRadicacion);
+
+/**
+ * @swagger
+ * /headquarters:
+ *   post:
+ *     summary: Crea una sede
+ *     tags: [Lugares de Radicación]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SedesRequest'
+ *     responses:
+ *       200:
+ *         description: Sede creada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Sedes'
+ *       400:
+ *         description: Datos inválidos
+ *       409:
+ *         description: Ya existe una sede con ese nombre
+ */
+router.post("", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createLugarRadicacion);
+
+/**
+ * @swagger
+ * /headquarters/lugares-radicacion-name:
+ *   post:
+ *     summary: Busca sedes por nombre
+ *     tags: [Lugares de Radicación]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Texto a buscar en el nombre; use "@" para listar las primeras 100 sedes
+ *     responses:
+ *       200:
+ *         description: Sedes encontradas
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Sedes'
+ *       404:
+ *         description: No se encontraron sedes
  */
-router.get("/lugares-radicacion", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT_HR), getAllLugaresRadicacion);
+router.post("/name", authenticate, authorizeRoles(ROLE_GROUPS.ALL), getLugaresRadicacionByName);
 
 /**
  * @swagger
- * /lugares-radicacion/{id}:
- *   get:
- *     summary: Obtiene un lugar de radicación por ID
+ * /headquarters/{id}:
+ *   put:
+ *     summary: Actualiza una sede
  *     tags: [Lugares de Radicación]
  *     security:
  *       - bearerAuth: []
@@ -41,78 +156,31 @@ router.get("/lugares-radicacion", authenticate, authorizeRoles(ROLE_GROUPS.MANAG
  *         required: true
  *         schema:
  *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SedesRequest'
  *     responses:
  *       200:
- *         description: Lugar de radicación encontrado
+ *         description: Sede actualizada
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Sedes'
- *       404:
- *         description: Lugar de radicación no encontrado
- */
-router.get("/lugares-radicacion/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId , getLugarRadicacion);
-
-/**
- * @swagger
- * /lugares-radicacion:
- *   post:
- *     summary: Crea un nuevo lugar de radicación
- *     tags: [Lugares de Radicación]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Sedes'
- *     responses:
- *       200:
- *         description: Lugar de radicación creado
  *       400:
- *         description: Error en la creación
- */
-router.post("/lugares-radicacion",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), createLugarRadicacion);
-
-/**
- * @swagger
- * /lugares-radicacion/{id}:
- *   put:
- *     summary: Actualiza un lugar de radicación
- *     tags: [Lugares de Radicación]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               status:
- *                 type: boolean
- *     responses:
- *       200:
- *         description: Lugar de radicación actualizado
+ *         description: Datos inválidos
  *       404:
- *         description: Lugar de radicación no encontrado
+ *         description: Sede no encontrada
  */
-router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId ,updateLugarRadicacion);
+router.put("/:id", authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT), validarId, updateHeadquarters);
 
 /**
  * @swagger
- * /lugares-radicacion/{id}:
+ * /headquarters/lugares-radicacion/{id}:
  *   delete:
- *     summary: Elimina un lugar de radicación
+ *     summary: Elimina una sede
  *     tags: [Lugares de Radicación]
  *     security:
  *       - bearerAuth: []
@@ -124,73 +192,19 @@ router.put("/lugares-radicacion/:id",authenticate, authorizeRoles(ROLE_GROUPS.MA
  *           type: integer
  *     responses:
  *       200:
- *         description: Lugar de radicación eliminado
+ *         description: Sede eliminada
+ *       400:
+ *         description: La sede tiene registros asociados y no se puede eliminar
  *       404:
- *         description: Lugar de radicación no encontrado
+ *         description: Sede no encontrada
  */
-router.delete("/lugares-radicacion/:id",authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),validarId ,deleteLugarRadicacion);
+router.delete("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteLugarRadicacion);
 
 /**
  * @swagger
- * /lugares-radicacion-name:
- *   post:
- *     summary: Busca lugares de radicación por nombre
- *     tags: [Lugares de Radicación]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *     responses:
- *       200:
- *         description: Lugares de radicación encontrados
- */
-router.post("/lugares-radicacion-name",authenticate, authorizeRoles(ROLE_GROUPS.ALL), getLugaresRadicacionByName);
-
-/**
- * @swagger
- * /update-lugar-status/{id}:
- *   put:
- *     summary: Actualiza el estado de un lugar de radicación
- *     tags: [Lugares de Radicación]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *               name:
- *                 type: string
- *     responses:
- *       200:
- *         description: Estado actualizado
- *       404:
- *         description: Lugar de radicación no encontrado
- */
-router.put("/update-lugar-status/:id",authenticate, authorizeRoles(ROLE_GROUPS.MANAGEMENT),validarId , updateStatusLugarRadicacion);
-
-/**
- * @swagger
- * /lugares-radicacion-departamento/{id}:
+ * /headquarters/sede/departamento/{id}:
  *   get:
- *     summary: Obtiene lugares de radicación por departamento
+ *     summary: Obtiene las sedes de un departamento
  *     tags: [Lugares de Radicación]
  *     security:
  *       - bearerAuth: []
@@ -203,7 +217,7 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(ROLE_GROUPS.M
  *         description: ID del departamento
  *     responses:
  *       200:
- *         description: Lista de lugares de radicación del departamento
+ *         description: Lista de sedes del departamento
  *         content:
  *           application/json:
  *             schema:
@@ -211,10 +225,8 @@ router.put("/update-lugar-status/:id",authenticate, authorizeRoles(ROLE_GROUPS.M
  *               items:
  *                 $ref: '#/components/schemas/Sedes'
  *       404:
- *         description: No se encontraron lugares de radicación
+ *         description: No se encontraron sedes
  */
-router.get("/sede/departamento/:id",authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL),validarId , getLugaresRadicacionByDepartment);
-
-router.get("/headquarters", getHeadquartersList);
+router.get("/department/:id", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL), validarId, getLugaresRadicacionByDepartment);
 
 export default router;

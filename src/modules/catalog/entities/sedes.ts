@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, M
 import { Radicacion } from "../../radicacion/entities/radicacion";
 import { NotasTecnicas } from "../../radicacion/entities/notas-tecnicas";
 import { ServiciosEjecutados } from "../../radicacion/entities/servicios-ejecutados";
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { dispositivosRed } from "../../inventory/entities/dispositivos-red";
 import { Municipio } from "./municipio";
 import { Usuarios } from "../../auth/entities/usuarios";
@@ -15,30 +15,36 @@ import { ProgramaMetaHistorico } from "../../programs/entities/programa-meta-his
 import { DemandaInducida } from "../../demand-induced/entities/demanda-inducida";
 
 @Entity("headquarters")
-export class Sedes extends BaseEntity{
+export class Sedes extends BaseEntity {
 
-    @PrimaryGeneratedColumn({name: "id", type: "int"})
+    @PrimaryGeneratedColumn({ name: "id", type: "int" })
     id: number
 
-    @Column({name: "name", type: "varchar", length: 100})
+    @Column({ name: "name", type: "varchar", length: 100 })
     @IsString()
-    @IsNotEmpty({message: "El nombre del lugar es requerido"})
-    @Length(3, 100, {message: "El nombre del lugar debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({ message: "El nombre del lugar es requerido" })
+    @Length(3, 100, { message: "El nombre del lugar debe tener entre $constraint1 y $constraint2 caracteres" })
     name: string
 
-    @Column({name: "status", type: "tinyint", width: 1, default: 1})
+    @Column({ name: "status", type: "tinyint", width: 1, default: 1 })
     @IsBoolean()
-    @IsNotEmpty({message: "El estado del lugar es requerido"})
+    @IsNotEmpty({ message: "El estado del lugar es requerido" })
     status: boolean
 
-    @Column({name: "headquarter_number", nullable: true, type: "int"})
+    @Column({ name: "headquarter_number", nullable: true, type: "int" })
+    @IsOptional()
+    @IsInt()
     numeroSede: number
 
-    @Column({name: "address", type: "varchar", length: 255})
+    @Column({ name: "address", type: "varchar", length: 255, nullable: false })
+    @IsNotEmpty({ message: "La dirección del lugar es requerida" })
+    @IsString()
     address: string
 
-    @Column({name: "municipality_id", type: "int"})
-    municipalityId: number
+    @Column({ name: "municipality_id", type: "int" })
+    @IsNotEmpty({ message: "El municipio de la sede es requerido" })
+    @IsInt({ message: "El municipio de la sede debe ser un número entero" })
+    municipalityId: number;
 
     @Column({
         name: "license_code",
@@ -73,7 +79,7 @@ export class Sedes extends BaseEntity{
 
     // relacion con municipio
     @ManyToOne(() => Municipio, (municipio) => municipio.placeRelation)
-    @JoinColumn({name: "municipality_id"})
+    @JoinColumn({ name: "municipality_id" })
     municipioRelation: Municipio;
 
     // relacion con notas tecnicas
@@ -94,7 +100,7 @@ export class Sedes extends BaseEntity{
 
     @OneToMany(() => Equipos, (equipos) => equipos.placeRelation)
     EquipmentRelation: Equipos[]
-    
+
     // Relaciones con las nuevas entidades
     @OneToMany(() => Televisor, (televisor) => televisor.sedeRelation)
     televisoresRelation: Televisor[]

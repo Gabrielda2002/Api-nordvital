@@ -188,7 +188,7 @@ router.use(ipsPrimariaRoutes);
 router.use(ipsRemiteRoutes);
 router.use(especialidadRoutes);
 router.use("/group-services", grupoServiciosRoutes);
-router.use(sedesRoutes);
+router.use("/headquarters", sedesRoutes);
 router.use(municipioRoutes);
 router.use(departamentosRoutes);
 router.use(unidadFuncionalRoutes);

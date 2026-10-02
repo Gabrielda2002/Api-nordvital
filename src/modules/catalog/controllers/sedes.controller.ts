@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { QueryFailedError } from "typeorm";
 import { Sedes } from "../entities/sedes";
-import { validate } from "class-validator";
-import { parse } from "path";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
 
 export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
@@ -11,7 +12,7 @@ export async function getAllLugaresRadicacion(req: Request, res: Response, next:
         .getMany();
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
+            throw new NotFoundError("Sede not found");
         }
 
         const lugaresFormat = lugaresRadicacion.map(lugar => ({
@@ -23,6 +24,7 @@ export async function getAllLugaresRadicacion(req: Request, res: Response, next:
             cityId: lugar.municipioRelation.id,
             department: lugar.municipioRelation?.departmentRelation?.name,
             city: lugar.municipioRelation.name,
+            licenseCode: lugar.licenseCode,
             headquartersNumber: lugar.numeroSede,
         }));
 
@@ -39,7 +41,7 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
         const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id))  });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
+            throw new NotFoundError("Sede not found");
         }
 
         return res.json(lugarRadicacion);
@@ -50,78 +52,27 @@ export async function getLugarRadicacion(req: Request, res: Response, next: Next
 
 export async function createLugarRadicacion(req: Request, res: Response, next: NextFunction){
     try {
-        const { name, address, city, headquartersNumber } = req.body;
+        const { name, address, cityId, headquartersNumber, licenseCode } = req.body;
 
-        if (!name) {
-            return res.status(400).json({ message: "Name is required" });
-        }
-
-        const lugarRadicacionExist = await Sedes.findOneBy({ name });
+        const lugarRadicacionExist = name ? await Sedes.findOneBy({ name }) : null;
 
         if (lugarRadicacionExist) {
-            return res.status(400).json({ message: "Sedes already exists" });
+            throw new ConflictError("Ya existe una sede con ese nombre");
         }
 
         const lugarRadicacion = new Sedes();
         lugarRadicacion.name = name;
         lugarRadicacion.status = true;
         lugarRadicacion.address = address;
-        lugarRadicacion.municipalityId = city;
+        lugarRadicacion.municipalityId = parseInt(cityId);
         lugarRadicacion.numeroSede = headquartersNumber;
+        lugarRadicacion.licenseCode = licenseCode;
 
-        const errors = await validate(lugarRadicacion);
-
-        if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-
-            return res.status(400).json({ message: "Error creating lugar radicador", messages });
-        }
+       await validateEntity(lugarRadicacion);
 
         await lugarRadicacion.save();
 
         return res.json(lugarRadicacion);
-    } catch (error) {
-        next(error);
-    }
-}
-
-export async function updateLugarRadicacion(req: Request, res: Response, next: NextFunction){
-    try {
-        
-        const { id } = req.params;
-        const { name, status, address, city, headquartersNumber } = req.body;
-
-        const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
-
-        if (!lugarRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
-        }
-
-        lugarRadicacion.name = name;
-        lugarRadicacion.status = status;
-        lugarRadicacion.address = address;
-        lugarRadicacion.municipalityId = city;
-        lugarRadicacion.numeroSede = headquartersNumber;
-
-        const errors = await validate(lugarRadicacion);
-
-        if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints
-            }))
-
-            return res.status(400).json({ message: "Error updating lugar radicador", messages });
-
-        }
-
-        await lugarRadicacion.save();
-
-        return res.json(lugarRadicacion);
-
     } catch (error) {
         next(error);
     }
@@ -134,12 +85,12 @@ export async function deleteLugarRadicacion(req: Request, res: Response, next: N
         const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
+            throw new NotFoundError("Sede not found");
         }
 
         await lugarRadicacion.remove();
 
-        return res.json({ message: "Sedes deleted" });
+        return res.json({ message: "Sede deleted" });
     } catch (error) {
         next(error);
     }
@@ -148,7 +99,6 @@ export async function deleteLugarRadicacion(req: Request, res: Response, next: N
 export async function getLugaresRadicacionByName(req: Request, res: Response, next: NextFunction){
     try {
         const { name } = req.body;
-
 
         let lugaresRadicacion;
         
@@ -164,8 +114,7 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
         }
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
-            
+            throw new NotFoundError("Sede not found")
         }
 
         return res.json(lugaresRadicacion);
@@ -174,38 +123,26 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
     }
 }
 
-// actualizar el estadod de lugar radicacion
-
-export async function updateStatusLugarRadicacion(req: Request, res: Response, next: NextFunction){
+export async function updateHeadquarters(req: Request, res: Response, next: NextFunction){
     try {
         
         const { id } = req.params;
-        const { status, name, address, city, headquartersNumber } = req.body;
+        const { status, name, address, cityId, headquartersNumber, licenseCode } = req.body;
 
         const lugarRadicacion = await Sedes.findOneBy({ id: parseInt(String(id)) });
 
         if (!lugarRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
+            throw new NotFoundError("Sede not found");
         }
 
         lugarRadicacion.name = name;
         lugarRadicacion.status = status == "1";
         lugarRadicacion.address = address;
-        lugarRadicacion.municipalityId = city;
+        lugarRadicacion.municipalityId = parseInt(cityId);
         lugarRadicacion.numeroSede = headquartersNumber;
+        lugarRadicacion.licenseCode = licenseCode;
 
-        console.log(lugarRadicacion)
-
-        const errors = await validate(lugarRadicacion);
-
-        if (errors.length > 0) {
-            const errorsMessage = errors.map(err => (
-                Object.values(err.constraints || {}).join(", ")
-            ));
-
-            return res.status(400).json({ message: errorsMessage });
-
-        }
+        await validateEntity(lugarRadicacion);
 
         await lugarRadicacion.save();
 
@@ -228,7 +165,7 @@ export async function getLugaresRadicacionByDepartment(req: Request, res: Respon
         .getMany();
 
         if (!lugaresRadicacion) {
-            return res.status(404).json({ message: "Sedes not found" });
+            throw new NotFoundError("Sede not found");
         }
 
         return res.json(lugaresRadicacion);

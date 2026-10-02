@@ -362,31 +362,134 @@ export const options = {
         },
         Sedes: {
           type: "object",
-          required: ["name"],
+          description: "Sede (respuesta de la entidad)",
           properties: {
             id: {
               type: "integer",
-              description: "ID del lugar de radicación",
+              description: "ID de la sede",
             },
             name: {
               type: "string",
-              description: "Nombre del lugar de radicación",
+              description: "Nombre de la sede",
             },
             status: {
               type: "boolean",
-              description: "Estado del lugar de radicación",
+              description: "Estado de la sede",
             },
             address: {
               type: "string",
-              description: "Dirección del lugar de radicación",
+              description: "Dirección de la sede",
             },
-            departamento: {
+            municipalityId: {
+              type: "integer",
+              description: "ID del municipio",
+            },
+            numeroSede: {
+              type: "integer",
+              nullable: true,
+              description: "Número de la sede",
+            },
+            licenseCode: {
+              type: "string",
+              nullable: true,
+              minLength: 5,
+              maxLength: 20,
+              description: "Código de habilitación de la sede (REPS). Sus primeros 5 dígitos son el código Divipola del municipio.",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha de creación",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+              description: "Fecha de actualización",
+            },
+          },
+        },
+        SedesListItem: {
+          type: "object",
+          description: "Sede con municipio y departamento (respuesta del listado)",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la sede",
+            },
+            name: {
+              type: "string",
+              description: "Nombre de la sede",
+            },
+            address: {
+              type: "string",
+              description: "Dirección de la sede",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado de la sede",
+            },
+            departmentId: {
               type: "integer",
               description: "ID del departamento",
             },
-            city: {
+            cityId: {
               type: "integer",
-              description: "ID de la ciudad",
+              description: "ID del municipio",
+            },
+            department: {
+              type: "string",
+              description: "Nombre del departamento",
+            },
+            city: {
+              type: "string",
+              description: "Nombre del municipio",
+            },
+            licenseCode: {
+              type: "string",
+              nullable: true,
+              description: "Código de habilitación de la sede (REPS)",
+            },
+            headquartersNumber: {
+              type: "integer",
+              nullable: true,
+              description: "Número de la sede",
+            },
+          },
+        },
+        SedesRequest: {
+          type: "object",
+          required: ["name", "cityId", "address", "headquartersNumber"],
+          properties: {
+            name: {
+              type: "string",
+              minLength: 3,
+              maxLength: 100,
+              description: "Nombre de la sede",
+            },
+            cityId: {
+              type: "integer",
+              description: "ID del municipio (tabla municipalities)",
+            },
+            address: {
+              type: "string",
+              maxLength: 255,
+              description: "Dirección de la sede",
+            },
+            headquartersNumber: {
+              type: "integer",
+              description: "Número de la sede",
+            },
+            licenseCode: {
+              type: "string",
+              nullable: true,
+              minLength: 5,
+              maxLength: 20,
+              description: "Código de habilitación de la sede (REPS). Obligatorio para sedes usadas en PPS; sus primeros 5 dígitos son el código Divipola del municipio.",
+            },
+            status: {
+              type: "integer",
+              enum: [0, 1],
+              description: "Estado de la sede (solo en actualización)",
             },
           },
         },
