@@ -28,7 +28,7 @@ export class PpsActionLine extends BaseEntity {
     @Length(2, 2, { message: "El eje estratégico debe tener $constraint1 caracteres (Ej: E1)" })
     strategicAxis: string;
 
-    @Column({ name: "status", type: "tinyint", width: 1, default: 1, comment: "Estado (1=Activa, 0=Inactiva)" })
+    @Column({ name: "status", type: "boolean", default: true, comment: "Estado (true=activa, false=inactiva)" })
     @IsBoolean()
     status: boolean;
 

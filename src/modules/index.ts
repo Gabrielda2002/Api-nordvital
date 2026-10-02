@@ -108,6 +108,7 @@ import {
 import { researchCenterRoutes } from "./research-center";
 import encuestaSatisfaccionRoutes from "./surveys/routes/encuesta-satisfaccion.routes";
 import pqrsdfRoutes from "./pqrsdf/routes/pqrsdf.routes";
+import ppsRoutes from "./pps/routes/pps.routes";
 import { reportsRoutes } from "./reports";
 import {
     areaPqrsRoutes,
@@ -268,5 +269,8 @@ router.use(servicioAtencionRoutes);
 router.use(areaPqrsRoutes);
 router.use(tipoPoblacionPqrsRoutes);
 router.use(motivoGeneralPqrsRoutes);
+
+// PPS module (Plan de Participación Social en Salud - Resolución 2063 de 2017)
+router.use("/pps", ppsRoutes);
 
 export default router;

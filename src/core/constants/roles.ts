@@ -263,6 +263,13 @@ export const ROLE_GROUPS = {
     ROLE_IDS.COORDINADORA_ENFERMERIA,
   ],
 
+  /** Colaboradores del módulo PPS (Plan de Participación Social en Salud) */
+  PPS: [
+    ROLE_IDS.ADMINISTRADOR,
+    ROLE_IDS.GERENTE,
+    ROLE_IDS.SIAU,
+  ],
+
   SEARCH_PATIENTS: [
     ROLE_IDS.ADMINISTRADOR,
     ROLE_IDS.AUDITOR,

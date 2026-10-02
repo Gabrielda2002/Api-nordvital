@@ -21,7 +21,7 @@ export class PpsTargetPopulation extends BaseEntity {
     @Length(2, 255, { message: "La descripción de la población objetivo debe tener entre $constraint1 y $constraint2 caracteres" })
     description: string;
 
-    @Column({ name: "status", type: "tinyint", width: 1, default: 1, comment: "Estado (1=Activa, 0=Inactiva)" })
+    @Column({ name: "status", type: "boolean", default: true, comment: "Estado (true=activa, false=inactiva)" })
     @IsBoolean()
     status: boolean;
 

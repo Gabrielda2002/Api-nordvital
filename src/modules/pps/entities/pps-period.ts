@@ -29,7 +29,7 @@ export class PpsPeriod extends BaseEntity {
     @IsOptional()
     cutoffDate?: Date;
 
-    @Column({ name: "status", type: "tinyint", width: 1, default: 1, comment: "Estado (1=Activa, 0=Inactiva)" })
+    @Column({ name: "status", type: "boolean", default: true, comment: "Estado (true=activa, false=inactiva)" })
     @IsBoolean()
     status: boolean;
 

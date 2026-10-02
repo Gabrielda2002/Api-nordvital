@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { IsBoolean, IsInt, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsBoolean, IsInt, IsNotEmpty, IsString, Length, Matches } from "class-validator";
 import { PpsActionLine } from "./pps-action-line";
 import { PpsActivity } from "./pps-activity";
 
@@ -26,9 +26,10 @@ export class PpsGoal extends BaseEntity {
     @IsString()
     @IsNotEmpty({ message: "La descripción de la meta es requerida" })
     @Length(20, 300, { message: "La descripción de la meta debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^[^;,]*$/, { message: "La descripción de la meta no puede contener comas ni punto y coma" })
     description: string;
 
-    @Column({ name: "status", type: "tinyint", width: 1, default: 1, comment: "Estado (1=Activa, 0=Inactiva)" })
+    @Column({ name: "status", type: "boolean", default: true, comment: "Estado (true=activa, false=inactiva)" })
     @IsBoolean()
     status: boolean;
 

@@ -493,6 +493,360 @@ export const options = {
             },
           },
         },
+        PpsActionLine: {
+          type: "object",
+          description: "Línea de acción del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la línea de acción",
+            },
+            code: {
+              type: "string",
+              description: "Código de la línea (Ej: E1La)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción oficial de la línea de acción",
+            },
+            strategicAxis: {
+              type: "string",
+              description: "Eje estratégico (E1 a E5), derivado del código",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsGoal: {
+          type: "object",
+          description: "Meta del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la meta",
+            },
+            actionLineId: {
+              type: "integer",
+              description: "ID de la línea de acción",
+            },
+            code: {
+              type: "string",
+              description: "Consecutivo de la meta (Ej: M01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la meta (20 a 300 caracteres, sin comas ni punto y coma)",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsActivity: {
+          type: "object",
+          description: "Actividad del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la actividad",
+            },
+            goalId: {
+              type: "integer",
+              description: "ID de la meta",
+            },
+            code: {
+              type: "string",
+              description: "Consecutivo de la actividad (Ej: A01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la actividad (20 a 300 caracteres, sin comas ni punto y coma)",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsTargetPopulation: {
+          type: "object",
+          description: "Población objetivo del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del registro",
+            },
+            code: {
+              type: "string",
+              description: "Código oficial (Ej: 01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la población objetivo",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsFundingSource: {
+          type: "object",
+          description: "Fuente de recursos del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del registro",
+            },
+            code: {
+              type: "string",
+              description: "Código oficial (Ej: 01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la fuente de recursos",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsReportingEntity: {
+          type: "object",
+          description: "Entidad que reporta el PPS y parámetros de sus reportes (registro único)",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del registro",
+            },
+            identificationType: {
+              type: "string",
+              enum: ["NI", "DE", "DI", "MU"],
+              description: "Tipo de identificación (NI=NIT, DE=Departamento, DI=Distrito, MU=Municipio)",
+            },
+            identificationNumber: {
+              type: "string",
+              description: "Número de identificación (NIT sin dígito de verificación; código Divipola para DE/DI/MU)",
+            },
+            entityName: {
+              type: "string",
+              description: "Nombre de la entidad",
+            },
+            logoPath: {
+              type: "string",
+              nullable: true,
+              description: "Ruta relativa del logo de la entidad",
+            },
+            programmingFilePrefix: {
+              type: "string",
+              description: "Prefijo del archivo plano de programación (por defecto PPS190PPPS)",
+            },
+            monitoringFilePrefix: {
+              type: "string",
+              description: "Prefijo del archivo plano de seguimiento (por defecto PPS190SPPS)",
+            },
+            strictMode: {
+              type: "boolean",
+              description: "Modo estricto: la programación solo acepta metas y actividades del catálogo",
+            },
+            programmingDueMonth: {
+              type: "integer",
+              description: "Mes límite de entrega de la programación",
+            },
+            programmingDueDay: {
+              type: "integer",
+              description: "Día límite de entrega de la programación",
+            },
+            programmingDueYear: {
+              type: "string",
+              enum: ["same", "next"],
+              description: "Año límite de entrega de la programación (same=misma vigencia, next=año siguiente)",
+            },
+            monitoringDueMonth: {
+              type: "integer",
+              description: "Mes límite de entrega del seguimiento",
+            },
+            monitoringDueDay: {
+              type: "integer",
+              description: "Día límite de entrega del seguimiento",
+            },
+            monitoringDueYear: {
+              type: "string",
+              enum: ["same", "next"],
+              description: "Año límite de entrega del seguimiento (same=misma vigencia, next=año siguiente)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsCatalogRequest: {
+          type: "object",
+          required: ["code", "description"],
+          properties: {
+            code: {
+              type: "string",
+              description: "Código del registro",
+            },
+            description: {
+              type: "string",
+              description: "Descripción del registro",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (solo en actualización)",
+            },
+          },
+        },
+        PpsGoalRequest: {
+          type: "object",
+          required: ["actionLineId", "code", "description"],
+          properties: {
+            actionLineId: {
+              type: "integer",
+              description: "ID de la línea de acción",
+            },
+            code: {
+              type: "string",
+              description: "Consecutivo de la meta (Ej: M01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la meta (20 a 300 caracteres, sin comas ni punto y coma)",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (solo en actualización)",
+            },
+          },
+        },
+        PpsActivityRequest: {
+          type: "object",
+          required: ["goalId", "code", "description"],
+          properties: {
+            goalId: {
+              type: "integer",
+              description: "ID de la meta",
+            },
+            code: {
+              type: "string",
+              description: "Consecutivo de la actividad (Ej: A01)",
+            },
+            description: {
+              type: "string",
+              description: "Descripción de la actividad (20 a 300 caracteres, sin comas ni punto y coma)",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (solo en actualización)",
+            },
+          },
+        },
+        PpsReportingEntityRequest: {
+          type: "object",
+          properties: {
+            identificationType: {
+              type: "string",
+              enum: ["NI", "DE", "DI", "MU"],
+              description: "Tipo de identificación (NI=NIT, DE=Departamento, DI=Distrito, MU=Municipio)",
+            },
+            identificationNumber: {
+              type: "string",
+              description: "Número de identificación (NIT sin dígito de verificación; código Divipola para DE/DI/MU)",
+            },
+            entityName: {
+              type: "string",
+              description: "Nombre de la entidad",
+            },
+            programmingFilePrefix: {
+              type: "string",
+              description: "Prefijo del archivo plano de programación",
+            },
+            monitoringFilePrefix: {
+              type: "string",
+              description: "Prefijo del archivo plano de seguimiento",
+            },
+            strictMode: {
+              type: "boolean",
+              description: "Modo estricto",
+            },
+            programmingDueMonth: {
+              type: "integer",
+              description: "Mes límite de entrega de la programación",
+            },
+            programmingDueDay: {
+              type: "integer",
+              description: "Día límite de entrega de la programación",
+            },
+            programmingDueYear: {
+              type: "string",
+              enum: ["same", "next"],
+              description: "Año límite de entrega de la programación",
+            },
+            monitoringDueMonth: {
+              type: "integer",
+              description: "Mes límite de entrega del seguimiento",
+            },
+            monitoringDueDay: {
+              type: "integer",
+              description: "Día límite de entrega del seguimiento",
+            },
+            monitoringDueYear: {
+              type: "string",
+              enum: ["same", "next"],
+              description: "Año límite de entrega del seguimiento",
+            },
+          },
+        },
         Municipio: {
           type: "object",
           required: ["name", "nitMunicipio"],

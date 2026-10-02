@@ -77,10 +77,9 @@ export class PpsReportingEntity extends BaseEntity {
 
     @Column({
         name: "strict_mode",
-        type: "tinyint",
-        width: 1,
-        default: 1,
-        comment: "Modo estricto: la programación solo acepta metas y actividades del catálogo (1=Sí, 0=No)",
+        type: "boolean",
+        default: true,
+        comment: "Modo estricto: la programación solo acepta metas y actividades del catálogo",
     })
     @IsBoolean()
     strictMode: boolean;
