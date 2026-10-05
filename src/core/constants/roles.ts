@@ -39,6 +39,7 @@ export const ROLE_IDS = {
   AUXILIAR_INFRAESTRUCTURA:   '23',
   COORDINADOR_SST:            '24',
   AUXILIAR_SST:               '25',
+  AUXILIAR_INVENTARIO:        '26',
 } as const;
 
 /**
@@ -135,11 +136,16 @@ export const ROLE_GROUPS = {
     ROLE_IDS.SOPORTE,
   ],
 
-  /** Catálogo de inventario (Admin, Coordinador, Calidad) */
+  /** Catálogo de inventario */
   INVENTORY_CATALOG: [
     ROLE_IDS.ADMINISTRADOR,
+    ROLE_IDS.GERENTE,
     ROLE_IDS.COORDINADOR,
     ROLE_IDS.CALIDAD,
+    ROLE_IDS.AUXILIAR_INVENTARIO,
+    ROLE_IDS.COORDINADOR_INFRAESTRUCTURA,
+    ROLE_IDS.COORDINADOR_SST,
+    ROLE_IDS.COORDINADORA_ENFERMERIA,
   ],
 
   /** Inventario completo — todos los gestores de inventario */
@@ -149,6 +155,7 @@ export const ROLE_GROUPS = {
     ROLE_IDS.CALIDAD,
     ROLE_IDS.GERENTE,
     ROLE_IDS.SOPORTE,
+    ROLE_IDS.AUXILIAR_INVENTARIO
   ],
 
   /** Aprobadores de solicitudes de permisos/vacaciones (sin Gerente) */

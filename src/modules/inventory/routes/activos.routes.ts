@@ -52,9 +52,9 @@ const router = Router();
  *       404:
  *         description: No se encontraron activos
  */
-router.get('/activos/:id', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES),validarId ,getAllByAssetId);
+router.get('/activos/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG),validarId, getAllByAssetId);
 
-router.get('/activos', authenticate, authorizeRoles(ROLE_GROUPS.COORDINADORES), getAll);
+router.get('/activos', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG), getAll);
 
 /**
  * @swagger

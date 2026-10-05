@@ -56,7 +56,7 @@ const router = Router();
  *       401:
  *         description: No autorizado
  */
-router.get("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllAccessories);
+router.get("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), getAllAccessories);
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ router.get("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINIS
  *       404:
  *         description: Accesorio no encontrado
  */
-router.get("/accesorios-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, getAccessory);
+router.get("/accesorios-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getAccessory);
 
 /**
  * @swagger
@@ -129,7 +129,7 @@ router.get("/accesorios-equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADM
  *       400:
  *         description: Error de validación
  */
-router.post("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),createAccessory);
+router.post("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]),createAccessory);
 
 /**
  * @swagger
@@ -178,7 +178,7 @@ router.post("/accesorios-equipos", authenticate, authorizeRoles([ROLE_IDS.ADMINI
  *       400:
  *         description: Error de validación
  */
-router.put("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateAccessory);
+router.put("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, updateAccessory);
 
 /**
  * @swagger
@@ -198,6 +198,6 @@ router.put("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADM
  *       200:
  *         description: Accesorio eliminado exitosamente
  */
-router.delete("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteAccessory);
+router.delete("/accesorios/equipos/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, deleteAccessory);
 
 export default router;

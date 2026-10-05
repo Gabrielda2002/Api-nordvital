@@ -133,7 +133,7 @@ router.get("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRA
  *       400:
  *         description: Datos inválidos
  */
-router.post("/componentes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createComponent);
+router.post("/componentes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), createComponent);
 
 /**
  * @swagger
@@ -166,7 +166,7 @@ router.post("/componentes", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR
  *       404:
  *         description: Componente no encontrado
  */
-router.put("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateComponent);
+router.put("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, updateComponent);
 
 /**
  * @swagger
@@ -189,6 +189,6 @@ router.put("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRA
  *       404:
  *         description: Componente no encontrado
  */
-router.delete("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteComponent);
+router.delete("/componentes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, deleteComponent);
 
 export default router;

@@ -355,7 +355,7 @@ router.put("/usuario-update-table/:id", authenticate, authorizeRoles([ROLE_IDS.A
  *       200:
  *         description: Usuario encontrado
  */
-router.post("/search-user-by-name", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.GERENTE, ROLE_IDS.COORDINADOR]), searchUsuarios);
+router.post("/search-user-by-name", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_CATALOG), searchUsuarios);
 
 /**
  * @swagger
