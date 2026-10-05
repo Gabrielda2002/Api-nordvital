@@ -178,7 +178,7 @@ router.delete("/soportes/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRA
  *       404:
  *         description: Soporte no encontrado
  */
-router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.AUDITOR, ROLE_IDS.CALIDAD, ROLE_IDS.AUXILIAR, ROLE_IDS.RADICADOR, ROLE_IDS.SIAU, ROLE_IDS.CONTRATACION, ROLE_IDS.MEDICO, ROLE_IDS.JEFE, ROLE_IDS.CIRUGIA, ROLE_IDS.PARAMEDICO, ROLE_IDS.SOPORTE, ROLE_IDS.RRHH, ROLE_IDS.ENFERMERIA]), validarId, generateSoporteAccessToken);
+router.post("/soportes/:id/access-token", fileAccessRateLimit, authenticate, authorizeRoles(ROLE_GROUPS.ALL), validarId, generateSoporteAccessToken);
 
 /**
  * @swagger

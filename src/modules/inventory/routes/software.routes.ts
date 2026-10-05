@@ -75,7 +75,7 @@ router.get("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR
  *       400:
  *         description: Datos inválidos
  */
-router.post("/software", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), createSoftware);
+router.post("/software", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), createSoftware);
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ router.post("/software", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]),
  *       404:
  *         description: Software no encontrado
  */
-router.put("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, updateSoftware);
+router.put("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, updateSoftware);
 
 /**
  * @swagger
@@ -125,6 +125,6 @@ router.put("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR
  *       404:
  *         description: Software no encontrado
  */
-router.delete("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, deleteSoftware);
+router.delete("/software/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, deleteSoftware);
 
 export default router;

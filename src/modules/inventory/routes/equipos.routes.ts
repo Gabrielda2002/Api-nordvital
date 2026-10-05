@@ -83,7 +83,7 @@ const router = Router();
  *       400:
  *         description: Datos inválidos
  */
-router.post("/", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadDocDelivery, createEquipment);
+router.post("/", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), uploadDocDelivery, createEquipment);
 
 /**
  * @swagger
@@ -111,7 +111,7 @@ router.post("/", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), uploadD
  *       404:
  *         description: Equipo no encontrado
  */
-router.put("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), validarId, uploadDocDelivery, updateEquipment);
+router.put("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, uploadDocDelivery, updateEquipment);
 
 /**
  * @swagger
@@ -161,7 +161,7 @@ router.delete("/:id", authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), va
  *       404:
  *         description: No se encontraron equipos
  */
-router.get("/sede/:id", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWERS), validarId, getEquipmentBySede);
+router.get("/sede/:id", authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_VIEWERS, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getEquipmentBySede);
 
 /**
  * @swagger
@@ -190,7 +190,7 @@ router.get("/sede/:id", authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_VIEWE
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentTypeDistribution);
+router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getEquipmentTypeDistribution);
 
 /**
  * @swagger
@@ -219,7 +219,7 @@ router.get('/statics/typeEquipment/:id', authenticate, authorizeRoles(ROLE_GROUP
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentHeadquartersDistribution);
+router.get('/statics/headquarters/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getEquipmentHeadquartersDistribution);
 
 /**
  * @swagger
@@ -263,7 +263,7 @@ router.get('/statics/headquarters/:id', authenticate, authorizeRoles(ROLE_GROUPS
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/age/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentAgeBySede);
+router.get('/statics/age/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getEquipmentAgeBySede);
 
 /**
  * @swagger
@@ -303,7 +303,7 @@ router.get('/statics/age/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTOR
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), validarId, getEquipmentWarrantyStatistics);
+router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getEquipmentWarrantyStatistics);
 
 /**
  * @swagger
@@ -333,7 +333,7 @@ router.get('/statics/warrantyExpiration/:id', authenticate, authorizeRoles(ROLE_
  *       404:
  *         description: No se encontraron equipos
  */
-router.get('/statics/withLock/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS),validarId, getEquipmentLockStatistics);
+router.get('/statics/withLock/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]),validarId, getEquipmentLockStatistics);
 
 /**
  * @swagger
@@ -381,7 +381,7 @@ router.get('/statics/withLock/:id', authenticate, authorizeRoles(ROLE_GROUPS.INV
  *       404:
  *         description: No se encontraron equipos que coincidan con la búsqueda
  */
-router.get('/search', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_MANAGERS), searchEquipmentGlobal);
+router.get('/search', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_MANAGERS, ROLE_IDS.AUXILIAR_INVENTARIO]), searchEquipmentGlobal);
 
 router.post("/equipos/auto-inventory", autoInventory);
 

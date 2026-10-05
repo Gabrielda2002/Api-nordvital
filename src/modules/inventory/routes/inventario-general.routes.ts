@@ -29,7 +29,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllInventarioGeneral);
+router.get('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), getAllInventarioGeneral);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get('/', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR]), getAllIn
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL), getAllInventoryGeneralByHeadquarters);
+router.get('/sede/:id', authenticate, authorizeRoles([...ROLE_GROUPS.INVENTORY_FULL, ROLE_IDS.AUXILIAR_INVENTARIO]), getAllInventoryGeneralByHeadquarters);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ router.get('/sede/:id', authenticate, authorizeRoles(ROLE_GROUPS.INVENTORY_FULL)
  *       500:
  *         description: Error interno del servidor.
  */
-router.post('/', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE]), createInventoryGeneral);
+router.post('/', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]), createInventoryGeneral);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROL
  *       500:
  *         description: Error interno del servidor.
  */
-router.put('/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE]), updateInventoryGeneral);
+router.put('/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]), updateInventoryGeneral);
 
 /**
  * @swagger
@@ -145,7 +145,7 @@ router.put('/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, R
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInvetoryGeneralWarrantyStatitics);
+router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getInvetoryGeneralWarrantyStatitics);
 
 /**
  * @swagger
@@ -165,7 +165,7 @@ router.get('/statistics/warrantyExpiration/:id', authenticate, authorizeRoles([.
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/age/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]),validarId, getInventoryGeneralAgeStatistics);
+router.get('/statistics/age/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]),validarId, getInventoryGeneralAgeStatistics);
 
 /**
  * @swagger
@@ -194,7 +194,7 @@ router.get('/statistics/age/:id', authenticate, authorizeRoles([...ROLE_GROUPS.C
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), validarId, getInventoryGeneralByHeadquartersStatistics);
+router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]), validarId, getInventoryGeneralByHeadquartersStatistics);
 
 /**
  * @swagger
@@ -244,6 +244,6 @@ router.get('/statistics/headquarters/:id', authenticate, authorizeRoles([...ROLE
  *       500:
  *         description: Error interno del servidor.
  */
-router.get('/search', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE]), searchInventoryGeneral);
+router.get('/search', authenticate, authorizeRoles([...ROLE_GROUPS.COORDINADORES, ROLE_IDS.GERENTE, ROLE_IDS.SOPORTE, ROLE_IDS.AUXILIAR_INVENTARIO]), searchInventoryGeneral);
 
 export default router;
