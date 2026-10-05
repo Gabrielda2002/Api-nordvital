@@ -27,7 +27,7 @@ export class PpsPeriod extends BaseEntity {
 
     @Column({ name: "cutoff_date", type: "date", nullable: true, comment: "Fecha de corte para el reporte de seguimiento" })
     @IsOptional()
-    cutoffDate?: Date;
+    cutoffDate?: Date | null;
 
     @Column({ name: "status", type: "boolean", default: true, comment: "Estado (true=activa, false=inactiva)" })
     @IsBoolean()

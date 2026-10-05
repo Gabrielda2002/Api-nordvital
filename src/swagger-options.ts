@@ -847,6 +847,87 @@ export const options = {
             },
           },
         },
+        PpsPeriod: {
+          type: "object",
+          description: "Vigencia (periodo anual) de programación y seguimiento del PPS",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la vigencia",
+            },
+            validityYear: {
+              type: "integer",
+              description: "Año de la vigencia",
+            },
+            startDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha de inicio de la vigencia (AAAA-MM-DD)",
+            },
+            endDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha de fin de la vigencia (AAAA-MM-DD)",
+            },
+            cutoffDate: {
+              type: "string",
+              format: "date",
+              nullable: true,
+              description: "Fecha de corte del seguimiento",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (true=activa)",
+            },
+            createdBy: {
+              type: "integer",
+              nullable: true,
+              description: "Usuario que creó la vigencia",
+            },
+            activitiesCount: {
+              type: "integer",
+              description: "Cantidad de actividades programadas (listado y detalle)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsPeriodRequest: {
+          type: "object",
+          required: ["validityYear", "startDate", "endDate"],
+          properties: {
+            validityYear: {
+              type: "integer",
+              description: "Año de la vigencia (solo creación; no se puede cambiar)",
+            },
+            startDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha de inicio (AAAA-MM-DD)",
+            },
+            endDate: {
+              type: "string",
+              format: "date",
+              description: "Fecha de fin (AAAA-MM-DD)",
+            },
+            cutoffDate: {
+              type: "string",
+              format: "date",
+              nullable: true,
+              description: "Fecha de corte; por defecto igual a la fecha de fin",
+            },
+            status: {
+              type: "boolean",
+              description: "Estado (solo actualización)",
+            },
+          },
+        },
         Municipio: {
           type: "object",
           required: ["name", "nitMunicipio"],
