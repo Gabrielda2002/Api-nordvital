@@ -1,5 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Min } from "class-validator";
+import { IsZeroOrAtLeast } from "../utils/is-zero-or-at-least.decorator";
 import { PpsPeriod } from "./pps-period";
 import { PpsGoal } from "./pps-goal";
 import { PpsActivity } from "./pps-activity";
@@ -46,44 +47,50 @@ export class PpsProgrammedActivity extends BaseEntity {
     @Column({ name: "goal_id", type: "int", nullable: true, comment: "Meta del catálogo (null cuando se programó manualmente fuera del catálogo)" })
     @IsOptional()
     @IsInt()
-    goalId?: number;
+    goalId?: number | null;
 
     @Column({ name: "goal_code", type: "varchar", length: 10, comment: "Consecutivo de la meta (copia histórica)" })
     @IsString()
     @IsNotEmpty({ message: "El consecutivo de la meta es requerido" })
     @Length(2, 10, { message: "El consecutivo de la meta debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^M\d{2,3}$/i, { message: "El consecutivo de la meta debe tener el formato MXX (Ej: M01)" })
     goalCode: string;
 
     @Column({ name: "goal_description", type: "varchar", length: 300, comment: "Descripción de la meta (copia histórica de la que se reportó)" })
     @IsString()
     @IsNotEmpty({ message: "La descripción de la meta es requerida" })
     @Length(20, 300, { message: "La descripción de la meta debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^[^;,]*$/, { message: "La descripción de la meta no puede contener comas ni punto y coma" })
+    @Matches(/^(?!.*no aplica)/i, { message: "La descripción de la meta no puede ser 'no aplica'" })
     goalDescription: string;
 
     @Column({ name: "activity_id", type: "int", nullable: true, comment: "Actividad del catálogo (null cuando se programó manualmente fuera del catálogo)" })
     @IsOptional()
     @IsInt()
-    activityId?: number;
+    activityId?: number | null;
 
     @Column({ name: "activity_code", type: "varchar", length: 10, comment: "Consecutivo de la actividad (copia histórica)" })
     @IsString()
     @IsNotEmpty({ message: "El consecutivo de la actividad es requerido" })
     @Length(2, 10, { message: "El consecutivo de la actividad debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^A\d{2,3}$/i, { message: "El consecutivo de la actividad debe tener el formato AXX (Ej: A01)" })
     activityCode: string;
 
     @Column({ name: "activity_description", type: "varchar", length: 300, comment: "Descripción de la actividad (copia histórica de la que se reportó)" })
     @IsString()
     @IsNotEmpty({ message: "La descripción de la actividad es requerida" })
     @Length(20, 300, { message: "La descripción de la actividad debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^[^;,]*$/, { message: "La descripción de la actividad no puede contener comas ni punto y coma" })
+    @Matches(/^(?!.*no aplica)/i, { message: "La descripción de la actividad no puede ser 'no aplica'" })
     activityDescription: string;
 
     @Column({ name: "numeric_expression", type: "int", comment: "Expresión numérica: veces que se ejecutará la actividad (mayor a 0)" })
-    @IsInt()
+    @IsInt({ message: "La expresión numérica debe ser un número entero" })
     @Min(1, { message: "La expresión numérica debe ser mayor a 0" })
     numericExpression: number;
 
     @Column({ name: "target_population_id", type: "int", comment: "Población objetivo de la actividad" })
-    @IsInt()
+    @IsInt({ message: "La población objetivo es inválida" })
     @IsNotEmpty({ message: "La población objetivo es requerida" })
     targetPopulationId: number;
 
@@ -97,13 +104,13 @@ export class PpsProgrammedActivity extends BaseEntity {
 
     @Column({ name: "programmed_resources", type: "decimal", precision: 12, scale: 2, comment: "Recursos programados (0 o mayor/igual a 10.000)" })
     @IsNumber({ maxDecimalPlaces: 2 }, { message: "Los recursos programados deben ser un valor numérico" })
-    @Min(0, { message: "Los recursos programados no pueden ser negativos" })
+    @IsZeroOrAtLeast(10000, { message: "Los recursos programados deben ser 0 o mayor/igual a 10.000" })
     programmedResources: number;
-
+    
     @Column({ name: "created_by", type: "int", nullable: true, comment: "Usuario que programó la actividad" })
     @IsOptional()
     @IsInt()
-    createdBy?: number;
+    createdBy?: number | null;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;

@@ -928,6 +928,279 @@ export const options = {
             },
           },
         },
+        PpsProgrammedActivity: {
+          type: "object",
+          description: "Actividad programada por vigencia (con copia histórica del catálogo)",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID de la actividad programada",
+            },
+            periodId: {
+              type: "integer",
+              description: "ID de la vigencia",
+            },
+            headquartersId: {
+              type: "integer",
+              description: "ID de la sede que ejecuta la actividad",
+            },
+            territoryCode: {
+              type: "string",
+              description: "Código Divipola (5 dígitos) derivado del código de habilitación de la sede",
+            },
+            actionLineCode: {
+              type: "string",
+              description: "Código de la línea de acción (copia histórica)",
+            },
+            goalId: {
+              type: "integer",
+              nullable: true,
+              description: "ID de la meta del catálogo (null si se programó manualmente)",
+            },
+            goalCode: {
+              type: "string",
+              description: "Consecutivo de la meta (MXX)",
+            },
+            goalDescription: {
+              type: "string",
+              description: "Descripción de la meta (copia histórica)",
+            },
+            activityId: {
+              type: "integer",
+              nullable: true,
+              description: "ID de la actividad del catálogo (null si se programó manualmente)",
+            },
+            activityCode: {
+              type: "string",
+              description: "Consecutivo de la actividad (AXX)",
+            },
+            activityDescription: {
+              type: "string",
+              description: "Descripción de la actividad (copia histórica)",
+            },
+            numericExpression: {
+              type: "integer",
+              description: "Expresión numérica: veces que se ejecutará la actividad",
+            },
+            targetPopulationId: {
+              type: "integer",
+              description: "ID de la población objetivo",
+            },
+            startDate: {
+              type: "string",
+              format: "date",
+            },
+            endDate: {
+              type: "string",
+              format: "date",
+            },
+            programmedResources: {
+              type: "number",
+              description: "Recursos programados (0 o mayor/igual a 10.000)",
+            },
+            createdBy: {
+              type: "integer",
+              nullable: true,
+            },
+            monitoringComplete: {
+              type: "boolean",
+              description: "Indica si el seguimiento está completo (incluido en el listado)",
+            },
+            headquartersRelation: {
+              type: "object",
+              description: "Sede (incluida en el listado)",
+              properties: {
+                id: {
+                  type: "integer",
+                },
+                name: {
+                  type: "string",
+                },
+                licenseCode: {
+                  type: "string",
+                  nullable: true,
+                },
+              },
+            },
+            monitoringRelation: {
+              allOf: [{ $ref: '#/components/schemas/PpsMonitoring' }],
+              nullable: true,
+              description: "Seguimiento de la actividad (null si no se ha diligenciado)",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsProgrammedActivityRequest: {
+          type: "object",
+          required: ["headquartersId", "numericExpression", "targetPopulationId", "startDate", "endDate", "programmedResources"],
+          properties: {
+            headquartersId: {
+              type: "integer",
+              description: "ID de la sede",
+            },
+            goalId: {
+              type: "integer",
+              nullable: true,
+              description: "ID de la meta del catálogo (obligatorio junto con activityId en modo estricto)",
+            },
+            activityId: {
+              type: "integer",
+              nullable: true,
+              description: "ID de la actividad del catálogo (obligatorio en modo estricto)",
+            },
+            actionLineCode: {
+              type: "string",
+              description: "Código de la línea de acción (solo modo manual)",
+            },
+            goalCode: {
+              type: "string",
+              description: "Consecutivo de la meta MXX (solo modo manual)",
+            },
+            goalDescription: {
+              type: "string",
+              description: "Descripción de la meta (solo modo manual)",
+            },
+            activityCode: {
+              type: "string",
+              description: "Consecutivo de la actividad AXX (solo modo manual)",
+            },
+            activityDescription: {
+              type: "string",
+              description: "Descripción de la actividad (solo modo manual)",
+            },
+            numericExpression: {
+              type: "integer",
+              minimum: 1,
+              description: "Veces que se ejecutará la actividad (mayor a 0)",
+            },
+            targetPopulationId: {
+              type: "integer",
+              description: "ID de la población objetivo",
+            },
+            startDate: {
+              type: "string",
+              format: "date",
+              description: "Debe estar dentro de la vigencia",
+            },
+            endDate: {
+              type: "string",
+              format: "date",
+              description: "Debe estar dentro de la vigencia",
+            },
+            programmedResources: {
+              type: "number",
+              description: "0 o mayor/igual a 10.000",
+            },
+          },
+        },
+        PpsMonitoring: {
+          type: "object",
+          description: "Seguimiento de ejecución de una actividad programada",
+          properties: {
+            id: {
+              type: "integer",
+              description: "ID del registro de seguimiento",
+            },
+            programmedActivityId: {
+              type: "integer",
+              description: "ID de la actividad programada",
+            },
+            result: {
+              type: "integer",
+              nullable: true,
+              description: "Resultado: veces que se ejecutó la actividad",
+            },
+            intervenedPopulationId: {
+              type: "integer",
+              nullable: true,
+              description: "Población intervenida (si es null se usa la población objetivo programada)",
+            },
+            totalPersons: {
+              type: "integer",
+              nullable: true,
+              description: "Total de personas impactadas",
+            },
+            executedResources: {
+              type: "number",
+              nullable: true,
+              description: "Recursos ejecutados (puede ser 0)",
+            },
+            fundingSourceId: {
+              type: "integer",
+              nullable: true,
+              description: "ID de la fuente de recursos",
+            },
+            evidenceLink: {
+              type: "string",
+              nullable: true,
+              description: "Link de la evidencia",
+            },
+            verificationMeans: {
+              type: "string",
+              nullable: true,
+              description: "Medio de verificación",
+            },
+            updatedBy: {
+              type: "integer",
+              nullable: true,
+              description: "Usuario que actualizó el seguimiento",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+        PpsMonitoringRequest: {
+          type: "object",
+          description: "Actualización parcial del seguimiento: envía solo los campos a cambiar; null o cadena vacía limpia el campo",
+          properties: {
+            result: {
+              type: "integer",
+              nullable: true,
+              minimum: 0,
+            },
+            intervenedPopulationId: {
+              type: "integer",
+              nullable: true,
+            },
+            totalPersons: {
+              type: "integer",
+              nullable: true,
+              minimum: 0,
+            },
+            executedResources: {
+              type: "number",
+              nullable: true,
+              minimum: 0,
+            },
+            fundingSourceId: {
+              type: "integer",
+              nullable: true,
+            },
+            evidenceLink: {
+              type: "string",
+              nullable: true,
+              maxLength: 500,
+            },
+            verificationMeans: {
+              type: "string",
+              nullable: true,
+              maxLength: 500,
+            },
+          },
+        },
         Municipio: {
           type: "object",
           required: ["name", "nitMunicipio"],

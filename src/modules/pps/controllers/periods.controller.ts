@@ -3,25 +3,7 @@ import { PpsPeriod } from "../entities/pps-period";
 import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
-
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-const parseDate = (value: unknown, label: string): Date => {
-    const text = String(value ?? "").trim();
-
-    if (!DATE_PATTERN.test(text)) {
-        throw new BadRequestError(`La ${label} no es válida; use el formato AAAA-MM-DD`);
-    }
-
-    const [year, month, day] = text.split("-").map(Number);
-    const check = new Date(Date.UTC(year, month - 1, day));
-
-    if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) {
-        throw new BadRequestError(`La ${label} no es una fecha válida`);
-    }
-
-    return text as unknown as Date;
-};
+import { parsePpsDate } from "../utils/pps-date.util";
 
 const assertDateRange = (startDate: Date, endDate: Date, cutoffDate: Date | null): void => {
     if (String(endDate) < String(startDate)) {
@@ -79,10 +61,10 @@ export async function createPeriod(req: Request, res: Response, next: NextFuncti
             throw new ConflictError(`Ya existe una vigencia para el año ${validityYear}`);
         }
 
-        const startDate = parseDate(req.body.startDate, "fecha de inicio");
-        const endDate = parseDate(req.body.endDate, "fecha de fin");
+        const startDate = parsePpsDate(req.body.startDate, "fecha de inicio");
+        const endDate = parsePpsDate(req.body.endDate, "fecha de fin");
         const cutoffDate = req.body.cutoffDate
-            ? parseDate(req.body.cutoffDate, "fecha de corte")
+            ? parsePpsDate(req.body.cutoffDate, "fecha de corte")
             : endDate;
 
         assertDateRange(startDate, endDate, cutoffDate);
@@ -115,18 +97,18 @@ export async function updatePeriod(req: Request, res: Response, next: NextFuncti
         }
 
         if (req.body.startDate !== undefined) {
-            period.startDate = parseDate(req.body.startDate, "fecha de inicio");
+            period.startDate = parsePpsDate(req.body.startDate, "fecha de inicio");
         }
 
         if (req.body.endDate !== undefined) {
-            period.endDate = parseDate(req.body.endDate, "fecha de fin");
+            period.endDate = parsePpsDate(req.body.endDate, "fecha de fin");
         }
 
         if (req.body.cutoffDate !== undefined) {
             period.cutoffDate =
                 req.body.cutoffDate === null || req.body.cutoffDate === ""
                     ? null
-                    : parseDate(req.body.cutoffDate, "fecha de corte");
+                    : parsePpsDate(req.body.cutoffDate, "fecha de corte");
         }
 
         if (req.body.status !== undefined) {

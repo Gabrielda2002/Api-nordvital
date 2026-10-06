@@ -6,6 +6,8 @@ import targetPopulationsRoutes from "./target-populations.routes";
 import fundingSourcesRoutes from "./funding-sources.routes";
 import reportingEntityRoutes from "./reporting-entity.routes";
 import periodsRoutes from "./periods.routes";
+import programmedActivitiesRoutes from "./programmed-activities.routes";
+import monitoringRoutes from "./monitoring.routes";
 
 const router = Router();
 
@@ -16,5 +18,7 @@ router.use(targetPopulationsRoutes);
 router.use(fundingSourcesRoutes);
 router.use(reportingEntityRoutes);
 router.use(periodsRoutes);
+router.use(programmedActivitiesRoutes);
+router.use(monitoringRoutes);
 
 export default router;

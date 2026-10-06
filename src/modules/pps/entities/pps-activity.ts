@@ -19,6 +19,7 @@ export class PpsActivity extends BaseEntity {
     @IsString()
     @IsNotEmpty({ message: "El consecutivo de la actividad es requerido" })
     @Length(2, 10, { message: "El consecutivo de la actividad debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^A\d{2,3}$/i, { message: "El consecutivo de la actividad debe tener el formato AXX (Ej: A01)" })
     code: string;
 
     @Column({ name: "description", type: "varchar", length: 300, comment: "Descripción de la actividad (20 a 300 caracteres, sin comas ni punto y coma)" })

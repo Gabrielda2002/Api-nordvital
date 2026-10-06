@@ -20,6 +20,7 @@ export class PpsGoal extends BaseEntity {
     @IsString()
     @IsNotEmpty({ message: "El consecutivo de la meta es requerido" })
     @Length(2, 10, { message: "El consecutivo de la meta debe tener entre $constraint1 y $constraint2 caracteres" })
+    @Matches(/^M\d{2,3}$/i, { message: "El consecutivo de la meta debe tener el formato MXX (Ej: M01)" })
     code: string;
 
     @Column({ name: "description", type: "varchar", length: 300, comment: "Descripción de la meta (20 a 300 caracteres, sin comas ni punto y coma)" })

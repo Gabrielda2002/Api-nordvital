@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { IsInt, IsNumber, IsOptional, IsString, Length, Min } from "class-validator";
+import { IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
 import { PpsProgrammedActivity } from "./pps-programmed-activity";
 import { PpsTargetPopulation } from "./pps-target-population";
 import { PpsFundingSource } from "./pps-funding-source";
@@ -21,46 +21,46 @@ export class PpsMonitoring extends BaseEntity {
     @IsOptional()
     @IsInt()
     @Min(0, { message: "El resultado no puede ser negativo" })
-    result?: number;
+    result?: number | null;
 
     @Column({ name: "intervened_population_id", type: "int", nullable: true, comment: "Población intervenida (puede diferir de la población objetivo programada)" })
     @IsOptional()
     @IsInt()
-    intervenedPopulationId?: number;
+    intervenedPopulationId?: number | null;
 
     @Column({ name: "total_persons", type: "int", nullable: true, comment: "Total de personas impactadas" })
     @IsOptional()
     @IsInt()
     @Min(0, { message: "El total de personas no puede ser negativo" })
-    totalPersons?: number;
+    totalPersons?: number | null;
 
     @Column({ name: "executed_resources", type: "decimal", precision: 12, scale: 2, nullable: true, comment: "Recursos ejecutados (puede ser 0)" })
     @IsOptional()
     @IsNumber({ maxDecimalPlaces: 2 }, { message: "Los recursos ejecutados deben ser un valor numérico" })
     @Min(0, { message: "Los recursos ejecutados no pueden ser negativos" })
-    executedResources?: number;
+    executedResources?: number | null;
 
     @Column({ name: "funding_source_id", type: "int", nullable: true, comment: "Fuente de los recursos ejecutados" })
     @IsOptional()
     @IsInt()
-    fundingSourceId?: number;
+    fundingSourceId?: number | null;
 
-    @Column({ name: "evidence_link", type: "varchar", length: 500, nullable: true, comment: "Link de la evidencia (mínimo 20 caracteres, sin comas ni punto y coma)" })
+    @Column({ name: "evidence_link", type: "varchar", length: 500, nullable: true, comment: "Link de la evidencia (mínimo 20 caracteres para completar el seguimiento)" })
     @IsOptional()
     @IsString()
-    @Length(20, 500, { message: "El link de la evidencia debe tener entre $constraint1 y $constraint2 caracteres" })
-    evidenceLink?: string;
+    @MaxLength(500, { message: "El link de la evidencia no puede superar los $constraint1 caracteres" })
+    evidenceLink?: string | null;
 
-    @Column({ name: "verification_means", type: "varchar", length: 500, nullable: true, comment: "Medio de verificación (mínimo 20 caracteres, sin comas ni punto y coma)" })
+    @Column({ name: "verification_means", type: "varchar", length: 500, nullable: true, comment: "Medio de verificación (mínimo 20 caracteres para completar el seguimiento)" })
     @IsOptional()
     @IsString()
-    @Length(20, 500, { message: "El medio de verificación debe tener entre $constraint1 y $constraint2 caracteres" })
-    verificationMeans?: string;
+    @MaxLength(500, { message: "El medio de verificación no puede superar los $constraint1 caracteres" })
+    verificationMeans?: string | null;
 
     @Column({ name: "updated_by", type: "int", nullable: true, comment: "Usuario que actualizó el seguimiento" })
     @IsOptional()
     @IsInt()
-    updatedBy?: number;
+    updatedBy?: number | null;
 
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
