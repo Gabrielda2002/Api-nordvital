@@ -34,7 +34,18 @@ export class PpsMonitoring extends BaseEntity {
     @Min(0, { message: "El total de personas no puede ser negativo" })
     totalPersons?: number | null;
 
-    @Column({ name: "executed_resources", type: "decimal", precision: 12, scale: 2, nullable: true, comment: "Recursos ejecutados (puede ser 0)" })
+    @Column({
+        name: "executed_resources",
+        type: "decimal",
+        precision: 12,
+        scale: 2,
+        nullable: true,
+        comment: "Recursos ejecutados (puede ser 0)",
+        transformer: {
+            to: (value: number | null) => value,
+            from: (value: string | null) => (value === null ? null : Number(value)),
+        },
+    })
     @IsOptional()
     @IsNumber({ maxDecimalPlaces: 2 }, { message: "Los recursos ejecutados deben ser un valor numérico" })
     @Min(0, { message: "Los recursos ejecutados no pueden ser negativos" })

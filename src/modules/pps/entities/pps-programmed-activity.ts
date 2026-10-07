@@ -102,7 +102,17 @@ export class PpsProgrammedActivity extends BaseEntity {
     @IsNotEmpty({ message: "La fecha de fin es requerida" })
     endDate: Date;
 
-    @Column({ name: "programmed_resources", type: "decimal", precision: 12, scale: 2, comment: "Recursos programados (0 o mayor/igual a 10.000)" })
+    @Column({
+        name: "programmed_resources",
+        type: "decimal",
+        precision: 12,
+        scale: 2,
+        comment: "Recursos programados (0 o mayor/igual a 10.000)",
+        transformer: {
+            to: (value: number) => value,
+            from: (value: string) => Number(value),
+        },
+    })
     @IsNumber({ maxDecimalPlaces: 2 }, { message: "Los recursos programados deben ser un valor numérico" })
     @IsZeroOrAtLeast(10000, { message: "Los recursos programados deben ser 0 o mayor/igual a 10.000" })
     programmedResources: number;

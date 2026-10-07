@@ -103,7 +103,7 @@ export class PpsReportingEntity extends BaseEntity {
         default: DueYearRelation.SAME,
         comment: "Año límite de entrega de la programación (same=misma vigencia, next=año siguiente)",
     })
-    @IsEnum(DueYearRelation, { message: "El año límite de entrega de la programación no es válido" })
+    @IsEnum(DueYearRelation, { message: "El año limite debe ser igual a 'same' o 'next'" })
     programmingDueYear: DueYearRelation;
 
     @Column({ name: "monitoring_due_month", type: "tinyint", default: 1, comment: "Mes límite de entrega del seguimiento" })
@@ -125,7 +125,7 @@ export class PpsReportingEntity extends BaseEntity {
         default: DueYearRelation.NEXT,
         comment: "Año límite de entrega del seguimiento (same=misma vigencia, next=año siguiente)",
     })
-    @IsEnum(DueYearRelation, { message: "El año límite de entrega del seguimiento no es válido" })
+    @IsEnum(DueYearRelation, { message: "El año limite debe ser igual a 'same' o 'next'" })
     monitoringDueYear: DueYearRelation;
 
     @CreateDateColumn({ name: "created_at" })

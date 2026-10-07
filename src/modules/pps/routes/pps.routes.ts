@@ -8,6 +8,7 @@ import reportingEntityRoutes from "./reporting-entity.routes";
 import periodsRoutes from "./periods.routes";
 import programmedActivitiesRoutes from "./programmed-activities.routes";
 import monitoringRoutes from "./monitoring.routes";
+import ppsFilesRoutes from "./pps-files.routes";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use(reportingEntityRoutes);
 router.use(periodsRoutes);
 router.use(programmedActivitiesRoutes);
 router.use(monitoringRoutes);
+router.use(ppsFilesRoutes);
 
 export default router;
