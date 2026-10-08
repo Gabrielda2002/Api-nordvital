@@ -16,7 +16,7 @@ const router = Router();
  * @swagger
  * /pps/periods/{id}/programmed-activities:
  *   get:
- *     summary: Lista las actividades programadas de una vigencia (incluye el seguimiento y si está completo)
+ *     summary: Lista las actividades programadas de una vigencia (incluye el seguimiento, si está completo y los campos pendientes)
  *     tags: [PPS]
  *     security:
  *       - bearerAuth: []

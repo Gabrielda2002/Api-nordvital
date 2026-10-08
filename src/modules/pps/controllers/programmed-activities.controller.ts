@@ -21,10 +21,15 @@ export async function getProgrammedActivities(req: Request, res: Response, next:
             order: { id: "ASC" },
         });
 
-        const rows = activities.map((activity) => ({
-            ...activity,
-            monitoringComplete: validateMonitoringCompleteness(activity, activity.monitoringRelation ?? null).length === 0,
-        }));
+        const rows = activities.map((activity) => {
+            const monitoringIssues = validateMonitoringCompleteness(activity, activity.monitoringRelation ?? null);
+
+            return {
+                ...activity,
+                monitoringComplete: monitoringIssues.length === 0,
+                monitoringIssues,
+            };
+        });
 
         return res.json(rows);
     } catch (error) {

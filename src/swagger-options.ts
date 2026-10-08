@@ -1006,6 +1006,13 @@ export const options = {
               type: "boolean",
               description: "Indica si el seguimiento está completo (incluido en el listado)",
             },
+            monitoringIssues: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description: "Campos pendientes del seguimiento (vacío si está completo). Valores posibles: resultado, poblacionIntervenida, totalPersonas, recursosEjecutados, fuente, link, medioVerificacion",
+            },
             headquartersRelation: {
               type: "object",
               description: "Sede (incluida en el listado)",
