@@ -45,6 +45,7 @@ export async function getReportGeneralInventoryRows(
   data.forEach((d) => {
     rows.push({
       createdAt: d.createdAt,
+      name: d.name || "",
       classification: d.classificationRelation?.name || "",
       asset: d.assetRelation?.name || "",
       material: d.materialRelation?.name || "",
@@ -54,7 +55,6 @@ export async function getReportGeneralInventoryRows(
       dependencyArea: d.dependencyAreaRelation?.name || "",
       assetType: d.assetTypeRelation?.name || "",
       headquarters: d.headquartersRelation?.name || "",
-      name: d.name || "",
       brand: d.brand || "",
       model: d.model || "",
       serial: d.serialNumber || "",
