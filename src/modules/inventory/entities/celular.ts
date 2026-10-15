@@ -123,7 +123,7 @@ export class Celular extends BaseEntity {
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
     deliveryDate: Date;
 
-    @Column({name: "numero_inventario"})
+    @Column({name: "numero_inventario", unique: true})
     @IsString()
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 255, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})

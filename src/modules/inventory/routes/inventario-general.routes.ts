@@ -1,11 +1,13 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
-import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, searchInventoryGeneral, updateInventoryGeneral } from "../controllers/inventario-general.controller";
+import { createInventoryGeneral, getAllInventarioGeneral, getAllInventoryGeneralByHeadquarters, getInventoryGeneralAgeStatistics, getInventoryGeneralByHeadquartersStatistics, getInvetoryGeneralWarrantyStatitics, searchInventoryGeneral, updateInventoryGeneral, getDuplicateInventoryNumbersHandler } from "../controllers/inventario-general.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
+
+router.get('/duplicates', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), getDuplicateInventoryNumbersHandler);
 
 /**
  * @swagger

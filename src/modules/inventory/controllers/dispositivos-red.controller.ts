@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { dispositivosRed } from "../entities/dispositivos-red";
 import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
+import { assertUniqueInventoryNumber } from "../utils/inventory-number.validator";
 
 export async function getAllDevices(
   req: Request,
@@ -78,6 +79,10 @@ export async function createDevice(
     device.status = status;
     device.inventoryNumber = inventoryNumber;
 
+    if (inventoryNumber) {
+      await assertUniqueInventoryNumber(inventoryNumber);
+    }
+
     await validateEntity(device);
 
     await device.save();
@@ -125,6 +130,13 @@ export async function updateDevice(
     device.status = status;
     device.inventoryNumber = inventoryNumber;
     device.sedeId = parseInt(String(sedeId));
+
+    if (inventoryNumber) {
+      await assertUniqueInventoryNumber(inventoryNumber, {
+        assetType: "dispositivos_red",
+        id: device.id,
+      });
+    }
 
     await validateEntity(device);
 

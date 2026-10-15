@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
 import { optionalNumber } from "@core/utils/number-helper";
+import { assertUniqueInventoryNumber, getDuplicateInventoryNumbers } from "../utils/inventory-number.validator";
 
 export async function getAllInventarioGeneral(
   req: Request,
@@ -165,6 +166,7 @@ export async function createInventoryGeneral(
     newInventarioGeneral.warranty = parseBooleanFlag(warranty);
     newInventarioGeneral.warrantyPeriod = warrantyPeriod;
     newInventarioGeneral.inventoryNumber = inventoryNumber;
+    await assertUniqueInventoryNumber(inventoryNumber);
     newInventarioGeneral.classificationId = parseInt(String(classificationId));
     newInventarioGeneral.headquartersId = parseInt(String(headquartersId));
     newInventarioGeneral.statusId = parseInt(String(statusId)); 
@@ -282,6 +284,13 @@ export async function updateInventoryGeneral(
       dependencyAreaId,
       inventarioGeneral.dependencyAreaId
     );
+
+    if (inventarioGeneral.inventoryNumber) {
+      await assertUniqueInventoryNumber(inventarioGeneral.inventoryNumber, {
+        assetType: "inventario_general",
+        id: inventarioGeneral.id,
+      });
+    }
 
     await validateEntity(inventarioGeneral);
 
@@ -527,6 +536,19 @@ export async function searchInventoryGeneral(
 
     return res.status(200).json(inventarioGeneralFormated);
 
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getDuplicateInventoryNumbersHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const duplicates = await getDuplicateInventoryNumbers();
+    return res.status(200).json(duplicates);
   } catch (error) {
     next(error);
   }

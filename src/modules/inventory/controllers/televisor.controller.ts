@@ -6,6 +6,7 @@ import { parseBooleanFlag } from "@core/utils/boolean-helper";
 import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { optionalNumber } from "@core/utils/number-helper";
+import { assertUniqueInventoryNumber } from "../utils/inventory-number.validator";
 
 export async function getTelevisorBySedeId(
   req: Request,
@@ -136,6 +137,9 @@ export async function createTelevisor(
     televisor.warranty = parseBooleanFlag(warranty);
     televisor.deliveryDate = deliveryDate;
     televisor.inventoryNumber = inventoryNumber || "Sin número de inventario";
+    if (inventoryNumber) {
+      await assertUniqueInventoryNumber(inventoryNumber);
+    }
     televisor.observation = observation;
     televisor.status = status;
     televisor.acquisitionValue = optionalNumber(acquisitionValue, 0);
@@ -239,6 +243,13 @@ export async function updateTelevisor(
       televisor.idResponsable
     );
     televisor.sedeId = optionalNumber(sedeId, televisor.sedeId);
+
+    if (televisor.inventoryNumber) {
+      await assertUniqueInventoryNumber(televisor.inventoryNumber, {
+        assetType: "televisores",
+        id: televisor.id,
+      });
+    }
 
     await validateEntity(televisor);
 

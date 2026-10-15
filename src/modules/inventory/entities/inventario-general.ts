@@ -78,7 +78,7 @@ export class InventarioGeneral extends BaseEntity {
     @IsString()
     warrantyPeriod: string;
 
-    @Column({ name: "numero_inventario", type: "varchar", length: 150, nullable: true })
+    @Column({ name: "numero_inventario", type: "varchar", length: 150, nullable: true, unique: true })
     @IsNotEmpty({ message: "Numero de inventario es obligatorio"})
     @IsString()
     inventoryNumber: string;

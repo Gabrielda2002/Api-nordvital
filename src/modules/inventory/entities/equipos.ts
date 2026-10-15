@@ -89,9 +89,9 @@ export class Equipos extends BaseEntity {
 
     @Column({name: "fecha_entrega"})
     @IsNotEmpty({message: "La fecha de entrega es requerida"})
-    deliveryDate: Date  
+deliveryDate: Date  
 
-    @Column({name: "numero_intentario"})
+    @Column({name: "numero_intentario", unique: true})
     @IsString()
     @IsNotEmpty({message: "El número de inventario es requerido"})
     @Length(3, 200, {message: "El número de inventario debe tener entre $constraint1 y $constraint2 caracteres"})

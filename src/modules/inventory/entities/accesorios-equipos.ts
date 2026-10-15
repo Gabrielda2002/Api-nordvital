@@ -71,7 +71,7 @@ export class AccesoriosEquipos extends BaseEntity {
   })
   status: string;
 
-  @Column({ name: "numero_inventario" })
+  @Column({ name: "numero_inventario", unique: true })
   @IsString()
   @IsNotEmpty({ message: "El número de inventario del accesorio es requerido" })
   @Length(3, 255, {

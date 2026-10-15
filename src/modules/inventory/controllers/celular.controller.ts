@@ -11,6 +11,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custo
 import Logger from "@core/utils/logger-wrapper";
 import { validateEntity } from "@core/utils/validation-helper";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
+import { assertUniqueInventoryNumber } from "../utils/inventory-number.validator";
 
 export async function getPhoneBySedeId(
   req: Request,
@@ -156,6 +157,7 @@ export async function createPhone(
     newPhone.warranty = parseBooleanFlag(warranty);
     newPhone.deliveryDate = deliveryDate;
     newPhone.inventoryNumber = inventoryNumber;
+    await assertUniqueInventoryNumber(inventoryNumber);
     newPhone.responsible = parseInt(String(responsable));
     newPhone.caseProtector = parseBooleanFlag(caseProtector);
     newPhone.temperedGlass = parseBooleanFlag(tenperedGlass);
@@ -300,6 +302,12 @@ export async function updatePhone(
     phone.warranty = parseBooleanFlag(warranty);
     phone.deliveryDate = deliveryDate;
     phone.inventoryNumber = inventoryNumber;
+
+    await assertUniqueInventoryNumber(inventoryNumber, {
+      assetType: "celulares",
+      id: phone.id,
+    });
+
     phone.responsible = parseInt(String(responsable));
     phone.caseProtector = parseBooleanFlag(caseProtector);
     phone.temperedGlass = parseBooleanFlag(tenperedGlass);

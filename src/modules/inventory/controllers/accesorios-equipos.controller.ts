@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AccesoriosEquipos } from "../entities/accesorios-equipos";
 import { validate } from "class-validator";
+import { assertUniqueInventoryNumber } from "../utils/inventory-number.validator";
 
 export async function getAllAccessories(
   req: Request,
@@ -85,6 +86,10 @@ export async function createAccessory(
     accessory.status = status;
     accessory.inventoryNumber = inventoryNumber;
 
+    if (inventoryNumber) {
+      await assertUniqueInventoryNumber(inventoryNumber);
+    }
+
     const errors = await validate(accessory);
     if (errors.length > 0) {
       const message = errors.map((err) => ({
@@ -139,6 +144,13 @@ export async function updateAccessory(
     accessory.otherData = otherData;
     accessory.status = status;
     accessory.inventoryNumber = inventoryNumber;
+
+    if (inventoryNumber) {
+      await assertUniqueInventoryNumber(inventoryNumber, {
+        assetType: "accesorios_equipos",
+        id: accessory.id,
+      });
+    }
 
     const errors = await validate(accessory);
 

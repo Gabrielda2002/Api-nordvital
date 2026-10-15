@@ -12,6 +12,7 @@ import Logger from "@core/utils/logger-wrapper";
 import { validateEntity } from "@core/utils/validation-helper";
 import { ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import { parseBooleanFlag } from "@core/utils/boolean-helper";
+import { assertUniqueInventoryNumber } from "../utils/inventory-number.validator";
 
 export async function createEquipment(
   req: Request,
@@ -77,6 +78,7 @@ export async function createEquipment(
     equipment.warranty = parseBooleanFlag(warranty);
     equipment.deliveryDate = deliveryDate;
     equipment.inventoryNumber = inventoryNumber;
+    await assertUniqueInventoryNumber(inventoryNumber);
     equipment.dhcp = parseBooleanFlag(dhcp);
     equipment.idUsuario = parseInt(managerId);
     equipment.lock = parseBooleanFlag(lock);
@@ -219,6 +221,11 @@ export async function updateEquipment(
     equipment.lockKey = codeLock || null;
     equipment.inventoryNumber = inventoryNumber;
     equipment.sedeId = parseInt(String(sedeId));
+
+    await assertUniqueInventoryNumber(inventoryNumber, {
+      assetType: "equipos",
+      id: equipment.id,
+    });
 
     await validateEntity(equipment);
 
@@ -868,7 +875,13 @@ export async function autoInventory(
 
       // Actualizar datos administrativos SOLO si vienen en el request
       if (equipment.ubicacion) existingEquipment.ubicacion = equipment.ubicacion;
-      if (equipment.inventoryNumber) existingEquipment.inventoryNumber = equipment.inventoryNumber;
+      if (equipment.inventoryNumber) {
+        existingEquipment.inventoryNumber = equipment.inventoryNumber;
+        await assertUniqueInventoryNumber(equipment.inventoryNumber, {
+          assetType: "equipos",
+          id: existingEquipment.id,
+        });
+      }
       if (equipment.purchaseDate) existingEquipment.purchaseDate = new Date(equipment.purchaseDate);
       if (equipment.warrantyTime) existingEquipment.warrantyTime = equipment.warrantyTime;
       if (equipment.warranty !== undefined) existingEquipment.warranty = equipment.warranty;
@@ -928,6 +941,9 @@ export async function autoInventory(
       newEquipment.warranty = equipment.warranty || false;
       newEquipment.deliveryDate = equipment.deliveryDate ? new Date(equipment.deliveryDate) : new Date();
       newEquipment.inventoryNumber = equipment.inventoryNumber || 'Por asignar';
+      if (equipment.inventoryNumber) {
+        await assertUniqueInventoryNumber(equipment.inventoryNumber);
+      }
       newEquipment.dhcp = equipment.dhcp !== undefined ? equipment.dhcp : true;
       newEquipment.idUsuario = null;
       newEquipment.lock = equipment.lock || false;
