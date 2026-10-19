@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjetivoDemandaInducida } from "../entities/objetivo-demanda-inducida";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllObjetiveDemandInduced = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -28,7 +29,7 @@ export const getObjetiveDemandInducedByName = async (req: Request, res: Response
             .getMany(); 
         }else {
             objetiveDemandInduced =  await ObjetivoDemandaInducida.createQueryBuilder("objetivoDemandaInducida")
-            .where("objetivoDemandaInducida.name LIKE :name", { name: `%${name}%` })
+            .where("objetivoDemandaInducida.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .getMany();
         }
 

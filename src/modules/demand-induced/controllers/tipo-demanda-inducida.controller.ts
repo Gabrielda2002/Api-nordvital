@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { TipoDemandaInducida } from "../entities/tipo-demanda-inducida";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllTypeDemandInduced = async (
   req: Request,
@@ -36,7 +37,7 @@ export const getTypeDemandInducedByName = async (
         .getMany();
     }else {
       typeDemandInduced = await TipoDemandaInducida.createQueryBuilder("tipo")
-        .where("tipo.name LIKE :name", { name: `%${name}%` })
+        .where("tipo.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

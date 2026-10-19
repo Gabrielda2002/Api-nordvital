@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Programa } from "../entities/programa";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getProgramByName = async (
   req: Request,
@@ -17,7 +18,7 @@ export const getProgramByName = async (
         .getMany();
     } else {
       program = await Programa.createQueryBuilder("program")
-        .where("program.name LIKE :name", { name: `%${name}%` })
+        .where("program.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

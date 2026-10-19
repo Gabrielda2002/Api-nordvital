@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Convenio } from "../entities/convenio";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllConvenio(req: Request, res: Response, next: NextFunction) {
     try {
@@ -173,7 +174,7 @@ export async function getAgreementByName(req: Request, res: Response, next: Next
                 .getMany();
         } else {
             convenio = await Convenio.createQueryBuilder("convenio")
-                .where("convenio.name LIKE :name", { name: `%${name}%` })
+                .where("convenio.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
                 .getMany();
         }
 

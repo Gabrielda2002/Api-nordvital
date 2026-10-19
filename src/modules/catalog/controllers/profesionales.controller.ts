@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Profesionales } from "../entities/profesionales";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllProfessional (req: Request, res: Response, next: NextFunction) {
   try {
@@ -33,7 +34,7 @@ export const getProfesionalByName = async (
         .getMany();
     } else {
       profesional = await Profesionales.createQueryBuilder("profesionales")
-        .where("profesionales.name LIKE :name", { name: `%${name}%` })
+        .where("profesionales.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

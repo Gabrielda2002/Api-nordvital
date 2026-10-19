@@ -3,6 +3,7 @@ import { QueryFailedError } from "typeorm";
 import { Sedes } from "../entities/sedes";
 import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllLugaresRadicacion(req: Request, res: Response, next: NextFunction){
     try {
@@ -109,7 +110,7 @@ export async function getLugaresRadicacionByName(req: Request, res: Response, ne
             
         }else{
             lugaresRadicacion = await Sedes.createQueryBuilder("lugar_radicacion")
-            .where("lugar_radicacion.name LIKE :name", { name: `%${name}%` })
+            .where("lugar_radicacion.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .getMany();
         }
 

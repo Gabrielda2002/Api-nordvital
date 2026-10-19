@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Cargo } from "../entities/cargo";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllPosition(
   req: Request,
@@ -53,7 +54,9 @@ export async function getPositionByName(
                 .getMany();
         }else {
             position = await Cargo.createQueryBuilder("area")
-                .where("area.name LIKE :name AND area.status = true", { name: `%${name}%` })
+                .where("area.name LIKE :name ESCAPE '!' AND area.status = true", {
+                    name: buildContainsPattern(name),
+                })
                 .getMany();
         }
 

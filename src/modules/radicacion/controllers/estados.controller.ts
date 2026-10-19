@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Estados } from "../entities/estados";
 import { validate } from "class-validator";
 import { parse } from "path";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllEstados(req: Request, res: Response, next: NextFunction) {
     try {
@@ -140,7 +141,7 @@ export async function getStatusByName(req: Request, res: Response, next: NextFun
                 .getMany();
         }else {
             status = await Estados.createQueryBuilder("estados")
-                .where("estados.name LIKE :name", { name: `%${name}%` })
+                .where("estados.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
                 .limit(20)
                 .getMany();
         }

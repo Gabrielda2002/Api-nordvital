@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IpsPrimaria } from "../entities/ips-primaria";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllIpsPrimaria(req: Request, res: Response, next: NextFunction){
     try {
@@ -135,7 +136,7 @@ export async function getIpsPrimariaByName(req: Request, res: Response, next: Ne
         const { name } = req.body;
 
         const ipsPrimaria = await IpsPrimaria.createQueryBuilder("ipsPrimaria")
-            .where("ipsPrimaria.name LIKE :name", { name: `%${name}%` })
+            .where("ipsPrimaria.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .getMany();
 
         if (!ipsPrimaria) {

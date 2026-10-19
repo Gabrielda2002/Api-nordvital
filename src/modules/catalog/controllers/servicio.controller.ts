@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Servicios } from "../entities/servicios";
 import { NotFoundError, BadRequestError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllServicios(
   req: Request,
@@ -130,7 +131,7 @@ export async function getServiciosByName(
         .getMany();
     } else {
       servicios = await Servicios.createQueryBuilder("servicios")
-        .where("servicios.name LIKE :name", { name: `%${name}%` })
+        .where("servicios.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

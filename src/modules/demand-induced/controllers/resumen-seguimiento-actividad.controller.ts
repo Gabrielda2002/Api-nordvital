@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ResumenSeguimientoActividad } from "../entities/resumen-seguimiento-actividad";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllSummaryActivity = async (
   req: Request,
@@ -41,7 +42,7 @@ export const getSummaryActivityByName = async (
       summaryActivity = await ResumenSeguimientoActividad.createQueryBuilder(
         "resumen"
       )
-        .where("resumen.name LIKE :name", { name: `%${name}%` })
+        .where("resumen.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

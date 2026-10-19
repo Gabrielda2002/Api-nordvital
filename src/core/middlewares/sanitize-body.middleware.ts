@@ -1,8 +1,12 @@
 import { NextFunction, Request, Response } from "express";
+import { normalizeText } from "@core/utils/search-helper";
+
+const NAME_KEYS = new Set(["name", "nombre"]);
 
 /**
- * Middleware para sanitizar (trim) todos los strings en el body de la petición.
- * Elimina espacios al inicio y final de cada propiedad string de forma recursiva.
+ * Middleware para sanitizar los strings del body de la petición.
+ * Aplica trim a todos los strings y normaliza los campos de nombre
+ * (name/nombre) colapsando los espacios internos de forma recursiva.
  * 
  * @param req - Request object
  * @param res - Response object
@@ -16,7 +20,8 @@ export function sanitizeBody(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
- * Sanitiza recursivamente un objeto, aplicando trim a todos los strings.
+ * Sanitiza recursivamente un objeto, aplicando trim a todos los strings y
+ * normalizando los campos de nombre (name/nombre).
  * 
  * @param obj - Objeto a sanitizar
  * @returns Objeto sanitizado
@@ -40,8 +45,14 @@ function sanitizeObject(obj: any): any {
     if (typeof obj === 'object') {
         const sanitized: any = {};
         for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                sanitized[key] = sanitizeObject(obj[key]);
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                const value = obj[key];
+                const isNameKey = NAME_KEYS.has(key.toLowerCase());
+
+                sanitized[key] =
+                    isNameKey && typeof value === 'string'
+                        ? normalizeText(value)
+                        : sanitizeObject(value);
             }
         }
         return sanitized;

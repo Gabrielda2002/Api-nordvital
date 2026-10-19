@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IpsRemite } from "../entities/ips-remite";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllIpsRemite(
   req: Request,
@@ -155,7 +156,7 @@ export async function getIpsRemiteByName(
         .getMany();
     } else {
       ipsRemite = await IpsRemite.createQueryBuilder("ipsRemite")
-        .where("ipsRemite.name LIKE :name", { name: `%${name}%` })
+        .where("ipsRemite.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

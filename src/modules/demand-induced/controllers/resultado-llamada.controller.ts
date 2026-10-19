@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ResultadoLlamada } from "../entities/resultado-llamada";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllResultCalls = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -30,7 +31,7 @@ export const getResultCallByName = async (req: Request, res: Response, next: Nex
             .getMany();
         }else {
             resultCall = await ResultadoLlamada.createQueryBuilder("resultado_llamada")
-            .where("resultado_llamada.name LIKE :name", { name: `%${name}%` })
+            .where("resultado_llamada.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .getMany();
         }
 

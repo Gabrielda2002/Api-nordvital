@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Categorias } from "../entities/categorias";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllCategories(req: Request, res: Response, next: NextFunction){
     try {
@@ -17,7 +18,7 @@ export async function getAllCategories(req: Request, res: Response, next: NextFu
         }else {
             categories = await Categorias.createQueryBuilder("categoria")
             .select(["categoria.name", "categoria.id", "categoria.description"])
-            .where("categoria.nombre LIKE :name", { name: `%${name}%` })
+            .where("categoria.nombre LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .andWhere("categoria.tipo_ticket = :type", { type })
             .limit(50)
             .getMany();

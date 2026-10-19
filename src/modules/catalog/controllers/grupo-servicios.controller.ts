@@ -3,6 +3,7 @@ import { GrupoServicios } from "../entities/grupo-servicios";
 import { validate } from "class-validator";
 import { parse } from "path";
 import { Radicacion } from "../../radicacion/entities/radicacion";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllGruposServicios(req: Request, res: Response, next: NextFunction ) {
   try {
@@ -139,7 +140,7 @@ export async function getGrupoServiciosByName(req: Request, res: Response, next:
         .getMany();
     }else{
       grupoServicios = await GrupoServicios.createQueryBuilder("grupo_servicios")
-        .where("grupo_servicios.name LIKE :name", { name: `%${name}%` })
+        .where("grupo_servicios.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

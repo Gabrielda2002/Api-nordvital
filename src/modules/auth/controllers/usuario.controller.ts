@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Usuarios } from "../entities/usuarios";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
@@ -449,9 +450,10 @@ export async function searchUsuarios(
         .getMany();
     } else {
       usuarios = await Usuarios.createQueryBuilder("usuarios")
-        .where('CONCAT(usuarios.name, " ", usuarios.lastName) like :name', {
-          name: `%${name}%`,
-        })
+        .where(
+          "CONCAT(usuarios.name, ' ', usuarios.lastName) LIKE :name ESCAPE '!'",
+          { name: buildContainsPattern(name) }
+        )
         .getMany();
     }
 

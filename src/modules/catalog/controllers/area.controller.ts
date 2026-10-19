@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Area } from "../entities/area";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllAreas(
   req: Request,
@@ -49,7 +50,11 @@ export async function getAreaByName(
         .limit(50)
         .getMany();
     } else {
-      area = await Area.find({ where: { name, status: true } });
+      area = await Area.createQueryBuilder("area")
+        .where("area.status = true AND area.name LIKE :name ESCAPE '!'", {
+          name: buildContainsPattern(name),
+        })
+        .getMany();
     }
 
     if (!area || area.length === 0) {

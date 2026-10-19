@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { RelacionUsuario } from "../entities/relacion-usuario";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllRelationUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -30,7 +31,7 @@ export const getRelationUserByName = async (req: Request, res: Response, next: N
             
         }else {
             relationUser = await RelacionUsuario.createQueryBuilder("relation_user")
-            .where("relation_user.name LIKE :name", { name: `%${name}%` })
+            .where("relation_user.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
             .getMany();
         }
 

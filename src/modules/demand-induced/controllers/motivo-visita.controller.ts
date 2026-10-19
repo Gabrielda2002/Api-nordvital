@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { MotivoVisita } from "../entities/motivo-visita";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllReasonVisit = async (
   req: Request,
@@ -36,9 +37,11 @@ export const getReasonVisitByName = async (
         .limit(100)
         .getMany();
     } else {
-      motivoVisitas = await MotivoVisita.createQueryBuilder(
-        "motivoVisita"
-      ).where("motivoVisita.name LIKE :name", { name: `%${name}%` }).getMany;
+      motivoVisitas = await MotivoVisita.createQueryBuilder("motivoVisita")
+        .where("motivoVisita.name LIKE :name ESCAPE '!'", {
+          name: buildContainsPattern(name),
+        })
+        .getMany();
     }
 
     if (!motivoVisitas || motivoVisitas.length === 0) {

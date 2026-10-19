@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Especialidad } from "../entities/especialidad";
 import { validate } from "class-validator";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllEspecialidades(req: Request, res: Response, next: NextFunction) {
     try {
@@ -162,7 +163,7 @@ export async function getEspecialidadesByName(req: Request, res: Response, next:
             
         }else {
             especialidades = await Especialidad.createQueryBuilder("especialidad")
-                .where("especialidad.name LIKE :name", { name: `%${name}%` })
+                .where("especialidad.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
                 .getMany();
         }
 

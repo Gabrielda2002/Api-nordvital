@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AreaEps } from "../entities/area-eps";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllAreaEps = async (
   req: Request,
@@ -37,7 +38,7 @@ export const getAreaEpsByName = async (
         .getMany();
     } else {
       areaEps = await AreaEps.createQueryBuilder("areaEps")
-        .where("areaEps.name LIKE :name", { name: `%${name}%` })
+        .where("areaEps.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
     }
 

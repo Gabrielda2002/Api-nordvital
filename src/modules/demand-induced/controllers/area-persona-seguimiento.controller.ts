@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AreaPersonaSeguimiento } from "../entities/area-persona-seguimiento";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export const getAllAreaPerson = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -30,7 +31,7 @@ export const getAreaPersonByName = async (req: Request, res: Response, next: Nex
             .getMany();
         }else{
             areaPerson = await AreaPersonaSeguimiento.createQueryBuilder("area")
-            .where("area.name LIKE :name", { name: `%${name}%` })
+            .where("area.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
         .getMany();
         }
 

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { InfrastructureCategory } from "../entities/infrastructure-category";
 import { validateEntity } from "@core/utils/validation-helper";
+import { buildContainsPattern } from "@core/utils/search-helper";
 
 export async function getAllInfrastructureCategories(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,7 +18,7 @@ export async function getAllInfrastructureCategories(req: Request, res: Response
         } else {
             categories = await InfrastructureCategory.createQueryBuilder("category")
                 .select(["category.id", "category.name", "category.description", "category.priorityId"])
-                .where("category.name LIKE :name", { name: `%${name}%` })
+                .where("category.name LIKE :name ESCAPE '!'", { name: buildContainsPattern(name) })
                 .orderBy("category.name", "ASC")
                 .limit(50)
                 .getMany();
