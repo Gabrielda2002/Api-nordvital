@@ -16,3 +16,4 @@ dist/
 /inventory-agent/build
 /inventory-agent/dist
 .atl
+.playwright-mcp/

@@ -7,7 +7,7 @@ import { ROLE_IDS, ROLE_GROUPS } from "@core/constants/roles";
 
 const router = Router();
 
-router.get('/duplicates', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO]), getDuplicateInventoryNumbersHandler);
+router.get('/duplicates', authenticate, authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.AUXILIAR_INVENTARIO, ROLE_IDS.SOPORTE]), getDuplicateInventoryNumbersHandler);
 
 /**
  * @swagger
