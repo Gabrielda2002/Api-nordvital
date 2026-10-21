@@ -580,6 +580,19 @@ async function updatteAllSubItemsPathsWithTransaction(
   }
 }
 
+const PDF_MIME_TYPE = "application/pdf";
+
+// * los PDF no se incluyen en las descargas .zip
+function isPdfFile(file: Archivos): boolean {
+  const mimeType = (file.mimeType ?? "").trim().toLowerCase();
+  if (mimeType === PDF_MIME_TYPE) {
+    return true;
+  }
+
+  const extensionSource = file.name || file.path || "";
+  return path.extname(extensionSource).toLowerCase() === ".pdf";
+}
+
 export async function downloadFolder(
   req: Request,
   res: Response,
@@ -622,8 +635,15 @@ export async function downloadFolder(
     archive.pipe(res);
 
     let addedFiles = 0;
+    let skippedPdfs = 0;
 
     for (const file of allFiles) {
+      // * descartar los PDF del zip
+      if (isPdfFile(file)) {
+        skippedPdfs++;
+        continue;
+      }
+
       const absolutePath = path.join(uploadsBase, file.path);
       if (fs.existsSync(absolutePath)) {
         const zipEntryPath = path
@@ -636,7 +656,13 @@ export async function downloadFolder(
       }
     }
 
-    // Si la carpeta está vacía, agregar un directorio vacío
+    if (skippedPdfs > 0) {
+      console.info(
+        `ZIP de la carpeta ${folder.id}: ${skippedPdfs} archivo(s) PDF omitido(s)`
+      );
+    }
+
+    // Si la carpeta no tiene archivos descargables (o solo tenia PDF), agregar un directorio vacío
     if (addedFiles === 0) {
       archive.append("", { name: `${folder.name}/` });
     }
