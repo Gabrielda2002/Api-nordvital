@@ -1,8 +1,8 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
 import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
 import { uploadSggc } from "@core/middlewares/multer-files.middleware";
-import { createFile, deleteFile, downloadFile, getAllFiles, getFileById, moveFile, updateFile, generateFileAccessToken, serveSecureFile } from "../controllers/archivo.controller";
+import { createFile, deleteFile, getAllFiles, getFileById, moveFile, updateFile, generateFileAccessToken, serveSecureFile } from "../controllers/archivo.controller";
 import { validarId } from "@core/middlewares/validate-type-id.middleware";
 import { parseParentFolderId } from "@core/middlewares/parse-parent-folder-id";
 import { fileAccessRateLimit } from "@core/middlewares/file-rate-limit.middleware";
@@ -181,32 +181,6 @@ router.put("/archivo/:id", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MAN
  */
 router.delete("/archivo/:id", authenticate, authorizeRoles(ROLE_GROUPS.DOCUMENT_MANAGERS),validarId, deleteFile);
 
-/**
- * @swagger
- * /download-file/{id}:
- *   get:
- *     summary: Descarga un archivo
- *     security:
- *       - bearerAuth: []
- *     tags: [Archivos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Archivo descargado exitosamente
- *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *       404:
- *         description: Archivo no encontrado
- */
-router.get("/download-file/:id", authenticate, authorizeRoles(ROLE_GROUPS.ALL),validarId, downloadFile);
 
 /**
  * @swagger
@@ -355,3 +329,4 @@ router.post("/files/:id/access-token", fileAccessRateLimit, authenticate, author
 router.get("/secure-file/:token", serveSecureFile);
 
 export default router;
+

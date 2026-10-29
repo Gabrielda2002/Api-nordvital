@@ -6,6 +6,8 @@ import fs from "fs";
 import { promises as fsPromises } from "fs";
 import { Carpeta } from "../entities/carpeta";
 import { FileTokenService } from "../services/file-token.service";
+import { Logger } from "@core/utils/logger-wrapper";
+import { ForbiddenError, InternalServerError, NotFoundError } from "@core/utils/custom-errors";
 
 
 export async function getAllFiles(req: Request, res: Response, next: NextFunction){
@@ -174,35 +176,6 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
     }
 }
 
-export async function downloadFile(req: Request, res: Response, next: NextFunction){
-    try {
-        
-        const { id } = req.params;
-
-        const file = await Archivos.findOne({where: {id: parseInt(String(id))}});
-
-        if (!file) {
-            return res.status(404).json({message: "Archivo no encontrado"});
-        }
-
-        const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
-        // * Obtener la ruta absoluta del archivo
-        const filePath = path.resolve(__dirname, "..", "..", ".." , 'uploads', cleanPath);
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({message: "Archivo no encontrado en el servidor"});
-        }
-
-        res.download(filePath, file.nameSaved, (err) => {
-            if (err) {
-              res.status(500).json({ message: "Error al descargar el archivo" });
-            }
-          });
-
-    } catch (error) {
-        next(error)
-    }
-}
-
 export async function moveFiles(req: Request, res: Response, next: NextFunction) {
     try {
         
@@ -357,6 +330,13 @@ export async function generateFileAccessToken(req: Request, res: Response, next:
             return res.status(404).json({ message: "Archivo no encontrado" });
         }
 
+        // Restringir descarga de archivos PDF exclusivamente a Administrador y Calidad
+        if (actionType === 'DOWNLOAD' && !FileTokenService.canDownloadDocument(file, user?.rol)) {
+            return res.status(403).json({
+                message: "No tiene permisos para descargar archivos PDF"
+            });
+        }
+
         // Generar token temporal (15 minutos)
         const token = FileTokenService.generateFileAccessToken(
             fileId,
@@ -406,29 +386,31 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
         // Buscar el archivo
         const file = await Archivos.findOne({ where: { id: fileId } });
         if (!file) {
-            return res.status(404).json({ message: "Archivo no encontrado" });
+            throw new NotFoundError("Archivo no encontrado")
         }
 
         // Construir ruta del archivo
         const cleanPath = file.path.replace(/^\.\.\/\.\.\//, '');
         const filePath = path.resolve(__dirname, "..", "..", "..", 'uploads', cleanPath);
 
-        console.log("Serving file from path:", filePath);
-        console.log("clean path:", cleanPath);
+        Logger.info("Serving secure file", { filePath, cleanPath });
         
         if (!fs.existsSync(filePath)) {
-            return res.status(404).json({ message: "Archivo no encontrado en el servidor" });
+            throw new NotFoundError("Archivo no encontrado en el servidor.")
         }
 
         // TODO: Aquí registrarías el acceso para auditoría
-        console.log(`Archivo accedido: ${file.name} por usuario: ${validation.payload!.userId} - Acción: ${action}`);
+        Logger.info("Archivo accedido", { fileName: file.name, userId: validation.payload!.userId, action });
 
         // Determinar cómo servir el archivo
         if (action === 'DOWNLOAD') {
+            if (!FileTokenService.canDownloadDocument(file, validation.payload!.userRole)) {
+                throw new ForbiddenError("No tienes permisos para descargar")
+            }
             // Forzar descarga
             res.download(filePath, file.nameSaved, (err) => {
                 if (err) {
-                    res.status(500).json({ message: "Error al descargar el archivo" });
+                    throw new InternalServerError("Error al descargar el archivo.")
                 }
             });
         } else {
@@ -446,9 +428,9 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
             fileStream.pipe(res);
             
             fileStream.on('error', (err) => {
-                console.error('Error streaming file:', err);
+                Logger.error("Error streaming file", err);
                 if (!res.headersSent) {
-                    res.status(500).json({ message: "Error al cargar el archivo" });
+                    throw new InternalServerError("Error al descargar el archivo.")
                 }
             });
         }
@@ -457,3 +439,6 @@ export async function serveSecureFile(req: Request, res: Response, next: NextFun
         next(error);
     }
 }
+
+
+

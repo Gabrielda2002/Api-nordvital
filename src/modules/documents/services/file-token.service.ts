@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-
-const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
+import { ROLE_IDS } from '@core/constants/roles';
+import { config } from '@core/config/environment.config';
 
 interface FileAccessTokenPayload {
     fileId: number;
@@ -21,6 +21,36 @@ interface TokenValidationResult {
 }
 
 export class FileTokenService {
+
+    /**
+     * Determina si un archivo es de tipo PDF por su mimeType o por su extensión de nombre.
+     */
+    static isPdfDocument(file: { mimeType?: string | null; name?: string | null }): boolean {
+        const mime = file.mimeType?.toLowerCase() || '';
+        const name = file.name?.toLowerCase() || '';
+        return mime === 'application/pdf' || name.endsWith('.pdf');
+    }
+
+    /**
+     * Valida si un rol tiene autorización para descargar un archivo.
+     * Si el archivo es PDF, únicamente los roles ADMINISTRADOR (1) y CALIDAD (4) están permitidos.
+     * Los archivos que no sean PDF pueden ser descargados por cualquier rol autenticado.
+     */
+    static canDownloadDocument(
+        file: { mimeType?: string | null; name?: string | null },
+        userRole: string | number | undefined | null
+    ): boolean {
+        if (!this.isPdfDocument(file)) {
+            return true;
+        }
+
+        if (userRole === undefined || userRole === null) {
+            return false;
+        }
+
+        const roleStr = String(userRole);
+        return roleStr === ROLE_IDS.ADMINISTRADOR || roleStr === ROLE_IDS.CALIDAD;
+    }
     
     /**
      * Genera un token temporal para acceso a archivo
@@ -48,7 +78,7 @@ export class FileTokenService {
             jti: uuidv4()
         };
 
-        return jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256' });
+        return jwt.sign(payload, config.jwt.secret, { algorithm: 'HS256' });
     }
 
     /**
@@ -56,7 +86,7 @@ export class FileTokenService {
      */
     static validateFileAccessToken(token: string, clientIP: string): TokenValidationResult {
         try {
-            const decoded = jwt.verify(token, JWT_SECRET) as FileAccessTokenPayload;
+            const decoded = jwt.verify(token, config.jwt.secret) as FileAccessTokenPayload;
             
             // Verificar que la IP coincida (opcional, para mayor seguridad)
             if (decoded.clientIP !== clientIP) {
