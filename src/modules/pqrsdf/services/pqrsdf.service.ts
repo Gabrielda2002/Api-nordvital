@@ -26,7 +26,7 @@ export type CreatePqrsdfInput = {
     improvementAction?: boolean;
     improvementActionDetails?: string;
     responseSummary?: string;
-    filingNumber: number;
+    filingNumber: string;
     riskCode: string;
     status?: string;
 };

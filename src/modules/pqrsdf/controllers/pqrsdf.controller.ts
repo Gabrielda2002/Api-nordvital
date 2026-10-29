@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { EstadoPqrs, Pqrsdf } from "../entities/pqrsdf";
 import { validate } from "class-validator";
 import { PqrsdfService } from "../services/pqrsdf.service";
+import { validateEntity } from "@core/utils/validation-helper";
 
 const service = new PqrsdfService();
 
@@ -49,21 +50,12 @@ export async function createPqrsdf(req: Request, res: Response, next: NextFuncti
         pqrsdf.receivedDate = new Date(receivedDate);
         pqrsdf.createdBy = userId;
         pqrsdf.status = EstadoPqrs.ABIERTO;
-        pqrsdf.filingNumber = Number(filingNumber)
+        pqrsdf.filingNumber = filingNumber != null ? String(filingNumber).trim() : "";
         pqrsdf.riskId = 1;
         pqrsdf.improvementAction = improvementAction;
         pqrsdf.improvementActionDetails = improvementActionDetails;
 
-        const errors = await validate(pqrsdf);
-
-        if (errors.length > 0) {
-            const messages = errors.map(err => ({
-                property: err.property,
-                constraints: err.constraints,
-            }));
-
-            return res.status(400).json({ message: "Error de validación", messages });
-        }
+        await validateEntity(pqrsdf)
 
         const created = await service.create({
             patientId: pqrsdf.patientId,

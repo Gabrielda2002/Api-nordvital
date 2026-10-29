@@ -38,6 +38,7 @@ export enum MedioRecepcion {
     WHATSAPP = "WHATSAPP",
     SALA = "SALA",
     BUZON = "BUZON",
+    CORREO_ELECTRONICO = "CORREO_ELECTRONICO",
 }
 
 export enum MedioNotificacion {
@@ -100,10 +101,11 @@ export class Pqrsdf extends BaseEntity {
     @IsEnum(MedioRecepcion, { message: "El medio de recepción de la PQRSDF no es válido" })
     receptionMedium: MedioRecepcion;
 
-    @Column({ name: "filing_number", type: "int", comment: "NUMERO DE RADICADO (secuencial autogenerado por el sistema)" })
-    @IsInt()
+    @Column({ name: "filing_number", type: "varchar", length: 50, comment: "NUMERO DE RADICADO (secuencial autogenerado por el sistema o radicado alfanumérico)" })
+    @IsString({ message: "El número de radicado debe ser una cadena de texto" })
+    @Length(1, 50, { message: "El número de radicado debe tener entre $constraint1 y $constraint2 caracteres" })
     @IsNotEmpty({ message: "El número de radicado no puede estar vacío" })
-    filingNumber: number;
+    filingNumber: string;
 
     @Column({ name: "origin_area_id", type: "int", comment: "AREA DONDE SE ORIGINO EL EVENTO" })
     @IsInt()
