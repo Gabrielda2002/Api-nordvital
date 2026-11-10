@@ -18,7 +18,33 @@ export interface QueuePositionResult {
   estimatedWaitMinutes: number;
 }
 
+export interface QueueServiceCoverageSession {
+  moduloId: number;
+  serviceIds: number[];
+}
+
 export class TurnoQueueService {
+  static hasCompleteServiceCoverage(
+    activeServiceIds: number[],
+    activeModuleIds: number[],
+    sessions: QueueServiceCoverageSession[]
+  ): boolean {
+    if (activeServiceIds.length === 0 || activeModuleIds.length === 0) return false;
+
+    const servicesByModule = new Map<number, Set<number>>();
+    for (const session of sessions) {
+      const assignedServices = servicesByModule.get(session.moduloId) ?? new Set<number>();
+      for (const serviceId of session.serviceIds) assignedServices.add(serviceId);
+      servicesByModule.set(session.moduloId, assignedServices);
+    }
+
+    return activeModuleIds.every((moduleId) => {
+      const assignedServices = servicesByModule.get(moduleId);
+      if (!assignedServices) return false;
+      return activeServiceIds.every((serviceId) => assignedServices.has(serviceId));
+    });
+  }
+
   /**
    * Genera el código alfanumérico visible del ticket según la prioridad y correlativo
    * Ej: Prioritario número 5 -> P-005, General número 12 -> G-012

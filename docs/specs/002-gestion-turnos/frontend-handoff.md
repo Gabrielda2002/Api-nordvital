@@ -100,10 +100,14 @@ Rating obligatorio de 1 a 5; solo turno `FINALIZADO`, una respuesta por turno.
 
 ## TV y eventos en vivo
 
-`GET /tv/:slug/estado` devuelve `{ headquarter: { id, name, slug }, activeTurns }`.
+`GET /tv/:slug/estado` devuelve `{ headquarter: { id, name, slug }, activeTurns,
+upcomingTurns }`. `upcomingTurns` está disponible desde la integración 003 de
+próximos turnos de TV.
 Cada turno: `{ turnoId, ticketCode, priority, status, moduloCode, moduloName,
 advisorName, serviceName, calledAt }`. Estados: `LLAMADO` o `EN_ATENCION`;
-máximo 10 ordenados por último llamado. Sede inválida: 404.
+máximo 10 ordenados por último llamado. `upcomingTurns` contiene máximo cinco
+elementos `{ turnoId, ticketCode }`, todos pendientes del día operativo,
+ordenados por prioridad y FIFO, incluso si no hay sesiones activas. Sede inválida: 404.
 
 Conectar Socket.IO al origen del backend, sin `/api/v1`, y enviar
 `join` con el nombre de sala. El servidor actual no confirma la suscripción.
@@ -115,6 +119,7 @@ Conectar Socket.IO al origen del backend, sin `/api/v1`, y enviar
 | `sede_${id}_tv` | `turno:llamado`, `turno:rellamado` | Destacar y anunciar por voz. |
 | `sede_${id}_tv` | `turno:actualizado` | Actualizar a atención sin repetir el anuncio. |
 | `sede_${id}_tv` | `turno:retirado` | Eliminar turno finalizado, ausente, transferido o cancelado. |
+| `sede_${id}_tv` | `cola:actualizada` | Invalidar el listado de próximos; volver a consultar el snapshot TV. |
 | `sede_${id}` | `cola:actualizada` | Métricas diarias de espera de toda la sede. |
 
 - Llamado/rellamado: `{ turnoId, ticketCode, ticketToken, priority, moduloCode,
@@ -126,6 +131,13 @@ Conectar Socket.IO al origen del backend, sin `/api/v1`, y enviar
   updatedAt }`, con `moduloCode`, `moduloName` opcionales.
 - Cola: `{ headquarterId, pendingCount, priorityPendingCount, updatedAt }`;
   `lastCalledCode` es opcional.
+- `cola:actualizada` llega a la sala general y a la sala TV. En la TV se usa como
+  señal de recarga; no contiene la lista de próximos turnos.
+
+Para posición/espera, si cada módulo activo de la sede atiende todos los
+servicios activos, `aheadCount` considera pendientes de todos esos servicios.
+Si la cobertura es parcial, se mantiene el conteo por servicio. El conteo de
+asesores activos elegibles y la fórmula de espera no cambian.
 
 Después de persistir, se recalculan tickets al emitir, llamar, transferir o cancelar,
 y al iniciar/reemplazar/cerrar sesiones. La TV recibe cierres y comienzo de atención.

@@ -4,8 +4,10 @@ import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { SesionAtencion } from "../entities/SesionAtencion";
 import { TurnoQueueService } from "./turno-queue.service";
-import { Between } from "typeorm";
+import { Between, In } from "typeorm";
 import { TurnoDayService } from "./turno-day.service";
+import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
+import { TurnoServiceCoverageService } from "./turno-service-coverage.service";
 
 export interface TurnoLlamadoEventPayload {
   turnoId: number;
@@ -51,6 +53,20 @@ export interface ColaActualizadaEventPayload {
 }
 
 export class TurnoSocketService {
+  static async notificarCambioSesiones(headquarterId: number): Promise<void> {
+    const activeServiceIds = (await ServicioAtencion.find({
+      where: { status: true },
+      select: ["id"],
+    })).map(({ id }) => id);
+    if (activeServiceIds.length === 0) return;
+
+    const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(headquarterId);
+    const servicesToRefresh = hasCompleteCoverage ? activeServiceIds.slice(0, 1) : activeServiceIds;
+    await Promise.all(servicesToRefresh.map((serviceId) =>
+      this.notificarAvanceCola(headquarterId, serviceId)
+    ));
+  }
+
   /**
    * Emite el evento de llamado de turno a la sala general de la sede
    * y a la sala dedicada de pantallas TV (para que la TV reproduzca el anuncio por voz).
@@ -125,6 +141,7 @@ export class TurnoSocketService {
 
     const sedeRoom = `sede_${payload.headquarterId}`;
     io.to(sedeRoom).emit("cola:actualizada", payload);
+    io.to(`${sedeRoom}_tv`).emit("cola:actualizada", payload);
 
     Logger.info(
       `[TurnoSocketService] Evento cola:actualizada emitido a ${sedeRoom} (pendientes: ${payload.pendingCount})`
@@ -177,10 +194,14 @@ export class TurnoSocketService {
       ]);
       this.emitColaActualizada({ headquarterId, pendingCount, priorityPendingCount, updatedAt: new Date() });
 
-      const turnosPendientes = await Turno.find({
+      const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(headquarterId);
+      const queueServiceIds = hasCompleteCoverage
+        ? (await ServicioAtencion.find({ where: { status: true }, select: ["id"] })).map(({ id }) => id)
+        : [serviceId];
+      const turnosPendientes = queueServiceIds.length === 0 ? [] : await Turno.find({
         where: {
           headquarterId,
-          serviceId,
+          serviceId: In(queueServiceIds),
           status: TurnoStatus.PENDIENTE,
           createdAt: Between(hoyInicio, hoyFin),
         },
@@ -197,26 +218,28 @@ export class TurnoSocketService {
       });
       const avgMinutes = config?.averageServiceMinutes || 10;
 
-      const activeSessionsCount = await SesionAtencion.count({
-        where: {
-          headquarterId,
-          isActive: true,
-          serviciosAsignados: {
-            serviceId,
-          },
-        },
-      });
-
       const sortedQueue = [...turnosPendientes].sort((a, b) =>
         TurnoQueueService.compareQueueOrder(a, b)
       );
+      const activeSessionsByService = new Map<number, number>(await Promise.all(
+        [...new Set(sortedQueue.map(({ serviceId: turnoServiceId }) => turnoServiceId))].map(async (turnoServiceId) => [
+          turnoServiceId,
+          await SesionAtencion.count({
+            where: {
+              headquarterId,
+              isActive: true,
+              serviciosAsignados: { serviceId: turnoServiceId },
+            },
+          }),
+        ] as const)
+      ));
 
       for (const turno of sortedQueue) {
         const aheadCount = TurnoQueueService.calculateAheadCount(turno, sortedQueue);
         const estimatedWaitMinutes = TurnoQueueService.calculateEstimatedWaitMinutes(
           aheadCount,
           avgMinutes,
-          activeSessionsCount
+          activeSessionsByService.get(turno.serviceId) ?? 0
         );
 
         this.emitTicketEstado({

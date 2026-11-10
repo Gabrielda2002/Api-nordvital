@@ -15,6 +15,7 @@ import { Between, In } from "typeorm";
 import { config as configEnv } from "@core/config/environment.config";
 import { TurnoDayService } from "../services/turno-day.service";
 import { TurnoIssuanceService } from "../services/turno-issuance.service";
+import { TurnoServiceCoverageService } from "../services/turno-service-coverage.service";
 
 export class TurnosPublicController {
   /**
@@ -210,13 +211,15 @@ export class TurnosPublicController {
       }
 
       const { start, end } = TurnoDayService.getRange();
+      const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(config.headquarterId);
+      const pendingWhere = {
+        headquarterId: config.headquarterId,
+        status: TurnoStatus.PENDIENTE,
+        createdAt: Between(start, end),
+        ...(!hasCompleteCoverage ? { serviceId: Number(serviceId) } : {}),
+      };
       const pendingTurns = await Turno.find({
-        where: {
-          headquarterId: config.headquarterId,
-          serviceId: Number(serviceId),
-          status: TurnoStatus.PENDIENTE,
-          createdAt: Between(start, end),
-        },
+        where: pendingWhere,
         select: ["id", "priority", "createdAt"],
       });
 
@@ -285,10 +288,11 @@ export class TurnosPublicController {
 
       if (turno.status === TurnoStatus.PENDIENTE) {
         const { start, end } = TurnoDayService.getRange(turno.createdAt);
+        const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(turno.headquarterId);
         const pendingTurns = await Turno.find({
           where: {
             headquarterId: turno.headquarterId,
-            serviceId: turno.serviceId,
+            ...(!hasCompleteCoverage ? { serviceId: turno.serviceId } : {}),
             status: TurnoStatus.PENDIENTE,
             createdAt: Between(start, end),
           },
@@ -475,6 +479,17 @@ export class TurnosPublicController {
         take: 10,
       });
 
+      const { start, end } = TurnoDayService.getRange();
+      const upcomingTurns = await Turno.find({
+        where: {
+          headquarterId: config.headquarterId,
+          status: TurnoStatus.PENDIENTE,
+          createdAt: Between(start, end),
+        },
+        select: ["id", "ticketCode", "priority", "createdAt"],
+      });
+      upcomingTurns.sort((a, b) => TurnoQueueService.compareQueueOrder(a, b));
+
       return res.json({
         headquarter: {
           id: config.headquarterId,
@@ -491,6 +506,10 @@ export class TurnosPublicController {
           advisorName: t.currentUser?.name || "",
           serviceName: t.service?.name || "",
           calledAt: t.calledAt,
+        })),
+        upcomingTurns: upcomingTurns.slice(0, 5).map(({ id, ticketCode }) => ({
+          turnoId: id,
+          ticketCode,
         })),
       });
     } catch (error) {

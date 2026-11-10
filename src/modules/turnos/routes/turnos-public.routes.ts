@@ -190,7 +190,7 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  * @swagger
  * /turnos/tv/{slug}/estado:
  *   get:
- *     summary: Obtener estado inicial de turnos activos para la pantalla de sala (TV)
+ *     summary: Obtener turnos activos y próximos para la pantalla de sala (TV)
  *     tags: [Turnos - Público]
  *     parameters:
  *       - in: path
@@ -200,7 +200,7 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  *           type: string
  *     responses:
  *       200:
- *         description: Lista de turnos llamados y en atención
+ *         description: Turnos llamados/en atención y hasta cinco próximos turnos pendientes
  */
 router.get("/tv/:slug/estado", TurnosPublicController.getTvEstado);
 

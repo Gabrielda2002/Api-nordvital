@@ -71,19 +71,12 @@ export class TurnosAtencionController {
         await sesionServicio.save();
       }
 
-      const affectedQueues = new Map<string, { headquarterId: number; serviceId: number }>();
-      for (const session of previousSessions) {
-        for (const assigned of session.serviciosAsignados) {
-          affectedQueues.set(`${session.headquarterId}:${assigned.serviceId}`, {
-            headquarterId: session.headquarterId, serviceId: assigned.serviceId,
-          });
-        }
-      }
-      for (const id of serviceIds) {
-        affectedQueues.set(`${modulo.headquarterId}:${id}`, { headquarterId: modulo.headquarterId, serviceId: Number(id) });
-      }
-      await Promise.all([...affectedQueues.values()].map((queue) =>
-        TurnoSocketService.notificarAvanceCola(queue.headquarterId, queue.serviceId)
+      const affectedHeadquarterIds = new Set([
+        modulo.headquarterId,
+        ...previousSessions.map(({ headquarterId }) => headquarterId),
+      ]);
+      await Promise.all([...affectedHeadquarterIds].map((headquarterId) =>
+        TurnoSocketService.notificarCambioSesiones(headquarterId)
       ));
 
       return res.status(201).json({
@@ -137,9 +130,7 @@ export class TurnosAtencionController {
       sesionActiva.endedAt = new Date();
       await sesionActiva.save();
 
-      await Promise.all(sesionActiva.serviciosAsignados.map((assigned) =>
-        TurnoSocketService.notificarAvanceCola(sesionActiva.headquarterId, assigned.serviceId)
-      ));
+      await TurnoSocketService.notificarCambioSesiones(sesionActiva.headquarterId);
 
       return res.json({
         message: "Sesión de atención cerrada correctamente",

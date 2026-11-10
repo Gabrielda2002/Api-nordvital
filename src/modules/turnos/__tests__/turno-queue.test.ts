@@ -5,6 +5,25 @@ import { TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { ConflictError } from "@core/utils/custom-errors";
 
 describe("TurnoQueueService", () => {
+  describe("hasCompleteServiceCoverage", () => {
+    it("requiere que cada módulo activo atienda todos los servicios activos", () => {
+      assert.equal(TurnoQueueService.hasCompleteServiceCoverage(
+        [1, 2], [10, 11], [
+          { moduloId: 10, serviceIds: [1, 2] },
+          { moduloId: 11, serviceIds: [1, 2] },
+        ]
+      ), true);
+      assert.equal(TurnoQueueService.hasCompleteServiceCoverage(
+        [1, 2], [10, 11], [
+          { moduloId: 10, serviceIds: [1, 2] },
+          { moduloId: 11, serviceIds: [1] },
+        ]
+      ), false);
+      assert.equal(TurnoQueueService.hasCompleteServiceCoverage([1, 2], [10], []), false);
+      assert.equal(TurnoQueueService.hasCompleteServiceCoverage([], [10], [{ moduloId: 10, serviceIds: [] }]), false);
+    });
+  });
+
   describe("generateTicketCode", () => {
     it("debe anteponer 'G' y formatear a 3 dígitos para turnos generales", () => {
       assert.equal(TurnoQueueService.generateTicketCode(TurnoPriority.GENERAL, 1), "G-001");
@@ -151,4 +170,3 @@ describe("TurnoQueueService", () => {
     });
   });
 });
-
