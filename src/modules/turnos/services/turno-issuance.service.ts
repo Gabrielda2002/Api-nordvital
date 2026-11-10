@@ -1,0 +1,107 @@
+import { randomUUID } from "node:crypto";
+import { Between, EntityManager, In } from "typeorm";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import { validateEntity } from "@core/utils/validation-helper";
+import { Pacientes } from "../../patients/entities/pacientes";
+import { TipoDocumento } from "../../catalog/entities/tipo-documento";
+import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
+import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
+import { TurnoTracking } from "../entities/TurnoTracking";
+import { TurnoDayService } from "./turno-day.service";
+import { TurnoQueueService } from "./turno-queue.service";
+
+interface IssueTurnInput {
+  headquarterId: number;
+  serviceId: number;
+  priority: TurnoPriority;
+  documentNumber: string;
+  documentTypeId: number;
+  name: string;
+  phoneNumber: string;
+}
+
+export class TurnoIssuanceService {
+  static resolveDocumentTypeId(documentTypeId: unknown): number {
+    const id = Number(documentTypeId);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new BadRequestError("El tipo de documento es requerido y debe ser un ID válido");
+    }
+    return id;
+  }
+
+  private static async findPatient(manager: EntityManager, input: IssueTurnInput): Promise<Pacientes> {
+    const where = { documentNumber: input.documentNumber.trim(), documentTypeId: input.documentTypeId };
+    let patient = await manager.findOne(Pacientes, { where, lock: { mode: "pessimistic_write" } });
+    if (patient) return patient;
+
+    // Una identidad nueva aún no tiene fila para bloquear; serializar su alta por tipo.
+    const documentType = await manager.findOne(TipoDocumento, {
+      where: { id: input.documentTypeId, status: true }, lock: { mode: "pessimistic_write" },
+    });
+    if (!documentType) throw new NotFoundError("El tipo de documento no existe o está inactivo");
+    patient = await manager.findOne(Pacientes, { where, lock: { mode: "pessimistic_write" } });
+    if (patient) return patient;
+
+    patient = manager.create(Pacientes, {
+      ...where, name: input.name.trim(), phoneNumber: input.phoneNumber.trim(),
+    });
+    // No se fabrican los campos obligatorios del modelo compartido de pacientes.
+    await validateEntity(patient);
+    return manager.save(patient);
+  }
+
+  static async issue(input: IssueTurnInput): Promise<{ created: boolean; turno: Turno }> {
+    return Turno.getRepository().manager.transaction("READ COMMITTED", async (manager) => {
+      const patient = await this.findPatient(manager, input);
+      const { start, end } = TurnoDayService.getRange();
+      const activeTurn = await manager.findOne(Turno, {
+        where: {
+          patientId: patient.id,
+          status: In([TurnoStatus.PENDIENTE, TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION]),
+          createdAt: Between(start, end),
+        },
+        relations: ["service", "headquarter"],
+      });
+      if (activeTurn) return { created: false, turno: activeTurn };
+
+      const config = await manager.findOne(TurnoSedeConfig, {
+        where: { headquarterId: input.headquarterId, isEnabled: true },
+        lock: { mode: "pessimistic_write" },
+      });
+      if (!config) throw new NotFoundError("La sede no está habilitada para turnos");
+      const dailyNumber = await TurnoQueueService.getNextDailyNumber(input.headquarterId, start, manager);
+      const turno = manager.create(Turno, {
+        headquarterId: input.headquarterId, serviceId: input.serviceId, patientId: patient.id,
+        ticketToken: randomUUID(), ticketCode: TurnoQueueService.generateTicketCode(input.priority, dailyNumber),
+        dailyNumber, priority: input.priority, status: TurnoStatus.PENDIENTE, callCount: 0,
+      });
+      await validateEntity(turno);
+      await manager.save(turno);
+      await manager.save(manager.create(TurnoTracking, {
+        turnoId: turno.id, status: turno.status, notes: "Turno creado por paciente móvil",
+      }));
+      return { created: true, turno };
+    });
+  }
+
+  static async cancel(token: string, reason?: string): Promise<Turno> {
+    return Turno.getRepository().manager.transaction(async (manager) => {
+      const turno = await manager.findOne(Turno, {
+        where: { ticketToken: token }, lock: { mode: "pessimistic_write" },
+      });
+      if (!turno) throw new NotFoundError("Ticket no encontrado");
+      if (turno.status !== TurnoStatus.PENDIENTE && turno.status !== TurnoStatus.LLAMADO) {
+        throw new ConflictError("Solo puedes cancelar un turno pendiente o llamado");
+      }
+      turno.status = TurnoStatus.CANCELADO;
+      turno.finishedAt = new Date();
+      await manager.save(turno);
+      await manager.save(manager.create(TurnoTracking, {
+        turnoId: turno.id, status: turno.status,
+        moduloId: turno.currentModuloId, userId: turno.currentUserId,
+        notes: reason?.trim() ? `Cancelado por el paciente: ${reason.trim()}` : "Cancelado voluntariamente por el paciente",
+      }));
+      return turno;
+    });
+  }
+}
