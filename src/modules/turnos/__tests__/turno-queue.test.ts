@@ -148,6 +148,12 @@ describe("TurnoQueueService", () => {
       assert.equal(next, TurnoStatus.TRANSFERIDO);
     });
 
+    it("solo permite cancelar turnos llamados o en atención", () => {
+      assert.equal(TurnoQueueService.validateTransition(TurnoStatus.LLAMADO, "CANCELAR"), TurnoStatus.CANCELADO);
+      assert.equal(TurnoQueueService.validateTransition(TurnoStatus.EN_ATENCION, "CANCELAR"), TurnoStatus.CANCELADO);
+      assert.throws(() => TurnoQueueService.validateTransition(TurnoStatus.PENDIENTE, "CANCELAR"), ConflictError);
+    });
+
     it("bloquea FINALIZAR sobre un turno en PENDIENTE lanzando ConflictError", () => {
       assert.throws(
         () => TurnoQueueService.validateTransition(TurnoStatus.PENDIENTE, "FINALIZAR"),

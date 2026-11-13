@@ -1,11 +1,28 @@
 import { Router } from "express";
 import { TurnosAtencionController } from "../controllers/turnos-atencion.controller";
 import { authenticate } from "@core/middlewares/authenticate.middleware";
+import { authorizeRoles } from "@core/middlewares/authorize-roles.middleware";
+import { ROLE_IDS } from "@core/constants/roles";
 
 const router = Router();
 
-// Todas las rutas de atención requieren autenticación
+// La operación de turnos está disponible para Administrador y Radicador.
 router.use(authenticate);
+router.use(authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]));
+
+/**
+ * @swagger
+ * /turnos/atencion/opciones:
+ *   get:
+ *     summary: Obtener módulos y servicios activos para iniciar una sesión
+ *     tags: [Turnos - Atención Asesor]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Opciones operativas de módulos y servicios activos
+ */
+router.get("/opciones", TurnosAtencionController.getOpcionesSesion);
 
 /**
  * @swagger
@@ -49,7 +66,7 @@ router.post("/sesion/iniciar", TurnosAtencionController.iniciarSesion);
  *       200:
  *         description: Sesión cerrada con éxito
  *       409:
- *         description: No se puede cerrar sesión con turnos en atención
+ *         description: No se puede cerrar sesión con un turno llamado o en atención
  */
 router.post("/sesion/cerrar", TurnosAtencionController.cerrarSesion);
 
@@ -63,7 +80,7 @@ router.post("/sesion/cerrar", TurnosAtencionController.cerrarSesion);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Información de sesión y turno activo
+ *         description: Información de sesión, turno activo y cola pendiente
  */
 router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
 
@@ -92,6 +109,7 @@ router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
  *                 type: integer
  *               notes:
  *                 type: string
+ *                 description: Obligatorio para CANCELAR; motivo de cancelación.
  *     responses:
  *       200:
  *         description: Acción procesada con éxito
@@ -101,4 +119,3 @@ router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
 router.post("/accion", TurnosAtencionController.ejecutarAccion);
 
 export default router;
-

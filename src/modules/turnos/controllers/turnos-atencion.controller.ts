@@ -3,14 +3,68 @@ import { SesionAtencion } from "../entities/SesionAtencion";
 import { SesionAtencionServicio } from "../entities/SesionAtencionServicio";
 import { ModuloAtencion } from "../entities/ModuloAtencion";
 import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
-import { TurnoQueueService, TurnoAction } from "../services/turno-queue.service";
+import {
+  TurnoQueueService,
+  TurnoAction,
+} from "../services/turno-queue.service";
 import { TurnoSocketService } from "../services/turno-socket.service";
-import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "@core/utils/custom-errors";
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { Between, In } from "typeorm";
 import { TurnoDayService } from "../services/turno-day.service";
+import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
 
 export class TurnosAtencionController {
+  static async getOpcionesSesion(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const userId = Number(req.user?.id);
+      if (!userId) throw new UnauthorizedError("Usuario no autenticado");
+
+      const [modules, services] = await Promise.all([
+        ModuloAtencion.find({
+          where: { isActive: true },
+          relations: ["headquarter"],
+          order: { headquarterId: "ASC", code: "ASC" },
+        }),
+        ServicioAtencion.find({
+          where: { status: true },
+          order: { name: "ASC" },
+        }),
+      ]);
+      const activeSessions = await SesionAtencion.find({
+        where: { isActive: true },
+      });
+      const occupiedModuleIds = new Set(
+        activeSessions
+          .filter((session) => session.userId !== userId)
+          .map((session) => session.moduloId),
+      );
+
+      return res.json({
+        modules: modules.map((module) => ({
+          id: module.id,
+          headquarterId: module.headquarterId,
+          headquarterName: module.headquarter?.name,
+          code: module.code,
+          name: module.name,
+          isAvailable: !occupiedModuleIds.has(module.id),
+        })),
+        services: services.map(({ id, name }) => ({ id, name })),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
    * Inicia la sesión de atención de un asesor en un módulo físico con servicios asignados.
    */
@@ -22,8 +76,43 @@ export class TurnosAtencionController {
       const { moduloId, serviceIds } = req.body;
 
       if (!moduloId) throw new BadRequestError("El ID de módulo es requerido");
-      if (!serviceIds || !Array.isArray(serviceIds) || serviceIds.length === 0) {
-        throw new BadRequestError("Debe seleccionar al menos un servicio de atención");
+      if (
+        !serviceIds ||
+        !Array.isArray(serviceIds) ||
+        serviceIds.length === 0
+      ) {
+        throw new BadRequestError(
+          "Debe seleccionar al menos un servicio de atención",
+        );
+      }
+      const normalizedServiceIds = [...new Set(serviceIds.map(Number))];
+      if (
+        normalizedServiceIds.some(
+          (serviceId) => !Number.isInteger(serviceId) || serviceId <= 0,
+        )
+      ) {
+        throw new BadRequestError("Los servicios seleccionados no son válidos");
+      }
+
+      const activeTurn = await Turno.findOne({
+        where: {
+          currentUserId: userId,
+          status: In([TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION]),
+        },
+      });
+      if (activeTurn) {
+        throw new ConflictError(
+          `Debes resolver el turno ${activeTurn.ticketCode} antes de iniciar otra sesión`,
+        );
+      }
+
+      const activeServices = await ServicioAtencion.find({
+        where: { id: In(normalizedServiceIds), status: true },
+      });
+      if (activeServices.length !== normalizedServiceIds.length) {
+        throw new BadRequestError(
+          "Uno o varios servicios seleccionados no existen o están inactivos",
+        );
       }
 
       // 1. Validar existencia del módulo
@@ -31,7 +120,9 @@ export class TurnosAtencionController {
         where: { id: Number(moduloId), isActive: true },
       });
       if (!modulo) {
-        throw new NotFoundError("El módulo de atención no existe o está inactivo");
+        throw new NotFoundError(
+          "El módulo de atención no existe o está inactivo",
+        );
       }
 
       // 2. Validar que no haya otro asesor con sesión activa en este módulo
@@ -40,16 +131,19 @@ export class TurnosAtencionController {
       });
 
       if (moduloOcupado && moduloOcupado.userId !== userId) {
-        throw new ConflictError("El módulo seleccionado ya está ocupado por otro asesor");
+        throw new ConflictError(
+          "El módulo seleccionado ya está ocupado por otro asesor",
+        );
       }
 
       // 3. Cerrar cualquier sesión activa previa de este mismo usuario
       const previousSessions = await SesionAtencion.find({
-        where: { userId, isActive: true }, relations: ["serviciosAsignados"],
+        where: { userId, isActive: true },
+        relations: ["serviciosAsignados"],
       });
       await SesionAtencion.update(
         { userId, isActive: true },
-        { isActive: false, endedAt: new Date() }
+        { isActive: false, endedAt: new Date() },
       );
 
       // 4. Crear nueva sesión activa
@@ -64,7 +158,7 @@ export class TurnosAtencionController {
       await sesion.save();
 
       // 5. Vincular servicios asignados
-      for (const serviceId of serviceIds) {
+      for (const serviceId of normalizedServiceIds) {
         const sesionServicio = new SesionAtencionServicio();
         sesionServicio.sesionId = sesion.id;
         sesionServicio.serviceId = Number(serviceId);
@@ -75,9 +169,11 @@ export class TurnosAtencionController {
         modulo.headquarterId,
         ...previousSessions.map(({ headquarterId }) => headquarterId),
       ]);
-      await Promise.all([...affectedHeadquarterIds].map((headquarterId) =>
-        TurnoSocketService.notificarCambioSesiones(headquarterId)
-      ));
+      await Promise.all(
+        [...affectedHeadquarterIds].map((headquarterId) =>
+          TurnoSocketService.notificarCambioSesiones(headquarterId),
+        ),
+      );
 
       return res.status(201).json({
         message: "Sesión de atención iniciada con éxito",
@@ -88,7 +184,7 @@ export class TurnosAtencionController {
           name: modulo.name,
         },
         headquarterId: modulo.headquarterId,
-        serviceIds,
+        serviceIds: normalizedServiceIds,
       });
     } catch (error) {
       next(error);
@@ -109,20 +205,22 @@ export class TurnosAtencionController {
       });
 
       if (!sesionActiva) {
-        throw new BadRequestError("No tienes una sesión de atención activa para cerrar");
+        throw new BadRequestError(
+          "No tienes una sesión de atención activa para cerrar",
+        );
       }
 
       // Validar si tiene un turno pendiente en atención
       const turnoEnCurso = await Turno.findOne({
         where: {
           currentUserId: userId,
-          status: TurnoStatus.EN_ATENCION,
+          status: In([TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION]),
         },
       });
 
       if (turnoEnCurso) {
         throw new ConflictError(
-          `Tienes un turno en atención (${turnoEnCurso.ticketCode}). Debes finalizarlo antes de cerrar tu sesión.`
+          `Tienes un turno activo (${turnoEnCurso.ticketCode}). Debes resolverlo antes de cerrar tu sesión.`,
         );
       }
 
@@ -130,7 +228,9 @@ export class TurnosAtencionController {
       sesionActiva.endedAt = new Date();
       await sesionActiva.save();
 
-      await TurnoSocketService.notificarCambioSesiones(sesionActiva.headquarterId);
+      await TurnoSocketService.notificarCambioSesiones(
+        sesionActiva.headquarterId,
+      );
 
       return res.json({
         message: "Sesión de atención cerrada correctamente",
@@ -143,14 +243,22 @@ export class TurnosAtencionController {
   /**
    * Obtiene el estado de la sesión actual del asesor y el turno en curso.
    */
-  static async getEstadoActual(req: Request, res: Response, next: NextFunction) {
+  static async getEstadoActual(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const userId = Number(req.user?.id);
       if (!userId) throw new UnauthorizedError("Usuario no autenticado");
 
       const sesion = await SesionAtencion.findOne({
         where: { userId, isActive: true },
-        relations: ["modulo", "serviciosAsignados", "serviciosAsignados.service"],
+        relations: [
+          "modulo",
+          "serviciosAsignados",
+          "serviciosAsignados.service",
+        ],
       });
 
       if (!sesion) {
@@ -158,6 +266,8 @@ export class TurnosAtencionController {
           hasActiveSession: false,
           session: null,
           activeTurn: null,
+          pendingQueue: [],
+          pendingQueueCount: 0,
         });
       }
 
@@ -170,19 +280,22 @@ export class TurnosAtencionController {
         relations: ["patient", "service", "currentModulo"],
       });
 
-      // Contar turnos pendientes en la cola para sus servicios
       const serviceIds = sesion.serviciosAsignados.map((s) => s.serviceId);
       const { start, end } = TurnoDayService.getRange();
-      const pendingCount = serviceIds.length > 0
-        ? await Turno.count({
-            where: {
-              headquarterId: sesion.headquarterId,
-              serviceId: In(serviceIds),
-              status: TurnoStatus.PENDIENTE,
-              createdAt: Between(start, end),
-            },
-          })
-        : 0;
+      const pendingTurns =
+        serviceIds.length > 0
+          ? await Turno.find({
+              where: {
+                headquarterId: sesion.headquarterId,
+                serviceId: In(serviceIds),
+                status: TurnoStatus.PENDIENTE,
+                createdAt: Between(start, end),
+              },
+              relations: ["patient", "service"],
+            })
+          : [];
+      pendingTurns.sort(TurnoQueueService.compareQueueOrder);
+      const pendingCount = pendingTurns.length;
 
       return res.json({
         hasActiveSession: true,
@@ -203,13 +316,11 @@ export class TurnosAtencionController {
           ? {
               id: activeTurn.id,
               ticketCode: activeTurn.ticketCode,
-              ticketToken: activeTurn.ticketToken,
               priority: activeTurn.priority,
               status: activeTurn.status,
               callCount: activeTurn.callCount,
               patient: {
                 name: activeTurn.patient?.name,
-                documentNumber: activeTurn.patient?.documentNumber,
               },
               service: {
                 id: activeTurn.service?.id,
@@ -220,6 +331,16 @@ export class TurnosAtencionController {
             }
           : null,
         pendingQueueCount: pendingCount,
+        pendingQueue: pendingTurns.map((turn) => ({
+          ticketCode: turn.ticketCode,
+          patientName: turn.patient?.name,
+          serviceName: turn.service?.name,
+          priority: turn.priority,
+          waitingMinutes: Math.max(
+            0,
+            Math.floor((Date.now() - turn.createdAt.getTime()) / 60000),
+          ),
+        })),
       });
     } catch (error) {
       next(error);
@@ -242,7 +363,8 @@ export class TurnosAtencionController {
         notes?: string;
       };
 
-      if (!action) throw new BadRequestError("La acción a ejecutar es requerida");
+      if (!action)
+        throw new BadRequestError("La acción a ejecutar es requerida");
 
       // 1. Obtener la sesión activa del asesor
       const sesion = await SesionAtencion.findOne({
@@ -251,14 +373,14 @@ export class TurnosAtencionController {
       });
 
       if (!sesion) {
-        throw new ConflictError("Debes tener una sesión de atención activa para ejecutar acciones sobre turnos");
+        throw new ConflictError(
+          "Debes tener una sesión de atención activa para ejecutar acciones sobre turnos",
+        );
       }
 
       const serviceIds = sesion.serviciosAsignados.map((s) => s.serviceId);
 
-      // ==========================================
       // ACCIÓN: LLAMAR SIGUIENTE
-      // ==========================================
       if (action === "LLAMAR") {
         // Verificar que no tenga un turno en atención activo
         const turnoEnAtencion = await Turno.findOne({
@@ -267,7 +389,7 @@ export class TurnosAtencionController {
 
         if (turnoEnAtencion) {
           throw new ConflictError(
-            `Ya tienes un paciente en atención (${turnoEnAtencion.ticketCode}). Finaliza la atención actual antes de llamar al siguiente.`
+            `Ya tienes un paciente en atención (${turnoEnAtencion.ticketCode}). Finaliza la atención actual antes de llamar al siguiente.`,
           );
         }
 
@@ -278,16 +400,20 @@ export class TurnosAtencionController {
 
         if (turnoLlamadoPrevio) {
           throw new ConflictError(
-            `El turno ${turnoLlamadoPrevio.ticketCode} sigue en llamado. Debes iniciar su atención o marcar 'No asistió' antes de llamar al siguiente.`
+            `El turno ${turnoLlamadoPrevio.ticketCode} sigue en llamado. Debes iniciar su atención o marcar 'No asistió' antes de llamar al siguiente.`,
           );
         }
 
         // Buscar siguiente turno en cola
-        const nextTurno = await TurnoQueueService.getNextInQueue(sesion.headquarterId, serviceIds);
+        const nextTurno = await TurnoQueueService.getNextInQueue(
+          sesion.headquarterId,
+          serviceIds,
+        );
 
         if (!nextTurno) {
           return res.json({
-            message: "No hay turnos pendientes en cola para los servicios asignados",
+            message:
+              "No hay turnos pendientes en cola para los servicios asignados",
             action: "LLAMAR",
             turno: null,
           });
@@ -308,7 +434,7 @@ export class TurnosAtencionController {
           TurnoStatus.LLAMADO,
           sesion.moduloId,
           userId,
-          notes || "Llamado a ventanilla"
+          notes || "Llamado a ventanilla",
         );
 
         // Emitir eventos Socket.IO a salas de TV y sede
@@ -326,7 +452,10 @@ export class TurnosAtencionController {
         });
 
         // Notificar en tiempo real a los turnos que siguen en espera (avanzó la cola)
-        await TurnoSocketService.notificarAvanceCola(sesion.headquarterId, nextTurno.serviceId);
+        await TurnoSocketService.notificarAvanceCola(
+          sesion.headquarterId,
+          nextTurno.serviceId,
+        );
 
         return res.json({
           message: `Turno ${nextTurno.ticketCode} llamado con éxito`,
@@ -349,7 +478,11 @@ export class TurnosAtencionController {
       let turno: Turno | null = null;
       if (turnoId) {
         turno = await Turno.findOne({
-          where: { id: Number(turnoId) },
+          where: {
+            id: Number(turnoId),
+            currentUserId: userId,
+            status: In([TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION]),
+          },
           relations: ["patient", "service", "currentModulo", "currentUser"],
         });
       } else {
@@ -364,15 +497,29 @@ export class TurnosAtencionController {
       }
 
       if (!turno) {
-        throw new NotFoundError("No se encontró el turno especificado o no tienes un turno activo en atención");
+        throw new NotFoundError(
+          "No se encontró el turno especificado o no tienes un turno activo en atención",
+        );
+      }
+
+      if (turno.headquarterId !== sesion.headquarterId) {
+        throw new ConflictError(
+          "El turno activo no pertenece a la sede de tu sesión",
+        );
+      }
+      if (!serviceIds.includes(turno.serviceId)) {
+        throw new ConflictError(
+          "El servicio del turno no está asignado a tu sesión activa",
+        );
       }
 
       // Validar transición en la máquina de estados
-      const nextStatus = TurnoQueueService.validateTransition(turno.status, action);
+      const nextStatus = TurnoQueueService.validateTransition(
+        turno.status,
+        action,
+      );
 
-      // ==========================================
       // ACCIÓN: RELLAMAR
-      // ==========================================
       if (action === "RELLAMAR") {
         turno.callCount += 1;
         turno.calledAt = new Date();
@@ -383,7 +530,7 @@ export class TurnosAtencionController {
           TurnoStatus.LLAMADO,
           sesion.moduloId,
           userId,
-          `Rellamado número ${turno.callCount}`
+          `Rellamado número ${turno.callCount}`,
         );
 
         TurnoSocketService.emitTurnoRellamado(sesion.headquarterId, {
@@ -411,16 +558,17 @@ export class TurnosAtencionController {
         });
       }
 
-      // ==========================================
       // ACCIÓN: INICIAR ATENCIÓN
-      // ==========================================
       if (action === "INICIAR") {
         const startedAt = new Date();
         const result = await Turno.update(
           { id: turno.id, status: TurnoStatus.LLAMADO },
-          { status: nextStatus, startedAt }
+          { status: nextStatus, startedAt },
         );
-        if (result.affected !== 1) throw new ConflictError("El turno cambió de estado. Actualiza el panel antes de iniciar la atención");
+        if (result.affected !== 1)
+          throw new ConflictError(
+            "El turno cambió de estado. Actualiza el panel antes de iniciar la atención",
+          );
         turno.status = nextStatus;
         turno.startedAt = startedAt;
 
@@ -429,7 +577,7 @@ export class TurnosAtencionController {
           nextStatus,
           sesion.moduloId,
           userId,
-          notes || "Inicio de atención presencial"
+          notes || "Inicio de atención presencial",
         );
 
         TurnoSocketService.emitTicketEstado({
@@ -443,9 +591,13 @@ export class TurnosAtencionController {
         });
 
         TurnoSocketService.emitTurnoActualizado(sesion.headquarterId, {
-          turnoId: turno.id, ticketCode: turno.ticketCode, status: turno.status,
-          headquarterId: sesion.headquarterId, moduloCode: sesion.modulo?.code,
-          moduloName: sesion.modulo?.name, updatedAt: new Date(),
+          turnoId: turno.id,
+          ticketCode: turno.ticketCode,
+          status: turno.status,
+          headquarterId: sesion.headquarterId,
+          moduloCode: sesion.modulo?.code,
+          moduloName: sesion.modulo?.name,
+          updatedAt: new Date(),
         });
 
         return res.json({
@@ -473,7 +625,7 @@ export class TurnosAtencionController {
           nextStatus,
           sesion.moduloId,
           userId,
-          notes || "Atención finalizada con éxito"
+          notes || "Atención finalizada con éxito",
         );
 
         TurnoSocketService.emitTicketEstado({
@@ -520,7 +672,7 @@ export class TurnosAtencionController {
           nextStatus,
           sesion.moduloId,
           userId,
-          notes || `Paciente ausente tras ${turno.callCount} llamados`
+          notes || `Paciente ausente tras ${turno.callCount} llamados`,
         );
 
         TurnoSocketService.emitTicketEstado({
@@ -553,12 +705,25 @@ export class TurnosAtencionController {
         });
       }
 
-      // ==========================================
       // ACCIÓN: TRANSFERIR DE SERVICIO
-      // ==========================================
       if (action === "TRANSFERIR") {
         if (!newServiceId) {
-          throw new BadRequestError("El ID del nuevo servicio es requerido para la transferencia");
+          throw new BadRequestError(
+            "El ID del nuevo servicio es requerido para la transferencia",
+          );
+        }
+        if (Number(newServiceId) === turno.serviceId) {
+          throw new BadRequestError(
+            "El servicio de destino debe ser diferente al servicio actual",
+          );
+        }
+        const destinationService = await ServicioAtencion.findOne({
+          where: { id: Number(newServiceId), status: true },
+        });
+        if (!destinationService) {
+          throw new BadRequestError(
+            "El servicio de destino no existe o está inactivo",
+          );
         }
 
         // Trazar que fue transferido desde el servicio anterior
@@ -567,11 +732,12 @@ export class TurnosAtencionController {
           TurnoStatus.TRANSFERIDO,
           sesion.moduloId,
           userId,
-          notes || `Transferido al servicio ID ${newServiceId}`
+          notes || `Transferido al servicio ID ${newServiceId}`,
         );
 
         // Reubicar el turno en la cola del nuevo servicio en estado PENDIENTE conservando prioridad
-        turno.serviceId = Number(newServiceId);
+        turno.service = destinationService;
+        turno.serviceId = destinationService.id;
         turno.status = TurnoStatus.PENDIENTE;
         turno.currentModuloId = null;
         turno.currentUserId = null;
@@ -584,7 +750,7 @@ export class TurnosAtencionController {
           TurnoStatus.PENDIENTE,
           null,
           null,
-          `Reingreso a cola en nuevo servicio (${newServiceId})`
+          `Reingreso a cola en nuevo servicio (${newServiceId})`,
         );
 
         TurnoSocketService.emitTicketEstado({
@@ -607,7 +773,10 @@ export class TurnosAtencionController {
         });
 
         // Notificar avance de cola al nuevo servicio
-        await TurnoSocketService.notificarAvanceCola(sesion.headquarterId, Number(newServiceId));
+        await TurnoSocketService.notificarAvanceCola(
+          sesion.headquarterId,
+          Number(newServiceId),
+        );
 
         return res.json({
           message: `Turno ${turno.ticketCode} transferido con éxito al nuevo servicio`,
@@ -625,6 +794,9 @@ export class TurnosAtencionController {
       // ACCIÓN: CANCELAR
       // ==========================================
       if (action === "CANCELAR") {
+        const reason = typeof notes === "string" ? notes.trim() : "";
+        if (!reason)
+          throw new BadRequestError("Debes indicar el motivo de cancelación");
         turno.status = nextStatus;
         turno.finishedAt = new Date();
         await turno.save();
@@ -634,7 +806,7 @@ export class TurnosAtencionController {
           nextStatus,
           sesion.moduloId,
           userId,
-          notes || "Turno cancelado administrativamente"
+          reason,
         );
 
         TurnoSocketService.emitTicketEstado({
@@ -655,7 +827,10 @@ export class TurnosAtencionController {
           updatedAt: new Date(),
         });
 
-        await TurnoSocketService.notificarAvanceCola(sesion.headquarterId, turno.serviceId);
+        await TurnoSocketService.notificarAvanceCola(
+          sesion.headquarterId,
+          turno.serviceId,
+        );
 
         return res.json({
           message: `Turno ${turno.ticketCode} cancelado`,

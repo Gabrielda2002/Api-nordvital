@@ -187,8 +187,8 @@ describe("Eventos de integración pública", () => {
   for (const affected of [1, 0]) {
     it(`inicio de atención actualiza TV solo si la transición gana (affected=${affected})`, async (t) => {
       events.length = 0;
-      t.mock.method(SesionAtencion, "findOne", async () => ({ headquarterId: 1, moduloId: 2, modulo: { code: "M2", name: "Módulo 2" }, serviciosAsignados: [] }));
-      t.mock.method(Turno, "findOne", async () => Object.assign(new Turno(), { id: 3, status: TurnoStatus.LLAMADO, ticketCode: "G-003", ticketToken: "ticket" }));
+      t.mock.method(SesionAtencion, "findOne", async () => ({ headquarterId: 1, moduloId: 2, modulo: { code: "M2", name: "Módulo 2" }, serviciosAsignados: [{ serviceId: 3 }] }));
+      t.mock.method(Turno, "findOne", async () => Object.assign(new Turno(), { id: 3, headquarterId: 1, serviceId: 3, status: TurnoStatus.LLAMADO, ticketCode: "G-003", ticketToken: "ticket" }));
       t.mock.method(Turno, "update", async (criteria: unknown) => {
         assert.deepEqual(criteria, { id: 3, status: TurnoStatus.LLAMADO });
         return { affected };
@@ -209,6 +209,8 @@ describe("Eventos de integración pública", () => {
   it("reemplazar sesión recalcula los servicios anteriores y nuevos", async (t) => {
     const headquarters: number[] = [];
     t.mock.method(ModuloAtencion, "findOne", async () => ({ id: 2, headquarterId: 1, code: "M2", name: "Módulo 2" }));
+    t.mock.method(Turno, "findOne", async () => null);
+    t.mock.method(ServicioAtencion, "find", async () => [{ id: 3, name: "Medicina" }]);
     t.mock.method(SesionAtencion, "findOne", async () => null);
     t.mock.method(SesionAtencion, "find", async () => [{ headquarterId: 8, serviciosAsignados: [{ serviceId: 9 }] }]);
     t.mock.method(SesionAtencion, "update", async () => ({ affected: 1 }));
@@ -232,6 +234,166 @@ describe("Eventos de integración pública", () => {
     await TurnosAtencionController.cerrarSesion({ user: { id: 1 } } as unknown as Request, harness.response, harness.next);
     assert.deepEqual(harness.errors, []);
     assert.deepEqual(headquarters, [1]);
+  });
+
+  it("devuelve la cola de sesión ordenada y sin datos sensibles", async (t) => {
+    const now = new Date();
+    const session = Object.assign(new SesionAtencion(), {
+      headquarterId: 4,
+      modulo: { id: 8, code: "M8", name: "Módulo 8" },
+      serviciosAsignados: [{ serviceId: 2, service: { name: "Medicina" } }],
+    });
+    const turns = [
+      Object.assign(new Turno(), { id: 2, ticketToken: "private-2", ticketCode: "G-002", headquarterId: 4, serviceId: 2, status: TurnoStatus.PENDIENTE, priority: TurnoPriority.GENERAL, createdAt: new Date(now.getTime() - 120000), patient: { name: "Paciente dos", documentNumber: "secret" }, service: { name: "Medicina" } }),
+      Object.assign(new Turno(), { id: 1, ticketToken: "private-1", ticketCode: "P-001", headquarterId: 4, serviceId: 2, status: TurnoStatus.PENDIENTE, priority: TurnoPriority.PRIORITARIO, createdAt: new Date(now.getTime() - 60000), patient: { name: "Paciente uno", documentNumber: "secret" }, service: { name: "Medicina" } }),
+    ];
+    t.mock.method(SesionAtencion, "findOne", async () => session);
+    t.mock.method(Turno, "findOne", async () => null);
+    t.mock.method(Turno, "count", async () => 2);
+    t.mock.method(Turno, "find", async (options: { where: { headquarterId: number; serviceId: unknown } }) => {
+      assert.equal(options.where.headquarterId, 4);
+      assert.ok(options.where.serviceId);
+      return turns;
+    });
+    const harness = responseHarness();
+
+    await TurnosAtencionController.getEstadoActual({ user: { id: 12 } } as unknown as Request, harness.response, harness.next);
+
+    assert.deepEqual(harness.errors, []);
+    const queue = harness.body.pendingQueue as Array<Record<string, unknown>>;
+    assert.deepEqual(queue.map((item) => item.ticketCode), ["P-001", "G-002"]);
+    assert.deepEqual(Object.keys(queue[0]).sort(), ["patientName", "priority", "serviceName", "ticketCode", "waitingMinutes"]);
+    assert.equal(queue[0].patientName, "Paciente uno");
+    assert.equal(queue[0].serviceName, "Medicina");
+    assert.equal(queue[0].waitingMinutes, 1);
+  });
+
+  it("expone solo módulos disponibles y servicios activos como opciones", async (t) => {
+    t.mock.method(ModuloAtencion, "find", async () => [
+      { id: 1, headquarterId: 4, code: "M1", name: "Módulo 1", isActive: true, headquarter: { name: "Sede Norte" } },
+      { id: 2, headquarterId: 4, code: "M2", name: "Módulo 2", isActive: true, headquarter: { name: "Sede Norte" } },
+    ]);
+    t.mock.method(ServicioAtencion, "find", async () => [{ id: 8, name: "Medicina", status: true }]);
+    t.mock.method(SesionAtencion, "find", async () => [{ userId: 9, moduloId: 2, isActive: true }]);
+    const harness = responseHarness();
+
+    await TurnosAtencionController.getOpcionesSesion({ user: { id: 3 } } as unknown as Request, harness.response, harness.next);
+
+    assert.deepEqual(harness.errors, []);
+    const modules = harness.body.modules as Array<Record<string, unknown>>;
+    assert.equal(modules[0].isAvailable, true);
+    assert.equal(modules[1].isAvailable, false);
+    assert.deepEqual(harness.body.services, [{ id: 8, name: "Medicina" }]);
+  });
+
+  it("impide cerrar la sesión si el turno sigue llamado", async (t) => {
+    const session = Object.assign(new SesionAtencion(), { headquarterId: 1, isActive: true });
+    t.mock.method(SesionAtencion, "findOne", async () => session);
+    t.mock.method(Turno, "findOne", async () => Object.assign(new Turno(), { ticketCode: "G-010", status: TurnoStatus.LLAMADO }));
+    const harness = responseHarness();
+
+    await TurnosAtencionController.cerrarSesion({ user: { id: 1 } } as unknown as Request, harness.response, harness.next);
+
+    assert.ok(harness.errors[0] instanceof ConflictError);
+    assert.equal(session.isActive, true);
+  });
+
+  it("no permite operar un turno que pertenece a otro usuario", async (t) => {
+    t.mock.method(SesionAtencion, "findOne", async () => Object.assign(new SesionAtencion(), {
+      headquarterId: 1,
+      moduloId: 2,
+      serviciosAsignados: [{ serviceId: 3 }],
+      modulo: { code: "M2", name: "Módulo 2" },
+    }));
+    t.mock.method(Turno, "findOne", async (_options: { where: { id: number; currentUserId: number } }) => null);
+    const harness = responseHarness();
+
+    await TurnosAtencionController.ejecutarAccion({ user: { id: 7 }, body: { action: "RELLAMAR", turnoId: 99 } } as unknown as Request, harness.response, harness.next);
+
+    assert.equal((harness.errors[0] as Error).message, "No se encontró el turno especificado o no tienes un turno activo en atención");
+  });
+
+  it("rechaza cancelar desde atención si falta el motivo", async (t) => {
+    t.mock.method(SesionAtencion, "findOne", async () => Object.assign(new SesionAtencion(), {
+      headquarterId: 1,
+      moduloId: 2,
+      serviciosAsignados: [{ serviceId: 3 }],
+      modulo: { code: "M2", name: "Módulo 2" },
+    }));
+    const turn = Object.assign(new Turno(), {
+      id: 6, currentUserId: 7, headquarterId: 1, serviceId: 3,
+      status: TurnoStatus.EN_ATENCION, ticketCode: "G-006",
+    });
+    t.mock.method(Turno, "findOne", async () => turn);
+    const save = t.mock.method(turn, "save", async () => turn);
+    const harness = responseHarness();
+
+    await TurnosAtencionController.ejecutarAccion({ user: { id: 7 }, body: { action: "CANCELAR" } } as unknown as Request, harness.response, harness.next);
+
+    assert.equal((harness.errors[0] as Error).message, "Debes indicar el motivo de cancelación");
+    assert.equal(save.mock.callCount(), 0);
+    assert.equal(turn.status, TurnoStatus.EN_ATENCION);
+  });
+
+  it("rechaza transferir a un servicio inactivo sin modificar el turno", async (t) => {
+    t.mock.method(SesionAtencion, "findOne", async () => Object.assign(new SesionAtencion(), {
+      headquarterId: 1,
+      moduloId: 2,
+      serviciosAsignados: [{ serviceId: 3 }],
+      modulo: { code: "M2", name: "Módulo 2" },
+    }));
+    const turn = Object.assign(new Turno(), {
+      id: 6, currentUserId: 7, headquarterId: 1, serviceId: 3,
+      status: TurnoStatus.EN_ATENCION, ticketCode: "G-006",
+    });
+    t.mock.method(Turno, "findOne", async () => turn);
+    t.mock.method(ServicioAtencion, "findOne", async () => null);
+    const save = t.mock.method(turn, "save", async () => turn);
+    const harness = responseHarness();
+
+    await TurnosAtencionController.ejecutarAccion({ user: { id: 7 }, body: { action: "TRANSFERIR", newServiceId: 8 } } as unknown as Request, harness.response, harness.next);
+
+    assert.equal((harness.errors[0] as Error).message, "El servicio de destino no existe o está inactivo");
+    assert.equal(save.mock.callCount(), 0);
+    assert.equal(turn.serviceId, 3);
+  });
+
+  it("transfiere el turno actualizando también la relación del servicio cargada", async (t) => {
+    t.mock.method(SesionAtencion, "findOne", async () => Object.assign(new SesionAtencion(), {
+      headquarterId: 1,
+      moduloId: 2,
+      serviciosAsignados: [{ serviceId: 3 }],
+      modulo: { code: "M2", name: "Módulo 2" },
+    }));
+    const sourceService = { id: 3, name: "Medicina" };
+    const destinationService = { id: 8, name: "Odontología", status: true };
+    const turn = Object.assign(new Turno(), {
+      id: 6,
+      currentUserId: 7,
+      headquarterId: 1,
+      serviceId: sourceService.id,
+      service: sourceService,
+      status: TurnoStatus.EN_ATENCION,
+      ticketCode: "G-006",
+      ticketToken: "token-6",
+    });
+    t.mock.method(Turno, "findOne", async () => turn);
+    t.mock.method(ServicioAtencion, "findOne", async () => destinationService);
+    t.mock.method(TurnoQueueService, "recordTracking", async () => new TurnoTracking());
+    t.mock.method(TurnoSocketService, "notificarAvanceCola", async () => undefined);
+    t.mock.method(turn, "save", async () => turn);
+    const harness = responseHarness();
+
+    await TurnosAtencionController.ejecutarAccion({
+      user: { id: 7 },
+      body: { action: "TRANSFERIR", newServiceId: destinationService.id },
+    } as unknown as Request, harness.response, harness.next);
+
+    assert.deepEqual(harness.errors, []);
+    assert.equal(turn.serviceId, destinationService.id);
+    assert.equal(turn.service, destinationService);
+    assert.equal(turn.status, TurnoStatus.PENDIENTE);
+    assert.equal((harness.body.turno as Record<string, unknown>).newServiceId, destinationService.id);
   });
 
   it("cancelar informa retiro a TV y recalcula la cola", async (t) => {

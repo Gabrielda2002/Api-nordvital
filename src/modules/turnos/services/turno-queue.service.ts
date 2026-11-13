@@ -161,13 +161,9 @@ export class TurnoQueueService {
         return TurnoStatus.TRANSFERIDO;
 
       case "CANCELAR":
-        if (
-          currentStatus === TurnoStatus.FINALIZADO ||
-          currentStatus === TurnoStatus.NO_ASISTIO ||
-          currentStatus === TurnoStatus.CANCELADO
-        ) {
+        if (currentStatus !== TurnoStatus.LLAMADO && currentStatus !== TurnoStatus.EN_ATENCION) {
           throw new ConflictError(
-            `No se puede cancelar un turno cerrado en estado "${currentStatus}".`
+            `Solo se puede cancelar un turno llamado o en atención. El estado actual es "${currentStatus}".`
           );
         }
         return TurnoStatus.CANCELADO;
