@@ -17,7 +17,7 @@ const router = Router();
  *           type: string
  *     responses:
  *       200:
- *         description: Configuración de sede, servicios disponibles y documentTypes activos (id, name)
+ *         description: Configuración de sede, servicios activos asignados a esa sede (vacío si no hay asignaciones) y documentTypes activos
  *       404:
  *         description: Sede no encontrada o no habilitada
  */
@@ -91,9 +91,11 @@ router.post("/pacientes/verificar", TurnosPublicController.verificarPaciente);
  *                 description: Solo true con NODE_ENV=development; se rechaza en otros entornos
  *     responses:
  *       201:
- *         description: Ticket emitido con éxito
+ *         description: Ticket emitido; aheadCount y estimatedWaitMinutes consideran solo la cola de su prioridad. estimatedWaitMinutes es null si no hay asesor compatible activo.
  *       403:
  *         description: Ubicación fuera del radio permitido u omisión solicitada fuera de desarrollo
+ *       400:
+ *         description: Sede sin servicios configurados o servicio no asignado a la sede
  *       409:
  *         description: Paciente con turno activo del día en cualquier sede o servicio; incluye activeTicket recuperable
  */
@@ -113,7 +115,7 @@ router.post("/ticket", TurnosPublicController.emitirTicket);
  *           type: string
  *     responses:
  *       200:
- *         description: Información detallada del ticket y posición en cola
+ *         description: Posición filtrada por prioridad y cobertura de servicios de la sede; estimatedWaitMinutes es null si no hay asesor compatible activo.
  *       404:
  *         description: Ticket no encontrado
  */
@@ -200,7 +202,7 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  *           type: string
  *     responses:
  *       200:
- *         description: Turnos llamados/en atención y hasta cinco próximos turnos pendientes
+ *         description: Turnos llamados/en atención y hasta cinco próximos pendientes. Los próximos se ordenan cronológicamente para visualización; no representan un orden global de despacho entre prioridades.
  */
 router.get("/tv/:slug/estado", TurnosPublicController.getTvEstado);
 

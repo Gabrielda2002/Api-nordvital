@@ -35,7 +35,7 @@ export class SesionAtencion extends BaseEntity {
   @IsDate()
   endedAt?: Date | null;
 
-  @Column({ name: "is_active", type: "tinyint", width: 1, default: 1 })
+  @Column({ name: "is_active", type: "boolean", default: true })
   @IsOptional()
   @IsBoolean()
   isActive: boolean;

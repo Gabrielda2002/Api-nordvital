@@ -47,6 +47,64 @@ router.post("/sedes-config", TurnosAdminController.saveSedeConfig);
 
 /**
  * @swagger
+ * /turnos/admin/sedes/{headquarterId}/servicios:
+ *   get:
+ *     summary: Consultar catálogo activo y servicios asignados a una sede
+ *     tags: [Turnos - Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: headquarterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Catálogo activo con indicador de asignación y todos los IDs actualmente asignados
+ *       404:
+ *         description: Sede no encontrada
+ */
+router.get("/sedes/:headquarterId/servicios", TurnosAdminController.getServiciosSede);
+
+/**
+ * @swagger
+ * /turnos/admin/sedes/{headquarterId}/servicios:
+ *   put:
+ *     summary: Reemplazar los servicios asignados a una sede
+ *     tags: [Turnos - Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: headquarterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [serviceIds]
+ *             properties:
+ *               serviceIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Asignaciones guardadas
+ *       400:
+ *         description: Servicios inválidos, duplicados o inactivos
+ *       409:
+ *         description: Un servicio retirado tiene sesiones activas o turnos sin resolver
+ */
+router.put("/sedes/:headquarterId/servicios", TurnosAdminController.saveServiciosSede);
+
+/**
+ * @swagger
  * /turnos/admin/modulos:
  *   get:
  *     summary: Obtener módulos físicos de atención
@@ -60,7 +118,7 @@ router.post("/sedes-config", TurnosAdminController.saveSedeConfig);
  *           type: integer
  *     responses:
  *       200:
- *         description: Lista de módulos
+ *         description: Lista de módulos incluyendo si atienden turnos prioritarios
  */
 router.get("/modulos", TurnosAdminController.getModulos);
 
@@ -79,6 +137,10 @@ router.get("/modulos", TurnosAdminController.getModulos);
  *           schema:
  *             type: object
  *             required: [headquarterId, code, name]
+ *             properties:
+ *               isPriority:
+ *                 type: boolean
+ *                 description: Indica si el módulo atiende exclusivamente turnos prioritarios
  *     responses:
  *       201:
  *         description: Módulo creado con éxito
@@ -93,6 +155,21 @@ router.post("/modulos", TurnosAdminController.createModulo);
  *     tags: [Turnos - Administración]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isPriority:
+ *                 type: boolean
+ *               isActive:
+ *                 type: boolean
+ *               code:
+ *                 type: string
+ *               name:
+ *                 type: string
  *     parameters:
  *       - in: path
  *         name: id
@@ -102,6 +179,8 @@ router.post("/modulos", TurnosAdminController.createModulo);
  *     responses:
  *       200:
  *         description: Módulo actualizado
+ *       409:
+ *         description: El módulo tiene una sesión activa
  */
 router.put("/modulos/:id", TurnosAdminController.updateModulo);
 
@@ -135,4 +214,3 @@ router.put("/modulos/:id", TurnosAdminController.updateModulo);
 router.get("/kpis", TurnosAdminController.getKpis);
 
 export default router;
-

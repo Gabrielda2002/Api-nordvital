@@ -24,10 +24,15 @@ export class ModuloAtencion extends BaseEntity {
   @Length(2, 100, { message: "El nombre debe tener entre 2 y 100 caracteres" })
   name: string;
 
-  @Column({ name: "is_active", type: "tinyint", width: 1, default: 1 })
+  @Column({ name: "is_active", type: "boolean", default: true })
   @IsOptional()
   @IsBoolean()
   isActive: boolean;
+
+  @Column({ name: "is_priority", type: "boolean", default: false })
+  @IsOptional()
+  @IsBoolean({ message: "El tipo de atención prioritaria debe ser booleano" })
+  isPriority: boolean;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
@@ -39,4 +44,3 @@ export class ModuloAtencion extends BaseEntity {
   @JoinColumn({ name: "headquarter_id" })
   headquarter: Sedes;
 }
-

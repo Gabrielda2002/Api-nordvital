@@ -10,6 +10,9 @@ import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { TurnoTracking } from "../entities/TurnoTracking";
 import { Pacientes } from "../../patients/entities/pacientes";
 import { TipoDocumento } from "../../catalog/entities/tipo-documento";
+import { Sedes } from "../../catalog/entities/sedes";
+import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
+import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from "@core/utils/custom-errors";
 
 const input = {
@@ -79,9 +82,18 @@ describe("Integración pública de turnos", () => {
             assert.equal("headquarterId" in options.where, false);
             return turns[0] ?? null;
           }
+          if (entity === Sedes) {
+            assert.equal(options.lock?.mode, "pessimistic_write");
+            return { id: input.headquarterId };
+          }
+          if (entity === ServicioAtencion) return { id: options.where.id, status: true };
           assert.equal(entity, TurnoSedeConfig);
           assert.equal(options.lock?.mode, "pessimistic_write");
           return { headquarterId: input.headquarterId };
+        },
+        find: async (entity: unknown, options: { where: { headquarterId: number } }) => {
+          assert.equal(entity, TurnoSedeServicio);
+          return [{ serviceId: options.where.headquarterId === 1 ? 2 : 10 }];
         },
         create: (entity: new () => object, values: object) => Object.assign(new entity(), values),
         save: async (entity: object) => {
@@ -129,14 +141,69 @@ describe("Integración pública de turnos", () => {
     assert.equal(lookups.length, 3);
   });
 
+  it("rechaza emitir cuando la sede aún no tiene servicios asignados", async (t) => {
+    const patient = Object.assign(new Pacientes(), { id: 7, documentNumber: "123456", documentTypeId: 1 });
+    const manager = {
+      findOne: async (entity: unknown) => {
+        if (entity === Pacientes) return patient;
+        if (entity === TurnoSedeConfig) return { headquarterId: input.headquarterId };
+        if (entity === Sedes) return { id: input.headquarterId };
+        assert.fail("No debe consultar turnos ni servicios para una sede sin asignaciones");
+      },
+      find: async (entity: unknown) => {
+        assert.equal(entity, TurnoSedeServicio);
+        return [];
+      },
+    } as unknown as EntityManager;
+    t.mock.method(Turno, "getRepository", () => ({ manager: {
+      transaction: async (_level: string, work: (transactionManager: EntityManager) => unknown) => work(manager),
+    } } as unknown as Repository<Turno>));
+
+    await assert.rejects(
+      TurnoIssuanceService.issue(input),
+      (error: unknown) => error instanceof BadRequestError && error.message === "La sede no tiene servicios de atención configurados",
+    );
+  });
+
+  it("rechaza emitir un servicio activo que no está asignado a la sede", async (t) => {
+    const patient = Object.assign(new Pacientes(), { id: 7, documentNumber: "123456", documentTypeId: 1 });
+    const manager = {
+      findOne: async (entity: unknown) => {
+        if (entity === Pacientes) return patient;
+        if (entity === TurnoSedeConfig) return { headquarterId: input.headquarterId };
+        if (entity === Sedes) return { id: input.headquarterId };
+        assert.fail("No debe continuar la emisión si el servicio no está asignado");
+      },
+      find: async (entity: unknown) => {
+        assert.equal(entity, TurnoSedeServicio);
+        return [{ serviceId: 99 }];
+      },
+    } as unknown as EntityManager;
+    t.mock.method(Turno, "getRepository", () => ({ manager: {
+      transaction: async (_level: string, work: (transactionManager: EntityManager) => unknown) => work(manager),
+    } } as unknown as Repository<Turno>));
+
+    await assert.rejects(
+      TurnoIssuanceService.issue(input),
+      (error: unknown) => error instanceof BadRequestError && error.message === "El servicio seleccionado no está habilitado para esta sede",
+    );
+  });
+
   it("la consulta diaria no incluye turnos anteriores", async (t) => {
     let range: { _value: Date[] } | undefined;
-    const manager = {
-      findOne: async (entity: unknown, options: { where: { createdAt?: { _value: Date[] } } }) => {
-        if (entity === Pacientes) return { id: 4 };
-        if (entity === Turno) { range = options.where.createdAt; return { id: 1 }; }
-        throw new Error("No debe crear otro turno");
-      },
+      const manager = {
+        findOne: async (entity: unknown, options: { where: { createdAt?: { _value: Date[] } } }) => {
+          if (entity === Pacientes) return { id: 4 };
+          if (entity === TurnoSedeConfig) return { headquarterId: input.headquarterId };
+          if (entity === Sedes) return { id: input.headquarterId };
+          if (entity === ServicioAtencion) return { id: input.serviceId, status: true };
+          if (entity === Turno) { range = options.where.createdAt; return { id: 1 }; }
+          throw new Error("Entidad inesperada en la emisión");
+        },
+        find: async (entity: unknown) => {
+          assert.equal(entity, TurnoSedeServicio);
+          return [{ serviceId: input.serviceId }];
+        },
     } as unknown as EntityManager;
     t.mock.method(Turno, "getRepository", () => ({ manager: { transaction: async (_level: string, work: (em: EntityManager) => unknown) => work(manager) } } as unknown as Repository<Turno>));
     const result = await TurnoIssuanceService.issue(input);

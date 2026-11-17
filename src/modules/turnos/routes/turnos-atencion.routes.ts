@@ -20,7 +20,7 @@ router.use(authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]));
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Opciones operativas de módulos y servicios activos
+ *         description: Módulos con isPriority y servicios activos agrupados por sede en servicesByHeadquarter
  */
 router.get("/opciones", TurnosAtencionController.getOpcionesSesion);
 
@@ -51,6 +51,8 @@ router.get("/opciones", TurnosAtencionController.getOpcionesSesion);
  *         description: Sesión iniciada con éxito
  *       409:
  *         description: Módulo ocupado por otro asesor
+ *       400:
+ *         description: Servicio inactivo o no asignado a la sede del módulo
  */
 router.post("/sesion/iniciar", TurnosAtencionController.iniciarSesion);
 
@@ -74,13 +76,13 @@ router.post("/sesion/cerrar", TurnosAtencionController.cerrarSesion);
  * @swagger
  * /turnos/atencion/estado-actual:
  *   get:
- *     summary: Obtener estado de la sesión activa del asesor y su turno en curso
+ *     summary: Obtener sesión, turno activo y cola compatible con la prioridad del módulo
  *     tags: [Turnos - Atención Asesor]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Información de sesión, turno activo y cola pendiente
+ *         description: Información de sesión, turno activo y cola pendiente filtrada por sede, servicios, día operativo y tipo del módulo
  */
 router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
 
@@ -88,7 +90,7 @@ router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
  * @swagger
  * /turnos/atencion/accion:
  *   post:
- *     summary: Ejecutar acción de la máquina de estados sobre los turnos (LLAMAR, RELLAMAR, INICIAR, FINALIZAR, NO_ASISTIO, TRANSFERIR)
+ *     summary: Ejecutar una acción de turno; LLAMAR reclama FIFO solo dentro de la prioridad del módulo
  *     tags: [Turnos - Atención Asesor]
  *     security:
  *       - bearerAuth: []
@@ -114,7 +116,9 @@ router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
  *       200:
  *         description: Acción procesada con éxito
  *       409:
- *         description: Conflicto de estado de turno
+ *         description: Conflicto de sesión, turno activo o estado del turno
+ *       400:
+ *         description: Servicio de destino no asignado a la sede del turno
  */
 router.post("/accion", TurnosAtencionController.ejecutarAccion);
 

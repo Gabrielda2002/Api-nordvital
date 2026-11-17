@@ -1,5 +1,9 @@
 # Plan técnico: 003 - Contrato y cálculo de próximos turnos de TV
 
+> Actualización por la unidad D de la spec 005: la antigüedad organiza la lista
+> de TV únicamente como referencia visual. La prioridad separa las colas para
+> posición, espera y cobertura; sin asesores compatibles, el estimado es `null`.
+
 ## Alcance
 
 Implementación exclusiva del backend. La interfaz y su presentación se

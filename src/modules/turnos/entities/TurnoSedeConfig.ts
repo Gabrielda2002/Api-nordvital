@@ -38,7 +38,7 @@ export class TurnoSedeConfig extends BaseEntity {
   @Min(10)
   geoRadiusMeters: number;
 
-  @Column({ name: "is_enabled", type: "tinyint", width: 1, default: 1 })
+  @Column({ name: "is_enabled", type: "boolean", default: true })
   @IsOptional()
   @IsBoolean()
   isEnabled: boolean;

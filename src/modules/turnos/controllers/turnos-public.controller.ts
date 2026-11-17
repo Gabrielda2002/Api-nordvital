@@ -14,6 +14,7 @@ import { validateEntity } from "@core/utils/validation-helper";
 import { Between, In } from "typeorm";
 import { config as configEnv } from "@core/config/environment.config";
 import { TurnoDayService } from "../services/turno-day.service";
+import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { TurnoIssuanceService } from "../services/turno-issuance.service";
 import { TurnoServiceCoverageService } from "../services/turno-service-coverage.service";
 
@@ -35,10 +36,17 @@ export class TurnosPublicController {
         throw new NotFoundError(`No se encontró la configuración para la sede "${slug}" o no está habilitada`);
       }
 
-      const activeServices = await ServicioAtencion.find({
-        where: { status: true },
-        order: { name: "ASC" },
+      const assignments = await TurnoSedeServicio.find({
+        where: { headquarterId: config.headquarterId },
+        select: ["serviceId"],
       });
+      const assignedServiceIds = assignments.map(({ serviceId }) => serviceId);
+      const activeServices = assignedServiceIds.length > 0
+        ? await ServicioAtencion.find({
+            where: { id: In(assignedServiceIds), status: true },
+            order: { name: "ASC" },
+          })
+        : [];
 
       const activeDocumentTypes = await TipoDocumento.find({
         where: { status: true },
@@ -211,12 +219,17 @@ export class TurnosPublicController {
       }
 
       const { start, end } = TurnoDayService.getRange();
-      const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(config.headquarterId);
+      const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
+        config.headquarterId,
+        service.id,
+        turno.priority,
+      );
       const pendingWhere = {
         headquarterId: config.headquarterId,
+        serviceId: In(queueServiceIds),
+        priority: turno.priority,
         status: TurnoStatus.PENDIENTE,
         createdAt: Between(start, end),
-        ...(!hasCompleteCoverage ? { serviceId: Number(serviceId) } : {}),
       };
       const pendingTurns = await Turno.find({
         where: pendingWhere,
@@ -225,11 +238,15 @@ export class TurnosPublicController {
 
       const aheadCount = TurnoQueueService.calculateAheadCount(turno, pendingTurns);
 
-      // Contar asesores activos atendiendo este servicio
+      // Contar únicamente asesores activos de módulos compatibles con la prioridad.
       const activeSessionsCount = await SesionAtencion.count({
         where: {
           headquarterId: config.headquarterId,
           isActive: true,
+          modulo: {
+            isActive: true,
+            isPriority: turno.priority === TurnoPriority.PRIORITARIO,
+          },
           serviciosAsignados: {
             serviceId: Number(serviceId),
           },
@@ -242,7 +259,7 @@ export class TurnosPublicController {
         activeSessionsCount
       );
 
-      await TurnoSocketService.notificarAvanceCola(config.headquarterId, service.id);
+      await TurnoSocketService.notificarAvanceCola(config.headquarterId, service.id, turno.priority);
 
       return res.status(201).json({
         token: turno.ticketToken,
@@ -284,15 +301,20 @@ export class TurnosPublicController {
       }
 
       let aheadCount = 0;
-      let estimatedWaitMinutes = 0;
+      let estimatedWaitMinutes: number | null = 0;
 
       if (turno.status === TurnoStatus.PENDIENTE) {
         const { start, end } = TurnoDayService.getRange(turno.createdAt);
-        const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(turno.headquarterId);
+        const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
+          turno.headquarterId,
+          turno.serviceId,
+          turno.priority,
+        );
         const pendingTurns = await Turno.find({
           where: {
             headquarterId: turno.headquarterId,
-            ...(!hasCompleteCoverage ? { serviceId: turno.serviceId } : {}),
+            serviceId: In(queueServiceIds),
+            priority: turno.priority,
             status: TurnoStatus.PENDIENTE,
             createdAt: Between(start, end),
           },
@@ -309,6 +331,10 @@ export class TurnosPublicController {
           where: {
             headquarterId: turno.headquarterId,
             isActive: true,
+            modulo: {
+              isActive: true,
+              isPriority: turno.priority === TurnoPriority.PRIORITARIO,
+            },
             serviciosAsignados: {
               serviceId: turno.serviceId,
             },
@@ -441,7 +467,7 @@ export class TurnosPublicController {
       });
 
       // Recalcular posición en cola para los pacientes que siguen esperando
-      await TurnoSocketService.notificarAvanceCola(turno.headquarterId, turno.serviceId);
+      await TurnoSocketService.notificarAvanceCola(turno.headquarterId, turno.serviceId, turno.priority);
 
       return res.json({
         message: `El turno ${turno.ticketCode} fue cancelado exitosamente`,
@@ -488,7 +514,10 @@ export class TurnosPublicController {
         },
         select: ["id", "ticketCode", "priority", "createdAt"],
       });
-      upcomingTurns.sort((a, b) => TurnoQueueService.compareQueueOrder(a, b));
+      // Es una vista cronológica para TV, no un orden global de despacho entre colas.
+      upcomingTurns.sort((a, b) =>
+        a.createdAt.getTime() - b.createdAt.getTime() || a.id - b.id,
+      );
 
       return res.json({
         headquarter: {

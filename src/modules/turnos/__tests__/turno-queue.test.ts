@@ -1,8 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { TurnoQueueService } from "../services/turno-queue.service";
-import { TurnoPriority, TurnoStatus } from "../entities/Turno";
+import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { ConflictError } from "@core/utils/custom-errors";
+import { EntityManager } from "typeorm";
 
 describe("TurnoQueueService", () => {
   describe("hasCompleteServiceCoverage", () => {
@@ -37,67 +38,19 @@ describe("TurnoQueueService", () => {
     });
   });
 
-  describe("compareQueueOrder (Ley 1171 y FIFO)", () => {
-    it("turno prioritario debe tener precedencia sobre general aunque haya llegado después", () => {
-      const generalTemprano = {
-        id: 1,
-        priority: TurnoPriority.GENERAL,
-        createdAt: new Date("2026-11-04T08:00:00Z"),
-      };
-      const prioritarioTardio = {
-        id: 2,
-        priority: TurnoPriority.PRIORITARIO,
-        createdAt: new Date("2026-11-04T08:15:00Z"),
-      };
-
-      const cmp = TurnoQueueService.compareQueueOrder(prioritarioTardio, generalTemprano);
-      assert.ok(cmp < 0, "El prioritario debe ubicarse antes (cmp < 0)");
-
-      const cmpInverso = TurnoQueueService.compareQueueOrder(generalTemprano, prioritarioTardio);
-      assert.ok(cmpInverso > 0, "El general debe ubicarse después (cmp > 0)");
-    });
-
-    it("entre dos turnos de igual prioridad debe ordenar en estricto FIFO", () => {
-      const primerGeneral = {
-        id: 10,
-        priority: TurnoPriority.GENERAL,
-        createdAt: new Date("2026-11-04T08:00:00Z"),
-      };
-      const segundoGeneral = {
-        id: 11,
-        priority: TurnoPriority.GENERAL,
-        createdAt: new Date("2026-11-04T08:05:00Z"),
-      };
-
-      const cmp = TurnoQueueService.compareQueueOrder(primerGeneral, segundoGeneral);
-      assert.ok(cmp < 0, "El primer general llegado debe preceder al segundo");
-    });
-
-    it("si tienen exactamente el mismo timestamp, desempata por ID menor", () => {
-      const fecha = new Date("2026-11-04T08:00:00Z");
-      const turnoA = { id: 5, priority: TurnoPriority.GENERAL, createdAt: fecha };
-      const turnoB = { id: 8, priority: TurnoPriority.GENERAL, createdAt: fecha };
-
-      assert.ok(TurnoQueueService.compareQueueOrder(turnoA, turnoB) < 0);
-    });
-  });
-
   describe("calculateAheadCount", () => {
-    it("debe calcular correctamente los turnos precedentes considerando prioridad", () => {
+    it("excluye la prioridad opuesta y conserva FIFO con desempate por ID", () => {
       const t1General = { id: 1, priority: TurnoPriority.GENERAL, createdAt: new Date("2026-11-04T08:00:00Z") };
       const t2General = { id: 2, priority: TurnoPriority.GENERAL, createdAt: new Date("2026-11-04T08:05:00Z") };
-      const t3Prioritario = { id: 3, priority: TurnoPriority.PRIORITARIO, createdAt: new Date("2026-11-04T08:10:00Z") };
+      const t3Prioritario = { id: 3, priority: TurnoPriority.PRIORITARIO, createdAt: new Date("2026-11-04T07:00:00Z") };
+      const t4GeneralSameTime = { id: 4, priority: TurnoPriority.GENERAL, createdAt: t2General.createdAt };
 
-      const cola = [t1General, t2General, t3Prioritario];
+      const cola = [t1General, t2General, t3Prioritario, t4GeneralSameTime];
 
-      // El prioritario no tiene a nadie por delante (precede a t1 y t2)
       assert.equal(TurnoQueueService.calculateAheadCount(t3Prioritario, cola), 0);
-
-      // t1General tiene 1 por delante (t3Prioritario)
-      assert.equal(TurnoQueueService.calculateAheadCount(t1General, cola), 1);
-
-      // t2General tiene 2 por delante (t3Prioritario y t1General)
-      assert.equal(TurnoQueueService.calculateAheadCount(t2General, cola), 2);
+      assert.equal(TurnoQueueService.calculateAheadCount(t1General, cola), 0);
+      assert.equal(TurnoQueueService.calculateAheadCount(t2General, cola), 1);
+      assert.equal(TurnoQueueService.calculateAheadCount(t4GeneralSameTime, cola), 2);
     });
   });
 
@@ -114,6 +67,53 @@ describe("TurnoQueueService", () => {
     it("debe distribuir la carga si hay múltiples asesores activos", () => {
       // 4 personas por delante * 10 min / 2 asesores = 20 min
       assert.equal(TurnoQueueService.calculateEstimatedWaitMinutes(4, 10, 2), 20);
+    });
+
+    it("no presenta un estimado si no hay asesores compatibles activos", () => {
+      assert.equal(TurnoQueueService.calculateEstimatedWaitMinutes(4, 10, 0), null);
+      assert.equal(TurnoQueueService.calculateEstimatedWaitMinutes(0, 10, 0), null);
+    });
+  });
+
+  describe("getNextInQueue", () => {
+    for (const priority of [TurnoPriority.GENERAL, TurnoPriority.PRIORITARIO]) {
+      it(`consulta solo la cola ${priority} en FIFO y bloquea la fila`, async () => {
+        const filters: Array<{ condition: string; parameters?: Record<string, unknown> }> = [];
+        const order: Array<[string, string]> = [];
+        let lockMode = "";
+        const selected = Object.assign(new Turno(), {
+          id: 4,
+          priority,
+          status: TurnoStatus.PENDIENTE,
+        });
+        const builder = {
+          where: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
+          andWhere: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
+          orderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
+          addOrderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
+          setLock: (mode: string) => { lockMode = mode; return builder; },
+          getOne: async () => selected,
+        };
+        const manager = { createQueryBuilder: () => builder } as unknown as EntityManager;
+
+        const result = await TurnoQueueService.getNextInQueue(manager, 7, [2, 3], priority);
+
+        assert.equal(result, selected);
+        assert.ok(filters.some(({ condition, parameters }) => condition === "turno.priority = :priority" && parameters?.priority === priority));
+        assert.deepEqual(order, [["turno.created_at", "ASC"], ["turno.id", "ASC"]]);
+        assert.equal(lockMode, "pessimistic_write");
+      });
+    }
+
+    it("no consulta la base cuando la sesión no tiene servicios", async () => {
+      const manager = {
+        createQueryBuilder: () => assert.fail("No debe consultar una cola sin servicios"),
+      } as unknown as EntityManager;
+
+      assert.equal(
+        await TurnoQueueService.getNextInQueue(manager, 7, [], TurnoPriority.GENERAL),
+        null,
+      );
     });
   });
 
