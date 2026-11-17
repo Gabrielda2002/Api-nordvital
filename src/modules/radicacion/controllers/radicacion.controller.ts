@@ -58,7 +58,7 @@ export async function getRadicacionesAudit(
       documentNumber: r.patientRelation?.documentNumber || "N/A",
       namePatient: r.patientRelation?.name || "N/A",
       agreementName: r.patientRelation?.convenioRelation?.name || "N/A",
-      ipsPrimary: r.patientRelation.ipsPrimariaRelation.name || "N/A",
+      ipsPrimary: r.patientRelation?.ipsPrimariaRelation?.name || "N/A",
       orderDate: r.orderDate || "N/A",
       place: r.placeRelation?.name || "N/A",
       ipsRemitente: r.ipsRemiteRelation?.name || "N/A",

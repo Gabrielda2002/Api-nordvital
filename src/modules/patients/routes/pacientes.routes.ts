@@ -13,6 +13,7 @@ const router = Router();
  * /pacientes:
  *   get:
  *     summary: Obtiene todos los pacientes
+ *     description: Los pacientes registrados inicialmente desde turnos pueden tener email, address, agreementId, ipsPrimaryId y sus relaciones en null hasta completar su perfil.
  *     tags: [Pacientes]
  *     security:
  *       - bearerAuth: []

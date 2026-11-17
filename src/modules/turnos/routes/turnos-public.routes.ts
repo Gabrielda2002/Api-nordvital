@@ -53,6 +53,7 @@ router.post("/pacientes/verificar", TurnosPublicController.verificarPaciente);
  * /turnos/ticket:
  *   post:
  *     summary: Emitir un nuevo ticket digital previa validación de geolocalización
+ *     description: Si la identidad no está registrada, crea un paciente activo con documento, nombre y celular. Correo, dirección, convenio e IPS primaria quedan pendientes como null; no modifica el perfil de pacientes existentes.
  *     tags: [Turnos - Público]
  *     requestBody:
  *       required: true

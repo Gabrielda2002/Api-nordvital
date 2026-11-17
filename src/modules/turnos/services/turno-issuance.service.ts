@@ -68,9 +68,14 @@ export class TurnoIssuanceService {
       ...where,
       name: input.name.trim(),
       phoneNumber: input.phoneNumber.trim(),
+      email: null,
+      address: null,
+      agreementId: null,
+      ipsPrimaryId: null,
+      status: true,
     });
-    // No se fabrican los campos obligatorios del modelo compartido de pacientes.
-    await validateEntity(patient);
+    // Solo turnos permite posponer el perfil; las altas y ediciones habituales siguen completas.
+    await validateEntity(patient, { groups: ["turno-registration"] });
     return manager.save(patient);
   }
 

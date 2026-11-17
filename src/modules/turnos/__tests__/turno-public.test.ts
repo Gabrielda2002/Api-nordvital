@@ -58,7 +58,10 @@ describe("Integración pública de turnos", () => {
   });
 
   it("serializa emisiones simultáneas y conserva los datos del paciente", async (t) => {
-    const patient = Object.assign(new Pacientes(), { id: 7, documentNumber: "123456", documentTypeId: 1, name: "Nombre original", phoneNumber: "3111111111" });
+    const patient = Object.assign(new Pacientes(), {
+      id: 7, documentNumber: "123456", documentTypeId: 1, name: "Nombre original", phoneNumber: "3111111111",
+      email: "original@example.com", address: "Dirección original", agreementId: 3, ipsPrimaryId: 4, status: true,
+    });
     const turns: Turno[] = [];
     const saved: object[] = [];
     let gate = Promise.resolve();
@@ -122,23 +125,87 @@ describe("Integración pública de turnos", () => {
     assert.equal(turns.length, 1);
     assert.equal(patient.name, "Nombre original");
     assert.equal(patient.phoneNumber, "3111111111");
+    assert.equal(patient.email, "original@example.com");
+    assert.equal(patient.address, "Dirección original");
+    assert.equal(patient.agreementId, 3);
+    assert.equal(patient.ipsPrimaryId, 4);
+    assert.equal(patient.status, true);
     assert.equal(saved.some((entry) => entry instanceof Pacientes), false);
     assert.equal(saved.filter((entry) => entry instanceof TurnoTracking).length, 1);
   });
 
-  it("no reutiliza pacientes con otro tipo de documento ni fabrica datos faltantes", async (t) => {
-    const lookups: unknown[] = [];
+  it("crea paciente y turno con datos mínimos sin inventar el perfil ni mezclar tipos documentales", async (t) => {
+    const saved: object[] = [];
+    let patientLookups = 0;
     const manager = {
-      findOne: async (entity: unknown, options: unknown) => {
-        lookups.push({ entity, options });
-        return entity === TipoDocumento ? { id: 2 } : null;
+      findOne: async (entity: unknown, options: { where: Record<string, unknown>; lock?: { mode: string } }) => {
+        if (entity === Pacientes) {
+          patientLookups++;
+          assert.deepEqual(options.where, { documentNumber: input.documentNumber, documentTypeId: 2 });
+          assert.equal(options.lock?.mode, "pessimistic_write");
+          return null;
+        }
+        if (entity === TipoDocumento) {
+          assert.equal(options.lock?.mode, "pessimistic_write");
+          return { id: 2 };
+        }
+        if (entity === TurnoSedeConfig) return { headquarterId: input.headquarterId };
+        if (entity === Sedes) return { id: input.headquarterId };
+        if (entity === ServicioAtencion) return { id: input.serviceId, status: true };
+        if (entity === Turno) return null;
+        assert.fail("Entidad inesperada");
       },
+      find: async () => [{ serviceId: input.serviceId }],
       create: (entity: new () => object, values: object) => Object.assign(new entity(), values),
-      save: async () => { assert.fail("No debe guardar un paciente incompleto"); },
+      save: async (entity: object) => {
+        saved.push(entity);
+        if (entity instanceof Pacientes) entity.id = 7;
+        if (entity instanceof Turno) entity.id = 9;
+        return entity;
+      },
     } as unknown as EntityManager;
     t.mock.method(Turno, "getRepository", () => ({ manager: { transaction: async (_level: string, work: (em: EntityManager) => unknown) => work(manager) } } as unknown as Repository<Turno>));
-    await assert.rejects(TurnoIssuanceService.issue({ ...input, documentTypeId: 2 }), /Email|Direccion|Convenio|ipsPrimaria|Estado/);
-    assert.equal(lookups.length, 3);
+    t.mock.method(TurnoQueueService, "getNextDailyNumber", async () => 1);
+
+    const result = await TurnoIssuanceService.issue({ ...input, documentTypeId: 2 });
+
+    assert.equal(patientLookups, 2);
+    assert.equal(result.created, true);
+    assert.equal(result.turno.patientId, 7);
+    const patient = saved.find((entity): entity is Pacientes => entity instanceof Pacientes);
+    assert.ok(patient);
+    assert.equal(patient.name, input.name);
+    assert.equal(patient.phoneNumber, input.phoneNumber);
+    assert.equal(patient.status, true);
+    assert.deepEqual(
+      [patient.email, patient.address, patient.agreementId, patient.ipsPrimaryId],
+      [null, null, null, null],
+    );
+    assert.equal(saved.filter((entity) => entity instanceof TurnoTracking).length, 1);
+  });
+
+  for (const invalid of [
+    { documentNumber: "abc" }, { name: "" }, { phoneNumber: "" }, { phoneNumber: "12345678901" },
+  ]) {
+    it(`rechaza datos mínimos inválidos sin guardar: ${JSON.stringify(invalid)}`, async (t) => {
+      const manager = {
+        findOne: async (entity: unknown) => entity === TipoDocumento ? { id: 1 } : null,
+        create: (entity: new () => object, values: object) => Object.assign(new entity(), values),
+        save: async () => assert.fail("No debe guardar datos inválidos"),
+      } as unknown as EntityManager;
+      t.mock.method(Turno, "getRepository", () => ({ manager: {
+        transaction: async (_level: string, work: (em: EntityManager) => unknown) => work(manager),
+      } } as unknown as Repository<Turno>));
+      await assert.rejects(TurnoIssuanceService.issue({ ...input, ...invalid }));
+    });
+  }
+
+  it("rechaza un tipo documental inactivo antes de registrar un paciente", async (t) => {
+    const manager = { findOne: async () => null } as unknown as EntityManager;
+    t.mock.method(Turno, "getRepository", () => ({ manager: {
+      transaction: async (_level: string, work: (em: EntityManager) => unknown) => work(manager),
+    } } as unknown as Repository<Turno>));
+    await assert.rejects(TurnoIssuanceService.issue(input), NotFoundError);
   });
 
   it("rechaza emitir cuando la sede aún no tiene servicios asignados", async (t) => {

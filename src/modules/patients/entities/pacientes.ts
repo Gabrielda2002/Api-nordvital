@@ -19,33 +19,33 @@ export class Pacientes extends BaseEntity {
     id: number;
 
     @Column({name: "document_type_id", type: "int"})
-    @IsInt()
-    @IsNotEmpty({message: "El campo Documento no puede estar vacio"})
+    @IsInt({ always: true })
+    @IsNotEmpty({message: "El campo Documento no puede estar vacio", always: true})
     documentTypeId: number;
 
     @Column({name: "document_number", type: "bigint"})
-    @IsString()
-    @IsNotEmpty({message: "El campo Identificacion no puede estar vacio"})
-    @Matches(/^\d+$/, { message: "El campo Identificacion solo permite numeros" })
-    @Length(5,20, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsString({ always: true })
+    @IsNotEmpty({message: "El campo Identificacion no puede estar vacio", always: true})
+    @Matches(/^\d+$/, { message: "El campo Identificacion solo permite numeros", always: true })
+    @Length(5,20, {message: "El campo Identificacion debe tener entre $constraint1 y $constraint2 caracteres", always: true})
     documentNumber: string;
 
     @Column({name: "name", type: "varchar", length: 250})
-    @IsString()
-    @IsNotEmpty({message: "El campo NombreCompleto no puede estar vacio"})
-    @Length(3, 250, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsString({ always: true })
+    @IsNotEmpty({message: "El campo NombreCompleto no puede estar vacio", always: true})
+    @Length(3, 250, {message: "El campo NombreCompleto debe tener entre $constraint1 y $constraint2 caracteres", always: true})
     name: string;
 
     @Column({name: "phone_number", type: "varchar", length: 10})
-    @IsNotEmpty({message: "El campo NumeroCelular no puede estar vacio"})
-    @Length(1, 10, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres"})
+    @IsNotEmpty({message: "El campo NumeroCelular no puede estar vacio", always: true})
+    @Length(1, 10, {message: "El campo NumeroCelular debe tener entre $constraint1 y $constraint2 caracteres", always: true})
     phoneNumber: string;
 
     @Column({name: "landline", nullable: true, type: "varchar", length: 10})
     @ValidateIf((o) => o.landline !== null && o.landline !== undefined && o.landline !== '')
     @IsString()
     @MaxLength(10, {message: "El campo TelefonoFijo no debe exceder los $constraint1 dígitos"})
-    landline?: string;
+    landline?: string | null;
 
     @Column({name: "phone_number_2", nullable: true, type: "varchar", length: 10})
     @ValidateIf((o) => o.phoneNumber2 !== null && o.phoneNumber2 !== undefined && o.phoneNumber2 !== '')
@@ -53,34 +53,34 @@ export class Pacientes extends BaseEntity {
     @Length(1, 10, {message: "El campo numeroCelular2 debe tener entre $constraint1 y $constraint2 caracteres"})
     phoneNumber2: string
 
-    @Column({name: "email", type: "varchar", length: 250})
+    @Column({name: "email", type: "varchar", length: 250, nullable: true})
     @IsEmail()
     @IsNotEmpty({message: "El campo Email no puede estar vacio"})
-    email: string;
+    email: string | null;
 
-    @Column({name: "address", type: "varchar", length: 250})
+    @Column({name: "address", type: "varchar", length: 250, nullable: true})
     @IsString()
     @IsNotEmpty({message: "El campo Direccion no puede estar vacio"})
-    address: string;
+    address: string | null;
 
-    @Column({name: "agreement_id", type: "int"})
+    @Column({name: "agreement_id", type: "int", nullable: true})
     @IsInt()
     @IsNotEmpty({message: "El campo Convenio no puede estar vacio"})
-    agreementId: number;
+    agreementId: number | null;
 
-    @Column({name: "ips_primary_id", type: "int"})
+    @Column({name: "ips_primary_id", type: "int", nullable: true})
     @IsInt()
     @IsNotEmpty({message: "El campo ipsPrimaria no puede estar vacio"})
-    ipsPrimaryId: number;
+    ipsPrimaryId: number | null;
 
     @Column({ name: "regime", type: "enum", enum: Regime, nullable: true})
     @IsEnum(Regime, { message: "Regimen debe ser valido"})
     @IsOptional()
     regime: Regime;
 
-    @Column({name: "status", type: "tinyint"})
-    @IsBoolean()
-    @IsNotEmpty({message: "El campo Estado no puede estar vacio"})
+    @Column({name: "status", type: "boolean"})
+    @IsBoolean({ always: true })
+    @IsNotEmpty({message: "El campo Estado no puede estar vacio", always: true})
     status: boolean;
 
     @UpdateDateColumn({ name: "updated_at" })
@@ -94,7 +94,7 @@ export class Pacientes extends BaseEntity {
     // ? relacion con convenio
     @ManyToOne(() => Convenio, (convenio) => convenio.patientRelation)
     @JoinColumn({name: "agreement_id"})
-    convenioRelation: Convenio
+    convenioRelation: Convenio | null
 
     // ? relacion con documento
     @ManyToOne(() => TipoDocumento, (tipoDocumento) => tipoDocumento.patientRelation)
@@ -104,7 +104,7 @@ export class Pacientes extends BaseEntity {
     // * relacion con ips primaria
     @ManyToOne(() => IpsPrimaria, (ipsPrimaria) => ipsPrimaria.patientRelation)
     @JoinColumn({name: "ips_primary_id"})
-    ipsPrimariaRelation: IpsPrimaria
+    ipsPrimariaRelation: IpsPrimaria | null
 
     // * relacion con radicacion
 

@@ -180,7 +180,7 @@ export async function getRequestLetter(req: Request, res: Response, next: NextFu
             dniNumber: r.patientRelation.documentNumber || "N/A",
             dniType: r.patientRelation.documentRelation.name || "N/A",
             patientName: r.patientRelation.name || "N/A",
-            agreement: r.patientRelation.convenioRelation.name || "N/A",
+            agreement: r.patientRelation?.convenioRelation?.name || "N/A",
             cupsAuthorized: r.cupsRadicadosRelation.map(c => ({
                 id: c.servicioRelation?.id || "N/A",
                 code: c.servicioRelation?.code || "N/A",
@@ -234,7 +234,7 @@ export async function getResponseLetter(req: Request, res: Response, next: NextF
             patientName: r.radicacionRelation.patientRelation.name || "N/A",
             dniNumber: r.radicacionRelation.patientRelation.documentNumber || "N/A",
             dniType: r.radicacionRelation.patientRelation.documentRelation.name || "N/A",
-            agreement: r.radicacionRelation.patientRelation.convenioRelation.name || "N/A",
+            agreement: r.radicacionRelation.patientRelation?.convenioRelation?.name || "N/A",
             idRadicado: r.radicacionRelation.id || "N/A",
             cupsAuthorized: r.radicacionRelation.cupsRadicadosRelation.map(c => ({
                 id: c.servicioRelation?.id || "N/A",

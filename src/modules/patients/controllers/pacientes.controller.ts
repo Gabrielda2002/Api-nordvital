@@ -292,7 +292,7 @@ export async function updatePacienteTable(
     paciente.name = name.toUpperCase();
     paciente.phoneNumber = phoneNumber;
     paciente.phoneNumber2 = phoneNumber2 && phoneNumber2 !== '' ? phoneNumber2 : null;
-    paciente.landline = landline.toString();
+    paciente.landline = landline == null || landline === "" ? null : String(landline);
     paciente.email = email;
     paciente.address = address;
     paciente.agreementId = parseInt(String(agreement));
