@@ -8,7 +8,7 @@ const router = Router();
 
 // Rutas administrativas protegidas por autenticación y roles de Gestión / Calidad
 router.use(authenticate);
-router.use(authorizeRoles([...ROLE_GROUPS.MANAGEMENT, ROLE_IDS.CALIDAD]));
+router.use(authorizeRoles([...ROLE_GROUPS.MANAGEMENT]));
 
 /**
  * @swagger
