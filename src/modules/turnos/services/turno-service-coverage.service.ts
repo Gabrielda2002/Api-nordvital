@@ -1,6 +1,5 @@
 import { ModuloAtencion } from "../entities/ModuloAtencion";
 import { SesionAtencion } from "../entities/SesionAtencion";
-import { TurnoPriority } from "../entities/Turno";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { TurnoQueueService } from "./turno-queue.service";
 
@@ -15,22 +14,18 @@ export class TurnoServiceCoverageService {
       .map(({ serviceId }) => serviceId);
   }
 
-  static async hasCompleteCoverage(
-    headquarterId: number,
-    priority: TurnoPriority,
-  ): Promise<boolean> {
-    const isPriorityModule = priority === TurnoPriority.PRIORITARIO;
+  static async hasCompleteCoverage(headquarterId: number): Promise<boolean> {
     const [activeServiceIds, activeModules, activeSessions] = await Promise.all([
       this.getActiveAssignedServiceIds(headquarterId),
       ModuloAtencion.find({
-        where: { headquarterId, isActive: true, isPriority: isPriorityModule },
+        where: { headquarterId, isActive: true },
         select: ["id"],
       }),
       SesionAtencion.find({
         where: {
           headquarterId,
           isActive: true,
-          modulo: { isActive: true, isPriority: isPriorityModule },
+          modulo: { isActive: true },
         },
         relations: ["modulo", "serviciosAsignados"],
       }),
@@ -49,9 +44,8 @@ export class TurnoServiceCoverageService {
   static async getQueueServiceIds(
     headquarterId: number,
     serviceId: number,
-    priority: TurnoPriority,
   ): Promise<number[]> {
-    if (!(await this.hasCompleteCoverage(headquarterId, priority))) {
+    if (!(await this.hasCompleteCoverage(headquarterId))) {
       return [serviceId];
     }
     return this.getActiveAssignedServiceIds(headquarterId);

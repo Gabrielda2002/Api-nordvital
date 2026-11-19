@@ -56,18 +56,13 @@ export class TurnoSocketService {
     const activeServiceIds = await TurnoServiceCoverageService.getActiveAssignedServiceIds(headquarterId);
     if (activeServiceIds.length === 0) return;
 
-    for (const priority of [TurnoPriority.GENERAL, TurnoPriority.PRIORITARIO]) {
-      const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(
-        headquarterId,
-        priority,
-      );
-      const servicesToRefresh = hasCompleteCoverage
-        ? activeServiceIds.slice(0, 1)
-        : activeServiceIds;
-      await Promise.all(servicesToRefresh.map((serviceId) =>
-        this.notificarAvanceCola(headquarterId, serviceId, priority)
-      ));
-    }
+    const hasCompleteCoverage = await TurnoServiceCoverageService.hasCompleteCoverage(headquarterId);
+    const servicesToRefresh = hasCompleteCoverage
+      ? activeServiceIds.slice(0, 1)
+      : activeServiceIds;
+    await Promise.all(servicesToRefresh.map((serviceId) =>
+      this.notificarAvanceCola(headquarterId, serviceId)
+    ));
   }
 
   /**
@@ -185,7 +180,6 @@ export class TurnoSocketService {
   static async notificarAvanceCola(
     headquarterId: number,
     serviceId: number,
-    priority?: TurnoPriority,
   ): Promise<void> {
     try {
       if (!io) return;
@@ -201,69 +195,58 @@ export class TurnoSocketService {
       ]);
       this.emitColaActualizada({ headquarterId, pendingCount, priorityPendingCount, updatedAt: new Date() });
 
-      const priorities = priority ? [priority] : [TurnoPriority.GENERAL, TurnoPriority.PRIORITARIO];
-
-      for (const queuePriority of priorities) {
-        const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
+      const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
+        headquarterId,
+        serviceId,
+      );
+      const pendingTurns = queueServiceIds.length === 0 ? [] : await Turno.find({
+        where: {
           headquarterId,
-          serviceId,
-          queuePriority,
+          serviceId: In(queueServiceIds),
+          status: TurnoStatus.PENDIENTE,
+          createdAt: Between(hoyInicio, hoyFin),
+        },
+        order: { createdAt: "ASC", id: "ASC" },
+      });
+      if (pendingTurns.length === 0) return;
+
+      const config = await TurnoSedeConfig.findOne({
+        where: { headquarterId, isEnabled: true },
+      });
+      const avgMinutes = config?.averageServiceMinutes || 10;
+
+      const sortedQueue = [...pendingTurns].sort(TurnoQueueService.compareQueueOrder);
+      const activeSessionsByService = new Map<number, number>(await Promise.all(
+        [...new Set(sortedQueue.map(({ serviceId: turnServiceId }) => turnServiceId))].map(async (turnServiceId) => [
+          turnServiceId,
+          await SesionAtencion.count({
+            where: {
+              headquarterId,
+              isActive: true,
+              modulo: { isActive: true },
+              serviciosAsignados: { serviceId: turnServiceId },
+            },
+          }),
+        ] as const)
+      ));
+
+      for (const turno of sortedQueue) {
+        const aheadCount = TurnoQueueService.calculateAheadCount(turno, sortedQueue);
+        const estimatedWaitMinutes = TurnoQueueService.calculateEstimatedWaitMinutes(
+          aheadCount,
+          avgMinutes,
+          activeSessionsByService.get(turno.serviceId) ?? 0
         );
-        const pendingTurns = queueServiceIds.length === 0 ? [] : await Turno.find({
-          where: {
-            headquarterId,
-            serviceId: In(queueServiceIds),
-            priority: queuePriority,
-            status: TurnoStatus.PENDIENTE,
-            createdAt: Between(hoyInicio, hoyFin),
-          },
-          order: { createdAt: "ASC", id: "ASC" },
+
+        this.emitTicketEstado({
+          turnoId: turno.id,
+          ticketToken: turno.ticketToken,
+          ticketCode: turno.ticketCode,
+          status: turno.status,
+          aheadCount,
+          estimatedWaitMinutes,
+          updatedAt: new Date(),
         });
-        if (pendingTurns.length === 0) continue;
-
-        const config = await TurnoSedeConfig.findOne({
-          where: { headquarterId, isEnabled: true },
-        });
-        const avgMinutes = config?.averageServiceMinutes || 10;
-
-        const sortedQueue = [...pendingTurns].sort((a, b) =>
-          a.createdAt.getTime() - b.createdAt.getTime() || a.id - b.id
-        );
-        const activeSessionsByService = new Map<number, number>(await Promise.all(
-          [...new Set(sortedQueue.map(({ serviceId: turnServiceId }) => turnServiceId))].map(async (turnServiceId) => [
-            turnServiceId,
-            await SesionAtencion.count({
-              where: {
-                headquarterId,
-                isActive: true,
-                modulo: {
-                  isActive: true,
-                  isPriority: queuePriority === TurnoPriority.PRIORITARIO,
-                },
-                serviciosAsignados: { serviceId: turnServiceId },
-              },
-            }),
-          ] as const)
-        ));
-
-        for (const turno of sortedQueue) {
-          const aheadCount = TurnoQueueService.calculateAheadCount(turno, sortedQueue);
-          const estimatedWaitMinutes = TurnoQueueService.calculateEstimatedWaitMinutes(
-            aheadCount,
-            avgMinutes,
-            activeSessionsByService.get(turno.serviceId) ?? 0
-          );
-
-          this.emitTicketEstado({
-            turnoId: turno.id,
-            ticketToken: turno.ticketToken,
-            ticketCode: turno.ticketCode,
-            status: turno.status,
-            aheadCount,
-            estimatedWaitMinutes,
-            updatedAt: new Date(),
-          });
-        }
       }
     } catch (error) {
       Logger.error(`[TurnoSocketService] Error al notificar avance de cola: ${error}`);

@@ -20,7 +20,7 @@ router.use(authorizeRoles([ROLE_IDS.ADMINISTRADOR, ROLE_IDS.RADICADOR]));
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Módulos con isPriority y servicios activos agrupados por sede en servicesByHeadquarter
+ *         description: Módulos activos con su disponibilidad y servicios activos agrupados por sede en servicesByHeadquarter
  */
 router.get("/opciones", TurnosAtencionController.getOpcionesSesion);
 
@@ -76,13 +76,13 @@ router.post("/sesion/cerrar", TurnosAtencionController.cerrarSesion);
  * @swagger
  * /turnos/atencion/estado-actual:
  *   get:
- *     summary: Obtener sesión, turno activo y cola compatible con la prioridad del módulo
+ *     summary: Obtener sesión, turno activo y cola compatible con los servicios del módulo
  *     tags: [Turnos - Atención Asesor]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Información de sesión, turno activo y cola pendiente filtrada por sede, servicios, día operativo y tipo del módulo
+ *         description: Información de sesión, turno activo y cola pendiente filtrada por sede, servicios y día operativo, ordenada con prioritarios primero
  */
 router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
 
@@ -90,7 +90,7 @@ router.get("/estado-actual", TurnosAtencionController.getEstadoActual);
  * @swagger
  * /turnos/atencion/accion:
  *   post:
- *     summary: Ejecutar una acción de turno; LLAMAR reclama FIFO solo dentro de la prioridad del módulo
+ *     summary: Ejecutar una acción de turno; LLAMAR reclama el siguiente turno con prioritarios primero y FIFO
  *     tags: [Turnos - Atención Asesor]
  *     security:
  *       - bearerAuth: []

@@ -3,10 +3,9 @@ import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { ModuloAtencion } from "../entities/ModuloAtencion";
 import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoEncuesta } from "../entities/TurnoEncuesta";
-import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
+import { BadRequestError, NotFoundError } from "@core/utils/custom-errors";
 import { validateEntity } from "@core/utils/validation-helper";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
-import { SesionAtencion } from "../entities/SesionAtencion";
 import { TurnoSiteServiceService } from "../services/turno-site-service.service";
 import { Sedes } from "../../catalog/entities/sedes";
 
@@ -147,7 +146,6 @@ export class TurnosAdminController {
           code: m.code,
           name: m.name,
           isActive: m.isActive,
-          isPriority: m.isPriority,
         }))
       );
     } catch (error) {
@@ -160,21 +158,17 @@ export class TurnosAdminController {
    */
   static async createModulo(req: Request, res: Response, next: NextFunction) {
     try {
-      const { headquarterId, code, name, isActive = true, isPriority = false } = req.body;
+      const { headquarterId, code, name, isActive = true } = req.body;
 
       if (!headquarterId) throw new BadRequestError("La sede es requerida");
       if (!code) throw new BadRequestError("El código de ventanilla es requerido");
       if (!name) throw new BadRequestError("El nombre de ventanilla es requerido");
-      if (typeof isPriority !== "boolean") {
-        throw new BadRequestError("El tipo de atención prioritaria debe ser booleano");
-      }
 
       const modulo = new ModuloAtencion();
       modulo.headquarterId = Number(headquarterId);
       modulo.code = String(code).trim().toUpperCase();
       modulo.name = String(name).trim();
       modulo.isActive = Boolean(isActive);
-      modulo.isPriority = isPriority;
 
       await validateEntity(modulo);
       await modulo.save();
@@ -195,11 +189,7 @@ export class TurnosAdminController {
   static async updateModulo(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params.id);
-      const { code, name, isActive, isPriority } = req.body;
-
-      if (isPriority !== undefined && typeof isPriority !== "boolean") {
-        throw new BadRequestError("El tipo de atención prioritaria debe ser booleano");
-      }
+      const { code, name, isActive } = req.body;
 
       const existingModulo = await ModuloAtencion.findOne({ where: { id } });
       if (!existingModulo) throw new NotFoundError("Módulo no encontrado");
@@ -218,15 +208,6 @@ export class TurnosAdminController {
         if (code) currentModulo.code = String(code).trim().toUpperCase();
         if (name) currentModulo.name = String(name).trim();
         if (isActive !== undefined) currentModulo.isActive = Boolean(isActive);
-        if (isPriority !== undefined && isPriority !== currentModulo.isPriority) {
-          const activeSession = await manager.findOne(SesionAtencion, {
-            where: { moduloId: id, isActive: true },
-          });
-          if (activeSession) {
-            throw new ConflictError("No se puede cambiar el tipo de atención mientras el módulo tenga una sesión activa");
-          }
-          currentModulo.isPriority = isPriority;
-        }
 
         await validateEntity(currentModulo);
         return manager.save(currentModulo);

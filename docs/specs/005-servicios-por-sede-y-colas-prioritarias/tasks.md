@@ -1,6 +1,29 @@
 # Tareas backend 005 — Servicios por sede y colas prioritarias
 
-**Estado:** Unidades A–D implementadas. Verificación local de E aprobada; validaciones MySQL de E pendientes de acordar entorno. No ejecutar migraciones sin ese acuerdo.
+**Estado:** Revisión de prioridad por turno y clasificación implementada y verificada localmente el 19 de noviembre de 2026. Migraciones y concurrencia real MySQL pendientes de entorno autorizado.
+
+## Revisión vigente — Prioridad por turno y clasificación
+
+Esta sección y la spec actualizada sustituyen las reglas de exclusividad de A–E que se conservan debajo como historial de la implementación anterior.
+
+- [x] Retirar `isPriority` de entidad, administración, opciones y filtros operativos.
+- [x] Restaurar prioritarios primero, FIFO por `createdAt`/`id`, manteniendo bloqueo transaccional.
+- [x] Unificar posiciones, cobertura y eventos cruzando prioridades sin alterar servicios por sede ni TV.
+- [x] Añadir clasificación requerida en emisión pública, persistencia enum nullable y respuesta del ticket.
+- [x] Crear migraciones nuevas sin editar las aplicadas: retirar `is_priority` y añadir `classification`.
+- [x] Adaptar pruebas existentes y Swagger; comprobar los tres valores y rechazos sin escritura.
+- [x] Ejecutar `pnpm test`: 125 pruebas aprobadas, cero fallos.
+- [x] Ejecutar `pnpm exec tsc --noEmit` y `pnpm build`: salida 0.
+- [x] Consultar `pnpm m:show`: aplicadas 178 `AddSiteServicesAndModulePriority1794611078914` y 179 `AllowMinimalPatientRegistration1794927748837`; pendientes `RemoveModulePriority1795100000000` y `AddTurnoClassification1795100000001`.
+- [ ] Ejecutar `up`/`down` y concurrencia con conexiones independientes en una base MySQL autorizada.
+
+**Comprobación de ejecución:** Controllers y eventos ejercitados por los tests con persistencia simulada; frontend recorrido en navegador con API simulada. Esto no acredita concurrencia real ni DDL en MySQL.
+
+**Límite de reversión:** Retirar clasificación exige coordinar formulario/API y preservar los valores guardados antes de su `down`. Restaurar exclusividad exige restaurar juntos módulo, despacho y cálculos; su `down` solo recrea `is_priority=false`, no los valores antiguos. Mantener asignaciones por sede y alta mínima de pacientes fuera de esa reversión.
+
+**Despliegue pendiente:** Respaldar y aplicar ambas migraciones en orden solo con autorización; desplegar API y frontend coordinadamente. No reclasificar módulos ni reconfigurar servicios ya asignados.
+
+## Historial — Implementación previa de exclusividad (sustituida)
 
 La [spec](spec.md) y el [plan](plan.md) están aprobados. Ejecutar las unidades en orden; mantener pruebas y documentación con el comportamiento que verifican.
 

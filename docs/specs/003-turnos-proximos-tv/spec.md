@@ -1,9 +1,9 @@
 # Spec: 003 - Contrato y cálculo de próximos turnos de TV
 
-> Para la separación actual entre colas generales y prioritarias, prevalece la
-> spec 005: `upcomingTurns` es un snapshot cronológico de visualización, no un
-> orden global de despacho. La posición y la espera consideran solo la prioridad
-> del turno y la cobertura activa de servicios de su sede.
+> Prevalece la revisión actual de la spec 005: `upcomingTurns` conserva su
+> snapshot cronológico informativo. El despacho, posición y espera consideran
+> prioritarios primero y FIFO dentro de cada prioridad, según la cobertura de
+> servicios de la sede, sin exclusividad por módulo.
 
 ## 1. Contexto y propósito
 

@@ -5,7 +5,7 @@ import { TurnoIssuanceService } from "../services/turno-issuance.service";
 import { TurnoDayService } from "../services/turno-day.service";
 import { TurnoGeoService } from "../services/turno-geo.service";
 import { TurnoQueueService } from "../services/turno-queue.service";
-import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
+import { Turno, TurnoClassification, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { TurnoTracking } from "../entities/TurnoTracking";
 import { Pacientes } from "../../patients/entities/pacientes";
@@ -17,6 +17,7 @@ import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from "@
 
 const input = {
   headquarterId: 1, serviceId: 2, priority: TurnoPriority.GENERAL,
+  classification: TurnoClassification.ASIGNACION_CITAS,
   documentNumber: "123456", documentTypeId: 1, name: "Nombre recibido", phoneNumber: "3000000000",
 };
 
@@ -35,6 +36,53 @@ describe("Integración pública de turnos", () => {
       assert.throws(() => TurnoIssuanceService.resolveDocumentTypeId(value), BadRequestError);
     }
   });
+
+  it("exige una clasificación de trámite válida", () => {
+    for (const value of Object.values(TurnoClassification)) {
+      assert.equal(TurnoIssuanceService.resolveClassification(value), value);
+    }
+    for (const value of [undefined, null, "", "OTRA", "asignacion_citas", 3, ["ASIGNACION_CITAS"]]) {
+      assert.throws(() => TurnoIssuanceService.resolveClassification(value), BadRequestError);
+    }
+  });
+
+  for (const classification of Object.values(TurnoClassification)) {
+    it(`persiste la clasificación ${classification} en el turno emitido`, async (t) => {
+      const saved: object[] = [];
+      const patient = Object.assign(new Pacientes(), { id: 7, documentNumber: "123456", documentTypeId: 1 });
+      const manager = {
+        findOne: async (entity: unknown) => {
+          if (entity === Pacientes) return patient;
+          if (entity === TurnoSedeConfig) return { headquarterId: input.headquarterId };
+          if (entity === Sedes) return { id: input.headquarterId };
+          if (entity === ServicioAtencion) return { id: input.serviceId, status: true };
+          if (entity === Turno) return null;
+          assert.fail("Entidad inesperada");
+        },
+        find: async () => [{ serviceId: input.serviceId }],
+        create: (entity: new () => object, values: object) => Object.assign(new entity(), values),
+        save: async (entity: object) => {
+          saved.push(entity);
+          if (entity instanceof Turno) entity.id = 9;
+          return entity;
+        },
+      } as unknown as EntityManager;
+      t.mock.method(Turno, "getRepository", () => ({ manager: {
+        transaction: async (_level: string, work: (em: EntityManager) => unknown) => work(manager),
+      } } as unknown as Repository<Turno>));
+      t.mock.method(TurnoQueueService, "getNextDailyNumber", async () => 4);
+
+      const result = await TurnoIssuanceService.issue({
+        ...input,
+        classification,
+      });
+
+      assert.equal(result.turno.classification, classification);
+      const turno = saved.find((entity): entity is Turno => entity instanceof Turno);
+      assert.ok(turno);
+      assert.equal(turno.classification, classification);
+    });
+  }
 
   const target = { latitude: 7.9, longitude: -72.5, geoRadiusMeters: 150 };
   it("permite omitir ubicación únicamente con flag explícito en desarrollo", () => {

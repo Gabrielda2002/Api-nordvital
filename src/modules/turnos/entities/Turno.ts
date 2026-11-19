@@ -13,6 +13,12 @@ export enum TurnoPriority {
   PRIORITARIO = "PRIORITARIO",
 }
 
+export enum TurnoClassification {
+  ASIGNACION_CITAS = "ASIGNACION_CITAS",
+  CONFIRMACION_CITAS = "CONFIRMACION_CITAS",
+  TRAMITES_ADMINISTRATIVOS = "TRAMITES_ADMINISTRATIVOS",
+}
+
 export enum TurnoStatus {
   PENDIENTE = "PENDIENTE",
   LLAMADO = "LLAMADO",
@@ -67,6 +73,16 @@ export class Turno extends BaseEntity {
   })
   @IsEnum(TurnoPriority)
   priority: TurnoPriority;
+
+  @Column({
+    name: "classification",
+    type: "enum",
+    enum: TurnoClassification,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsEnum(TurnoClassification)
+  classification?: TurnoClassification | null;
 
   @Column({
     name: "status",

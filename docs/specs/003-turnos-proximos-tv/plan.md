@@ -1,8 +1,9 @@
 # Plan técnico: 003 - Contrato y cálculo de próximos turnos de TV
 
-> Actualización por la unidad D de la spec 005: la antigüedad organiza la lista
-> de TV únicamente como referencia visual. La prioridad separa las colas para
-> posición, espera y cobertura; sin asesores compatibles, el estimado es `null`.
+> Revisión vigente de la spec 005: la antigüedad organiza la lista de TV
+> únicamente como referencia visual, sin modificar su contrato. El despacho y
+> las posiciones priorizan PRIORITARIO sobre GENERAL en cualquier módulo del
+> servicio; sin asesores activos para ese servicio, el estimado es `null`.
 
 ## Alcance
 

@@ -29,11 +29,6 @@ export class ModuloAtencion extends BaseEntity {
   @IsBoolean()
   isActive: boolean;
 
-  @Column({ name: "is_priority", type: "boolean", default: false })
-  @IsOptional()
-  @IsBoolean({ message: "El tipo de atención prioritaria debe ser booleano" })
-  isPriority: boolean;
-
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

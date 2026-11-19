@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { SesionAtencion } from "../entities/SesionAtencion";
 import { SesionAtencionServicio } from "../entities/SesionAtencionServicio";
 import { ModuloAtencion } from "../entities/ModuloAtencion";
-import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
+import { Turno, TurnoStatus } from "../entities/Turno";
 import {
   TurnoQueueService,
   TurnoAction,
@@ -60,7 +60,6 @@ export class TurnosAtencionController {
           headquarterName: module.headquarter?.name,
           code: module.code,
           name: module.name,
-          isPriority: module.isPriority,
           isAvailable: !occupiedModuleIds.has(module.id),
         })),
         services: services.map(({ id, name }) => ({ id, name })),
@@ -326,25 +325,19 @@ export class TurnosAtencionController {
 
       const serviceIds = sesion.serviciosAsignados.map((s) => s.serviceId);
       const { start, end } = TurnoDayService.getRange();
-      const priority = sesion.modulo?.isPriority
-        ? TurnoPriority.PRIORITARIO
-        : TurnoPriority.GENERAL;
       const pendingTurns =
         serviceIds.length > 0
           ? await Turno.find({
               where: {
                 headquarterId: sesion.headquarterId,
                 serviceId: In(serviceIds),
-                priority,
                 status: TurnoStatus.PENDIENTE,
                 createdAt: Between(start, end),
               },
               relations: ["patient", "service"],
             })
           : [];
-      pendingTurns.sort((a, b) =>
-        a.createdAt.getTime() - b.createdAt.getTime() || a.id - b.id,
-      );
+      pendingTurns.sort(TurnoQueueService.compareQueueOrder);
       const pendingCount = pendingTurns.length;
 
       return res.json({
@@ -480,14 +473,10 @@ export class TurnosAtencionController {
               select: ["serviceId"],
             });
             const activeServiceIds = activeServices.map(({ serviceId }) => serviceId);
-            const acceptedPriority = activeModule.isPriority
-              ? TurnoPriority.PRIORITARIO
-              : TurnoPriority.GENERAL;
             const selectedTurn = await TurnoQueueService.getNextInQueue(
               manager,
               activeSession.headquarterId,
               activeServiceIds,
-              acceptedPriority,
             );
             if (!selectedTurn) return null;
 
@@ -520,7 +509,7 @@ export class TurnosAtencionController {
         if (!claimed) {
           return res.json({
             message:
-              "No hay turnos pendientes compatibles con los servicios y el tipo de módulo de tu sesión",
+              "No hay turnos pendientes compatibles con los servicios de tu sesión",
             action: "LLAMAR",
             turno: null,
           });
@@ -544,7 +533,6 @@ export class TurnosAtencionController {
         await TurnoSocketService.notificarAvanceCola(
           sesion.headquarterId,
           claimed.serviceId,
-          claimed.priority,
         );
 
         return res.json({
@@ -891,7 +879,6 @@ export class TurnosAtencionController {
           TurnoSocketService.notificarAvanceCola(
             sesion.headquarterId,
             serviceId,
-            turno.priority,
           ),
         ));
 
@@ -947,7 +934,6 @@ export class TurnosAtencionController {
         await TurnoSocketService.notificarAvanceCola(
           sesion.headquarterId,
           turno.serviceId,
-          turno.priority,
         );
 
         return res.json({

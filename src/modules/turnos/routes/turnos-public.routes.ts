@@ -61,12 +61,15 @@ router.post("/pacientes/verificar", TurnosPublicController.verificarPaciente);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [slug, serviceId, documentNumber, documentTypeId, name, phoneNumber]
+ *             required: [slug, serviceId, classification, documentNumber, documentTypeId, name, phoneNumber]
  *             properties:
  *               slug:
  *                 type: string
  *               serviceId:
  *                 type: integer
+ *               classification:
+ *                 type: string
+ *                 enum: [ASIGNACION_CITAS, CONFIRMACION_CITAS, TRAMITES_ADMINISTRATIVOS]
  *               documentNumber:
  *                 type: string
  *               documentTypeId:
@@ -92,7 +95,7 @@ router.post("/pacientes/verificar", TurnosPublicController.verificarPaciente);
  *                 description: Solo true con NODE_ENV=development; se rechaza en otros entornos
  *     responses:
  *       201:
- *         description: Ticket emitido; aheadCount y estimatedWaitMinutes consideran solo la cola de su prioridad. estimatedWaitMinutes es null si no hay asesor compatible activo.
+ *         description: Ticket emitido con su clasificación; aheadCount y estimatedWaitMinutes consideran la cola de la sede, con prioritarios primero. estimatedWaitMinutes es null si no hay asesor activo para el servicio.
  *       403:
  *         description: Ubicación fuera del radio permitido u omisión solicitada fuera de desarrollo
  *       400:
@@ -116,7 +119,7 @@ router.post("/ticket", TurnosPublicController.emitirTicket);
  *           type: string
  *     responses:
  *       200:
- *         description: Posición filtrada por prioridad y cobertura de servicios de la sede; estimatedWaitMinutes es null si no hay asesor compatible activo.
+ *         description: Posición en la cola de la sede con prioritarios primero y cobertura de servicios; estimatedWaitMinutes es null si no hay asesor activo para el servicio.
  *       404:
  *         description: Ticket no encontrado
  */

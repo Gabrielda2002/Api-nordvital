@@ -36,14 +36,6 @@ const hydrateWithDeclaredType = (
 
 describe("Indicadores booleanos de turnos", () => {
   it("hidrata los indicadores como true/false y no como 0/1", () => {
-    assert.equal(
-      hydrateWithDeclaredType(ModuloAtencion, "isPriority", 1),
-      true,
-    );
-    assert.equal(
-      hydrateWithDeclaredType(ModuloAtencion, "isPriority", 0),
-      false,
-    );
     assert.equal(hydrateWithDeclaredType(ModuloAtencion, "isActive", 1), true);
     assert.equal(
       hydrateWithDeclaredType(TurnoSedeConfig, "isEnabled", 0),
@@ -59,7 +51,6 @@ describe("Indicadores booleanos de turnos", () => {
       code: "25",
       name: "Módulo de prueba",
       isActive: hydrateWithDeclaredType(ModuloAtencion, "isActive", 1),
-      isPriority: hydrateWithDeclaredType(ModuloAtencion, "isPriority", 0),
     });
 
     await assert.doesNotReject(() => validateEntity(modulo));

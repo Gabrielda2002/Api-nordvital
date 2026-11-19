@@ -154,6 +154,7 @@ export class TurnosPublicController {
         slug,
         serviceId,
         priority = TurnoPriority.GENERAL,
+        classification,
         userLatitude,
         userLongitude,
         documentNumber,
@@ -169,6 +170,7 @@ export class TurnosPublicController {
       if (!name) throw new BadRequestError("El nombre del paciente es requerido");
       if (!phoneNumber) throw new BadRequestError("El número celular es requerido");
       const resolvedDocTypeId = TurnoIssuanceService.resolveDocumentTypeId(documentTypeId);
+      const resolvedClassification = TurnoIssuanceService.resolveClassification(classification);
 
       // 1. Obtener configuración de sede
       const config = await TurnoSedeConfig.findOne({
@@ -199,6 +201,7 @@ export class TurnosPublicController {
         headquarterId: config.headquarterId,
         serviceId: service.id,
         priority: priority === TurnoPriority.PRIORITARIO ? TurnoPriority.PRIORITARIO : TurnoPriority.GENERAL,
+        classification: resolvedClassification,
         documentNumber: String(documentNumber).trim(),
         documentTypeId: resolvedDocTypeId,
         name: String(name),
@@ -222,12 +225,10 @@ export class TurnosPublicController {
       const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
         config.headquarterId,
         service.id,
-        turno.priority,
       );
       const pendingWhere = {
         headquarterId: config.headquarterId,
         serviceId: In(queueServiceIds),
-        priority: turno.priority,
         status: TurnoStatus.PENDIENTE,
         createdAt: Between(start, end),
       };
@@ -238,14 +239,13 @@ export class TurnosPublicController {
 
       const aheadCount = TurnoQueueService.calculateAheadCount(turno, pendingTurns);
 
-      // Contar únicamente asesores activos de módulos compatibles con la prioridad.
+      // Contar los asesores activos que atienden el servicio, sin filtrar por tipo de módulo.
       const activeSessionsCount = await SesionAtencion.count({
         where: {
           headquarterId: config.headquarterId,
           isActive: true,
           modulo: {
             isActive: true,
-            isPriority: turno.priority === TurnoPriority.PRIORITARIO,
           },
           serviciosAsignados: {
             serviceId: Number(serviceId),
@@ -259,7 +259,7 @@ export class TurnosPublicController {
         activeSessionsCount
       );
 
-      await TurnoSocketService.notificarAvanceCola(config.headquarterId, service.id, turno.priority);
+      await TurnoSocketService.notificarAvanceCola(config.headquarterId, service.id);
 
       return res.status(201).json({
         token: turno.ticketToken,
@@ -308,13 +308,11 @@ export class TurnosPublicController {
         const queueServiceIds = await TurnoServiceCoverageService.getQueueServiceIds(
           turno.headquarterId,
           turno.serviceId,
-          turno.priority,
         );
         const pendingTurns = await Turno.find({
           where: {
             headquarterId: turno.headquarterId,
             serviceId: In(queueServiceIds),
-            priority: turno.priority,
             status: TurnoStatus.PENDIENTE,
             createdAt: Between(start, end),
           },
@@ -333,7 +331,6 @@ export class TurnosPublicController {
             isActive: true,
             modulo: {
               isActive: true,
-              isPriority: turno.priority === TurnoPriority.PRIORITARIO,
             },
             serviciosAsignados: {
               serviceId: turno.serviceId,
@@ -353,6 +350,7 @@ export class TurnosPublicController {
         ticketToken: turno.ticketToken,
         status: turno.status,
         priority: turno.priority,
+        classification: turno.classification,
         dailyNumber: turno.dailyNumber,
         callCount: turno.callCount,
         headquarter: {
@@ -467,7 +465,7 @@ export class TurnosPublicController {
       });
 
       // Recalcular posición en cola para los pacientes que siguen esperando
-      await TurnoSocketService.notificarAvanceCola(turno.headquarterId, turno.serviceId, turno.priority);
+      await TurnoSocketService.notificarAvanceCola(turno.headquarterId, turno.serviceId);
 
       return res.json({
         message: `El turno ${turno.ticketCode} fue cancelado exitosamente`,

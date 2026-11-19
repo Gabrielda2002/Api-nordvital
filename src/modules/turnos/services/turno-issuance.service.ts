@@ -10,7 +10,7 @@ import { Pacientes } from "../../patients/entities/pacientes";
 import { TipoDocumento } from "../../catalog/entities/tipo-documento";
 import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
 import { Sedes } from "../../catalog/entities/sedes";
-import { Turno, TurnoPriority, TurnoStatus } from "../entities/Turno";
+import { Turno, TurnoClassification, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { TurnoTracking } from "../entities/TurnoTracking";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
@@ -21,6 +21,7 @@ interface IssueTurnInput {
   headquarterId: number;
   serviceId: number;
   priority: TurnoPriority;
+  classification: TurnoClassification;
   documentNumber: string;
   documentTypeId: number;
   name: string;
@@ -35,6 +36,16 @@ export class TurnoIssuanceService {
       );
     }
     return id;
+  }
+
+  static resolveClassification(classification: unknown): TurnoClassification {
+    const value = typeof classification === "string" ? classification.trim() : "";
+    if (!Object.values(TurnoClassification).includes(value as TurnoClassification)) {
+      throw new BadRequestError(
+        "La clasificación del trámite es requerida y debe ser válida",
+      );
+    }
+    return value as TurnoClassification;
   }
 
   private static async findPatient(
@@ -145,6 +156,7 @@ export class TurnoIssuanceService {
           ),
           dailyNumber,
           priority: input.priority,
+          classification: input.classification,
           status: TurnoStatus.PENDIENTE,
           callCount: 0,
         });

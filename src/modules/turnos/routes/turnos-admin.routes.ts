@@ -118,7 +118,7 @@ router.put("/sedes/:headquarterId/servicios", TurnosAdminController.saveServicio
  *           type: integer
  *     responses:
  *       200:
- *         description: Lista de módulos incluyendo si atienden turnos prioritarios
+ *         description: Lista de módulos de atención de la sede
  */
 router.get("/modulos", TurnosAdminController.getModulos);
 
@@ -138,9 +138,14 @@ router.get("/modulos", TurnosAdminController.getModulos);
  *             type: object
  *             required: [headquarterId, code, name]
  *             properties:
- *               isPriority:
+ *               headquarterId:
+ *                 type: integer
+ *               code:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               isActive:
  *                 type: boolean
- *                 description: Indica si el módulo atiende exclusivamente turnos prioritarios
  *     responses:
  *       201:
  *         description: Módulo creado con éxito
@@ -162,8 +167,6 @@ router.post("/modulos", TurnosAdminController.createModulo);
  *           schema:
  *             type: object
  *             properties:
- *               isPriority:
- *                 type: boolean
  *               isActive:
  *                 type: boolean
  *               code:

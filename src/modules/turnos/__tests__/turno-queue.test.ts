@@ -39,7 +39,7 @@ describe("TurnoQueueService", () => {
   });
 
   describe("calculateAheadCount", () => {
-    it("excluye la prioridad opuesta y conserva FIFO con desempate por ID", () => {
+    it("cuenta prioritarios primero y conserva FIFO con desempate por ID", () => {
       const t1General = { id: 1, priority: TurnoPriority.GENERAL, createdAt: new Date("2026-11-04T08:00:00Z") };
       const t2General = { id: 2, priority: TurnoPriority.GENERAL, createdAt: new Date("2026-11-04T08:05:00Z") };
       const t3Prioritario = { id: 3, priority: TurnoPriority.PRIORITARIO, createdAt: new Date("2026-11-04T07:00:00Z") };
@@ -48,9 +48,17 @@ describe("TurnoQueueService", () => {
       const cola = [t1General, t2General, t3Prioritario, t4GeneralSameTime];
 
       assert.equal(TurnoQueueService.calculateAheadCount(t3Prioritario, cola), 0);
-      assert.equal(TurnoQueueService.calculateAheadCount(t1General, cola), 0);
-      assert.equal(TurnoQueueService.calculateAheadCount(t2General, cola), 1);
-      assert.equal(TurnoQueueService.calculateAheadCount(t4GeneralSameTime, cola), 2);
+      assert.equal(TurnoQueueService.calculateAheadCount(t1General, cola), 1);
+      assert.equal(TurnoQueueService.calculateAheadCount(t2General, cola), 2);
+      assert.equal(TurnoQueueService.calculateAheadCount(t4GeneralSameTime, cola), 3);
+    });
+
+    it("un turno general no adelanta a un prioritario aunque haya llegado antes", () => {
+      const general = { id: 1, priority: TurnoPriority.GENERAL, createdAt: new Date("2026-11-04T06:00:00Z") };
+      const prioritario = { id: 2, priority: TurnoPriority.PRIORITARIO, createdAt: new Date("2026-11-04T09:00:00Z") };
+
+      assert.equal(TurnoQueueService.calculateAheadCount(prioritario, [general, prioritario]), 0);
+      assert.equal(TurnoQueueService.calculateAheadCount(general, [general, prioritario]), 1);
     });
   });
 
@@ -76,34 +84,43 @@ describe("TurnoQueueService", () => {
   });
 
   describe("getNextInQueue", () => {
-    for (const priority of [TurnoPriority.GENERAL, TurnoPriority.PRIORITARIO]) {
-      it(`consulta solo la cola ${priority} en FIFO y bloquea la fila`, async () => {
-        const filters: Array<{ condition: string; parameters?: Record<string, unknown> }> = [];
-        const order: Array<[string, string]> = [];
-        let lockMode = "";
-        const selected = Object.assign(new Turno(), {
-          id: 4,
-          priority,
-          status: TurnoStatus.PENDIENTE,
-        });
-        const builder = {
-          where: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
-          andWhere: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
-          orderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
-          addOrderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
-          setLock: (mode: string) => { lockMode = mode; return builder; },
-          getOne: async () => selected,
-        };
-        const manager = { createQueryBuilder: () => builder } as unknown as EntityManager;
-
-        const result = await TurnoQueueService.getNextInQueue(manager, 7, [2, 3], priority);
-
-        assert.equal(result, selected);
-        assert.ok(filters.some(({ condition, parameters }) => condition === "turno.priority = :priority" && parameters?.priority === priority));
-        assert.deepEqual(order, [["turno.created_at", "ASC"], ["turno.id", "ASC"]]);
-        assert.equal(lockMode, "pessimistic_write");
+    it("consulta ambos turnos, prioriza PRIORITARIO, ordena FIFO y bloquea la fila", async () => {
+      const filters: Array<{ condition: string; parameters?: Record<string, unknown> }> = [];
+      const order: Array<[string, string]> = [];
+      let lockMode = "";
+      const selected = Object.assign(new Turno(), {
+        id: 4,
+        priority: TurnoPriority.PRIORITARIO,
+        status: TurnoStatus.PENDIENTE,
       });
-    }
+      const builder = {
+        where: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
+        andWhere: (condition: string, parameters?: Record<string, unknown>) => { filters.push({ condition, parameters }); return builder; },
+        orderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
+        addOrderBy: (column: string, direction: string) => { order.push([column, direction]); return builder; },
+        setLock: (mode: string) => { lockMode = mode; return builder; },
+        getOne: async () => selected,
+      };
+      const manager = { createQueryBuilder: () => builder } as unknown as EntityManager;
+
+      const result = await TurnoQueueService.getNextInQueue(manager, 7, [2, 3]);
+
+      assert.equal(result, selected);
+      assert.ok(
+        filters.some(
+          ({ condition, parameters }) =>
+            condition === "turno.service_id IN (:...serviceIds)" &&
+            JSON.stringify(parameters?.serviceIds) === JSON.stringify([2, 3]),
+        ),
+      );
+      assert.ok(!filters.some(({ condition }) => condition === "turno.priority = :priority"));
+      assert.deepEqual(order, [
+        ["CASE WHEN turno.priority = 'PRIORITARIO' THEN 1 ELSE 2 END", "ASC"],
+        ["turno.created_at", "ASC"],
+        ["turno.id", "ASC"],
+      ]);
+      assert.equal(lockMode, "pessimistic_write");
+    });
 
     it("no consulta la base cuando la sesión no tiene servicios", async () => {
       const manager = {
@@ -111,7 +128,7 @@ describe("TurnoQueueService", () => {
       } as unknown as EntityManager;
 
       assert.equal(
-        await TurnoQueueService.getNextInQueue(manager, 7, [], TurnoPriority.GENERAL),
+        await TurnoQueueService.getNextInQueue(manager, 7, []),
         null,
       );
     });

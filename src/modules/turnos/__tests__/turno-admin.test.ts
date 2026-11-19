@@ -7,7 +7,7 @@ import { ModuloAtencion } from "../entities/ModuloAtencion";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
 import { Sedes } from "../../catalog/entities/sedes";
-import { ConflictError } from "@core/utils/custom-errors";
+import { NotFoundError } from "@core/utils/custom-errors";
 import { TurnoSiteServiceService } from "../services/turno-site-service.service";
 
 const appPath = require.resolve("../../../app");
@@ -30,7 +30,7 @@ function responseHarness() {
   return { response, next: ((error: unknown) => errors.push(error)) as NextFunction, errors, get body() { return body; } };
 }
 
-describe("Administración de servicios por sede y tipo de módulo", () => {
+describe("Administración de servicios por sede y módulos", () => {
   it("devuelve catálogo activo indicando cuáles servicios están asignados", async (t) => {
     t.mock.method(Sedes, "findOne", async () => ({ id: 1, name: "Sede" }));
     t.mock.method(ServicioAtencion, "find", async () => [{ id: 2, name: "Medicina" }, { id: 3, name: "Odontología" }]);
@@ -44,9 +44,9 @@ describe("Administración de servicios por sede y tipo de módulo", () => {
     ]);
   });
 
-  it("persiste el cambio de tipo del módulo cuando no tiene sesión activa", async (t) => {
+  it("actualiza nombre y estado del módulo y notifica a la sede", async (t) => {
     const module = Object.assign(new ModuloAtencion(), {
-      id: 4, headquarterId: 1, code: "M4", name: "Módulo 4", isActive: true, isPriority: false,
+      id: 4, headquarterId: 1, code: "M4", name: "Módulo 4", isActive: true,
     });
     t.mock.method(ModuloAtencion, "findOne", async () => module);
     const manager = {
@@ -63,47 +63,27 @@ describe("Administración de servicios por sede y tipo de módulo", () => {
 
     const harness = responseHarness();
     await TurnosAdminController.updateModulo(
-      { params: { id: "4" }, body: { isPriority: true } } as unknown as Request,
+      { params: { id: "4" }, body: { name: "Módulo 4B", isActive: false } } as unknown as Request,
       harness.response,
       harness.next,
     );
 
     assert.deepEqual(harness.errors, []);
-    assert.equal((harness.body.modulo as ModuloAtencion).isPriority, true);
+    assert.equal((harness.body.modulo as ModuloAtencion).name, "Módulo 4B");
+    assert.equal((harness.body.modulo as ModuloAtencion).isActive, false);
     assert.deepEqual(notifiedHeadquarters, [1]);
   });
 
-  it("rechaza cambiar el tipo de un módulo con sesión activa", async (t) => {
-    const module = Object.assign(new ModuloAtencion(), {
-      id: 4, headquarterId: 1, code: "M4", name: "Módulo 4", isActive: true, isPriority: false,
-    });
-    t.mock.method(ModuloAtencion, "findOne", async () => module);
-    const manager = {
-      findOne: async (entity: unknown) => entity === Sedes ? { id: 1 } : entity === ModuloAtencion ? module : { id: 7 },
-      save: async () => assert.fail("No debe guardar el módulo"),
-    } as unknown as EntityManager;
-    t.mock.method(ModuloAtencion, "getRepository", () => ({ manager: {
-      transaction: async (_isolation: string, work: (transactionManager: EntityManager) => unknown) => work(manager),
-    } } as unknown as Repository<ModuloAtencion>));
+  it("rechaza actualizar un módulo inexistente", async (t) => {
+    t.mock.method(ModuloAtencion, "findOne", async () => null);
 
     const harness = responseHarness();
     await TurnosAdminController.updateModulo(
-      { params: { id: "4" }, body: { isPriority: true } } as unknown as Request,
+      { params: { id: "404" }, body: { name: "Módulo X" } } as unknown as Request,
       harness.response,
       harness.next,
     );
 
-    assert.ok(harness.errors[0] instanceof ConflictError);
-    assert.equal(module.isPriority, false);
-  });
-
-  it("rechaza tipos de prioridad que no sean booleanos", async (t) => {
-    const harness = responseHarness();
-    await TurnosAdminController.createModulo(
-      { body: { headquarterId: 1, code: "M1", name: "Módulo 1", isPriority: "true" } } as unknown as Request,
-      harness.response,
-      harness.next,
-    );
-    assert.match(String(harness.errors[0]), /debe ser booleano/);
+    assert.ok(harness.errors[0] instanceof NotFoundError);
   });
 });

@@ -56,16 +56,36 @@ export class TurnoQueueService {
   }
 
   /**
-   * Calcula cuántos turnos de la misma prioridad están por delante en FIFO.
+   * Comparador determinista de prioridad según la Ley 1171 de Colombia:
+   * 1. Turno PRIORITARIO precede a GENERAL sin importar hora de llegada.
+   * 2. Misma prioridad desempata por orden de llegada (FIFO / createdAt más antiguo primero).
+   */
+  static compareQueueOrder(
+    a: { id: number; priority: TurnoPriority; createdAt: Date },
+    b: { id: number; priority: TurnoPriority; createdAt: Date }
+  ): number {
+    if (a.priority !== b.priority) {
+      return a.priority === TurnoPriority.PRIORITARIO ? -1 : 1;
+    }
+
+    const timeDiff = a.createdAt.getTime() - b.createdAt.getTime();
+    if (timeDiff !== 0) {
+      return timeDiff;
+    }
+
+    return a.id - b.id;
+  }
+
+  /**
+   * Calcula cuántos turnos en estado PENDIENTE están por delante del turno consultado.
    */
   static calculateAheadCount(
     myTurn: { id: number; priority: TurnoPriority; createdAt: Date },
     pendingTurns: Array<{ id: number; priority: TurnoPriority; createdAt: Date }>
   ): number {
     return pendingTurns.filter((turn) => {
-      if (turn.id === myTurn.id || turn.priority !== myTurn.priority) return false;
-      const timeDiff = turn.createdAt.getTime() - myTurn.createdAt.getTime();
-      return timeDiff < 0 || (timeDiff === 0 && turn.id < myTurn.id);
+      if (turn.id === myTurn.id) return false;
+      return this.compareQueueOrder(turn, myTurn) < 0;
     }).length;
   }
 
@@ -178,13 +198,12 @@ export class TurnoQueueService {
 
   /**
    * Selecciona y despacha el siguiente turno en cola para la sesión del asesor
-   * limitando la consulta a una prioridad y orden FIFO.
+   * respetando la prioridad legal (PRIORITARIO > GENERAL) y orden FIFO.
    */
   static async getNextInQueue(
     manager: EntityManager,
     headquarterId: number,
     serviceIds: number[],
-    priority: TurnoPriority,
   ): Promise<Turno | null> {
     if (!serviceIds || serviceIds.length === 0) {
       return null;
@@ -194,10 +213,10 @@ export class TurnoQueueService {
     const nextTurno = await manager.createQueryBuilder(Turno, "turno")
       .where("turno.headquarter_id = :headquarterId", { headquarterId })
       .andWhere("turno.service_id IN (:...serviceIds)", { serviceIds })
-      .andWhere("turno.priority = :priority", { priority })
       .andWhere("turno.status = :status", { status: TurnoStatus.PENDIENTE })
       .andWhere("turno.created_at BETWEEN :start AND :end", { start, end })
-      .orderBy("turno.created_at", "ASC")
+      .orderBy("CASE WHEN turno.priority = 'PRIORITARIO' THEN 1 ELSE 2 END", "ASC")
+      .addOrderBy("turno.created_at", "ASC")
       .addOrderBy("turno.id", "ASC")
       .setLock("pessimistic_write")
       .getOne();
