@@ -8,6 +8,7 @@ import { validateEntity } from "@core/utils/validation-helper";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 import { TurnoSiteServiceService } from "../services/turno-site-service.service";
 import { Sedes } from "../../catalog/entities/sedes";
+import { TurnoServiceCatalogService } from "../services/turno-service-catalog.service";
 
 async function notificarCambioSesiones(headquarterId: number): Promise<void> {
   const { TurnoSocketService } = await import("../services/turno-socket.service");
@@ -15,6 +16,36 @@ async function notificarCambioSesiones(headquarterId: number): Promise<void> {
 }
 
 export class TurnosAdminController {
+  static async listServicios(_req: Request, res: Response, next: NextFunction) {
+    try {
+      return res.json(await TurnoServiceCatalogService.list());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createServicio(req: Request, res: Response, next: NextFunction) {
+    try {
+      const service = await TurnoServiceCatalogService.create(req.body?.name);
+      return res.status(201).json(service);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateServicio(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      if (!Number.isSafeInteger(id) || id <= 0) {
+        throw new BadRequestError("El ID del servicio no es válido");
+      }
+      const service = await TurnoServiceCatalogService.update(id, req.body?.name, req.body?.status);
+      return res.json(service);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getServiciosSede(req: Request, res: Response, next: NextFunction) {
     try {
       const headquarterId = Number(req.params.headquarterId);

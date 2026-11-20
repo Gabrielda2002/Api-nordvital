@@ -10,6 +10,75 @@ const router = Router();
 router.use(authenticate);
 router.use(authorizeRoles([...ROLE_GROUPS.MANAGEMENT]));
 
+const administrador = authorizeRoles([ROLE_IDS.ADMINISTRADOR]);
+
+/**
+ * @swagger
+ * /turnos/admin/servicios:
+ *   get:
+ *     summary: Listar servicios de turnos activos e inactivos
+ *     tags: [Turnos - Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Catálogo de servicios
+ *   post:
+ *     summary: Crear un servicio de turnos activo
+ *     tags: [Turnos - Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string, minLength: 3, maxLength: 150 }
+ *     responses:
+ *       201:
+ *         description: Servicio creado
+ */
+router.get("/servicios", administrador, TurnosAdminController.listServicios);
+router.post("/servicios", administrador, TurnosAdminController.createServicio);
+
+/**
+ * @swagger
+ * /turnos/admin/servicios/{id}:
+ *   put:
+ *     summary: Editar el nombre y estado de un servicio de turnos
+ *     tags: [Turnos - Administración]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, status]
+ *             properties:
+ *               name: { type: string, minLength: 3, maxLength: 150 }
+ *               status:
+ *                 oneOf:
+ *                   - { type: boolean }
+ *                   - { type: integer, enum: [0, 1] }
+ *                   - { type: string, enum: ["0", "1"] }
+ *     responses:
+ *       200:
+ *         description: Servicio actualizado
+ *       409:
+ *         description: El servicio tiene sesiones activas o turnos sin resolver
+ */
+router.put("/servicios/:id", administrador, TurnosAdminController.updateServicio);
+
 /**
  * @swagger
  * /turnos/admin/sedes-config:

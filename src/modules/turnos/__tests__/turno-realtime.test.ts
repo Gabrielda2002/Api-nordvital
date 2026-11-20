@@ -396,10 +396,8 @@ describe("Eventos de integración pública", () => {
         ? { id: 1 }
         : entity === ModuloAtencion
           ? { id: 2, headquarterId: 1, code: "M2", name: "Módulo 2", isActive: true }
-          : null,
-      find: async (entity: unknown) => entity === ServicioAtencion
-        ? [{ id: 3, name: "Medicina" }]
-        : entity === TurnoSedeServicio
+          : entity === ServicioAtencion ? { id: 3, name: "Medicina" } : null,
+      find: async (entity: unknown) => entity === TurnoSedeServicio
           ? [{ serviceId: 3 }]
           : [{ headquarterId: 8, serviciosAsignados: [{ serviceId: 9 }] }],
       update: async () => ({ affected: 1 }),
@@ -423,8 +421,8 @@ describe("Eventos de integración pública", () => {
   it("rechaza iniciar sesión con un servicio activo que no está asignado a la sede del módulo", async (t) => {
     const module = { id: 2, headquarterId: 1, isActive: true };
     const manager = {
-      findOne: async (entity: unknown) => entity === Sedes ? { id: 1 } : entity === ModuloAtencion ? module : null,
-      find: async (entity: unknown) => entity === ServicioAtencion ? [{ id: 3 }] : [],
+      findOne: async (entity: unknown) => entity === Sedes ? { id: 1 } : entity === ModuloAtencion ? module : entity === ServicioAtencion ? { id: 3 } : null,
+      find: async () => [],
     } as unknown as EntityManager;
     t.mock.method(ModuloAtencion, "findOne", async () => module);
     t.mock.method(SesionAtencion, "getRepository", () => ({ manager: {

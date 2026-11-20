@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { Module } from "node:module";
 import { NextFunction, Request, Response } from "express";
@@ -7,8 +7,11 @@ import { ModuloAtencion } from "../entities/ModuloAtencion";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
 import { Sedes } from "../../catalog/entities/sedes";
-import { NotFoundError } from "@core/utils/custom-errors";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 import { TurnoSiteServiceService } from "../services/turno-site-service.service";
+import { TurnoServiceCatalogService } from "../services/turno-service-catalog.service";
+import { SesionAtencionServicio } from "../entities/SesionAtencionServicio";
+import { Turno, TurnoStatus } from "../entities/Turno";
 
 const appPath = require.resolve("../../../app");
 const previousApp = require.cache[appPath];
@@ -86,4 +89,63 @@ describe("Administración de servicios por sede y módulos", () => {
 
     assert.ok(harness.errors[0] instanceof NotFoundError);
   });
+});
+
+describe("Catálogo administrativo de servicios de turnos", () => {
+  it("crea un servicio activo con el nombre limpio y rechaza nombres inválidos", async (t) => {
+    t.mock.method(ServicioAtencion, "create", (data: unknown) => data);
+    t.mock.method(ServicioAtencion, "save", async (data: unknown) => data);
+    assert.deepEqual(await TurnoServiceCatalogService.create("  Medicina  "), {
+      name: "Medicina", status: true,
+    });
+    assert.throws(() => TurnoServiceCatalogService.create("  ab  "), BadRequestError);
+  });
+
+  function mockCatalogTransaction(
+    t: TestContext,
+    blockedBy?: typeof SesionAtencionServicio | typeof Turno,
+  ) {
+    const service = Object.assign(new ServicioAtencion(), { id: 7, name: "Medicina", status: true });
+    const manager = {
+      findOne: async (entity: unknown, options: { lock: { mode: string } }) => {
+        assert.equal(entity, ServicioAtencion);
+        assert.equal(options.lock.mode, "pessimistic_write");
+        return service;
+      },
+      exists: async (entity: unknown, { where }: { where: Record<string, unknown> }) => {
+        assert.equal(where.serviceId, 7);
+        assert.equal("headquarterId" in where, false);
+        if (entity === SesionAtencionServicio) assert.deepEqual(where.sesion, { isActive: true });
+        if (entity === Turno) {
+          assert.deepEqual((where.status as { value: TurnoStatus[] }).value, [
+            TurnoStatus.PENDIENTE, TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION,
+          ]);
+        }
+        return entity === blockedBy;
+      },
+      save: async (item: ServicioAtencion) => item,
+    };
+    t.mock.method(ServicioAtencion, "getRepository", () => ({ manager: {
+      transaction: async (_isolation: string, work: (manager: unknown) => unknown) => work(manager),
+    } }));
+    return service;
+  }
+
+  it("renombra, desactiva y reactiva un servicio sin modificar su identidad", async (t) => {
+    mockCatalogTransaction(t);
+    const updated = await TurnoServiceCatalogService.update(7, "  Medicina general  ", "0");
+    assert.equal(updated.id, 7);
+    assert.equal(updated.name, "Medicina general");
+    assert.equal(updated.status, false);
+    assert.equal((await TurnoServiceCatalogService.update(7, updated.name, "1")).status, true);
+  });
+
+  for (const blocker of [SesionAtencionServicio, Turno] as const) {
+    it(`rechaza la desactivación si hay registros de ${blocker.name} sin resolver`, async (t) => {
+      const service = mockCatalogTransaction(t, blocker);
+      await assert.rejects(() => TurnoServiceCatalogService.update(7, "Otro nombre", false), ConflictError);
+      assert.equal(service.status, true);
+      assert.equal(service.name, "Medicina");
+    });
+  }
 });

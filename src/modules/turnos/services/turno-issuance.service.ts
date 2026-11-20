@@ -10,7 +10,12 @@ import { Pacientes } from "../../patients/entities/pacientes";
 import { TipoDocumento } from "../../catalog/entities/tipo-documento";
 import { ServicioAtencion } from "../../catalog/entities/servicio-atencion";
 import { Sedes } from "../../catalog/entities/sedes";
-import { Turno, TurnoClassification, TurnoPriority, TurnoStatus } from "../entities/Turno";
+import {
+  Turno,
+  TurnoClassification,
+  TurnoPriority,
+  TurnoStatus,
+} from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { TurnoTracking } from "../entities/TurnoTracking";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
@@ -39,8 +44,11 @@ export class TurnoIssuanceService {
   }
 
   static resolveClassification(classification: unknown): TurnoClassification {
-    const value = typeof classification === "string" ? classification.trim() : "";
-    if (!Object.values(TurnoClassification).includes(value as TurnoClassification)) {
+    const value =
+      typeof classification === "string" ? classification.trim() : "";
+    if (
+      !Object.values(TurnoClassification).includes(value as TurnoClassification)
+    ) {
       throw new BadRequestError(
         "La clasificación del trámite es requerida y debe ser válida",
       );
@@ -109,22 +117,35 @@ export class TurnoIssuanceService {
           where: { id: input.headquarterId },
           lock: { mode: "pessimistic_write" },
         });
-        if (!headquarter) throw new NotFoundError("La sede no está habilitada para turnos");
+        if (!headquarter)
+          throw new NotFoundError("La sede no está habilitada para turnos");
 
         const siteAssignments = await manager.find(TurnoSedeServicio, {
           where: { headquarterId: input.headquarterId },
           select: ["serviceId"],
         });
         if (siteAssignments.length === 0) {
-          throw new BadRequestError("La sede no tiene servicios de atención configurados");
+          throw new BadRequestError(
+            "La sede no tiene servicios de atención configurados",
+          );
         }
-        if (!siteAssignments.some(({ serviceId }) => serviceId === input.serviceId)) {
-          throw new BadRequestError("El servicio seleccionado no está habilitado para esta sede");
+        if (
+          !siteAssignments.some(
+            ({ serviceId }) => serviceId === input.serviceId,
+          )
+        ) {
+          throw new BadRequestError(
+            "El servicio seleccionado no está habilitado para esta sede",
+          );
         }
         const service = await manager.findOne(ServicioAtencion, {
           where: { id: input.serviceId, status: true },
+          lock: { mode: "pessimistic_read" },
         });
-        if (!service) throw new BadRequestError("El servicio seleccionado no existe o está inactivo");
+        if (!service)
+          throw new BadRequestError(
+            "El servicio seleccionado no existe o está inactivo",
+          );
 
         const activeTurn = await manager.findOne(Turno, {
           where: {

@@ -148,14 +148,15 @@ export class TurnosAtencionController {
               );
             }
 
-          const activeServices = await manager.find(ServicioAtencion, {
-            where: { id: In(normalizedServiceIds), status: true },
-          });
-            if (activeServices.length !== normalizedServiceIds.length) {
-              throw new BadRequestError(
-              "Uno o varios servicios seleccionados no existen o están inactivos",
-            );
-          }
+            for (const serviceId of [...normalizedServiceIds].sort((a, b) => a - b)) {
+              const service = await manager.findOne(ServicioAtencion, {
+                where: { id: serviceId, status: true },
+                lock: { mode: "pessimistic_read" },
+              });
+              if (!service) {
+                throw new BadRequestError("Uno o varios servicios seleccionados no existen o están inactivos");
+              }
+            }
 
           const siteAssignments = await manager.find(TurnoSedeServicio, {
             where: {
@@ -812,6 +813,7 @@ export class TurnosAtencionController {
 
             const destinationService = await manager.findOne(ServicioAtencion, {
               where: { id: Number(newServiceId), status: true },
+              lock: { mode: "pessimistic_read" },
             });
             if (!destinationService) {
               throw new BadRequestError("El servicio de destino no existe o está inactivo");
