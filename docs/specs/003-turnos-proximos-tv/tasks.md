@@ -17,3 +17,13 @@
 - `pnpm exec tsc --noEmit`: aprobado.
 - `pnpm build`: aprobado.
 - No se verificó contra una instancia MySQL/Socket.IO real.
+
+### Extensión: historial reciente de llamados
+
+- [x] Consultar los últimos cinco turnos distintos llamados en la sede y agregar `recentCalls` al estado de TV.
+- [x] Documentar el campo en Swagger y verificar el contrato y los filtros con pruebas.
+- [x] Ejecutar la suite y la verificación de tipos.
+
+`pnpm test`: 131 pruebas aprobadas. `npx tsc --noEmit`: aprobado.
+`pnpm m:show`: sin migraciones pendientes. Consulta de solo lectura en MySQL
+para una sede sin historial: devolvió `[]`.

@@ -69,3 +69,16 @@ el conteo únicamente cuando la cobertura de atención lo permita.
 - El día operativo vigente y la prioridad FIFO se mantienen.
 - El cliente frontend consume el nuevo estado y la notificación según su spec
   propia: [spec frontend](../../../../front-app/radicar-app-frond/specs/002-turnos-proximos-tv/spec.md).
+
+## 6. Historial reciente de llamados
+
+- `GET /turnos/tv/{slug}/estado` añade `recentCalls` sin modificar los campos existentes.
+- Devuelve hasta cinco turnos distintos llamados durante el día operativo
+  (`America/Bogota`) en la sede consultada, del último llamado al más antiguo.
+  Un rellamado actualiza la posición del turno sin duplicarlo. El estado actual
+  del turno no lo excluye del historial.
+- Cada entrada expone solo `ticketCode`, `moduloCode`, `moduloName` y `calledAt`
+  (ISO 8601). El módulo corresponde al último llamado, no a la asignación actual.
+  Si ya no está disponible, sus campos se devuelven como cadenas vacías.
+- Sin llamados se devuelve `[]`. El frontend calcula «Llamado hace…» a partir de
+  `calledAt`; el backend no devuelve una duración.

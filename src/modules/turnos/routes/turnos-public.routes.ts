@@ -196,7 +196,7 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  * @swagger
  * /turnos/tv/{slug}/estado:
  *   get:
- *     summary: Obtener turnos activos y próximos para la pantalla de sala (TV)
+ *     summary: Obtener turnos activos, próximos y llamados recientes para la pantalla de sala (TV)
  *     tags: [Turnos - Público]
  *     parameters:
  *       - in: path
@@ -206,7 +206,34 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  *           type: string
  *     responses:
  *       200:
- *         description: Turnos llamados/en atención y hasta cinco próximos pendientes. Los próximos se ordenan cronológicamente para visualización; no representan un orden global de despacho entre prioridades.
+ *         description: Turnos llamados/en atención, hasta cinco próximos pendientes en orden cronológico de visualización e historial reciente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 recentCalls:
+ *                   type: array
+ *                   maxItems: 5
+ *                   description: Últimos turnos distintos llamados hoy (America/Bogota) en la sede, del más reciente al más antiguo. Un rellamado actualiza la entrada. Vacío si no hubo llamados.
+ *                   items:
+ *                     type: object
+ *                     required: [ticketCode, moduloCode, moduloName, calledAt]
+ *                     properties:
+ *                       ticketCode:
+ *                         type: string
+ *                       moduloCode:
+ *                         type: string
+ *                         description: Código del módulo desde el que se llamó; vacío si ya no está disponible.
+ *                       moduloName:
+ *                         type: string
+ *                         description: Nombre del módulo desde el que se llamó; vacío si ya no está disponible.
+ *                       calledAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Fecha y hora del último llamado. La TV calcula el tiempo transcurrido.
+ *       404:
+ *         description: Sede no encontrada o no habilitada
  */
 router.get("/tv/:slug/estado", TurnosPublicController.getTvEstado);
 

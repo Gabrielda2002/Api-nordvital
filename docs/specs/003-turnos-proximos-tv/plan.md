@@ -43,3 +43,15 @@ capacidad total por las asignaciones que definen esa cobertura.
 
 Retirar la extensión del snapshot, la emisión a la sala TV y la condición de
 cobertura; conservar intactos los contratos y eventos existentes.
+
+## Extensión: historial reciente de llamados
+
+Consultar `TurnoTracking` con estado `LLAMADO` en el mismo rango operativo
+que usa el snapshot. Seleccionar el último registro de cada turno antes de
+aplicar el límite de cinco. Desempatar por ID descendente. Obtener sede y
+código del turno y recuperar el módulo desde el registro histórico.
+
+Verificar el filtro de sede y día, el límite, el rellamado, la respuesta sin
+historial y la preservación del error 404. No se modifican eventos, esquema ni
+dependencias. Para revertir esta extensión, retirar únicamente `recentCalls`,
+su servicio, documentación y pruebas.

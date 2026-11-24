@@ -2,7 +2,7 @@ import { describe, it, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { Module } from "node:module";
 import { Request, Response, NextFunction } from "express";
-import { EntityManager } from "typeorm";
+import { DataSource, EntityManager } from "typeorm";
 import { Turno, TurnoClassification, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { SesionAtencion } from "../entities/SesionAtencion";
@@ -16,7 +16,9 @@ import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { TurnoIssuanceService } from "../services/turno-issuance.service";
 import { TurnoQueueService } from "../services/turno-queue.service";
 import { TurnoServiceCoverageService } from "../services/turno-service-coverage.service";
-import { BadRequestError, ConflictError } from "@core/utils/custom-errors";
+import { TurnoDayService } from "../services/turno-day.service";
+import { TurnoTvService } from "../services/turno-tv.service";
+import { BadRequestError, ConflictError, NotFoundError } from "@core/utils/custom-errors";
 
 // Aislar el servidor HTTP: estas pruebas no abren puertos ni conectan a la base de datos.
 const events: Array<{ room: string; event: string; payload: Record<string, unknown> }> = [];
@@ -159,12 +161,73 @@ describe("Eventos de integración pública", () => {
     t.mock.method(Turno, "find", async (options: { where: { status?: unknown } }) =>
       options.where.status === TurnoStatus.PENDIENTE ? pending : []
     );
+    t.mock.method(TurnoTvService, "getRecentCalls", async () => []);
     const harness = responseHarness();
     await TurnosPublicController.getTvEstado({ params: { slug: "sede" } } as unknown as Request, harness.response, harness.next);
     assert.deepEqual(harness.errors, []);
     const upcoming = harness.body.upcomingTurns as Array<Record<string, unknown>>;
     assert.deepEqual(upcoming.map(({ ticketCode }) => ticketCode), ["G-001", "G-002", "P-003", "G-004", "G-005"]);
     assert.deepEqual(Object.keys(upcoming[0]).sort(), ["ticketCode", "turnoId"]);
+    assert.deepEqual(harness.body.recentCalls, []);
+  });
+
+  it("expone los llamados históricos de la sede y conserva la fecha del último llamado", async (t) => {
+    const range = TurnoDayService.getRange(new Date("2026-11-25T01:00:00.000Z"));
+    const lastCall = new Date("2026-11-24T23:30:00.000Z");
+    const earlierCall = new Date("2026-11-24T22:00:00.000Z");
+    t.mock.method(TurnoDayService, "getRange", () => range);
+    t.mock.method(TurnoSedeConfig, "findOne", async () => ({ headquarterId: 7, slug: "sede" }));
+    t.mock.method(Turno, "find", async () => []);
+
+    // Construye y transforma la consulta real de TypeORM sin conectarse a MySQL.
+    const source = new DataSource({
+      type: "mysql",
+      database: "test",
+      entities: [__dirname + "/../../../**/entities/*{.ts,.js}"],
+    });
+    await source["buildMetadatas"]();
+    const runner = source.createQueryRunner();
+    const queryMock = t.mock.method(runner, "query", async (sql: string, parameters: unknown[]) => {
+      assert.match(sql, /`turno`\.`headquarter_id` = \?/);
+      assert.match(sql, /`tracking`\.`status` = \? AND `tracking`\.`created_at` BETWEEN \? AND \?/);
+      assert.match(sql, /`tracking`\.`id` = \(SELECT `recent`\.`id` AS `recent_id` FROM `turno_tracking` `recent`/);
+      assert.match(sql, /WHERE `recent`\.`turno_id` = `tracking`\.`turno_id` AND `recent`\.`status` = \? AND `recent`\.`created_at` BETWEEN \? AND \?/);
+      assert.match(sql, /ORDER BY `recent`\.`created_at` DESC, `recent_id` DESC LIMIT 1\)/);
+      assert.match(sql, /LEFT JOIN `turnos_modulos` `modulo` ON `modulo`\.`id`=`tracking`\.`modulo_id`/);
+      assert.match(sql, /ORDER BY `tracking_created_at` DESC, `tracking_id` DESC LIMIT 5$/);
+      assert.deepEqual(parameters, [7, TurnoStatus.LLAMADO, range.start, range.end, TurnoStatus.LLAMADO, range.start, range.end]);
+      assert.equal(range.start.toISOString(), "2026-11-24T05:00:00.000Z");
+      assert.equal(range.end.toISOString(), "2026-11-25T04:59:59.999Z");
+      return { records: [
+        { tracking_id: 9, tracking_created_at: lastCall, turno_id: 1, turno_ticket_code: "G-001", modulo_id: 2, modulo_code: "M02", modulo_name: "Módulo 2" },
+        { tracking_id: 4, tracking_created_at: earlierCall, turno_id: 2, turno_ticket_code: "P-002", modulo_id: null, modulo_code: null, modulo_name: null },
+      ] };
+    });
+    t.mock.method(TurnoTracking, "createQueryBuilder", (alias: string) =>
+      source.createQueryBuilder(TurnoTracking, alias, runner),
+    );
+    const harness = responseHarness();
+
+    await TurnosPublicController.getTvEstado({ params: { slug: "sede" } } as unknown as Request, harness.response, harness.next);
+
+    assert.deepEqual(harness.errors, []);
+    assert.equal(queryMock.mock.callCount(), 1);
+    assert.deepEqual(JSON.parse(JSON.stringify(harness.body.recentCalls)), [
+      { ticketCode: "G-001", moduloCode: "M02", moduloName: "Módulo 2", calledAt: lastCall.toISOString() },
+      { ticketCode: "P-002", moduloCode: "", moduloName: "", calledAt: earlierCall.toISOString() },
+    ]);
+  });
+
+  it("no consulta los llamados si la sede de TV no existe o está deshabilitada", async (t) => {
+    t.mock.method(TurnoSedeConfig, "findOne", async () => null);
+    const recentCalls = t.mock.method(TurnoTvService, "getRecentCalls", async () => []);
+    const harness = responseHarness();
+
+    await TurnosPublicController.getTvEstado({ params: { slug: "sede" } } as unknown as Request, harness.response, harness.next);
+
+    assert.equal(harness.errors.length, 1);
+    assert.ok(harness.errors[0] instanceof NotFoundError);
+    assert.equal(recentCalls.mock.callCount(), 0);
   });
 
   it("calcula cobertura con servicios asignados a sede y módulos activos", async (t) => {

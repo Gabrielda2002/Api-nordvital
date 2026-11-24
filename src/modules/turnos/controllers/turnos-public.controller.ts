@@ -17,6 +17,7 @@ import { TurnoDayService } from "../services/turno-day.service";
 import { TurnoSedeServicio } from "../entities/TurnoSedeServicio";
 import { TurnoIssuanceService } from "../services/turno-issuance.service";
 import { TurnoServiceCoverageService } from "../services/turno-service-coverage.service";
+import { TurnoTvService } from "../services/turno-tv.service";
 
 export class TurnosPublicController {
   /**
@@ -503,15 +504,18 @@ export class TurnosPublicController {
         take: 10,
       });
 
-      const { start, end } = TurnoDayService.getRange();
-      const upcomingTurns = await Turno.find({
-        where: {
-          headquarterId: config.headquarterId,
-          status: TurnoStatus.PENDIENTE,
-          createdAt: Between(start, end),
-        },
-        select: ["id", "ticketCode", "priority", "createdAt"],
-      });
+      const range = TurnoDayService.getRange();
+      const [upcomingTurns, recentCalls] = await Promise.all([
+        Turno.find({
+          where: {
+            headquarterId: config.headquarterId,
+            status: TurnoStatus.PENDIENTE,
+            createdAt: Between(range.start, range.end),
+          },
+          select: ["id", "ticketCode", "priority", "createdAt"],
+        }),
+        TurnoTvService.getRecentCalls(config.headquarterId, range),
+      ]);
       // Es una vista cronológica para TV, no un orden global de despacho entre colas.
       upcomingTurns.sort((a, b) =>
         a.createdAt.getTime() - b.createdAt.getTime() || a.id - b.id,
@@ -538,6 +542,7 @@ export class TurnosPublicController {
           turnoId: id,
           ticketCode,
         })),
+        recentCalls,
       });
     } catch (error) {
       next(error);
