@@ -212,16 +212,27 @@ router.post("/ticket/:token/cancelar", TurnosPublicController.cancelarTicket);
  *             schema:
  *               type: object
  *               properties:
+ *                 activeTurns:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       patientDisplayName:
+ *                         type: string
+ *                         description: Primera y tercera palabra del nombre registrado. Si hay menos de tres, se muestran las disponibles; vacío si falta el nombre.
  *                 recentCalls:
  *                   type: array
  *                   maxItems: 5
  *                   description: Últimos turnos distintos llamados hoy (America/Bogota) en la sede, del más reciente al más antiguo. Un rellamado actualiza la entrada. Vacío si no hubo llamados.
  *                   items:
  *                     type: object
- *                     required: [ticketCode, moduloCode, moduloName, calledAt]
+ *                     required: [ticketCode, patientDisplayName, moduloCode, moduloName, calledAt]
  *                     properties:
  *                       ticketCode:
  *                         type: string
+ *                       patientDisplayName:
+ *                         type: string
+ *                         description: Nombre de visualización abreviado con la misma regla que activeTurns.
  *                       moduloCode:
  *                         type: string
  *                         description: Código del módulo desde el que se llamó; vacío si ya no está disponible.

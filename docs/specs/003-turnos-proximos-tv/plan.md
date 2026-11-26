@@ -55,3 +55,10 @@ Verificar el filtro de sede y día, el límite, el rellamado, la respuesta sin
 historial y la preservación del error 404. No se modifican eventos, esquema ni
 dependencias. Para revertir esta extensión, retirar únicamente `recentCalls`,
 su servicio, documentación y pruebas.
+
+## Extensión: nombre de visualización
+
+Seleccionar solo el ID y el nombre del paciente en las consultas de activos e
+historial. Aplicar la misma regla de abreviación en `TurnoTvService` antes de
+responder. Verificar la salida de ambos listados, los espacios múltiples y los
+nombres cortos o ausentes. No cambiar esquema ni eventos de Socket.IO.

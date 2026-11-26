@@ -2,6 +2,11 @@ import { TurnoStatus } from "../entities/Turno";
 import { TurnoTracking } from "../entities/TurnoTracking";
 
 export class TurnoTvService {
+  static getPatientDisplayName(name?: string | null): string {
+    const [first, second, third] = (name ?? "").trim().split(/\s+/);
+    return [first, third ?? second].filter(Boolean).join(" ");
+  }
+
   static async getRecentCalls(
     headquarterId: number,
     { start, end }: { start: Date; end: Date },
@@ -9,6 +14,7 @@ export class TurnoTvService {
     const calls = await TurnoTracking.createQueryBuilder("tracking")
       .innerJoin("tracking.turno", "turno")
       .leftJoin("tracking.modulo", "modulo")
+      .leftJoin("turno.patient", "patient")
       .select([
         "tracking.id",
         "tracking.createdAt",
@@ -17,6 +23,8 @@ export class TurnoTvService {
         "modulo.id",
         "modulo.code",
         "modulo.name",
+        "patient.id",
+        "patient.name",
       ])
       .where("turno.headquarterId = :headquarterId", { headquarterId })
       .andWhere("tracking.status = :calledStatus", { calledStatus: TurnoStatus.LLAMADO })
@@ -37,12 +45,13 @@ export class TurnoTvService {
       })
       .orderBy("tracking.createdAt", "DESC")
       .addOrderBy("tracking.id", "DESC")
-      // Ambos joins son muchos-a-uno: no multiplican las filas del historial.
+      // Los joins son muchos-a-uno: no multiplican las filas del historial.
       .limit(5)
       .getMany();
 
     return calls.map(({ turno, modulo, createdAt }) => ({
       ticketCode: turno.ticketCode,
+      patientDisplayName: this.getPatientDisplayName(turno.patient?.name),
       moduloCode: modulo?.code ?? "",
       moduloName: modulo?.name ?? "",
       calledAt: createdAt,

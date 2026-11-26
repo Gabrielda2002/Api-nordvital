@@ -77,8 +77,18 @@ el conteo únicamente cuando la cobertura de atención lo permita.
   (`America/Bogota`) en la sede consultada, del último llamado al más antiguo.
   Un rellamado actualiza la posición del turno sin duplicarlo. El estado actual
   del turno no lo excluye del historial.
-- Cada entrada expone solo `ticketCode`, `moduloCode`, `moduloName` y `calledAt`
+- Cada entrada expone `ticketCode`, `moduloCode`, `moduloName`, `patientDisplayName` y `calledAt`
   (ISO 8601). El módulo corresponde al último llamado, no a la asignación actual.
   Si ya no está disponible, sus campos se devuelven como cadenas vacías.
 - Sin llamados se devuelve `[]`. El frontend calcula «Llamado hace…» a partir de
   `calledAt`; el backend no devuelve una duración.
+
+## 7. Nombre de visualización
+
+- El estado público de TV incluye `patientDisplayName` en `activeTurns` y
+  `recentCalls`, sin cambiar `upcomingTurns` ni los eventos de Socket.IO.
+- Se separa el nombre registrado por espacios en blanco. Si tiene al menos
+  tres palabras, se muestran la primera y la tercera; si tiene una o dos, se
+  muestran las disponibles. Si no hay nombre, se devuelve `""`.
+- Esta regla no identifica apellidos con certeza. La respuesta no incluye el
+  campo original del paciente ni agrega documento o datos de contacto.

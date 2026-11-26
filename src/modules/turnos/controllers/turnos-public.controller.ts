@@ -499,7 +499,18 @@ export class TurnosPublicController {
           headquarterId: config.headquarterId,
           status: In([TurnoStatus.LLAMADO, TurnoStatus.EN_ATENCION]),
         },
-        relations: ["currentModulo", "currentUser", "service"],
+        relations: { currentModulo: true, currentUser: true, service: true, patient: true },
+        select: {
+          id: true,
+          ticketCode: true,
+          priority: true,
+          status: true,
+          calledAt: true,
+          currentModulo: { id: true, code: true, name: true },
+          currentUser: { id: true, name: true },
+          service: { id: true, name: true },
+          patient: { id: true, name: true },
+        },
         order: { calledAt: "DESC" },
         take: 10,
       });
@@ -530,6 +541,7 @@ export class TurnosPublicController {
         activeTurns: activeTurns.map((t) => ({
           turnoId: t.id,
           ticketCode: t.ticketCode,
+          patientDisplayName: TurnoTvService.getPatientDisplayName(t.patient?.name),
           priority: t.priority,
           status: t.status,
           moduloCode: t.currentModulo?.code || "",

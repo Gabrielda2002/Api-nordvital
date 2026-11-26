@@ -2,7 +2,7 @@ import { describe, it, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { Module } from "node:module";
 import { Request, Response, NextFunction } from "express";
-import { DataSource, EntityManager } from "typeorm";
+import { DataSource, EntityManager, FindManyOptions } from "typeorm";
 import { Turno, TurnoClassification, TurnoPriority, TurnoStatus } from "../entities/Turno";
 import { TurnoSedeConfig } from "../entities/TurnoSedeConfig";
 import { SesionAtencion } from "../entities/SesionAtencion";
@@ -177,8 +177,6 @@ describe("Eventos de integración pública", () => {
     const earlierCall = new Date("2026-11-24T22:00:00.000Z");
     t.mock.method(TurnoDayService, "getRange", () => range);
     t.mock.method(TurnoSedeConfig, "findOne", async () => ({ headquarterId: 7, slug: "sede" }));
-    t.mock.method(Turno, "find", async () => []);
-
     // Construye y transforma la consulta real de TypeORM sin conectarse a MySQL.
     const source = new DataSource({
       type: "mysql",
@@ -186,6 +184,16 @@ describe("Eventos de integración pública", () => {
       entities: [__dirname + "/../../../**/entities/*{.ts,.js}"],
     });
     await source["buildMetadatas"]();
+    t.mock.method(Turno, "find", async (options: FindManyOptions<Turno>) => {
+      if (!options.relations) return [];
+      const sql = source.createQueryBuilder(Turno, "active").setFindOptions(options).getSql();
+      assert.match(sql, /`active__active_patient`\.`name`/);
+      assert.doesNotMatch(sql, /document_number|phone_number|email/);
+      return [{
+        id: 1, ticketCode: "G-001", status: TurnoStatus.LLAMADO,
+        patient: { name: "  María\tJosé  Pérez Gómez ", documentNumber: "123456" },
+      }];
+    });
     const runner = source.createQueryRunner();
     const queryMock = t.mock.method(runner, "query", async (sql: string, parameters: unknown[]) => {
       assert.match(sql, /`turno`\.`headquarter_id` = \?/);
@@ -194,13 +202,15 @@ describe("Eventos de integración pública", () => {
       assert.match(sql, /WHERE `recent`\.`turno_id` = `tracking`\.`turno_id` AND `recent`\.`status` = \? AND `recent`\.`created_at` BETWEEN \? AND \?/);
       assert.match(sql, /ORDER BY `recent`\.`created_at` DESC, `recent_id` DESC LIMIT 1\)/);
       assert.match(sql, /LEFT JOIN `turnos_modulos` `modulo` ON `modulo`\.`id`=`tracking`\.`modulo_id`/);
+      assert.match(sql, /`patient`\.`name` AS `patient_name`/);
+      assert.doesNotMatch(sql, /document_number|phone_number|email/);
       assert.match(sql, /ORDER BY `tracking_created_at` DESC, `tracking_id` DESC LIMIT 5$/);
       assert.deepEqual(parameters, [7, TurnoStatus.LLAMADO, range.start, range.end, TurnoStatus.LLAMADO, range.start, range.end]);
       assert.equal(range.start.toISOString(), "2026-11-24T05:00:00.000Z");
       assert.equal(range.end.toISOString(), "2026-11-25T04:59:59.999Z");
       return { records: [
-        { tracking_id: 9, tracking_created_at: lastCall, turno_id: 1, turno_ticket_code: "G-001", modulo_id: 2, modulo_code: "M02", modulo_name: "Módulo 2" },
-        { tracking_id: 4, tracking_created_at: earlierCall, turno_id: 2, turno_ticket_code: "P-002", modulo_id: null, modulo_code: null, modulo_name: null },
+        { tracking_id: 9, tracking_created_at: lastCall, turno_id: 1, turno_ticket_code: "G-001", modulo_id: 2, modulo_code: "M02", modulo_name: "Módulo 2", patient_id: 6, patient_name: "María José Pérez Gómez" },
+        { tracking_id: 4, tracking_created_at: earlierCall, turno_id: 2, turno_ticket_code: "P-002", modulo_id: null, modulo_code: null, modulo_name: null, patient_id: null, patient_name: null },
       ] };
     });
     t.mock.method(TurnoTracking, "createQueryBuilder", (alias: string) =>
@@ -212,10 +222,21 @@ describe("Eventos de integración pública", () => {
 
     assert.deepEqual(harness.errors, []);
     assert.equal(queryMock.mock.callCount(), 1);
+    const [activeTurn] = harness.body.activeTurns as Array<Record<string, unknown>>;
+    assert.equal(activeTurn.patientDisplayName, "María Pérez");
+    assert.ok(!("patient" in activeTurn));
     assert.deepEqual(JSON.parse(JSON.stringify(harness.body.recentCalls)), [
-      { ticketCode: "G-001", moduloCode: "M02", moduloName: "Módulo 2", calledAt: lastCall.toISOString() },
-      { ticketCode: "P-002", moduloCode: "", moduloName: "", calledAt: earlierCall.toISOString() },
+      { ticketCode: "G-001", patientDisplayName: "María Pérez", moduloCode: "M02", moduloName: "Módulo 2", calledAt: lastCall.toISOString() },
+      { ticketCode: "P-002", patientDisplayName: "", moduloCode: "", moduloName: "", calledAt: earlierCall.toISOString() },
     ]);
+  });
+
+  it("abrevia por primera y tercera palabra y conserva los nombres cortos", () => {
+    assert.equal(TurnoTvService.getPatientDisplayName("María José Pérez"), "María Pérez");
+    assert.equal(TurnoTvService.getPatientDisplayName("Ana Pérez Gómez"), "Ana Gómez");
+    assert.equal(TurnoTvService.getPatientDisplayName("Ana Pérez"), "Ana Pérez");
+    assert.equal(TurnoTvService.getPatientDisplayName("Ana"), "Ana");
+    assert.equal(TurnoTvService.getPatientDisplayName(" \t "), "");
   });
 
   it("no consulta los llamados si la sede de TV no existe o está deshabilitada", async (t) => {

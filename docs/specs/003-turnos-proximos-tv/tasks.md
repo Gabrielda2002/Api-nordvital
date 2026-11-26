@@ -27,3 +27,12 @@
 `pnpm test`: 131 pruebas aprobadas. `npx tsc --noEmit`: aprobado.
 `pnpm m:show`: sin migraciones pendientes. Consulta de solo lectura en MySQL
 para una sede sin historial: devolvió `[]`.
+
+### Extensión: nombre de visualización
+
+- [x] Incorporar el nombre abreviado a activos e historial; documentarlo en Swagger.
+- [x] Verificar ambas listas, nombres cortos o ausentes y ausencia de datos adicionales.
+
+`pnpm test`: 132 pruebas aprobadas, con consultas generadas por TypeORM y
+resultados de prueba sin conexión a MySQL. `npx tsc --noEmit`: aprobado.
+`pnpm m:show`: sin migraciones pendientes.
